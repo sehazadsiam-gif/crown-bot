@@ -1,0 +1,19 @@
+[Unit]
+Description=Crown Coffee messaging bot
+After=network.target
+
+[Service]
+Type=simple
+User=crown
+WorkingDirectory=/opt/crown-bot
+EnvironmentFile=/opt/crown-bot/.env
+ExecStart=/usr/bin/node src/server.js
+Restart=always
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

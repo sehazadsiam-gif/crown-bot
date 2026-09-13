@@ -1,0 +1,82 @@
+import crypto from 'node:crypto';
+
+const {
+  META_APP_SECRET, GRAPH_VERSION = 'v21.0',
+  FB_PAGE_TOKEN, FB_PAGE_ID,
+  IG_TOKEN, IG_USER_ID
+} = process.env;
+
+/** Constant-time check of Meta's X-Hub-Signature-256 header. */
+export function verifySignature(rawBody, header) {
+  if (!META_APP_SECRET) return false;
+  if (!header?.startsWith('sha256=')) return false;
+  const expected = 'sha256=' + crypto.createHmac('sha256', META_APP_SECRET).update(rawBody).digest('hex');
+  const a = Buffer.from(header), b = Buffer.from(expected);
+  return a.length === b.length && crypto.timingSafeEqual(a, b);
+}
+
+/** True when the sender is our own page/account (echo of our own send). */
+export function isSelf(platform, senderId) {
+  return platform === 'facebook' ? senderId === FB_PAGE_ID : senderId === IG_USER_ID;
+}
+
+export async function sendMessage(platform, psid, text) {
+  const isFb = platform === 'facebook';
+  const host = isFb ? 'https://graph.facebook.com' : 'https://graph.instagram.com';
+  const token = isFb ? FB_PAGE_TOKEN : IG_TOKEN;
+  if (!token) throw new Error(`no access token configured for ${platform}`);
+
+  const res = await fetch(`${host}/${GRAPH_VERSION}/me/messages`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+    body: JSON.stringify({
+      recipient: { id: psid },
+      message: { text: text.slice(0, 1900) },
+      messaging_type: 'RESPONSE'
+    })
+  });
+
+  if (!res.ok) throw new Error(`${platform} send failed ${res.status}: ${await res.text()}`);
+  return res.json();
+}
+
+/** Best-effort display name lookup; failure is not fatal. */
+export async function fetchProfileName(platform, psid) {
+  try {
+    const isFb = platform === 'facebook';
+    const host = isFb ? 'https://graph.facebook.com' : 'https://graph.instagram.com';
+    const token = isFb ? FB_PAGE_TOKEN : IG_TOKEN;
+    const field = isFb ? 'name' : 'username';
+    const res = await fetch(`${host}/${GRAPH_VERSION}/${psid}?fields=${field}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    if (!res.ok) return null;
+    const d = await res.json();
+    return d.name || d.username || null;
+  } catch { return null; }
+}
+
+/**
+ * Normalise a webhook body into a flat list of inbound text messages.
+ * Handles both `object: "page"` (Messenger) and `object: "instagram"`.
+ */
+export function parseWebhook(body) {
+  const out = [];
+  const platform = body.object === 'instagram' ? 'instagram' : 'facebook';
+
+  for (const entry of body.entry || []) {
+    for (const ev of entry.messaging || []) {
+      if (!ev.message || ev.message.is_echo) continue;      // skip our own sends
+      const text = ev.message.text;
+      if (!text) continue;                                   // skip stickers/attachments for now
+      out.push({
+        platform,
+        senderId: ev.sender?.id,
+        mid: ev.message.mid,
+        text,
+        ts: ev.timestamp
+      });
+    }
+  }
+  return out;
+}

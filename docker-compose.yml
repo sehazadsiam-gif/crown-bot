@@ -1,0 +1,54 @@
+# Coolify deployment.
+#
+# The volume below is the important line. Without it, data/crown.db lives
+# inside the container and every redeploy wipes your menu, settings and
+# conversation history. Declaring it here means it cannot be forgotten in
+# the UI.
+
+services:
+  crown-bot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+
+    environment:
+      # Fixed for containers — do NOT set HOST to 127.0.0.1 here or
+      # Coolify's proxy cannot reach the app.
+      PORT: 3000
+      HOST: 0.0.0.0
+      BASE_PATH: /chatbotadmin
+      NODE_ENV: production
+
+      # Set these in Coolify → Environment Variables
+      PUBLIC_URL: ${PUBLIC_URL:-https://ccadmin.online}
+      SESSION_SECRET: ${SESSION_SECRET}
+      ADMIN_EMAIL: ${ADMIN_EMAIL}
+      ADMIN_PASSWORD_HASH: ${ADMIN_PASSWORD_HASH}
+
+      GEMINI_API_KEY: ${GEMINI_API_KEY}
+      GEMINI_MODEL: ${GEMINI_MODEL:-gemini-2.5-flash}
+      GROQ_API_KEY: ${GROQ_API_KEY:-}
+      GROQ_MODEL: ${GROQ_MODEL:-llama-3.3-70b-versatile}
+
+      META_VERIFY_TOKEN: ${META_VERIFY_TOKEN}
+      META_APP_SECRET: ${META_APP_SECRET}
+      FB_PAGE_TOKEN: ${FB_PAGE_TOKEN:-}
+      FB_PAGE_ID: ${FB_PAGE_ID:-}
+      IG_TOKEN: ${IG_TOKEN:-}
+      IG_USER_ID: ${IG_USER_ID:-}
+      GRAPH_VERSION: ${GRAPH_VERSION:-v21.0}
+
+    volumes:
+      - crown-data:/app/data
+
+    healthcheck:
+      test: ["CMD", "node", "-e",
+             "fetch('http://127.0.0.1:3000/chatbotadmin/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+
+volumes:
+  crown-data:

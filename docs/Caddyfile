@@ -1,0 +1,24 @@
+ccadmin.online {
+	encode gzip
+
+	# Admin panel + its API
+	handle /chatbotadmin* {
+		reverse_proxy 127.0.0.1:3000
+	}
+
+	# Meta webhook (must be reachable without auth)
+	handle /webhook/* {
+		reverse_proxy 127.0.0.1:3000
+	}
+
+	# Everything else
+	handle {
+		redir /chatbotadmin/ permanent
+	}
+
+	header {
+		X-Content-Type-Options nosniff
+		X-Frame-Options DENY
+		Referrer-Policy strict-origin-when-cross-origin
+	}
+}
