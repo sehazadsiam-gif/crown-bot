@@ -1075,6 +1075,111 @@ pre.prompt {
   border-color: var(--accent);
   color: var(--ink);
 }
+
+/* Master Subscriptions & Clean Table */
+.sub-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11.5px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--line);
+  white-space: nowrap;
+}
+.sub-badge.trial {
+  background: var(--warn-soft);
+  color: var(--warn);
+  border-color: var(--warn);
+}
+.sub-badge.active {
+  background: var(--good-soft);
+  color: var(--good);
+  border-color: var(--good);
+}
+.sub-badge.expired {
+  background: var(--danger-soft);
+  color: var(--danger);
+  border-color: var(--danger);
+}
+.sub-badge.suspended {
+  background: var(--surface2);
+  color: var(--ink3);
+}
+
+.table-wrap {
+  width: 100%;
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+table.clean-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 13px;
+}
+table.clean-table th {
+  background: var(--surface2);
+  color: var(--ink2);
+  font-weight: 600;
+  font-size: 11.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--line);
+  white-space: nowrap;
+}
+table.clean-table td {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--line);
+  color: var(--ink);
+  vertical-align: middle;
+}
+table.clean-table tr:last-child td {
+  border-bottom: none;
+}
+table.clean-table tr:hover td {
+  background: var(--surface2);
+}
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.65);
+  z-index: 1200;
+  display: none;
+  place-items: center;
+  padding: 20px;
+  overflow-y: auto;
+}
+.modal-backdrop.open {
+  display: grid;
+}
+.modal-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 24px 26px;
+  width: 100%;
+  max-width: 520px;
+  box-shadow: var(--shadow);
+  margin: auto;
+}
+.copy-box {
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  font-size: 13px;
+  font-family: ui-monospace, monospace;
+  color: var(--ink);
+  margin: 12px 0;
+  line-height: 1.6;
+  word-break: break-all;
+}
 </style>
 </head>
 <body>
@@ -1085,7 +1190,7 @@ pre.prompt {
     <div class="logo-badge">CC</div>
     <h1>Crown Coffee</h1>
     <div class="s">Operations Hub</div>
-    <label class="f">Admin Email</label>
+    <label class="f">Email Address</label>
     <input type="email" id="lEmail" autocomplete="username" placeholder="admin@crowncoffee.com" required>
     <label class="f">Password</label>
     <input type="password" id="lPass" autocomplete="current-password" placeholder="••••••••" required>
@@ -1097,23 +1202,29 @@ pre.prompt {
 <!-- Global App Container -->
 <div id="app" style="display:none">
 <header>
-  <div class="brand" onclick="switchTab('dash')">
+  <div class="brand" onclick="switchTab(currentUser?.role==='master_admin'?'tenants':'dash')">
     <div class="brand-icon" id="brandLogoBadge">CC</div>
     <div>
       <h1 id="brandTitleTxt">Crown Coffee</h1>
-      <div class="sub">AI Operations Center</div>
+      <div class="sub" id="brandSubTxt">AI Operations Center</div>
     </div>
   </div>
 
-  <div class="workspace-pill-box" style="margin-left:14px; display:flex; align-items:center; gap:8px">
+  <!-- Master Admin Workspace Controls -->
+  <div id="masterWsControls" class="workspace-pill-box" style="margin-left:14px; display:none; align-items:center; gap:8px">
     <div style="display:flex; flex-direction:column">
-      <span style="font-size:10px; font-weight:800; color:var(--ink3); text-transform:uppercase; letter-spacing:0.06em">Account</span>
-      <select id="activeWorkspaceSelect" style="height:32px; padding:0 8px; font-size:12.5px; font-weight:700; border-radius:6px; background:var(--glass-thick); color:var(--ink); border:1px solid var(--line); outline:none; cursor:pointer">
+      <span style="font-size:10px; font-weight:700; color:var(--ink3); text-transform:uppercase; letter-spacing:0.06em">Switch Client</span>
+      <select id="activeWorkspaceSelect" style="height:32px; padding:0 8px; font-size:12.5px; font-weight:600; border-radius:6px; background:var(--surface2); color:var(--ink); border:1px solid var(--line); outline:none; cursor:pointer">
         <option value="1">Crown Coffee (Default)</option>
       </select>
     </div>
-    <button class="btn sm" id="btnOpenNewWsModal" title="Add New Business Account" style="margin-top:14px">+ New</button>
-    <button class="btn sm ghost" id="btnOpenManageWsModal" title="Manage Business Accounts" style="margin-top:14px">Manage</button>
+    <button class="btn sm primary" id="btnOpenNewWsModal" title="Add New Business Account" style="margin-top:14px">+ New Tenant</button>
+  </div>
+
+  <!-- Tenant Subscription & Profile Controls -->
+  <div id="tenantControls" style="margin-left:14px; display:none; align-items:center; gap:8px">
+    <span id="tenantSubBadge" class="sub-badge trial">14-Day Free Trial</span>
+    <button class="btn sm" id="btnOpenProfileModal">Profile &amp; Password</button>
   </div>
 
   <div class="spacer"></div>
@@ -1130,8 +1241,17 @@ pre.prompt {
 
 <div class="wrap">
   <nav id="nav">
+    <!-- Master Admin Navigation Section -->
+    <div id="navMasterSection" style="display:none">
+      <div class="navlabel">Master Control</div>
+      <button data-p="tenants" class="active">
+        <svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        Tenants &amp; Subscriptions
+      </button>
+    </div>
+
     <div class="navlabel">Live Monitoring</div>
-    <button data-p="dash" class="active">
+    <button data-p="dash">
       <svg viewBox="0 0 24 24"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
       Executive Desk
     </button>
@@ -1147,15 +1267,15 @@ pre.prompt {
     <div class="navlabel">Knowledge Base</div>
     <button data-p="cafe">
       <svg viewBox="0 0 24 24"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
-      Cafe Info
+      Business Info
     </button>
     <button data-p="menu">
       <svg viewBox="0 0 24 24"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" x2="6" y1="1" y2="4"/><line x1="10" x2="10" y1="1" y2="4"/><line x1="14" x2="14" y1="1" y2="4"/></svg>
-      Menu (89 Items)
+      Menu &amp; Catalog
     </button>
     <button data-p="faq">
       <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" x2="12.01" y1="17" y2="17"/></svg>
-      Verified FAQs (11)
+      Verified FAQs
     </button>
     
     <div class="navlabel">AI Behavior &amp; Rules</div>
@@ -1184,8 +1304,83 @@ pre.prompt {
   </nav>
 
   <main>
+    <!-- Tenant Expired Banner -->
+    <div id="tenantExpiredBanner" style="display:none; background:var(--danger-soft); border:1px solid var(--danger); border-radius:var(--radius-sm); padding:14px 18px; margin-bottom:18px; color:var(--ink)">
+      <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap">
+        <div>
+          <strong style="color:var(--danger); font-size:14px">14-Day Free Trial Concluded</strong>
+          <p style="margin:4px 0 0; font-size:13px; color:var(--ink2)">Your free trial period has ended and automated AI replies are paused. Please contact master administration to activate your monthly subscription.</p>
+        </div>
+        <div style="font-size:12px; font-weight:600; color:var(--ink); background:var(--surface); border:1px solid var(--line); padding:6px 12px; border-radius:6px; white-space:nowrap">
+          Hotline: 01806-576024
+        </div>
+      </div>
+    </div>
+
+    <!-- MASTER ADMIN: TENANTS & SUBSCRIPTIONS PANEL -->
+    <section class="panel" data-p="tenants">
+      <div class="phead">
+        <div>
+          <h2>Tenants &amp; Subscriptions Master Hub</h2>
+          <p>Global multi-tenant platform control: review trial statuses, manage client packages, reset credentials, and send monthly renewal invoices.</p>
+        </div>
+        <div class="row">
+          <button class="btn primary sm" onclick="openNewTenantModal()">+ Create New Tenant</button>
+        </div>
+      </div>
+
+      <!-- Master KPI Summary -->
+      <div class="grid g4" style="margin-bottom:20px">
+        <div class="stat-card">
+          <div class="v" id="mstTotalTenants">0</div>
+          <div class="k">Total Client Workspaces</div>
+          <div class="subtext">Hosted accounts</div>
+        </div>
+        <div class="stat-card">
+          <div class="v" id="mstActiveSubs" style="color:var(--good)">0</div>
+          <div class="k">Active Paid Packages</div>
+          <div class="subtext">Current subscribers</div>
+        </div>
+        <div class="stat-card">
+          <div class="v" id="mstTrials" style="color:var(--warn)">0</div>
+          <div class="k">14-Day Free Trials</div>
+          <div class="subtext">Active evaluation phase</div>
+        </div>
+        <div class="stat-card">
+          <div class="v" id="mstTotalRevenue">BDT 0</div>
+          <div class="k">Monthly Recurring Fee</div>
+          <div class="subtext">Projected monthly run rate</div>
+        </div>
+      </div>
+
+      <!-- Master Tenants Table -->
+      <div class="card" style="padding:0; overflow:hidden">
+        <div style="padding:14px 18px; border-bottom:1px solid var(--line); display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px">
+          <h3 style="margin:0">All Client Business Accounts</h3>
+          <input type="text" id="tenantSearchIn" placeholder="Search by business name or email…" style="max-width:280px; padding:6px 10px; font-size:12.5px" oninput="filterMasterTenants()">
+        </div>
+        <div class="table-wrap" style="border:none; border-radius:0">
+          <table class="clean-table">
+            <thead>
+              <tr>
+                <th>Business Account</th>
+                <th>Tenant Login</th>
+                <th>Subscription Status</th>
+                <th>Monthly Fee</th>
+                <th>Conversations</th>
+                <th style="text-align:right">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="masterTenantsTbody">
+              <tr><td colspan="6" style="text-align:center; padding:24px; color:var(--ink3)">Loading tenant accounts…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
     <!-- DASHBOARD PANEL -->
-    <section class="panel active" data-p="dash">
+    <section class="panel" data-p="dash">
       <div class="phead">
         <div>
           <h2>Operations Dashboard</h2>
@@ -1810,11 +2005,12 @@ pre.prompt {
       <kbd>ESC</kbd>
     </div>
     <div class="cmd-list" id="cmdList">
+      <div class="cmd-item" data-act="tenants"><span>Tenants &amp; Subscriptions Hub</span><kbd>G T</kbd></div>
       <div class="cmd-item" data-act="dash"><span>Jump to Operations Dashboard</span><kbd>G D</kbd></div>
       <div class="cmd-item" data-act="inbox"><span>Open Customer Inbox</span><kbd>G I</kbd></div>
       <div class="cmd-item" data-act="channels"><span>Multi-Channel Settings</span><kbd>G C</kbd></div>
-      <div class="cmd-item" data-act="menu"><span>Manage Cafe Menu (89 Items)</span><kbd>G M</kbd></div>
-      <div class="cmd-item" data-act="faq"><span>Manage FAQs (11 Qs)</span><kbd>G F</kbd></div>
+      <div class="cmd-item" data-act="menu"><span>Manage Menu &amp; Catalog</span><kbd>G M</kbd></div>
+      <div class="cmd-item" data-act="faq"><span>Manage Verified FAQs</span><kbd>G F</kbd></div>
       <div class="cmd-item" data-act="play"><span>Open AI Playground</span><kbd>G P</kbd></div>
       <div class="cmd-item" data-act="sim"><span>Toggle Side Simulator</span><kbd>S</kbd></div>
       <div class="cmd-item" data-act="theme"><span>Toggle Dark/Light Theme</span><kbd>T</kbd></div>
@@ -1822,35 +2018,160 @@ pre.prompt {
   </div>
 </div>
 
-<!-- New Business Account Modal -->
-<div id="wsModal" class="cmd-modal-backdrop" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.65); z-index:1100; align-items:center; justify-content:center; backdrop-filter:blur(6px)">
-  <div class="card" style="width:90%; max-width:440px; background:var(--bg); border:1px solid var(--line); box-shadow:0 24px 48px rgba(0,0,0,0.5)">
-    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px">
-      <h3 style="margin:0">Add New Business Account</h3>
-      <button class="btn sm ghost" onclick="closeWsModal()">Close</button>
+<!-- Master Admin: Create New Tenant Modal -->
+<div id="newTenantModal" class="modal-backdrop">
+  <div class="modal-card">
+    <div id="newTenantFormView">
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px">
+        <h3 style="margin:0">Create New Business Tenant</h3>
+        <button class="btn sm ghost" onclick="closeNewTenantModal()">Close</button>
+      </div>
+      <p class="hint" style="margin-bottom:16px">Provision a dedicated client workspace with an automated 14-day free trial, isolated knowledge base, and unique login credentials.</p>
+      
+      <label class="f">Business / Brand Name</label>
+      <input type="text" id="ntNameIn" placeholder="e.g. Gloria Jean's - Gulshan" style="margin-bottom:14px" required>
+      
+      <div class="grid g2" style="margin-bottom:18px">
+        <div>
+          <label class="f">Monthly Fee (BDT)</label>
+          <input type="number" id="ntFeeIn" value="5000" placeholder="5000">
+        </div>
+        <div>
+          <label class="f">Contact Email (Optional)</label>
+          <input type="email" id="ntEmailIn" placeholder="manager@clientbrand.com">
+        </div>
+      </div>
+
+      <div style="display:flex; justify-content:flex-end; gap:8px">
+        <button class="btn ghost sm" onclick="closeNewTenantModal()">Cancel</button>
+        <button class="btn primary sm" id="btnSubmitNewTenant">Provision Account</button>
+      </div>
     </div>
-    <p class="hint" style="margin-bottom:16px; line-height:1.5">Create an isolated chatbot workspace with its own Facebook, Instagram, WhatsApp, TikTok, Menu, and Knowledge Base.</p>
-    <label class="f">Business / Brand Name</label>
-    <input type="text" id="newWsNameIn" placeholder="e.g. Bella Italia Trattoria" style="margin-bottom:18px">
-    <div style="display:flex; justify-content:flex-end; gap:8px">
-      <button class="btn ghost sm" onclick="closeWsModal()">Cancel</button>
-      <button class="btn primary sm" id="btnSubmitNewWs">Create Workspace</button>
+
+    <!-- Provisioned Credentials Result View -->
+    <div id="newTenantResultView" style="display:none">
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px">
+        <h3 style="margin:0; color:var(--good)">Tenant Account Created</h3>
+        <button class="btn sm ghost" onclick="closeNewTenantModal()">Done</button>
+      </div>
+      <p class="hint" style="margin-bottom:12px">The client account has been configured on a 14-Day Free Trial. Hand over these credentials to the customer:</p>
+      
+      <div class="copy-box" id="ntCredsBox"></div>
+      
+      <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:16px">
+        <button class="btn sm" id="btnCopyCreds">Copy Credentials</button>
+        <button class="btn primary sm" id="btnGoToNewWs">Switch to Workspace</button>
+      </div>
     </div>
   </div>
 </div>
 
-<!-- Manage Business Accounts Modal -->
-<div id="manageWsModal" class="cmd-modal-backdrop" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.65); z-index:1100; align-items:center; justify-content:center; backdrop-filter:blur(6px)">
-  <div class="card" style="width:90%; max-width:560px; background:var(--bg); border:1px solid var(--line); box-shadow:0 24px 48px rgba(0,0,0,0.5)">
+<!-- Master Admin: Send Renewal Notice Modal -->
+<div id="sendRenewalModal" class="modal-backdrop">
+  <div class="modal-card">
     <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px">
-      <h3 style="margin:0">Manage Business Accounts</h3>
-      <button class="btn sm ghost" onclick="closeManageWsModal()">Close</button>
+      <h3 style="margin:0">Send Monthly Renewal Notice</h3>
+      <button class="btn sm ghost" onclick="closeRenewalModal()">Close</button>
     </div>
-    <p class="hint" style="margin-bottom:14px; line-height:1.5">Switch, rename, or delete connected business accounts hosted on this system.</p>
-    <div id="wsManageList" style="display:flex; flex-direction:column; gap:8px; max-height:360px; overflow-y:auto; padding-right:4px"></div>
-    <div style="margin-top:18px; display:flex; justify-content:flex-end">
-      <button class="btn sm ghost" onclick="closeManageWsModal()">Close</button>
+    <p class="hint" style="margin-bottom:16px">Prepare and dispatch a formal monthly subscription renewal invoice to the client.</p>
+
+    <label class="f">Tenant Business</label>
+    <input type="text" id="rnWsNameIn" readonly style="margin-bottom:12px; opacity:0.8">
+
+    <label class="f">Recipient Email Address</label>
+    <input type="email" id="rnEmailIn" style="margin-bottom:12px" required>
+
+    <div class="grid g2" style="margin-bottom:14px">
+      <div>
+        <label class="f">Renewal Amount (BDT)</label>
+        <input type="number" id="rnAmountIn" value="5000">
+      </div>
+      <div>
+        <label class="f">Payment Due Date</label>
+        <input type="text" id="rnDueDateIn" placeholder="e.g. October 1, 2026">
+      </div>
     </div>
+
+    <label class="f">Notification Text Preview</label>
+    <textarea id="rnPreviewText" style="font-size:12px; font-family:ui-monospace, monospace; min-height:110px; margin-bottom:18px" readonly></textarea>
+
+    <div style="display:flex; justify-content:flex-end; gap:8px">
+      <button class="btn ghost sm" onclick="closeRenewalModal()">Cancel</button>
+      <button class="btn primary sm" id="btnDispatchRenewal">Dispatch Notice</button>
+    </div>
+  </div>
+</div>
+
+<!-- Master Admin: Reset Password Modal -->
+<div id="resetPassModal" class="modal-backdrop">
+  <div class="modal-card">
+    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px">
+      <h3 style="margin:0">Reset Tenant Password</h3>
+      <button class="btn sm ghost" onclick="closeResetPassModal()">Close</button>
+    </div>
+    <p class="hint" style="margin-bottom:16px">Set a new password or restore the standard default password for this client account.</p>
+
+    <label class="f">Business Account</label>
+    <input type="text" id="rpWsNameIn" readonly style="margin-bottom:12px; opacity:0.8">
+
+    <label class="f">New Temporary Password</label>
+    <input type="text" id="rpPassIn" style="margin-bottom:18px" required>
+
+    <div style="display:flex; justify-content:flex-end; gap:8px">
+      <button class="btn ghost sm" onclick="closeResetPassModal()">Cancel</button>
+      <button class="btn primary sm" id="btnSubmitResetPass">Update Password</button>
+    </div>
+  </div>
+</div>
+
+<!-- Tenant: Profile & Password Modal -->
+<div id="profileModal" class="modal-backdrop">
+  <div class="modal-card">
+    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px">
+      <h3 style="margin:0">Account Security &amp; Profile</h3>
+      <button class="btn sm ghost" onclick="closeProfileModal()">Close</button>
+    </div>
+    <p class="hint" style="margin-bottom:16px">Update your admin login email address and account password.</p>
+
+    <label class="f">Admin Login Email</label>
+    <input type="email" id="pfEmailIn" style="margin-bottom:12px" required>
+
+    <label class="f">New Password (Optional - leave blank to keep current)</label>
+    <input type="password" id="pfNewPassIn" placeholder="••••••••" style="margin-bottom:12px">
+
+    <label class="f">Confirm New Password</label>
+    <input type="password" id="pfConfirmPassIn" placeholder="••••••••" style="margin-bottom:18px">
+
+    <div id="pfErr" style="color:var(--danger); font-size:12.5px; margin-bottom:10px"></div>
+
+    <div style="display:flex; justify-content:flex-end; gap:8px">
+      <button class="btn ghost sm" onclick="closeProfileModal()">Cancel</button>
+      <button class="btn primary sm" id="btnSubmitProfile">Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<!-- Tenant: Mandatory First-Time Login Password Change Modal -->
+<div id="firstLoginModal" class="modal-backdrop">
+  <div class="modal-card">
+    <div style="margin-bottom:14px">
+      <div class="logo-badge" style="width:34px; height:34px; font-size:13px; margin-bottom:10px">CC</div>
+      <h3 style="margin:0 0 4px">Welcome to Your Operations Hub</h3>
+      <p class="hint" style="margin:0">Please set your personal email address and choose a secure password before continuing.</p>
+    </div>
+
+    <label class="f">Your Email Address</label>
+    <input type="email" id="flEmailIn" style="margin-bottom:12px" required>
+
+    <label class="f">New Password (Minimum 6 characters)</label>
+    <input type="password" id="flPassIn" placeholder="••••••••" style="margin-bottom:12px" required>
+
+    <label class="f">Confirm Password</label>
+    <input type="password" id="flConfirmPassIn" placeholder="••••••••" style="margin-bottom:18px" required>
+
+    <div id="flErr" style="color:var(--danger); font-size:12.5px; margin-bottom:10px"></div>
+
+    <button class="btn primary" id="btnSubmitFirstLogin" style="width:100%; justify-content:center">Save &amp; Enter Dashboard</button>
   </div>
 </div>
 
@@ -1860,14 +2181,77 @@ const api = (p, opts={}) => fetch(API + p, {credentials:'same-origin', headers:{
 
 let S = null, saveT = null, selConv = null;
 let currentWorkspaceId = 1, workspaces = [];
+let currentUser = null, allMasterTenants = [];
+let pendingNewWsId = null;
 
-/* ---------- AUTHENTICATION ---------- */
+/* ---------- AUTHENTICATION & ROLE ENGINE ---------- */
 async function checkAuth(){
   const r = await api('/api/me').then(r=>r.json()).catch(()=>({authed:false}));
   if(r.authed){
+    currentUser = r;
     document.getElementById('login').style.display='none';
     document.getElementById('app').style.display='block';
-    await load(currentWorkspaceId);
+
+    const masterControls = document.getElementById('masterWsControls');
+    const masterNav = document.getElementById('navMasterSection');
+    const tenantControls = document.getElementById('tenantControls');
+    const tenantExpiredBanner = document.getElementById('tenantExpiredBanner');
+
+    if(r.role === 'master_admin'){
+      if(masterControls) masterControls.style.display = 'flex';
+      if(masterNav) masterNav.style.display = 'block';
+      if(tenantControls) tenantControls.style.display = 'none';
+      if(tenantExpiredBanner) tenantExpiredBanner.style.display = 'none';
+      
+      document.getElementById('brandTitleTxt').textContent = 'Crown Operations';
+      document.getElementById('brandSubTxt').textContent = 'Master Control Hub';
+      document.getElementById('brandLogoBadge').textContent = 'MO';
+
+      switchTab('tenants');
+      await loadMasterTenants();
+      await load(currentWorkspaceId);
+    } else {
+      // Tenant Admin
+      currentWorkspaceId = r.workspace_id;
+      if(masterControls) masterControls.style.display = 'none';
+      if(masterNav) masterNav.style.display = 'none';
+      if(tenantControls) tenantControls.style.display = 'flex';
+      
+      document.getElementById('brandTitleTxt').textContent = r.workspace_name || 'My Business';
+      document.getElementById('brandSubTxt').textContent = 'AI Operations Center';
+
+      // Render Subscription Status Badge
+      const sub = r.subscription;
+      const subBadge = document.getElementById('tenantSubBadge');
+      if(subBadge && sub){
+        if(sub.status === 'trial'){
+          subBadge.className = 'sub-badge ' + (sub.isExpired ? 'expired' : 'trial');
+          subBadge.textContent = sub.isExpired ? 'Trial Expired' : `14-Day Free Trial (${sub.daysRemaining}d left)`;
+        } else if(sub.status === 'active'){
+          subBadge.className = 'sub-badge active';
+          subBadge.textContent = `Active Package (${sub.daysRemaining}d)`;
+        } else if(sub.status === 'suspended'){
+          subBadge.className = 'sub-badge suspended';
+          subBadge.textContent = 'Service Suspended';
+        } else {
+          subBadge.className = 'sub-badge expired';
+          subBadge.textContent = 'Subscription Inactive';
+        }
+      }
+
+      if(tenantExpiredBanner){
+        tenantExpiredBanner.style.display = (sub?.isExpired || sub?.status === 'suspended') ? 'block' : 'none';
+      }
+
+      // Mandatory First-Time Password Setup
+      if(r.must_change_password){
+        document.getElementById('flEmailIn').value = r.email || '';
+        document.getElementById('firstLoginModal').classList.add('open');
+      }
+
+      switchTab('dash');
+      await load(currentWorkspaceId);
+    }
   } else {
     document.getElementById('login').style.display='grid';
     document.getElementById('app').style.display='none';
@@ -1889,7 +2273,379 @@ document.getElementById('logoutBtn').onclick = async () => {
   location.reload();
 };
 
-/* ---------- WORKSPACE MANAGEMENT ---------- */
+/* ---------- MASTER TENANTS & SUBSCRIPTION HUB ---------- */
+async function loadMasterTenants(){
+  if(currentUser?.role !== 'master_admin') return;
+  const res = await api('/api/admin/tenants').then(r=>r.json()).catch(()=>({tenants:[]}));
+  allMasterTenants = res.tenants || [];
+  renderMasterTenantsTable(allMasterTenants);
+
+  // Compute Master KPIs
+  const total = allMasterTenants.length;
+  const activeSubs = allMasterTenants.filter(t => t.subscription?.status === 'active' && !t.subscription?.isExpired).length;
+  const trials = allMasterTenants.filter(t => t.subscription?.status === 'trial' && !t.subscription?.isExpired).length;
+  const totalRev = allMasterTenants.reduce((acc, t) => acc + (t.subscription?.monthly_fee || 0), 0);
+
+  document.getElementById('mstTotalTenants').textContent = total;
+  document.getElementById('mstActiveSubs').textContent = activeSubs;
+  document.getElementById('mstTrials').textContent = trials;
+  document.getElementById('mstTotalRevenue').textContent = `BDT ${totalRev.toLocaleString()}`;
+}
+
+function renderMasterTenantsTable(tenantsList){
+  const tbody = document.getElementById('masterTenantsTbody');
+  if(!tbody) return;
+
+  if(!tenantsList.length){
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:24px; color:var(--ink3)">No business tenants matching query.</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = tenantsList.map(t => {
+    const ws = t.workspace;
+    const user = t.user || {};
+    const sub = t.subscription || {};
+    const isPrimary = ws.id === 1;
+
+    let statusPill = '';
+    if(sub.status === 'active'){
+      statusPill = `<span class="sub-badge active">Active (${sub.daysRemaining}d left)</span>`;
+    } else if(sub.status === 'trial'){
+      statusPill = `<span class="sub-badge ${sub.isExpired?'expired':'trial'}">${sub.isExpired?'Trial Expired':`Trial (${sub.daysRemaining}d left)`}</span>`;
+    } else if(sub.status === 'suspended'){
+      statusPill = `<span class="sub-badge suspended">Suspended</span>`;
+    } else {
+      statusPill = `<span class="sub-badge expired">Expired</span>`;
+    }
+
+    return `
+      <tr>
+        <td>
+          <div style="display:flex; flex-direction:column; gap:2px">
+            <strong>${esc(ws.name)} ${isPrimary?'<span class="badge" style="background:var(--accent-soft);color:var(--accent)">Flagship</span>':''}</strong>
+            <span style="font-size:11px; color:var(--ink3)">ID: #${ws.id} · Created: ${new Date(ws.created_at).toLocaleDateString()}</span>
+          </div>
+        </td>
+        <td>
+          <div style="display:flex; align-items:center; gap:6px">
+            <span class="mono" style="font-size:12px">${esc(user.email || 'N/A')}</span>
+          </div>
+        </td>
+        <td>${statusPill}</td>
+        <td>
+          <strong>BDT ${(sub.monthly_fee||0).toLocaleString()}</strong>
+          <div style="font-size:11px; color:var(--ink3)">/ month</div>
+        </td>
+        <td>
+          <strong>${t.stats?.conversations || 0}</strong>
+          <span style="font-size:11px; color:var(--ink3)">convs</span>
+        </td>
+        <td style="text-align:right">
+          <div style="display:inline-flex; gap:6px; flex-wrap:wrap; justify-content:flex-end">
+            <button class="btn sm" onclick="switchWorkspace(${ws.id}); switchTab('dash');">Manage</button>
+            <button class="btn sm" onclick="activatePackagePrompt(${ws.id}, '${esc(ws.name)}')">+ Paid Package</button>
+            <button class="btn sm ghost" onclick="extendTrialPrompt(${ws.id}, '${esc(ws.name)}')">+ Trial</button>
+            <button class="btn sm ghost" onclick="openResetPassModal(${ws.id}, '${esc(ws.name)}')">Reset Pass</button>
+            <button class="btn sm ghost" onclick="openRenewalModal(${ws.id}, '${esc(ws.name)}', '${esc(user.email||sub.contact_email||'')}', ${sub.monthly_fee||5000}, '${sub.active_until||''}')">Invoice</button>
+            ${!isPrimary ? `<button class="btn sm ghost" style="color:var(--danger)" onclick="deleteTenantWs(${ws.id})">Delete</button>` : ''}
+          </div>
+        </td>
+      </tr>
+    `;
+  }).join('');
+}
+
+function filterMasterTenants(){
+  const q = document.getElementById('tenantSearchIn').value.trim().toLowerCase();
+  if(!q) return renderMasterTenantsTable(allMasterTenants);
+  const filtered = allMasterTenants.filter(t => 
+    t.workspace.name.toLowerCase().includes(q) ||
+    (t.user?.email || '').toLowerCase().includes(q)
+  );
+  renderMasterTenantsTable(filtered);
+}
+
+/* Master Actions */
+async function activatePackagePrompt(wsId, wsName){
+  const daysStr = prompt(`Activate paid package for "${wsName}". Enter duration in days (+30, +90, +365):`, '30');
+  if(!daysStr) return;
+  const days = Number(daysStr);
+  if(isNaN(days) || days <= 0) return alert('Invalid number of days.');
+
+  const targetDate = new Date(Date.now() + days * 86400 * 1000).toISOString();
+  const res = await api(`/api/admin/tenants/${wsId}/subscription`, {
+    method: 'PUT',
+    body: JSON.stringify({
+      status: 'active',
+      plan_name: `Standard ${days}-Day Active Package`,
+      active_until: targetDate
+    })
+  });
+  if(res.ok){
+    chip(`Package activated for +${days} days`);
+    await loadMasterTenants();
+  } else {
+    alert('Failed to activate package.');
+  }
+}
+
+async function extendTrialPrompt(wsId, wsName){
+  const daysStr = prompt(`Extend 14-day free trial for "${wsName}". Enter extra days (+7, +14):`, '7');
+  if(!daysStr) return;
+  const days = Number(daysStr);
+  if(isNaN(days) || days <= 0) return alert('Invalid number of days.');
+
+  const targetDate = new Date(Date.now() + days * 86400 * 1000).toISOString();
+  const res = await api(`/api/admin/tenants/${wsId}/subscription`, {
+    method: 'PUT',
+    body: JSON.stringify({
+      status: 'trial',
+      plan_name: `Extended 14-Day Trial`,
+      trial_ends_at: targetDate
+    })
+  });
+  if(res.ok){
+    chip(`Trial extended by +${days} days`);
+    await loadMasterTenants();
+  } else {
+    alert('Failed to extend trial.');
+  }
+}
+
+async function deleteTenantWs(wsId){
+  if(!confirm(`Are you sure you want to permanently delete Workspace #${wsId}? All its AI configuration, menu items, and chat history will be deleted.`)) return;
+  const res = await api(`/api/workspaces/${wsId}`, {method:'DELETE'});
+  if(res.ok){
+    chip('Tenant workspace deleted');
+    await loadMasterTenants();
+    await loadWorkspaces();
+  } else {
+    alert('Failed to delete workspace.');
+  }
+}
+
+/* Master: Create New Tenant Modal */
+function openNewTenantModal(){
+  document.getElementById('newTenantFormView').style.display = 'block';
+  document.getElementById('newTenantResultView').style.display = 'none';
+  document.getElementById('ntNameIn').value = '';
+  document.getElementById('ntEmailIn').value = '';
+  document.getElementById('ntFeeIn').value = '5000';
+  document.getElementById('newTenantModal').classList.add('open');
+  document.getElementById('ntNameIn').focus();
+}
+
+function closeNewTenantModal(){
+  document.getElementById('newTenantModal').classList.remove('open');
+}
+
+document.getElementById('btnOpenNewWsModal').onclick = openNewTenantModal;
+
+document.getElementById('btnSubmitNewTenant').onclick = async () => {
+  const name = document.getElementById('ntNameIn').value.trim();
+  const monthly_fee = document.getElementById('ntFeeIn').value;
+  const contact_email = document.getElementById('ntEmailIn').value.trim();
+
+  if(!name){ alert('Please enter the client business name.'); return; }
+
+  const res = await api('/api/admin/tenants', {
+    method: 'POST',
+    body: JSON.stringify({ name, monthly_fee, contact_email })
+  });
+  const d = await res.json();
+  if(res.ok && d.tenant){
+    pendingNewWsId = d.tenant.workspace.id;
+    document.getElementById('newTenantFormView').style.display = 'none';
+    document.getElementById('newTenantResultView').style.display = 'block';
+
+    const origin = location.origin + API;
+    document.getElementById('ntCredsBox').textContent = 
+`Client Business: ${d.tenant.workspace.name}
+Dashboard URL:   ${origin}
+Admin Email:     ${d.tenant.credentials.email}
+Default Pass:    ${d.tenant.credentials.password}
+Trial Plan:      14-Day Free Trial (Active)`;
+
+    await loadMasterTenants();
+    await loadWorkspaces();
+  } else {
+    alert(d.error || 'Failed to create tenant.');
+  }
+};
+
+document.getElementById('btnCopyCreds').onclick = () => {
+  const text = document.getElementById('ntCredsBox').textContent;
+  navigator.clipboard?.writeText(text);
+  chip('Credentials copied to clipboard');
+};
+
+document.getElementById('btnGoToNewWs').onclick = async () => {
+  closeNewTenantModal();
+  if(pendingNewWsId){
+    await switchWorkspace(pendingNewWsId);
+    switchTab('dash');
+  }
+};
+
+/* Master: Renewal Notice Modal */
+let activeRenewalWsId = null;
+function openRenewalModal(wsId, wsName, email, fee, activeUntil){
+  activeRenewalWsId = wsId;
+  document.getElementById('rnWsNameIn').value = wsName;
+  document.getElementById('rnEmailIn').value = email;
+  document.getElementById('rnAmountIn').value = fee;
+  document.getElementById('rnDueDateIn').value = activeUntil ? new Date(activeUntil).toLocaleDateString() : 'Immediate';
+  
+  updateRenewalPreview();
+  document.getElementById('sendRenewalModal').classList.add('open');
+}
+
+function updateRenewalPreview(){
+  const name = document.getElementById('rnWsNameIn').value;
+  const amount = Number(document.getElementById('rnAmountIn').value || 5000);
+  const due = document.getElementById('rnDueDateIn').value;
+
+  document.getElementById('rnPreviewText').value = 
+`Dear ${name} Team,
+
+This is a reminder that your monthly subscription for Crown Operations AI Chatbot Platform is due for renewal.
+
+Summary:
+- Service: Multi-Channel AI Chatbot Platform
+- Renewal Fee: BDT ${amount.toLocaleString()}
+- Due Date: ${due}
+- Dashboard: ${location.origin + API}
+
+Payment Details:
+- bKash / Nagad Merchant: 01806-576024
+- Bank Transfer / Card: Available on request
+
+Thank you,
+Crown Operations Support`;
+}
+
+document.getElementById('rnAmountIn').oninput = updateRenewalPreview;
+document.getElementById('rnDueDateIn').oninput = updateRenewalPreview;
+
+function closeRenewalModal(){
+  document.getElementById('sendRenewalModal').classList.remove('open');
+}
+
+document.getElementById('btnDispatchRenewal').onclick = async () => {
+  if(!activeRenewalWsId) return;
+  const recipient = document.getElementById('rnEmailIn').value.trim();
+  const amount = document.getElementById('rnAmountIn').value;
+  const due_date = document.getElementById('rnDueDateIn').value;
+
+  const res = await api(`/api/admin/tenants/${activeRenewalWsId}/send-renewal-email`, {
+    method: 'POST',
+    body: JSON.stringify({ recipient, amount, due_date })
+  });
+  if(res.ok){
+    closeRenewalModal();
+    alert(`Renewal invoice notification prepared and dispatched to ${recipient}.`);
+  } else {
+    alert('Failed to send renewal notification.');
+  }
+};
+
+/* Master: Reset Password Modal */
+let activeResetWsId = null;
+function openResetPassModal(wsId, wsName){
+  activeResetWsId = wsId;
+  const slug = wsName.toLowerCase().replace(/[^a-z0-9]/g, '') || 'client';
+  document.getElementById('rpWsNameIn').value = wsName;
+  document.getElementById('rpPassIn').value = `${slug}@12345`;
+  document.getElementById('resetPassModal').classList.add('open');
+}
+
+function closeResetPassModal(){
+  document.getElementById('resetPassModal').classList.remove('open');
+}
+
+document.getElementById('btnSubmitResetPass').onclick = async () => {
+  if(!activeResetWsId) return;
+  const password = document.getElementById('rpPassIn').value.trim();
+  if(!password){ alert('Please enter a password.'); return; }
+
+  const res = await api(`/api/admin/tenants/${activeResetWsId}/reset-password`, {
+    method: 'POST',
+    body: JSON.stringify({ password })
+  });
+  if(res.ok){
+    closeResetPassModal();
+    chip('Tenant password reset successfully');
+    await loadMasterTenants();
+  } else {
+    alert('Failed to reset password.');
+  }
+};
+
+/* Tenant: Profile & Password Management */
+function openProfileModal(){
+  if(!currentUser) return;
+  document.getElementById('pfEmailIn').value = currentUser.email || '';
+  document.getElementById('pfNewPassIn').value = '';
+  document.getElementById('pfConfirmPassIn').value = '';
+  document.getElementById('pfErr').textContent = '';
+  document.getElementById('profileModal').classList.add('open');
+}
+
+function closeProfileModal(){
+  document.getElementById('profileModal').classList.remove('open');
+}
+
+document.getElementById('btnOpenProfileModal').onclick = openProfileModal;
+
+document.getElementById('btnSubmitProfile').onclick = async () => {
+  const email = document.getElementById('pfEmailIn').value.trim();
+  const newPass = document.getElementById('pfNewPassIn').value;
+  const confirmPass = document.getElementById('pfConfirmPassIn').value;
+  const err = document.getElementById('pfErr'); err.textContent = '';
+
+  if(!email){ err.textContent = 'Email is required.'; return; }
+  if(newPass && newPass.length < 6){ err.textContent = 'Password must be at least 6 characters.'; return; }
+  if(newPass && newPass !== confirmPass){ err.textContent = 'Passwords do not match.'; return; }
+
+  const res = await api('/api/tenant/profile', {
+    method: 'PUT',
+    body: JSON.stringify({ email, password: newPass || undefined })
+  });
+  if(res.ok){
+    closeProfileModal();
+    currentUser.email = email;
+    chip('Profile updated successfully');
+  } else {
+    err.textContent = (await res.json()).error || 'Update failed.';
+  }
+};
+
+/* Tenant: Mandatory First-Time Setup */
+document.getElementById('btnSubmitFirstLogin').onclick = async () => {
+  const email = document.getElementById('flEmailIn').value.trim();
+  const password = document.getElementById('flPassIn').value;
+  const confirmPass = document.getElementById('flConfirmPassIn').value;
+  const err = document.getElementById('flErr'); err.textContent = '';
+
+  if(!email){ err.textContent = 'Email address is required.'; return; }
+  if(!password || password.length < 6){ err.textContent = 'Password must be at least 6 characters.'; return; }
+  if(password !== confirmPass){ err.textContent = 'Passwords do not match.'; return; }
+
+  const res = await api('/api/tenant/profile', {
+    method: 'PUT',
+    body: JSON.stringify({ email, password })
+  });
+  if(res.ok){
+    document.getElementById('firstLoginModal').classList.remove('open');
+    currentUser.email = email;
+    currentUser.must_change_password = false;
+    chip('Account setup complete');
+  } else {
+    err.textContent = (await res.json()).error || 'Setup failed.';
+  }
+};
+
+/* ---------- WORKSPACE SWITCHING ---------- */
 async function loadWorkspaces(){
   const res = await api('/api/workspaces').then(r=>r.json()).catch(()=>({workspaces:[]}));
   workspaces = res.workspaces || [];
@@ -1898,23 +2654,6 @@ async function loadWorkspaces(){
   if(sel){
     sel.innerHTML = workspaces.map(w => `
       <option value="${w.id}" ${w.id===currentWorkspaceId?'selected':''}>${esc(w.name)} (#${w.id})</option>
-    `).join('');
-  }
-
-  const list = document.getElementById('wsManageList');
-  if(list){
-    list.innerHTML = workspaces.map(w => `
-      <div style="display:flex; align-items:center; justify-content:space-between; padding:10px 14px; background:var(--glass-thick); border:1px solid var(--line); border-radius:8px">
-        <div style="display:flex; flex-direction:column; gap:2px">
-          <strong style="font-size:14px">${esc(w.name)} ${w.id===1?'<span class="badge">Primary</span>':''}</strong>
-          <span style="font-size:11.5px; color:var(--ink3)">ID: ${w.id} · ${w.channel_count||0} channels active · ${w.conv_count||0} conversations</span>
-        </div>
-        <div style="display:flex; gap:6px">
-          ${w.id !== currentWorkspaceId ? `<button class="btn sm" onclick="switchWorkspace(${w.id}); closeManageWsModal();">Switch</button>` : '<span class="pill on" style="font-size:11px">Active</span>'}
-          <button class="btn sm ghost" onclick="promptRenameWorkspace(${w.id}, '${esc(w.name)}')">Rename</button>
-          ${w.id !== 1 ? `<button class="btn sm ghost" style="color:var(--danger)" onclick="deleteWorkspaceById(${w.id})">Delete</button>` : ''}
-        </div>
-      </div>
     `).join('');
   }
 }
@@ -1928,67 +2667,7 @@ async function switchWorkspace(wsId){
   chip(`Active: Workspace #${currentWorkspaceId}`);
 }
 
-function openWsModal(){
-  document.getElementById('wsModal').style.display = 'flex';
-  document.getElementById('newWsNameIn').value = '';
-  document.getElementById('newWsNameIn').focus();
-}
-
-function closeWsModal(){
-  document.getElementById('wsModal').style.display = 'none';
-}
-
-function openManageWsModal(){
-  loadWorkspaces();
-  document.getElementById('manageWsModal').style.display = 'flex';
-}
-
-function closeManageWsModal(){
-  document.getElementById('manageWsModal').style.display = 'none';
-}
-
-async function submitNewWorkspace(){
-  const name = document.getElementById('newWsNameIn').value.trim();
-  if(!name){ alert('Please enter a business name.'); return; }
-  const res = await api('/api/workspaces', {method:'POST', body:JSON.stringify({name})});
-  const data = await res.json();
-  if(res.ok && data.workspace){
-    closeWsModal();
-    await switchWorkspace(data.workspace.id);
-    chip(`Created "${name}"`);
-  } else {
-    alert(data.error || 'Failed to create workspace.');
-  }
-}
-
-async function promptRenameWorkspace(wsId, curName){
-  const newName = prompt('Enter new name for this workspace:', curName);
-  if(!newName || newName.trim() === curName) return;
-  const res = await api(`/api/workspaces/${wsId}/rename`, {method:'PUT', body:JSON.stringify({name:newName.trim()})});
-  if(res.ok){
-    await loadWorkspaces();
-    if(wsId === currentWorkspaceId) await load(wsId);
-    chip('Workspace renamed');
-  }
-}
-
-async function deleteWorkspaceById(wsId){
-  if(!confirm(`Are you sure you want to permanently delete Workspace #${wsId}? All its conversations, channels, and custom knowledge will be removed.`)) return;
-  const res = await api(`/api/workspaces/${wsId}`, {method:'DELETE'});
-  if(res.ok){
-    if(currentWorkspaceId === wsId) currentWorkspaceId = 1;
-    await loadWorkspaces();
-    await load(currentWorkspaceId);
-    chip('Workspace deleted');
-  } else {
-    alert((await res.json()).error || 'Delete failed.');
-  }
-}
-
 document.getElementById('activeWorkspaceSelect').onchange = e => switchWorkspace(+e.target.value);
-document.getElementById('btnOpenNewWsModal').onclick = openWsModal;
-document.getElementById('btnOpenManageWsModal').onclick = openManageWsModal;
-document.getElementById('btnSubmitNewWs').onclick = submitNewWorkspace;
 
 /* ---------- LOAD & AUTO-SAVE ENGINE ---------- */
 async function load(wsId = null){
@@ -1997,13 +2676,14 @@ async function load(wsId = null){
   const d = await api(`/api/config?workspace_id=${currentWorkspaceId}`).then(r=>r.json());
   S = d.config;
 
-  // Sync Brand Title & Badge
-  const cafeName = S?.cafe?.name || 'Crown Coffee';
-  const badge = cafeName.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase() || 'CC';
-  const logoBadge = document.getElementById('brandLogoBadge');
-  const titleTxt = document.getElementById('brandTitleTxt');
-  if(logoBadge) logoBadge.textContent = badge;
-  if(titleTxt) titleTxt.textContent = cafeName;
+  if(currentUser?.role !== 'master_admin'){
+    const cafeName = S?.cafe?.name || 'Crown Coffee';
+    const badge = cafeName.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase() || 'CC';
+    const logoBadge = document.getElementById('brandLogoBadge');
+    const titleTxt = document.getElementById('brandTitleTxt');
+    if(logoBadge) logoBadge.textContent = badge;
+    if(titleTxt) titleTxt.textContent = cafeName;
+  }
 
   render();
   paintPrompt(d.prompt);
@@ -2041,6 +2721,7 @@ function save(){
 function switchTab(tabId){
   document.querySelectorAll('nav button').forEach(x=>x.classList.toggle('active', x.dataset.p===tabId));
   document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('active', p.dataset.p===tabId));
+  if(tabId==='tenants') loadMasterTenants();
   if(tabId==='inbox') loadInbox();
   if(tabId==='setup') loadHealth();
   if(tabId==='channels') updateChannelUrls();
@@ -2639,8 +3320,10 @@ window.addEventListener('keydown', e => {
   if(e.key === 'Escape'){
     closeCmd();
     closeSimulator();
-    closeWsModal();
-    closeManageWsModal();
+    closeNewTenantModal();
+    closeRenewalModal();
+    closeResetPassModal();
+    closeProfileModal();
   }
 });
 

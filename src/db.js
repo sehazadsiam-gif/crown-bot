@@ -1,6 +1,7 @@
 import Database from 'better-sqlite3';
 import { mkdirSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
+import { scryptSync, randomBytes, timingSafeEqual } from 'node:crypto';
 
 const FILE = resolve(process.cwd(), 'data/crown.db');
 mkdirSync(dirname(FILE), { recursive: true });
@@ -25,6 +26,30 @@ CREATE TABLE IF NOT EXISTS workspace_configs (
   workspace_id INTEGER PRIMARY KEY REFERENCES workspaces(id) ON DELETE CASCADE,
   json         TEXT NOT NULL,
   updated      TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS workspace_users (
+  id                   INTEGER PRIMARY KEY AUTOINCREMENT,
+  workspace_id         INTEGER NOT NULL REFERENCES workspaces(id) ON DELETE CASCADE,
+  email                TEXT NOT NULL UNIQUE,
+  password_hash        TEXT NOT NULL,
+  must_change_password INTEGER NOT NULL DEFAULT 1,
+  role                 TEXT NOT NULL DEFAULT 'tenant_admin',
+  created_at           TEXT NOT NULL,
+  updated_at           TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS subscriptions (
+  workspace_id         INTEGER PRIMARY KEY REFERENCES workspaces(id) ON DELETE CASCADE,
+  status               TEXT NOT NULL DEFAULT 'trial',
+  plan_name            TEXT NOT NULL DEFAULT '14-Day Free Trial',
+  trial_ends_at        TEXT NOT NULL,
+  active_until         TEXT,
+  monthly_fee          INTEGER NOT NULL DEFAULT 5000,
+  contact_email        TEXT,
+  contact_phone        TEXT,
+  notes                TEXT,
+  updated_at           TEXT NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS channel_accounts (
@@ -1057,6 +1082,8 @@ export function deleteWorkspace(id) {
   db.prepare('DELETE FROM workspaces WHERE id = ?').run(wsId);
   db.prepare('DELETE FROM workspace_configs WHERE workspace_id = ?').run(wsId);
   db.prepare('DELETE FROM channel_accounts WHERE workspace_id = ?').run(wsId);
+  db.prepare('DELETE FROM workspace_users WHERE workspace_id = ?').run(wsId);
+  db.prepare('DELETE FROM subscriptions WHERE workspace_id = ?').run(wsId);
   return { ok: true };
 }
 
@@ -1361,6 +1388,245 @@ export function stats(workspaceId = null) {
   };
 }
 
+/* ───────── Tenant Auth & Subscription Helpers ───────── */
+
+export function hashPassword(password) {
+  const salt = randomBytes(16).toString('hex');
+  const hash = scryptSync(password, salt, 64).toString('hex');
+  return `${salt}:${hash}`;
+}
+
+export function verifyPassword(password, storedHash) {
+  if (!storedHash || !storedHash.includes(':')) return false;
+  const [salt, key] = storedHash.split(':');
+  const keyBuffer = Buffer.from(key, 'hex');
+  const derivedKey = scryptSync(password, salt, 64);
+  return timingSafeEqual(keyBuffer, derivedKey);
+}
+
+export function slugify(text) {
+  return String(text || '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, '') || 'client';
+}
+
+export function createWorkspaceWithTenant(name, monthlyFee = 5000, contactEmail = '') {
+  const ws = createWorkspace(name);
+  const slug = slugify(name);
+  const defaultEmail = contactEmail ? String(contactEmail).trim().toLowerCase() : `admin@${slug}.com`;
+  const defaultPassword = `${slug}@12345`;
+  const pHash = hashPassword(defaultPassword);
+
+  db.prepare(`
+    INSERT INTO workspace_users (workspace_id, email, password_hash, must_change_password, role, created_at, updated_at)
+    VALUES (?, ?, ?, 1, 'tenant_admin', ?, ?)
+  `).run(ws.id, defaultEmail, pHash, now(), now());
+
+  const trialEnds = new Date(Date.now() + 14 * 86400 * 1000).toISOString();
+  db.prepare(`
+    INSERT INTO subscriptions (workspace_id, status, plan_name, trial_ends_at, active_until, monthly_fee, contact_email, notes, updated_at)
+    VALUES (?, 'trial', '14-Day Free Trial', ?, NULL, ?, ?, '', ?)
+  `).run(ws.id, trialEnds, Number(monthlyFee) || 5000, defaultEmail, now());
+
+  return {
+    workspace: ws,
+    credentials: {
+      email: defaultEmail,
+      password: defaultPassword
+    },
+    subscription: getSubscription(ws.id)
+  };
+}
+
+export function authenticateTenant(email, password) {
+  if (!email || !password) return null;
+  const user = db.prepare('SELECT * FROM workspace_users WHERE LOWER(email) = LOWER(?)').get(String(email).trim());
+  if (!user) return null;
+  const ok = verifyPassword(String(password), user.password_hash);
+  if (!ok) return null;
+  const ws = db.prepare('SELECT * FROM workspaces WHERE id = ?').get(user.workspace_id);
+  if (!ws) return null;
+  return {
+    id: user.id,
+    workspace_id: user.workspace_id,
+    workspace_name: ws.name,
+    email: user.email,
+    must_change_password: !!user.must_change_password,
+    role: user.role
+  };
+}
+
+export function updateTenantCredentials(userId, newEmail, newPassword = null) {
+  const user = db.prepare('SELECT * FROM workspace_users WHERE id = ?').get(userId);
+  if (!user) throw new Error('Tenant user not found.');
+
+  const emailVal = newEmail ? String(newEmail).trim().toLowerCase() : user.email;
+
+  // Check unique email
+  if (emailVal !== user.email) {
+    const existing = db.prepare('SELECT id FROM workspace_users WHERE LOWER(email) = ? AND id != ?').get(emailVal, userId);
+    if (existing) throw new Error('Email is already in use by another tenant.');
+  }
+
+  if (newPassword && String(newPassword).trim().length >= 6) {
+    const pHash = hashPassword(String(newPassword).trim());
+    db.prepare('UPDATE workspace_users SET email = ?, password_hash = ?, must_change_password = 0, updated_at = ? WHERE id = ?')
+      .run(emailVal, pHash, now(), userId);
+  } else {
+    db.prepare('UPDATE workspace_users SET email = ?, updated_at = ? WHERE id = ?')
+      .run(emailVal, now(), userId);
+  }
+
+  // Update contact email in subscriptions
+  db.prepare('UPDATE subscriptions SET contact_email = ?, updated_at = ? WHERE workspace_id = ?').run(emailVal, now(), user.workspace_id);
+
+  return { ok: true, email: emailVal };
+}
+
+export function resetTenantPassword(workspaceId, newPassword = null) {
+  const ws = db.prepare('SELECT * FROM workspaces WHERE id = ?').get(workspaceId);
+  if (!ws) throw new Error('Workspace not found.');
+  const user = db.prepare('SELECT * FROM workspace_users WHERE workspace_id = ?').get(workspaceId);
+  const slug = slugify(ws.name);
+  const pwd = newPassword ? String(newPassword).trim() : `${slug}@12345`;
+  const pHash = hashPassword(pwd);
+
+  if (user) {
+    db.prepare('UPDATE workspace_users SET password_hash = ?, must_change_password = 1, updated_at = ? WHERE id = ?')
+      .run(pHash, now(), user.id);
+  } else {
+    const defaultEmail = `admin@${slug}.com`;
+    db.prepare(`
+      INSERT INTO workspace_users (workspace_id, email, password_hash, must_change_password, role, created_at, updated_at)
+      VALUES (?, ?, ?, 1, 'tenant_admin', ?, ?)
+    `).run(workspaceId, defaultEmail, pHash, now(), now());
+  }
+
+  return { ok: true, password: pwd };
+}
+
+export function getTenantUser(workspaceId) {
+  return db.prepare('SELECT id, workspace_id, email, must_change_password, role, created_at, updated_at FROM workspace_users WHERE workspace_id = ?')
+    .get(workspaceId);
+}
+
+export function getSubscription(workspaceId) {
+  const wsId = Number(workspaceId) || 1;
+  let sub = db.prepare('SELECT * FROM subscriptions WHERE workspace_id = ?').get(wsId);
+  if (!sub) {
+    if (wsId === 1) {
+      const activeUntil = '2099-12-31T23:59:59.000Z';
+      db.prepare(`
+        INSERT INTO subscriptions (workspace_id, status, plan_name, trial_ends_at, active_until, monthly_fee, contact_email, updated_at)
+        VALUES (1, 'active', 'Flagship Lifetime', ?, ?, 0, 'admin@crowncoffee.com', ?)
+      `).run(activeUntil, activeUntil, now());
+      sub = db.prepare('SELECT * FROM subscriptions WHERE workspace_id = 1').get();
+    } else {
+      const trialEnds = new Date(Date.now() + 14 * 86400 * 1000).toISOString();
+      db.prepare(`
+        INSERT INTO subscriptions (workspace_id, status, plan_name, trial_ends_at, active_until, monthly_fee, contact_email, updated_at)
+        VALUES (?, 'trial', '14-Day Free Trial', ?, NULL, 5000, '', ?)
+      `).run(wsId, trialEnds, now());
+      sub = db.prepare('SELECT * FROM subscriptions WHERE workspace_id = ?').get(wsId);
+    }
+  }
+
+  const nowMs = Date.now();
+  let daysRemaining = 0;
+  let isExpired = false;
+  let isActive = false;
+
+  if (sub.status === 'suspended') {
+    isExpired = true;
+    isActive = false;
+  } else if (sub.status === 'active') {
+    if (sub.active_until) {
+      const endMs = new Date(sub.active_until).getTime();
+      daysRemaining = Math.max(0, Math.ceil((endMs - nowMs) / (86400 * 1000)));
+      if (endMs < nowMs) {
+        isExpired = true;
+        isActive = false;
+        db.prepare("UPDATE subscriptions SET status = 'expired', updated_at = ? WHERE workspace_id = ?").run(now(), wsId);
+        sub.status = 'expired';
+      } else {
+        isActive = true;
+      }
+    } else {
+      isActive = true;
+      daysRemaining = 999;
+    }
+  } else if (sub.status === 'trial') {
+    const endMs = new Date(sub.trial_ends_at).getTime();
+    daysRemaining = Math.max(0, Math.ceil((endMs - nowMs) / (86400 * 1000)));
+    if (endMs < nowMs) {
+      isExpired = true;
+      isActive = false;
+      db.prepare("UPDATE subscriptions SET status = 'expired', updated_at = ? WHERE workspace_id = ?").run(now(), wsId);
+      sub.status = 'expired';
+    } else {
+      isActive = true;
+    }
+  } else if (sub.status === 'expired') {
+    isExpired = true;
+    isActive = false;
+  }
+
+  return {
+    ...sub,
+    daysRemaining,
+    isExpired,
+    isActive
+  };
+}
+
+export function isSubscriptionActive(workspaceId) {
+  const wsId = Number(workspaceId) || 1;
+  if (wsId === 1) return true; // Flagship always active
+  const sub = getSubscription(wsId);
+  return sub.isActive && !sub.isExpired;
+}
+
+export function updateSubscription(workspaceId, data = {}) {
+  const wsId = Number(workspaceId);
+  const current = getSubscription(wsId);
+  const status = data.status || current.status;
+  const planName = data.plan_name !== undefined ? data.plan_name : current.plan_name;
+  const trialEndsAt = data.trial_ends_at !== undefined ? data.trial_ends_at : current.trial_ends_at;
+  const activeUntil = data.active_until !== undefined ? data.active_until : current.active_until;
+  const monthlyFee = data.monthly_fee !== undefined ? Number(data.monthly_fee) : current.monthly_fee;
+  const contactEmail = data.contact_email !== undefined ? data.contact_email : current.contact_email;
+  const contactPhone = data.contact_phone !== undefined ? data.contact_phone : current.contact_phone;
+  const notes = data.notes !== undefined ? data.notes : current.notes;
+
+  db.prepare(`
+    UPDATE subscriptions SET
+      status = ?, plan_name = ?, trial_ends_at = ?, active_until = ?,
+      monthly_fee = ?, contact_email = ?, contact_phone = ?, notes = ?, updated_at = ?
+    WHERE workspace_id = ?
+  `).run(status, planName, trialEndsAt, activeUntil, monthlyFee, contactEmail, contactPhone, notes, now(), wsId);
+
+  return getSubscription(wsId);
+}
+
+export function listTenantsOverview() {
+  const workspaces = listWorkspaces();
+  return workspaces.map(ws => {
+    const user = getTenantUser(ws.id);
+    const sub = getSubscription(ws.id);
+    const convCount = (db.prepare('SELECT COUNT(*) as n FROM conversations WHERE workspace_id = ?').get(ws.id) || {}).n || 0;
+    const msgCount = (db.prepare('SELECT COUNT(*) as n FROM messages m JOIN conversations c ON c.id = m.conv_id WHERE c.workspace_id = ?').get(ws.id) || {}).n || 0;
+    return {
+      workspace: ws,
+      user: user || { email: `admin@${slugify(ws.name)}.com`, must_change_password: 1 },
+      subscription: sub,
+      stats: {
+        conversations: convCount,
+        messages: msgCount
+      }
+    };
+  });
+}
+
 /* ───────── Initializer ───────── */
 try {
   const defaultWs = db.prepare('SELECT * FROM workspaces WHERE id = 1').get();
@@ -1385,10 +1651,31 @@ try {
   // table exists
 }
 
+// Seed Workspace #1 Tenant User & Subscription
+try {
+  const user1 = db.prepare('SELECT * FROM workspace_users WHERE workspace_id = 1').get();
+  if (!user1) {
+    const pHash = hashPassword('crowncoffee@12345');
+    db.prepare(`
+      INSERT INTO workspace_users (workspace_id, email, password_hash, must_change_password, role, created_at, updated_at)
+      VALUES (1, 'admin@crowncoffee.com', ?, 0, 'tenant_admin', ?, ?)
+    `).run(pHash, now(), now());
+  }
+} catch (e) {
+  // table exists
+}
+
+try {
+  getSubscription(1);
+} catch (e) {
+  // init sub
+}
+
 try {
   const cfg1 = getWorkspaceConfig(1);
   if (cfg1.channels) syncChannelAccounts(1, cfg1.channels);
 } catch (e) {
   // channel sync
 }
+
 

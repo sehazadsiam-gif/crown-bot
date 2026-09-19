@@ -12,7 +12,10 @@ import {
   getWorkspaceConfig, saveWorkspaceConfig, findAccountByPlatformAndId, listWorkspaceChannels,
   getConfig, saveConfig, alreadySeen, upsertConversation, listConversations,
   getConversation, getMessages, addMessage, setBotEnabled, setFlag,
-  listDrafts, stats, db
+  listDrafts, stats, db,
+  authenticateTenant, updateTenantCredentials, resetTenantPassword,
+  getTenantUser, getSubscription, isSubscriptionActive, updateSubscription,
+  listTenantsOverview, createWorkspaceWithTenant
 } from './db.js';
 import { buildPrompt, openState, escalationHit } from './prompt.js';
 import { generateReply, parseMenuText } from './ai.js';
@@ -69,12 +72,12 @@ app.addContentTypeParser('application/json', { parseAs: 'buffer' }, (req, body, 
   catch (e) { e.statusCode = 400; done(e); }
 });
 
-/* ───────────────────────── auth ───────────────────────── */
+/* ───────────────────────── auth & session ───────────────────────── */
 const SESSION_TTL = 7 * 864e5;
 
-function makeToken() {
-  const payload = JSON.stringify({ u: ADMIN_EMAIL, exp: Date.now() + SESSION_TTL });
-  const b = Buffer.from(payload).toString('base64url');
+function makeToken(payload) {
+  const data = JSON.stringify({ ...payload, exp: Date.now() + SESSION_TTL });
+  const b = Buffer.from(data).toString('base64url');
   const sig = crypto.createHmac('sha256', SESSION_SECRET).update(b).digest('base64url');
   return `${b}.${sig}`;
 }
@@ -91,8 +94,23 @@ function readToken(tok) {
 }
 
 const requireAuth = async (req, reply) => {
-  if (!readToken(req.cookies.cc_session)) return reply.code(401).send({ error: 'unauthorized' });
+  const s = readToken(req.cookies.cc_session);
+  if (!s) return reply.code(401).send({ error: 'unauthorized' });
+  req.session = s;
 };
+
+const requireMasterAdmin = async (req, reply) => {
+  const s = readToken(req.cookies.cc_session);
+  if (!s || s.role !== 'master_admin') return reply.code(403).send({ error: 'Master Admin privileges required.' });
+  req.session = s;
+};
+
+function getScopedWorkspaceId(req) {
+  if (req.session?.role === 'tenant_admin') {
+    return req.session.workspace_id;
+  }
+  return Number(req.query?.workspace_id || req.body?.workspace_id) || 1;
+}
 
 /* In-memory login throttle */
 const attempts = new Map();
@@ -113,21 +131,56 @@ app.post(`${BASE}/api/login`, async (req, reply) => {
 
   const { email, password } = req.body || {};
   const supplied = typeof email === 'string' ? email.trim().toLowerCase() : '';
-  const expected = ADMIN_EMAIL.trim().toLowerCase();
-  const passwordOk = await verifyPassword(password, ADMIN_PASSWORD, ADMIN_PASSWORD_HASH);
-  const ok = supplied !== '' && supplied === expected && passwordOk;
+  const suppliedPass = String(password || '');
 
-  if (!ok) { noteFail(ip); return reply.code(401).send({ error: 'Wrong email or password.' }); }
+  // 1. Check Master Admin Credentials (.env)
+  const expectedAdmin = ADMIN_EMAIL.trim().toLowerCase();
+  const isMasterEmail = supplied !== '' && supplied === expectedAdmin;
+  const isMasterPass = await verifyPassword(suppliedPass, ADMIN_PASSWORD, ADMIN_PASSWORD_HASH);
 
-  attempts.delete(ip);
-  reply.setCookie('cc_session', makeToken(), {
-    path: '/',
-    httpOnly: true,
-    sameSite: 'lax',
-    secure: false,
-    maxAge: SESSION_TTL / 1000
-  });
-  return { ok: true };
+  if (isMasterEmail && isMasterPass) {
+    attempts.delete(ip);
+    const tok = makeToken({ role: 'master_admin', email: ADMIN_EMAIL });
+    reply.setCookie('cc_session', tok, {
+      path: '/',
+      httpOnly: true,
+      sameSite: 'lax',
+      secure: false,
+      maxAge: SESSION_TTL / 1000
+    });
+    return { ok: true, role: 'master_admin', email: ADMIN_EMAIL };
+  }
+
+  // 2. Check Tenant Credentials (workspace_users)
+  const tenant = authenticateTenant(supplied, suppliedPass);
+  if (tenant) {
+    attempts.delete(ip);
+    const tok = makeToken({
+      role: 'tenant_admin',
+      workspace_id: tenant.workspace_id,
+      user_id: tenant.id,
+      email: tenant.email,
+      must_change_password: tenant.must_change_password
+    });
+    reply.setCookie('cc_session', tok, {
+      path: '/',
+      httpOnly: true,
+      sameSite: 'lax',
+      secure: false,
+      maxAge: SESSION_TTL / 1000
+    });
+    return {
+      ok: true,
+      role: 'tenant_admin',
+      workspace_id: tenant.workspace_id,
+      workspace_name: tenant.workspace_name,
+      email: tenant.email,
+      must_change_password: tenant.must_change_password
+    };
+  }
+
+  noteFail(ip);
+  return reply.code(401).send({ error: 'Wrong email or password.' });
 });
 
 app.post(`${BASE}/api/logout`, async (req, reply) => {
@@ -135,21 +188,146 @@ app.post(`${BASE}/api/logout`, async (req, reply) => {
   return { ok: true };
 });
 
-app.get(`${BASE}/api/me`, async req => ({ authed: !!readToken(req.cookies.cc_session) }));
+app.get(`${BASE}/api/me`, async req => {
+  const s = readToken(req.cookies.cc_session);
+  if (!s) return { authed: false };
+  if (s.role === 'master_admin') {
+    return { authed: true, role: 'master_admin', email: s.email };
+  }
+  const sub = getSubscription(s.workspace_id);
+  const tenantUser = getTenantUser(s.workspace_id);
+  const ws = db.prepare('SELECT name FROM workspaces WHERE id = ?').get(s.workspace_id);
+  return {
+    authed: true,
+    role: 'tenant_admin',
+    workspace_id: s.workspace_id,
+    workspace_name: ws?.name || 'My Workspace',
+    email: tenantUser?.email || s.email,
+    must_change_password: !!tenantUser?.must_change_password,
+    subscription: sub
+  };
+});
 
-/* ───────────────────────── Multi-Tenant Workspace API ───────────────────────── */
-app.get(`${BASE}/api/workspaces`, { preHandler: requireAuth }, async () => {
+/* ───────────────────────── Tenant Profile API ───────────────────────── */
+app.put(`${BASE}/api/tenant/profile`, { preHandler: requireAuth }, async (req, reply) => {
+  if (req.session.role !== 'tenant_admin') {
+    return reply.code(400).send({ error: 'Only tenants can update profile here.' });
+  }
+  const { email, password } = req.body || {};
+  try {
+    const res = updateTenantCredentials(req.session.user_id, email, password);
+    const tok = makeToken({
+      ...req.session,
+      email: res.email,
+      must_change_password: 0
+    });
+    reply.setCookie('cc_session', tok, {
+      path: '/',
+      httpOnly: true,
+      sameSite: 'lax',
+      secure: false,
+      maxAge: SESSION_TTL / 1000
+    });
+    return { ok: true, email: res.email };
+  } catch (e) {
+    return reply.code(400).send({ error: e.message });
+  }
+});
+
+/* ───────────────────────── Master Admin Tenant & Subscription API ───────────────────────── */
+app.get(`${BASE}/api/admin/tenants`, { preHandler: requireMasterAdmin }, async () => {
+  return { tenants: listTenantsOverview() };
+});
+
+app.post(`${BASE}/api/admin/tenants`, { preHandler: requireMasterAdmin }, async (req, reply) => {
+  const { name, monthly_fee, contact_email } = req.body || {};
+  if (!name || !String(name).trim()) return reply.code(400).send({ error: 'Tenant business name is required.' });
+  try {
+    const res = createWorkspaceWithTenant(String(name).trim(), monthly_fee, contact_email);
+    return { ok: true, tenant: res };
+  } catch (e) {
+    return reply.code(400).send({ error: e.message });
+  }
+});
+
+app.put(`${BASE}/api/admin/tenants/:id/subscription`, { preHandler: requireMasterAdmin }, async (req, reply) => {
+  const id = Number(req.params.id);
+  try {
+    const sub = updateSubscription(id, req.body || {});
+    return { ok: true, subscription: sub };
+  } catch (e) {
+    return reply.code(400).send({ error: e.message });
+  }
+});
+
+app.post(`${BASE}/api/admin/tenants/:id/reset-password`, { preHandler: requireMasterAdmin }, async (req, reply) => {
+  const id = Number(req.params.id);
+  const { password } = req.body || {};
+  try {
+    const res = resetTenantPassword(id, password);
+    return { ok: true, ...res };
+  } catch (e) {
+    return reply.code(400).send({ error: e.message });
+  }
+});
+
+app.post(`${BASE}/api/admin/tenants/:id/send-renewal-email`, { preHandler: requireMasterAdmin }, async (req, reply) => {
+  const id = Number(req.params.id);
+  const ws = db.prepare('SELECT * FROM workspaces WHERE id = ?').get(id);
+  if (!ws) return reply.code(404).send({ error: 'Tenant not found.' });
+  const sub = getSubscription(id);
+  const user = getTenantUser(id);
+  const recipient = req.body?.recipient || sub.contact_email || user?.email || `admin@${slugify(ws.name)}.com`;
+  const amount = Number(req.body?.amount || sub.monthly_fee || 5000);
+  const dueDate = req.body?.due_date || (sub.active_until ? new Date(sub.active_until).toLocaleDateString() : 'Immediate');
+
+  const emailSubject = `[Invoice] Crown Operations - Monthly Chatbot Platform Renewal for ${ws.name}`;
+  const emailBody = `Dear ${ws.name} Team,
+
+This is a notification that your monthly subscription for the Crown Operations AI Chatbot Platform is due for renewal.
+
+Invoice Details:
+- Business Name: ${ws.name}
+- Service: Multi-Channel AI Chatbot Platform (Facebook, Instagram, WhatsApp, TikTok)
+- Renewal Fee: BDT ${amount.toLocaleString()}
+- Due Date: ${dueDate}
+- Platform URL: https://bot.ccadmin.online/chatbotadmin/
+
+Payment Information:
+- bKash / Nagad Merchant: 01806-576024
+- Bank Transfer / Card: Available on request
+
+Upon confirmation, your service will remain active for the next billing cycle.
+
+Best regards,
+Crown Operations Admin`;
+
+  req.log.info({ tenantId: id, recipient, emailSubject }, 'Renewal invoice notification prepared.');
+  return {
+    ok: true,
+    recipient,
+    subject: emailSubject,
+    body: emailBody,
+    dispatched_at: new Date().toISOString()
+  };
+});
+
+/* ───────────────────────── Workspace Management API ───────────────────────── */
+app.get(`${BASE}/api/workspaces`, { preHandler: requireAuth }, async (req) => {
+  if (req.session.role === 'tenant_admin') {
+    return { workspaces: listWorkspaces().filter(w => w.id === req.session.workspace_id) };
+  }
   return { workspaces: listWorkspaces() };
 });
 
-app.post(`${BASE}/api/workspaces`, { preHandler: requireAuth }, async (req, reply) => {
+app.post(`${BASE}/api/workspaces`, { preHandler: requireMasterAdmin }, async (req, reply) => {
   const name = String(req.body?.name || '').trim();
   if (!name) return reply.code(400).send({ error: 'Workspace name is required.' });
-  const ws = createWorkspace(name);
-  return { ok: true, workspace: ws };
+  const res = createWorkspaceWithTenant(name);
+  return { ok: true, workspace: res.workspace, credentials: res.credentials };
 });
 
-app.put(`${BASE}/api/workspaces/:id/rename`, { preHandler: requireAuth }, async (req, reply) => {
+app.put(`${BASE}/api/workspaces/:id/rename`, { preHandler: requireMasterAdmin }, async (req, reply) => {
   const id = Number(req.params.id);
   const name = String(req.body?.name || '').trim();
   if (!name) return reply.code(400).send({ error: 'Workspace name is required.' });
@@ -160,7 +338,7 @@ app.put(`${BASE}/api/workspaces/:id/rename`, { preHandler: requireAuth }, async 
   }
 });
 
-app.delete(`${BASE}/api/workspaces/:id`, { preHandler: requireAuth }, async (req, reply) => {
+app.delete(`${BASE}/api/workspaces/:id`, { preHandler: requireMasterAdmin }, async (req, reply) => {
   const id = Number(req.params.id);
   if (id === 1) return reply.code(400).send({ error: 'Primary workspace cannot be deleted.' });
   try {
@@ -173,21 +351,23 @@ app.delete(`${BASE}/api/workspaces/:id`, { preHandler: requireAuth }, async (req
 
 /* ───────────────────────── admin API (Workspace Scoped) ───────────────────────── */
 app.get(`${BASE}/api/config`, { preHandler: requireAuth }, async (req) => {
-  const wsId = Number(req.query?.workspace_id) || 1;
+  const wsId = getScopedWorkspaceId(req);
   const cfg = getWorkspaceConfig(wsId);
-  return { config: cfg, prompt: buildPrompt(cfg), open: openState(cfg), stats: stats(wsId), workspaceId: wsId };
+  const sub = getSubscription(wsId);
+  return { config: cfg, prompt: buildPrompt(cfg), open: openState(cfg), stats: stats(wsId), workspaceId: wsId, subscription: sub };
 });
 
 app.put(`${BASE}/api/config`, { preHandler: requireAuth }, async (req, reply) => {
+  const wsId = getScopedWorkspaceId(req);
   const cfg = req.body?.config;
-  const wsId = Number(req.body?.workspace_id || req.query?.workspace_id) || 1;
   if (!cfg || typeof cfg !== 'object') return reply.code(400).send({ error: 'bad config' });
   saveWorkspaceConfig(wsId, cfg);
-  return { ok: true, prompt: buildPrompt(cfg), open: openState(cfg), stats: stats(wsId), workspaceId: wsId };
+  const sub = getSubscription(wsId);
+  return { ok: true, prompt: buildPrompt(cfg), open: openState(cfg), stats: stats(wsId), workspaceId: wsId, subscription: sub };
 });
 
 app.get(`${BASE}/api/stats`, { preHandler: requireAuth }, async (req) => {
-  const wsId = req.query?.workspace_id ? Number(req.query.workspace_id) : null;
+  const wsId = getScopedWorkspaceId(req);
   return { stats: stats(wsId) };
 });
 
@@ -219,7 +399,7 @@ app.post(`${BASE}/api/import-menu`, { preHandler: requireAuth }, async (req, rep
 });
 
 app.post(`${BASE}/api/test`, { preHandler: requireAuth }, async req => {
-  const wsId = Number(req.body?.workspace_id) || 1;
+  const wsId = getScopedWorkspaceId(req);
   const cfg = getWorkspaceConfig(wsId);
   const history = (req.body?.history || []).slice(-12);
   const text = String(req.body?.text || '');
@@ -229,19 +409,35 @@ app.post(`${BASE}/api/test`, { preHandler: requireAuth }, async req => {
 });
 
 app.get(`${BASE}/api/conversations`, { preHandler: requireAuth }, async (req) => {
-  const wsId = req.query?.workspace_id ? Number(req.query.workspace_id) : null;
+  const wsId = getScopedWorkspaceId(req);
   return { conversations: listConversations(wsId), drafts: listDrafts(wsId) };
 });
 
-app.get(`${BASE}/api/conversations/:id`, { preHandler: requireAuth }, async req =>
-  ({ conversation: getConversation(req.params.id), messages: getMessages(req.params.id) }));
+app.get(`${BASE}/api/conversations/:id`, { preHandler: requireAuth }, async (req, reply) => {
+  const conv = getConversation(req.params.id);
+  if (!conv) return reply.code(404).send({ error: 'not found' });
+  if (req.session.role === 'tenant_admin' && conv.workspace_id !== req.session.workspace_id) {
+    return reply.code(403).send({ error: 'Forbidden' });
+  }
+  return { conversation: conv, messages: getMessages(req.params.id) };
+});
 
-app.post(`${BASE}/api/conversations/:id/bot`, { preHandler: requireAuth }, async req => {
+app.post(`${BASE}/api/conversations/:id/bot`, { preHandler: requireAuth }, async (req, reply) => {
+  const conv = getConversation(req.params.id);
+  if (!conv) return reply.code(404).send({ error: 'not found' });
+  if (req.session.role === 'tenant_admin' && conv.workspace_id !== req.session.workspace_id) {
+    return reply.code(403).send({ error: 'Forbidden' });
+  }
   setBotEnabled(req.params.id, !!req.body?.enabled);
   return { ok: true };
 });
 
-app.post(`${BASE}/api/conversations/:id/flag`, { preHandler: requireAuth }, async req => {
+app.post(`${BASE}/api/conversations/:id/flag`, { preHandler: requireAuth }, async (req, reply) => {
+  const conv = getConversation(req.params.id);
+  if (!conv) return reply.code(404).send({ error: 'not found' });
+  if (req.session.role === 'tenant_admin' && conv.workspace_id !== req.session.workspace_id) {
+    return reply.code(403).send({ error: 'Forbidden' });
+  }
   setFlag(req.params.id, !!req.body?.flagged, req.body?.reason || null);
   return { ok: true };
 });
@@ -249,6 +445,9 @@ app.post(`${BASE}/api/conversations/:id/flag`, { preHandler: requireAuth }, asyn
 app.post(`${BASE}/api/conversations/:id/reply`, { preHandler: requireAuth }, async (req, reply) => {
   const conv = getConversation(req.params.id);
   if (!conv) return reply.code(404).send({ error: 'not found' });
+  if (req.session.role === 'tenant_admin' && conv.workspace_id !== req.session.workspace_id) {
+    return reply.code(403).send({ error: 'Forbidden' });
+  }
   const text = String(req.body?.text || '').trim();
   if (!text) return reply.code(400).send({ error: 'empty' });
   try {
@@ -395,6 +594,7 @@ async function handleEvent(ev, log) {
   const conv = upsertConversation(platform, senderId, name, workspaceId);
   addMessage(conv.id, 'in', text, null, mid);
 
+  if (!isSubscriptionActive(workspaceId)) return log.info(`Subscription inactive/expired for workspace #${workspaceId}. Bot auto-reply paused.`);
   if (!cfg.runtime?.enabled) return log.info(`Bot globally disabled for workspace #${workspaceId}`);
   if (!conv.bot_enabled) return log.info(`Bot off for conversation ${conv.id}`);
 
