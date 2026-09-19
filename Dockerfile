@@ -28,8 +28,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends tini \
 COPY --from=build /app /app
 
 # SQLite lives here — this path MUST be a persistent volume.
-RUN mkdir -p /app/data && chown -R node:node /app
-USER node
+RUN mkdir -p /app/data
 
 EXPOSE 3000
 

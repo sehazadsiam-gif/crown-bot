@@ -11,6 +11,8 @@ services:
       context: .
       dockerfile: Dockerfile
     restart: unless-stopped
+    expose:
+      - "3000"
 
     environment:
       # Fixed for containers — do NOT set HOST to 127.0.0.1 here or
