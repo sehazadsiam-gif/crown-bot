@@ -16,6 +16,11 @@ export function verifySignature(rawBody, header) {
   return a.length === b.length && crypto.timingSafeEqual(a, b);
 }
 
+function cleanToken(tok) {
+  if (!tok || typeof tok !== 'string') return '';
+  return tok.trim().replace(/^Bearer\s+/i, '').replace(/^["']|["']$/g, '').trim();
+}
+
 /** True when the sender is our own page/account (echo of our own send). */
 export function isSelf(platform, senderId) {
   return platform === 'facebook' ? senderId === FB_PAGE_ID : senderId === IG_USER_ID;
@@ -24,15 +29,16 @@ export function isSelf(platform, senderId) {
 export async function sendMessage(platform, psid, text) {
   const isFb = platform === 'facebook';
   const host = isFb ? 'https://graph.facebook.com' : IG_GRAPH_HOST;
-  const token = isFb ? FB_PAGE_TOKEN : IG_TOKEN;
+  const rawToken = isFb ? FB_PAGE_TOKEN : IG_TOKEN;
+  const token = cleanToken(rawToken);
   if (!token) throw new Error(`no access token configured for ${platform}`);
 
   const body = { recipient: { id: psid }, message: { text: text.slice(0, 1900) } };
   if (isFb) body.messaging_type = 'RESPONSE';
 
-  const res = await fetch(`${host}/${GRAPH_VERSION}/me/messages`, {
+  const res = await fetch(`${host}/${GRAPH_VERSION}/me/messages?access_token=${encodeURIComponent(token)}`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body)
   });
 
@@ -45,11 +51,11 @@ export async function fetchProfileName(platform, psid) {
   try {
     const isFb = platform === 'facebook';
     const host = isFb ? 'https://graph.facebook.com' : IG_GRAPH_HOST;
-    const token = isFb ? FB_PAGE_TOKEN : IG_TOKEN;
+    const rawToken = isFb ? FB_PAGE_TOKEN : IG_TOKEN;
+    const token = cleanToken(rawToken);
+    if (!token) return null;
     const field = isFb ? 'name' : 'username';
-    const res = await fetch(`${host}/${GRAPH_VERSION}/${psid}?fields=${field}`, {
-      headers: { Authorization: `Bearer ${token}` }
-    });
+    const res = await fetch(`${host}/${GRAPH_VERSION}/${psid}?fields=${field}&access_token=${encodeURIComponent(token)}`);
     if (!res.ok) return null;
     const d = await res.json();
     return d.name || d.username || null;
