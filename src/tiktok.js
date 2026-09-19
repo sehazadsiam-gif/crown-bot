@@ -1,27 +1,27 @@
 import crypto from 'node:crypto';
-import { getConfig } from './db.js';
+import { getWorkspaceConfig } from './db.js';
 
 function cleanToken(tok) {
   if (!tok || typeof tok !== 'string') return '';
   return tok.trim().replace(/^Bearer\s+/i, '').replace(/^["']|["']$/g, '').trim();
 }
 
-export function getTikTokConfig() {
-  const cfg = getConfig();
+export function getTikTokConfig(workspaceId = 1) {
+  const cfg = getWorkspaceConfig(workspaceId);
   const ch = cfg.channels?.tiktok || {};
   return {
-    enabled: ch.enabled ?? !!(process.env.TIKTOK_ACCESS_TOKEN || process.env.TIKTOK_CLIENT_KEY),
-    clientKey: ch.clientKey || process.env.TIKTOK_CLIENT_KEY || '',
-    clientSecret: ch.clientSecret || process.env.TIKTOK_CLIENT_SECRET || '',
-    token: cleanToken(ch.token || process.env.TIKTOK_ACCESS_TOKEN || '')
+    enabled: ch.enabled ?? !!(ch.token || (workspaceId === 1 && (process.env.TIKTOK_ACCESS_TOKEN || process.env.TIKTOK_CLIENT_KEY))),
+    clientKey: ch.clientKey || (workspaceId === 1 ? process.env.TIKTOK_CLIENT_KEY : '') || '',
+    clientSecret: ch.clientSecret || (workspaceId === 1 ? process.env.TIKTOK_CLIENT_SECRET : '') || '',
+    token: cleanToken(ch.token || (workspaceId === 1 ? process.env.TIKTOK_ACCESS_TOKEN : '') || '')
   };
 }
 
 /**
  * Verify TikTok Webhook Signature if secret is configured.
  */
-export function verifyTikTokSignature(rawBody, signatureHeader, timestampHeader) {
-  const { clientSecret } = getTikTokConfig();
+export function verifyTikTokSignature(rawBody, signatureHeader, timestampHeader, customSecret = null) {
+  const clientSecret = customSecret || process.env.TIKTOK_CLIENT_SECRET || getTikTokConfig(1).clientSecret;
   if (!clientSecret || !rawBody) return true; // allow if no secret set for testing
   if (!signatureHeader) return false;
 
@@ -37,9 +37,10 @@ export function verifyTikTokSignature(rawBody, signatureHeader, timestampHeader)
 /**
  * Send a direct message to a user on TikTok Business Messaging.
  */
-export async function sendTikTokMessage(toUserId, text) {
-  const { token } = getTikTokConfig();
-  if (!token) throw new Error('TikTok access token is not configured.');
+export async function sendTikTokMessage(toUserId, text, channelAccount = null, workspaceId = 1) {
+  const conf = getTikTokConfig(workspaceId);
+  const token = channelAccount?.token || conf.token;
+  if (!token) throw new Error(`TikTok access token is not configured for workspace #${workspaceId}.`);
 
   const url = 'https://open.tiktokapis.com/v2/im/message/send/';
   const res = await fetch(url, {
@@ -77,6 +78,7 @@ export function parseTikTokWebhook(body) {
     if (d.message?.type === 'text' && d.message?.text) {
       out.push({
         platform: 'tiktok',
+        recipientAccountId: d.recipient_id || body.to_user_id || null,
         senderId: d.sender?.open_id || d.sender_id,
         mid: d.message_id || `tt_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
         text: d.message.text,
@@ -85,10 +87,12 @@ export function parseTikTokWebhook(body) {
     }
   } else if (Array.isArray(body.entry)) {
     for (const entry of body.entry) {
+      const recipientAccountId = entry.id || null;
       for (const ev of entry.messaging || []) {
         if (ev.message?.text && !ev.message.is_echo) {
           out.push({
             platform: 'tiktok',
+            recipientAccountId: ev.recipient?.id || recipientAccountId,
             senderId: ev.sender?.id || ev.sender?.open_id,
             mid: ev.message.mid || ev.message.id,
             text: ev.message.text,
@@ -105,7 +109,7 @@ export function parseTikTokWebhook(body) {
  * Test TikTok credentials against TikTok API.
  */
 export async function testTikTokConnection(customConfig = null) {
-  const conf = customConfig || getTikTokConfig();
+  const conf = customConfig || getTikTokConfig(1);
   const token = cleanToken(conf.token);
   if (!token) return { ok: false, error: 'TikTok Access Token is missing.' };
 
@@ -115,7 +119,7 @@ export async function testTikTokConnection(customConfig = null) {
     });
     const data = await res.json().catch(() => ({}));
     if (res.ok && (!data.code || data.code === 0)) {
-      return { ok: true, info: data.data?.user?.display_name ? `Connected as ${data.data.user.display_name}` : 'Token verified successfully.' };
+      return { ok: true, id: data.data?.user?.open_id || '', name: data.data?.user?.display_name || '', info: data.data?.user?.display_name ? `Connected as ${data.data.user.display_name}` : 'Token verified successfully.' };
     }
     return { ok: false, error: data.message || `API returned status ${res.status}` };
   } catch (e) {

@@ -3,13 +3,12 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Crown Coffee — Executive AI Operations & Multi-Channel Hub</title>
+<title>Crown Coffee — AI Operations and Multi-Channel Hub</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{
-  /* Dark Obsidian & Gold Palette (Executive Tier) */
   --bg:#0e0a07; --bg2:#16100b; --surface:#1b140e; --surface2:#231a13; --surface3:#2c2017;
   --ink:#f6ede2; --ink2:#bfad9d; --ink3:#8d7968;
   --line:rgba(229,180,88,0.12); --line2:rgba(229,180,88,0.22); --line-focus:rgba(229,180,88,0.45);
@@ -60,18 +59,17 @@ code,pre,.mono{font-family:"JetBrains Mono",ui-monospace,monospace}
 #login{position:fixed; inset:0; background:radial-gradient(circle at top, var(--surface2), var(--bg)); display:grid; place-items:center; z-index:100; padding:20px}
 #login .box{background:var(--surface); border:1px solid var(--line2); border-radius:20px; padding:40px 36px;
   width:100%; max-width:420px; box-shadow:var(--shadow-lg); text-align:left}
-#login .logo-badge{display:inline-flex; align-items:center; justify-content:center; width:52px; height:52px; border-radius:14px; background:var(--accent-soft); color:var(--accent); font-size:26px; margin-bottom:20px; border:1px solid var(--line2)}
+#login .logo-badge{display:inline-flex; align-items:center; justify-content:center; width:48px; height:48px; border-radius:12px; background:var(--accent-soft); color:var(--gold); font-size:18px; font-weight:800; font-family:"JetBrains Mono",monospace; margin-bottom:20px; border:1px solid var(--line2)}
 #login h1{font-size:28px; margin-bottom:6px; color:var(--ink)}
-#login .s{color:var(--ink3); font-size:13px; margin-bottom:28px; font-weight:500}
+#login .s{color:var(--ink3); font-size:12px; margin-bottom:28px; font-weight:600; text-transform:uppercase; letter-spacing:.08em}
 #login input{margin-bottom:16px}
 #loginErr{color:var(--danger); font-size:13px; min-height:22px; margin-bottom:6px; font-weight:600}
-
 
 /* Top Navigation Bar */
 header{border-bottom:1px solid var(--line); background:var(--surface); padding:12px 28px;
   display:flex; align-items:center; gap:16px; flex-wrap:wrap; position:sticky; top:0; z-index:40; box-shadow:var(--shadow-sm); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px)}
 .brand{display:flex; align-items:center; gap:12px; text-decoration:none; color:inherit; cursor:pointer}
-.brand-icon{width:36px; height:36px; border-radius:10px; background:linear-gradient(135deg, var(--gold), var(--accent)); color:#fff; display:grid; place-items:center; font-weight:700; font-size:18px; box-shadow:0 2px 10px rgba(229,180,88,0.3)}
+.brand-icon{width:36px; height:36px; border-radius:10px; background:linear-gradient(135deg, var(--gold), var(--accent)); color:#1a1005; display:grid; place-items:center; font-weight:800; font-size:15px; font-family:"JetBrains Mono",monospace; box-shadow:0 2px 10px rgba(229,180,88,0.3)}
 .brand h1{font-size:18px; line-height:1.1; color:var(--ink)}
 .brand .sub{font-size:10.5px; color:var(--gold); letter-spacing:.12em; text-transform:uppercase; font-weight:700}
 .spacer{flex:1}
@@ -96,7 +94,7 @@ nav button{display:flex; align-items:center; gap:10px; width:100%; text-align:le
   color:var(--ink2); padding:9px 14px; border-radius:10px; cursor:pointer; margin-bottom:3px; font-weight:500; font-size:13.5px; transition:all .15s}
 nav button:hover{background:var(--surface); color:var(--ink); transform:translateX(2px)}
 nav button.active{background:var(--accent-soft); color:var(--gold); font-weight:700; border-left:3px solid var(--gold)}
-nav button .nav-icon{font-size:16px; opacity:.9}
+nav button svg{width:16px; height:16px; stroke:currentColor; stroke-width:2; fill:none; stroke-linecap:round; stroke-linejoin:round; flex:none}
 nav .navlabel{font-size:10px; text-transform:uppercase; letter-spacing:.14em; color:var(--ink3);
   padding:16px 14px 6px; font-weight:800}
 
@@ -120,7 +118,7 @@ main{flex:1; padding:30px 36px 90px; min-width:0}
 .phead h2{font-size:28px; color:var(--ink); margin-bottom:4px; font-weight:600}
 .phead p{margin:0; color:var(--ink2); font-size:14px; max-width:72ch}
 
-/* Glassmorphic Executive Cards */
+/* Glassmorphic Cards */
 .card{background:var(--glass); border:1px solid var(--line); border-radius:var(--radius);
   padding:22px; margin-bottom:20px; box-shadow:var(--shadow); transition:transform .2s, border-color .2s, box-shadow .2s; position:relative; overflow:hidden}
 .card:hover{border-color:var(--line2)}
@@ -179,7 +177,6 @@ textarea{resize:vertical; min-height:84px; line-height:1.55}
 .stat-card .v{font-family:"Fraunces",serif; font-size:32px; font-weight:600; color:var(--ink); line-height:1.1}
 .stat-card .k{font-size:11.5px; text-transform:uppercase; letter-spacing:.08em; color:var(--ink3); font-weight:800; margin-top:4px}
 .stat-card .subtext{font-size:12.5px; color:var(--ink2); margin-top:8px; display:flex; align-items:center; gap:6px}
-.stat-card .icon{position:absolute; right:16px; top:16px; font-size:26px; opacity:.2}
 
 /* Radial Gauge Indicator */
 .gauge-box{display:flex; align-items:center; gap:18px}
@@ -193,7 +190,7 @@ textarea{resize:vertical; min-height:84px; line-height:1.55}
 .channel-card:hover{border-color:var(--line2); transform:translateY(-2px); box-shadow:var(--shadow)}
 .channel-header{display:flex; align-items:center; justify-content:space-between; margin-bottom:14px}
 .channel-title{display:flex; align-items:center; gap:12px; font-weight:700; font-size:15px}
-.channel-badge-icon{width:36px; height:36px; border-radius:10px; display:grid; place-items:center; font-size:18px}
+.channel-badge-icon{width:36px; height:36px; border-radius:10px; display:grid; place-items:center; font-size:13px; font-weight:800; font-family:"JetBrains Mono",monospace}
 .channel-badge-icon.fb{background:var(--fb-soft); color:var(--fb)}
 .channel-badge-icon.ig{background:var(--ig-soft); color:var(--ig)}
 .channel-badge-icon.wa{background:var(--wa-soft); color:var(--wa)}
@@ -230,7 +227,7 @@ textarea{resize:vertical; min-height:84px; line-height:1.55}
 #drawerBackdrop{position:fixed; inset:0; background:rgba(0,0,0,0.6); backdrop-filter:blur(4px); -webkit-backdrop-filter:blur(4px); z-index:80; display:none}
 #drawerBackdrop.open{display:block}
 
-/* Command Palette Modal (⌘K) */
+/* Command Palette Modal (Ctrl+K) */
 #cmdModal{position:fixed; inset:0; background:rgba(0,0,0,0.7); backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px); z-index:100; display:none; place-items:center; padding:20px}
 #cmdModal.open{display:grid}
 .cmd-box{background:var(--surface); border:1px solid var(--line2); border-radius:18px; width:100%; max-width:560px; box-shadow:var(--shadow-lg); overflow:hidden; animation:fadeIn .2s ease}
@@ -261,7 +258,7 @@ textarea{resize:vertical; min-height:84px; line-height:1.55}
 .chat{border:1px solid var(--line); border-radius:var(--radius); background:var(--surface); overflow:hidden; display:flex; flex-direction:column}
 .log{padding:18px; min-height:280px; max-height:460px; overflow-y:auto; display:flex; flex-direction:column; gap:12px}
 .msg{max-width:80%; padding:10px 15px; border-radius:16px; font-size:13.5px; line-height:1.5; white-space:pre-wrap; word-break:break-word}
-.msg.u{align-self:flex-end; background:linear-gradient(135deg, var(--gold), var(--accent)); color:#191005; font-weight:500; border-bottom-right-radius:4px}
+.msg.u{align-self:flex-end; background:linear-gradient(135deg, var(--gold), var(--accent)); color:#191005; font-weight:600; border-bottom-right-radius:4px}
 .msg.b{align-self:flex-start; background:var(--surface2); border:1px solid var(--line); border-bottom-left-radius:4px; color:var(--ink)}
 .msg.sys{align-self:center; font-size:12px; color:var(--ink3); font-style:italic; background:var(--surface3); padding:4px 14px; border-radius:99px; max-width:90%; text-align:center}
 .composer{display:flex; gap:8px; padding:14px; border-top:1px solid var(--line); background:var(--surface2)}
@@ -323,9 +320,9 @@ pre.prompt{background:var(--surface2); border:1px solid var(--line); border-radi
 <!-- Login Modal -->
 <div id="login">
   <form class="box" id="loginForm">
-    <div class="logo-badge">👑</div>
+    <div class="logo-badge">CC</div>
     <h1>Crown Coffee</h1>
-    <div class="s">Executive AI Operations &amp; Multi-Channel Hub</div>
+    <div class="s">Operations Hub</div>
     <label class="f">Admin Email</label>
     <input type="email" id="lEmail" autocomplete="username" placeholder="admin@crowncoffee.com" required>
     <label class="f">Password</label>
@@ -339,45 +336,89 @@ pre.prompt{background:var(--surface2); border:1px solid var(--line); border-radi
 <div id="app" style="display:none">
 <header>
   <div class="brand" onclick="switchTab('dash')">
-    <div class="brand-icon">👑</div>
+    <div class="brand-icon" id="brandLogoBadge">CC</div>
     <div>
-      <h1>Crown Coffee</h1>
+      <h1 id="brandTitleTxt">Crown Coffee</h1>
       <div class="sub">AI Operations Center</div>
     </div>
   </div>
 
+  <div class="workspace-pill-box" style="margin-left:14px; display:flex; align-items:center; gap:8px">
+    <div style="display:flex; flex-direction:column">
+      <span style="font-size:10px; font-weight:800; color:var(--ink3); text-transform:uppercase; letter-spacing:0.06em">Account</span>
+      <select id="activeWorkspaceSelect" style="height:32px; padding:0 8px; font-size:12.5px; font-weight:700; border-radius:6px; background:var(--glass-thick); color:var(--ink); border:1px solid var(--line); outline:none; cursor:pointer">
+        <option value="1">Crown Coffee (Default)</option>
+      </select>
+    </div>
+    <button class="btn sm" id="btnOpenNewWsModal" title="Add New Business Account" style="margin-top:14px">+ New</button>
+    <button class="btn sm ghost" id="btnOpenManageWsModal" title="Manage Business Accounts" style="margin-top:14px">Manage</button>
+  </div>
+
   <div class="spacer"></div>
 
-  <button class="cmd-trigger" id="btnCmdPal" title="Global Quick Actions"><span class="nav-icon">🔍</span> Search / Commands <kbd>⌘K</kbd></button>
+  <button class="cmd-trigger" id="btnCmdPal" title="Global Quick Actions">Search / Commands <kbd>Ctrl+K</kbd></button>
   
-  <span class="pill" id="openPill"><span class="dot pulse"></span><span id="openTxt">Dhaka: Checking…</span></span>
+  <span class="pill" id="openPill"><span class="dot pulse"></span><span id="openTxt">Dhaka: Checking...</span></span>
   <span class="savechip" id="saveChip"></span>
   
-  <button class="btn sm" id="btnOpenSim" title="Open AI Test Console">⚡ Fast Simulator</button>
-  <button class="btn sm" id="themeBtn" title="Toggle Obsidian / Ivory Mode">◐ Theme</button>
+  <button class="btn sm" id="btnOpenSim" title="Open AI Test Console">Fast Simulator</button>
+  <button class="btn sm" id="themeBtn" title="Toggle Theme">Theme</button>
   <button class="btn sm ghost" id="logoutBtn">Sign out</button>
 </header>
 
 <div class="wrap">
   <nav id="nav">
     <div class="navlabel">Live Monitoring</div>
-    <button data-p="dash" class="active"><span class="nav-icon">📊</span> Executive Desk</button>
-    <button data-p="inbox"><span class="nav-icon">💬</span> Customer Inbox</button>
-    <button data-p="channels"><span class="nav-icon">🌐</span> Multi-Channels</button>
+    <button data-p="dash" class="active">
+      <svg viewBox="0 0 24 24"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
+      Executive Desk
+    </button>
+    <button data-p="inbox">
+      <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      Customer Inbox
+    </button>
+    <button data-p="channels">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" x2="22" y1="12" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+      Multi-Channels
+    </button>
     
-    <div class="navlabel">Knowledge &amp; Ops</div>
-    <button data-p="cafe"><span class="nav-icon">📍</span> Cafe Info</button>
-    <button data-p="menu"><span class="nav-icon">☕</span> Menu (89 Items)</button>
-    <button data-p="faq"><span class="nav-icon">❓</span> Verified FAQs (11)</button>
+    <div class="navlabel">Knowledge Base</div>
+    <button data-p="cafe">
+      <svg viewBox="0 0 24 24"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+      Cafe Info
+    </button>
+    <button data-p="menu">
+      <svg viewBox="0 0 24 24"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" x2="6" y1="1" y2="4"/><line x1="10" x2="10" y1="1" y2="4"/><line x1="14" x2="14" y1="1" y2="4"/></svg>
+      Menu (89 Items)
+    </button>
+    <button data-p="faq">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" x2="12.01" y1="17" y2="17"/></svg>
+      Verified FAQs (11)
+    </button>
     
     <div class="navlabel">AI Behavior &amp; Rules</div>
-    <button data-p="persona"><span class="nav-icon">🎭</span> Persona &amp; Tone</button>
-    <button data-p="scope"><span class="nav-icon">🛡️</span> Autonomy &amp; Guards</button>
+    <button data-p="persona">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/></svg>
+      Persona &amp; Tone
+    </button>
+    <button data-p="scope">
+      <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      Autonomy &amp; Guards
+    </button>
     
     <div class="navlabel">Diagnostics</div>
-    <button data-p="play"><span class="nav-icon">⚡</span> Playground</button>
-    <button data-p="prompt"><span class="nav-icon">📜</span> Compiled Prompt</button>
-    <button data-p="setup"><span class="nav-icon">⚙️</span> Telemetry &amp; Health</button>
+    <button data-p="play">
+      <svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+      Playground
+    </button>
+    <button data-p="prompt">
+      <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" x2="8" y1="13" y2="13"/><line x1="16" x2="8" y1="17" y2="17"/></svg>
+      Compiled Prompt
+    </button>
+    <button data-p="setup">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      Telemetry &amp; Health
+    </button>
   </nav>
 
   <main>
@@ -386,10 +427,10 @@ pre.prompt{background:var(--surface2); border:1px solid var(--line); border-radi
       <div class="phead">
         <div>
           <h2>Operations Dashboard</h2>
-          <p>Real-time autonomous intelligence telemetry across Meta, WhatsApp, TikTok and in-store requests.</p>
+          <p>Real-time autonomous intelligence telemetry across Meta, WhatsApp, TikTok and customer requests.</p>
         </div>
         <div class="row">
-          <button class="btn primary sm" onclick="openSimulator()"><span class="nav-icon">⚡</span> Test AI Simulator</button>
+          <button class="btn primary sm" onclick="openSimulator()">Test AI Simulator</button>
         </div>
       </div>
 
@@ -405,11 +446,11 @@ pre.prompt{background:var(--surface2); border:1px solid var(--line); border-radi
               </label>
               <span class="pill on" id="masterStatusBadge"><span class="dot pulse"></span> ACTIVE &amp; RUNNING</span>
             </div>
-            <p class="hint" style="margin:0; line-height:1.5">When enabled, the high-speed Gemini AI engine responds to customer inquiries in 100% natural Banglish, Bangla, or English across all connected channels.</p>
+            <p class="hint" style="margin:0; line-height:1.5">When enabled, the Gemini AI engine responds to customer inquiries in natural Banglish, Bangla, or English across all channels.</p>
           </div>
           <div class="row" style="margin-top:16px; justify-content:space-between; border-top:1px dashed var(--line); padding-top:12px">
-            <span class="meter">Engine: <strong style="color:var(--gold)">gemini-3.5-flash</strong> (Zero Thinking Latency)</span>
-            <span class="meter">Turnaround: <strong style="color:var(--good)">&lt; 1.2s</strong></span>
+            <span class="meter">Engine: <strong style="color:var(--gold)">gemini-3.5-flash</strong></span>
+            <span class="meter">Latency: <strong style="color:var(--good)">&lt; 1.2s</strong></span>
           </div>
         </div>
 
@@ -425,42 +466,38 @@ pre.prompt{background:var(--surface2); border:1px solid var(--line); border-radi
               <div class="k" style="font-size:11px; text-transform:uppercase; color:var(--ink3); font-weight:800; margin-top:4px">AI Auto-Resolution</div>
             </div>
           </div>
-          <p class="hint" style="margin:10px 0 0; font-size:12.5px">Directly answered without requiring human manager intervention.</p>
+          <p class="hint" style="margin:10px 0 0; font-size:12.5px">Directly answered without requiring manual manager intervention.</p>
         </div>
       </div>
 
       <!-- Living KPI Grid -->
       <div class="grid g4" style="margin-bottom:20px">
         <div class="stat-card">
-          <div class="icon">💬</div>
           <div class="v" id="stConvs">0</div>
           <div class="k">Total Conversations</div>
           <div class="subtext" id="stTodayMsg">0 today</div>
         </div>
         <div class="stat-card">
-          <div class="icon">📥</div>
           <div class="v" id="stInToday">0</div>
           <div class="k">Inbound Messages</div>
-          <div class="subtext"><span style="color:var(--good)">●</span> Real customer volume</div>
+          <div class="subtext">Real customer volume</div>
         </div>
         <div class="stat-card">
-          <div class="icon">🤖</div>
           <div class="v" id="stOutToday">0</div>
           <div class="k">AI Auto-Replies</div>
-          <div class="subtext"><span style="color:var(--gold)">●</span> 0s customer wait time</div>
+          <div class="subtext">Zero customer wait time</div>
         </div>
         <div class="stat-card">
-          <div class="icon">🚩</div>
           <div class="v" id="stFlagged">0</div>
           <div class="k">Escalations Flagged</div>
-          <div class="subtext"><span style="color:var(--danger)">●</span> Manager review required</div>
+          <div class="subtext">Manager review required</div>
         </div>
       </div>
 
       <!-- 24-Hour Traffic Streamgraph -->
       <div class="card">
         <div style="display:flex; align-items:center; justify-content:space-between">
-          <h3><span>📈</span> 24-Hour Message Velocity (Dhaka Local Time)</h3>
+          <h3>24-Hour Message Velocity (Dhaka Local Time)</h3>
           <span class="meter" id="streamGraphTotal">Real-time hourly activity</span>
         </div>
         <div class="chart-box">
@@ -485,8 +522,8 @@ pre.prompt{background:var(--surface2); border:1px solid var(--line); border-radi
       <!-- Connected Channels Hub Grid -->
       <div class="card">
         <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px">
-          <h3><span>🌐</span> Multi-Channel Operations Hub</h3>
-          <button class="btn sm" onclick="switchTab('channels')">Manage Connections →</button>
+          <h3>Multi-Channel Operations Hub</h3>
+          <button class="btn sm" onclick="switchTab('channels')">Manage Connections</button>
         </div>
         <div class="channel-grid" id="dashChannelCards"></div>
       </div>
@@ -494,17 +531,17 @@ pre.prompt{background:var(--surface2); border:1px solid var(--line); border-radi
       <!-- Live Activity Ticker & Fallbacks -->
       <div class="grid g2">
         <div class="card">
-          <h3><span>⚡</span> Live Activity Stream</h3>
+          <h3>Live Activity Stream</h3>
           <div class="activity-list" id="dashRecentActivity">
             <div class="empty">No recent messages recorded.</div>
           </div>
         </div>
         <div class="card">
-          <h3><span>🛡️</span> Operational Directives</h3>
+          <h3>Operational Directives</h3>
           <label class="f">Off-Hours Protocol (11:00 PM – 11:00 AM)</label>
           <select data-b="runtime.offHours" style="margin-bottom:14px">
-            <option value="reply">Politely respond &amp; state next opening time (Recommended)</option>
-            <option value="silent">Stay completely silent until opening hours</option>
+            <option value="reply">Politely respond and state next opening time (Recommended)</option>
+            <option value="silent">Stay silent until opening hours</option>
           </select>
           <label class="f">Provider Safety Fallback</label>
           <input type="text" data-b="runtime.fallbackText" placeholder="Thanks for your message! Our team will reply shortly.">
@@ -522,7 +559,7 @@ pre.prompt{background:var(--surface2); border:1px solid var(--line); border-radi
       </div>
 
       <div class="info-banner">
-        💡 <strong>Hybrid Credentials:</strong> You can enter tokens directly below in the Admin Panel or rely on your server <code>.env</code> file. Anything entered in this panel overrides <code>.env</code> immediately without needing container restarts.
+        <strong>Hybrid Credentials:</strong> You can enter tokens directly below in the Admin Panel or rely on your server .env file. Values entered here take priority immediately.
       </div>
 
       <div class="grid g2">
@@ -530,7 +567,7 @@ pre.prompt{background:var(--surface2); border:1px solid var(--line); border-radi
         <div class="card">
           <div class="channel-header">
             <div class="channel-title">
-              <div class="channel-badge-icon fb">f</div>
+              <div class="channel-badge-icon fb">FB</div>
               Facebook Messenger
             </div>
             <label class="chk"><input type="checkbox" data-b="channels.facebook.enabled"> Active</label>
@@ -577,7 +614,7 @@ pre.prompt{background:var(--surface2); border:1px solid var(--line); border-radi
         <div class="card">
           <div class="channel-header">
             <div class="channel-title">
-              <div class="channel-badge-icon ig">📸</div>
+              <div class="channel-badge-icon ig">IG</div>
               Instagram Direct
             </div>
             <label class="chk"><input type="checkbox" data-b="channels.instagram.enabled"> Active</label>
@@ -616,7 +653,7 @@ pre.prompt{background:var(--surface2); border:1px solid var(--line); border-radi
         <div class="card">
           <div class="channel-header">
             <div class="channel-title">
-              <div class="channel-badge-icon wa">💬</div>
+              <div class="channel-badge-icon wa">WA</div>
               WhatsApp Cloud API
             </div>
             <label class="chk"><input type="checkbox" data-b="channels.whatsapp.enabled"> Active</label>
@@ -657,7 +694,7 @@ pre.prompt{background:var(--surface2); border:1px solid var(--line); border-radi
         <div class="card">
           <div class="channel-header">
             <div class="channel-title">
-              <div class="channel-badge-icon tt">🎵</div>
+              <div class="channel-badge-icon tt">TT</div>
               TikTok Business Messaging
             </div>
             <label class="chk"><input type="checkbox" data-b="channels.tiktok.enabled"> Active</label>
@@ -701,7 +738,7 @@ pre.prompt{background:var(--surface2); border:1px solid var(--line); border-radi
           <h2>Live Customer Inbox</h2>
           <p>Inspect incoming threads, observe AI conversations, or seamlessly reply as a human.</p>
         </div>
-        <button class="btn sm" id="refreshInbox">↻ Refresh Inbox</button>
+        <button class="btn sm" id="refreshInbox">Refresh Inbox</button>
       </div>
 
       <div class="inbox">
@@ -739,7 +776,7 @@ pre.prompt{background:var(--surface2); border:1px solid var(--line); border-radi
         </div>
       </div>
       <div class="card">
-        <h3><span>⏰</span> Operating Schedule &amp; Orders</h3>
+        <h3>Operating Schedule &amp; Orders</h3>
         <div class="grid g3">
           <div><label class="f">Kitchen Opens</label><input type="time" data-b="cafe.open"></div>
           <div><label class="f">Kitchen Closes</label><input type="time" data-b="cafe.close"></div>
@@ -755,7 +792,7 @@ pre.prompt{background:var(--surface2); border:1px solid var(--line); border-radi
         </div>
       </div>
       <div class="card">
-        <h3><span>✨</span> Facilities &amp; Services</h3>
+        <h3>Facilities &amp; Services</h3>
         <div class="grid g2">
           <div><label class="f">Wi-Fi &amp; Work Policy</label><input type="text" data-b="cafe.wifi"></div>
           <div><label class="f">Parking Details</label><input type="text" data-b="cafe.parking"></div>
@@ -784,7 +821,7 @@ pre.prompt{background:var(--surface2); border:1px solid var(--line); border-radi
       </div>
 
       <div class="card">
-        <h3><span>📋</span> Quick Text Importer</h3>
+        <h3>Quick Text Importer</h3>
         <p class="hint">Paste menu text to auto-parse and add categories.</p>
         <textarea id="importBox" placeholder="Espresso 190&#10;Traditional Breakfast 390&#10;BBQ Chicken Pizza (9&quot;) 595"></textarea>
         <div class="row" style="margin-top:12px">
@@ -866,7 +903,7 @@ pre.prompt{background:var(--surface2); border:1px solid var(--line); border-radi
       </div>
 
       <div class="card">
-        <h3><span>🛡️</span> Autonomy Tiers</h3>
+        <h3>Autonomy Tiers</h3>
         <div class="grid g2">
           <div class="step-box">
             <h4>Information Q&amp;A</h4>
@@ -895,7 +932,7 @@ pre.prompt{background:var(--surface2); border:1px solid var(--line); border-radi
             <h4>Complaints &amp; Allergies</h4>
             <p>Acknowledge politely and flag manager immediately.</p>
             <select data-b="scope.complaint">
-              <option value="ack">Politely acknowledge &amp; flag thread (Recommended)</option>
+              <option value="ack">Politely acknowledge and flag thread (Recommended)</option>
               <option value="off">Stay silent and flag thread</option>
             </select>
           </div>
@@ -903,7 +940,7 @@ pre.prompt{background:var(--surface2); border:1px solid var(--line); border-radi
       </div>
 
       <div class="card">
-        <h3><span>⛔</span> Strict Safety Guardrails</h3>
+        <h3>Strict Safety Guardrails</h3>
         <div id="guardList"></div>
         <div class="row" style="margin-top:12px">
           <input type="text" id="guardIn" placeholder="Add a new safety guardrail..." style="flex:1">
@@ -912,11 +949,11 @@ pre.prompt{background:var(--surface2); border:1px solid var(--line); border-radi
       </div>
 
       <div class="card">
-        <h3><span>🚩</span> Escalation Keywords</h3>
+        <h3>Escalation Keywords</h3>
         <p class="hint">When matched in any message, the thread is instantly flagged for human takeover.</p>
         <div class="tags" id="escTags"></div>
         <div class="row" style="margin-top:14px">
-          <input type="text" id="escIn" placeholder="Add keyword (e.g. manager, refund, অভিযোগ)..." style="flex:1">
+          <input type="text" id="escIn" placeholder="Add keyword (e.g. manager, refund)..." style="flex:1">
           <button class="btn primary sm" id="addEsc">Add Keyword</button>
         </div>
       </div>
@@ -950,7 +987,7 @@ pre.prompt{background:var(--surface2); border:1px solid var(--line); border-radi
           <h2>Compiled System Context</h2>
           <p>The exact prompt context generated from database facts and injected on every customer message.</p>
         </div>
-        <button class="btn sm" id="copyPrompt">📋 Copy Prompt</button>
+        <button class="btn sm" id="copyPrompt">Copy Prompt</button>
       </div>
       <div class="card">
         <span class="meter" id="promptMeter" style="display:block; margin-bottom:12px; font-weight:700"></span>
@@ -967,11 +1004,11 @@ pre.prompt{background:var(--surface2); border:1px solid var(--line); border-radi
         </div>
       </div>
       <div class="card">
-        <h3><span>🔌</span> Connectivity Diagnostic</h3>
+        <h3>Connectivity Diagnostic</h3>
         <div id="healthOut"></div>
       </div>
       <div class="card">
-        <h3><span>💾</span> Export Complete Config (JSON)</h3>
+        <h3>Export Complete Config (JSON)</h3>
         <div class="row" style="margin-bottom:14px">
           <button class="btn sm" id="copyJson">Copy JSON</button>
         </div>
@@ -986,8 +1023,8 @@ pre.prompt{background:var(--surface2); border:1px solid var(--line); border-radi
 <div id="drawerBackdrop" onclick="closeSimulator()"></div>
 <div id="simDrawer">
   <div class="drawer-header">
-    <h3 style="font-size:16px"><span>⚡</span> Quick AI Simulator</h3>
-    <button class="btn ghost sm" onclick="closeSimulator()">✕</button>
+    <h3 style="font-size:16px">Quick AI Simulator</h3>
+    <button class="btn ghost sm" onclick="closeSimulator()">Close</button>
   </div>
   <div class="drawer-body">
     <div class="quickrow" id="simDrawerQuick"></div>
@@ -1003,23 +1040,54 @@ pre.prompt{background:var(--surface2); border:1px solid var(--line); border-radi
   </div>
 </div>
 
-<!-- Command Palette Modal (⌘K) -->
+<!-- Command Palette Modal (Ctrl+K) -->
 <div id="cmdModal">
   <div class="cmd-box">
     <div class="cmd-input-wrap">
-      <span>🔍</span>
       <input type="text" id="cmdSearchIn" placeholder="Type a command or jump to page…" autocomplete="off">
       <kbd>ESC</kbd>
     </div>
     <div class="cmd-list" id="cmdList">
-      <div class="cmd-item" data-act="dash"><span>📊 Jump to Operations Dashboard</span><kbd>G D</kbd></div>
-      <div class="cmd-item" data-act="inbox"><span>💬 Open Customer Inbox</span><kbd>G I</kbd></div>
-      <div class="cmd-item" data-act="channels"><span>🌐 Multi-Channel Settings</span><kbd>G C</kbd></div>
-      <div class="cmd-item" data-act="menu"><span>☕ Manage Cafe Menu (89 Items)</span><kbd>G M</kbd></div>
-      <div class="cmd-item" data-act="faq"><span>❓ Manage FAQs (11 Qs)</span><kbd>G F</kbd></div>
-      <div class="cmd-item" data-act="play"><span>⚡ Open AI Playground</span><kbd>G P</kbd></div>
-      <div class="cmd-item" data-act="sim"><span>⚡ Toggle Side Simulator</span><kbd>S</kbd></div>
-      <div class="cmd-item" data-act="theme"><span>◐ Toggle Dark/Light Theme</span><kbd>T</kbd></div>
+      <div class="cmd-item" data-act="dash"><span>Jump to Operations Dashboard</span><kbd>G D</kbd></div>
+      <div class="cmd-item" data-act="inbox"><span>Open Customer Inbox</span><kbd>G I</kbd></div>
+      <div class="cmd-item" data-act="channels"><span>Multi-Channel Settings</span><kbd>G C</kbd></div>
+      <div class="cmd-item" data-act="menu"><span>Manage Cafe Menu (89 Items)</span><kbd>G M</kbd></div>
+      <div class="cmd-item" data-act="faq"><span>Manage FAQs (11 Qs)</span><kbd>G F</kbd></div>
+      <div class="cmd-item" data-act="play"><span>Open AI Playground</span><kbd>G P</kbd></div>
+      <div class="cmd-item" data-act="sim"><span>Toggle Side Simulator</span><kbd>S</kbd></div>
+      <div class="cmd-item" data-act="theme"><span>Toggle Dark/Light Theme</span><kbd>T</kbd></div>
+    </div>
+  </div>
+</div>
+
+<!-- New Business Account Modal -->
+<div id="wsModal" class="cmd-modal-backdrop" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.65); z-index:1100; align-items:center; justify-content:center; backdrop-filter:blur(6px)">
+  <div class="card" style="width:90%; max-width:440px; background:var(--bg); border:1px solid var(--line); box-shadow:0 24px 48px rgba(0,0,0,0.5)">
+    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px">
+      <h3 style="margin:0">Add New Business Account</h3>
+      <button class="btn sm ghost" onclick="closeWsModal()">Close</button>
+    </div>
+    <p class="hint" style="margin-bottom:16px; line-height:1.5">Create an isolated chatbot workspace with its own Facebook, Instagram, WhatsApp, TikTok, Menu, and Knowledge Base.</p>
+    <label class="f">Business / Brand Name</label>
+    <input type="text" id="newWsNameIn" placeholder="e.g. Bella Italia Trattoria" style="margin-bottom:18px">
+    <div style="display:flex; justify-content:flex-end; gap:8px">
+      <button class="btn ghost sm" onclick="closeWsModal()">Cancel</button>
+      <button class="btn primary sm" id="btnSubmitNewWs">Create Workspace</button>
+    </div>
+  </div>
+</div>
+
+<!-- Manage Business Accounts Modal -->
+<div id="manageWsModal" class="cmd-modal-backdrop" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.65); z-index:1100; align-items:center; justify-content:center; backdrop-filter:blur(6px)">
+  <div class="card" style="width:90%; max-width:560px; background:var(--bg); border:1px solid var(--line); box-shadow:0 24px 48px rgba(0,0,0,0.5)">
+    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px">
+      <h3 style="margin:0">Manage Business Accounts</h3>
+      <button class="btn sm ghost" onclick="closeManageWsModal()">Close</button>
+    </div>
+    <p class="hint" style="margin-bottom:14px; line-height:1.5">Switch, rename, or delete connected business accounts hosted on this system.</p>
+    <div id="wsManageList" style="display:flex; flex-direction:column; gap:8px; max-height:360px; overflow-y:auto; padding-right:4px"></div>
+    <div style="margin-top:18px; display:flex; justify-content:flex-end">
+      <button class="btn sm ghost" onclick="closeManageWsModal()">Close</button>
     </div>
   </div>
 </div>
@@ -1029,6 +1097,7 @@ const API = location.pathname.replace(/\/+$/,'') || '/chatbotadmin';
 const api = (p, opts={}) => fetch(API + p, {credentials:'same-origin', headers:{'Content-Type':'application/json'}, ...opts});
 
 let S = null, saveT = null, selConv = null;
+let currentWorkspaceId = 1, workspaces = [];
 
 /* ---------- AUTHENTICATION ---------- */
 async function checkAuth(){
@@ -1036,7 +1105,7 @@ async function checkAuth(){
   if(r.authed){
     document.getElementById('login').style.display='none';
     document.getElementById('app').style.display='block';
-    await load();
+    await load(currentWorkspaceId);
   } else {
     document.getElementById('login').style.display='grid';
     document.getElementById('app').style.display='none';
@@ -1058,10 +1127,122 @@ document.getElementById('logoutBtn').onclick = async () => {
   location.reload();
 };
 
+/* ---------- WORKSPACE MANAGEMENT ---------- */
+async function loadWorkspaces(){
+  const res = await api('/api/workspaces').then(r=>r.json()).catch(()=>({workspaces:[]}));
+  workspaces = res.workspaces || [];
+  
+  const sel = document.getElementById('activeWorkspaceSelect');
+  if(sel){
+    sel.innerHTML = workspaces.map(w => `
+      <option value="${w.id}" ${w.id===currentWorkspaceId?'selected':''}>${esc(w.name)} (#${w.id})</option>
+    `).join('');
+  }
+
+  const list = document.getElementById('wsManageList');
+  if(list){
+    list.innerHTML = workspaces.map(w => `
+      <div style="display:flex; align-items:center; justify-content:space-between; padding:10px 14px; background:var(--glass-thick); border:1px solid var(--line); border-radius:8px">
+        <div style="display:flex; flex-direction:column; gap:2px">
+          <strong style="font-size:14px">${esc(w.name)} ${w.id===1?'<span class="badge">Primary</span>':''}</strong>
+          <span style="font-size:11.5px; color:var(--ink3)">ID: ${w.id} · ${w.channel_count||0} channels active · ${w.conv_count||0} conversations</span>
+        </div>
+        <div style="display:flex; gap:6px">
+          ${w.id !== currentWorkspaceId ? `<button class="btn sm" onclick="switchWorkspace(${w.id}); closeManageWsModal();">Switch</button>` : '<span class="pill on" style="font-size:11px">Active</span>'}
+          <button class="btn sm ghost" onclick="promptRenameWorkspace(${w.id}, '${esc(w.name)}')">Rename</button>
+          ${w.id !== 1 ? `<button class="btn sm ghost" style="color:var(--danger)" onclick="deleteWorkspaceById(${w.id})">Delete</button>` : ''}
+        </div>
+      </div>
+    `).join('');
+  }
+}
+
+async function switchWorkspace(wsId){
+  currentWorkspaceId = Number(wsId);
+  const sel = document.getElementById('activeWorkspaceSelect');
+  if(sel) sel.value = String(currentWorkspaceId);
+  await load(currentWorkspaceId);
+  if(document.querySelector('nav button[data-p="inbox"].active')) loadInbox();
+  chip(`Active: Workspace #${currentWorkspaceId}`);
+}
+
+function openWsModal(){
+  document.getElementById('wsModal').style.display = 'flex';
+  document.getElementById('newWsNameIn').value = '';
+  document.getElementById('newWsNameIn').focus();
+}
+
+function closeWsModal(){
+  document.getElementById('wsModal').style.display = 'none';
+}
+
+function openManageWsModal(){
+  loadWorkspaces();
+  document.getElementById('manageWsModal').style.display = 'flex';
+}
+
+function closeManageWsModal(){
+  document.getElementById('manageWsModal').style.display = 'none';
+}
+
+async function submitNewWorkspace(){
+  const name = document.getElementById('newWsNameIn').value.trim();
+  if(!name){ alert('Please enter a business name.'); return; }
+  const res = await api('/api/workspaces', {method:'POST', body:JSON.stringify({name})});
+  const data = await res.json();
+  if(res.ok && data.workspace){
+    closeWsModal();
+    await switchWorkspace(data.workspace.id);
+    chip(`Created "${name}"`);
+  } else {
+    alert(data.error || 'Failed to create workspace.');
+  }
+}
+
+async function promptRenameWorkspace(wsId, curName){
+  const newName = prompt('Enter new name for this workspace:', curName);
+  if(!newName || newName.trim() === curName) return;
+  const res = await api(`/api/workspaces/${wsId}/rename`, {method:'PUT', body:JSON.stringify({name:newName.trim()})});
+  if(res.ok){
+    await loadWorkspaces();
+    if(wsId === currentWorkspaceId) await load(wsId);
+    chip('Workspace renamed');
+  }
+}
+
+async function deleteWorkspaceById(wsId){
+  if(!confirm(`Are you sure you want to permanently delete Workspace #${wsId}? All its conversations, channels, and custom knowledge will be removed.`)) return;
+  const res = await api(`/api/workspaces/${wsId}`, {method:'DELETE'});
+  if(res.ok){
+    if(currentWorkspaceId === wsId) currentWorkspaceId = 1;
+    await loadWorkspaces();
+    await load(currentWorkspaceId);
+    chip('Workspace deleted');
+  } else {
+    alert((await res.json()).error || 'Delete failed.');
+  }
+}
+
+document.getElementById('activeWorkspaceSelect').onchange = e => switchWorkspace(+e.target.value);
+document.getElementById('btnOpenNewWsModal').onclick = openWsModal;
+document.getElementById('btnOpenManageWsModal').onclick = openManageWsModal;
+document.getElementById('btnSubmitNewWs').onclick = submitNewWorkspace;
+
 /* ---------- LOAD & AUTO-SAVE ENGINE ---------- */
-async function load(){
-  const d = await api('/api/config').then(r=>r.json());
+async function load(wsId = null){
+  if(wsId) currentWorkspaceId = Number(wsId);
+  await loadWorkspaces();
+  const d = await api(`/api/config?workspace_id=${currentWorkspaceId}`).then(r=>r.json());
   S = d.config;
+
+  // Sync Brand Title & Badge
+  const cafeName = S?.cafe?.name || 'Crown Coffee';
+  const badge = cafeName.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase() || 'CC';
+  const logoBadge = document.getElementById('brandLogoBadge');
+  const titleTxt = document.getElementById('brandTitleTxt');
+  if(logoBadge) logoBadge.textContent = badge;
+  if(titleTxt) titleTxt.textContent = cafeName;
+
   render();
   paintPrompt(d.prompt);
   paintOpen(d.open);
@@ -1070,7 +1251,7 @@ async function load(){
 
 function chip(t){
   const e = document.getElementById('saveChip');
-  e.textContent = '✓ ' + t;
+  e.textContent = t;
   clearTimeout(chip._t);
   chip._t = setTimeout(()=>e.textContent='', 2200);
 }
@@ -1078,7 +1259,10 @@ function chip(t){
 function save(){
   clearTimeout(saveT);
   saveT = setTimeout(async ()=>{
-    const r = await api('/api/config', {method:'PUT', body:JSON.stringify({config:S})});
+    const r = await api(`/api/config?workspace_id=${currentWorkspaceId}`, {
+      method:'PUT',
+      body:JSON.stringify({ config: S, workspace_id: currentWorkspaceId })
+    });
     if(r.ok){
       const d = await r.json();
       paintPrompt(d.prompt);
@@ -1174,12 +1358,10 @@ function paintStats(s){
   document.getElementById('stOutToday').textContent = s.todayOut || 0;
   document.getElementById('stFlagged').textContent = s.flagged || 0;
 
-  // AI Resolution Calculation
   const totalOut = (s.aiReplies || 0) + (s.humanReplies || 0);
   const rate = totalOut > 0 ? Math.round(((s.aiReplies || 0) / totalOut) * 1000) / 10 : 98.5;
   document.getElementById('resRateTxt').textContent = `${rate}%`;
   
-  // Update SVG Gauge circle (220 is circumference)
   const offset = 220 - (220 * (rate / 100));
   const circle = document.getElementById('gaugeCircle');
   if(circle) circle.style.strokeDashoffset = offset;
@@ -1196,25 +1378,25 @@ function renderDashChannels(s){
 
   const items = [
     {
-      id: 'facebook', name: 'Facebook Messenger', icon: 'f', cls: 'fb',
+      id: 'facebook', name: 'Facebook Messenger', cls: 'fb', badge: 'FB',
       enabled: ch.facebook?.enabled ?? true,
       ready: !!(ch.facebook?.pageToken || ch.facebook?.pageId),
       count: s.byPlatform?.facebook || 0
     },
     {
-      id: 'instagram', name: 'Instagram Direct', icon: '📸', cls: 'ig',
+      id: 'instagram', name: 'Instagram Direct', cls: 'ig', badge: 'IG',
       enabled: ch.instagram?.enabled ?? false,
       ready: !!(ch.instagram?.token || ch.instagram?.userId),
       count: s.byPlatform?.instagram || 0
     },
     {
-      id: 'whatsapp', name: 'WhatsApp Cloud', icon: '💬', cls: 'wa',
+      id: 'whatsapp', name: 'WhatsApp Cloud', cls: 'wa', badge: 'WA',
       enabled: ch.whatsapp?.enabled ?? false,
       ready: !!(ch.whatsapp?.phoneNumberId || ch.whatsapp?.token),
       count: s.byPlatform?.whatsapp || 0
     },
     {
-      id: 'tiktok', name: 'TikTok Messaging', icon: '🎵', cls: 'tt',
+      id: 'tiktok', name: 'TikTok Messaging', cls: 'tt', badge: 'TT',
       enabled: ch.tiktok?.enabled ?? false,
       ready: !!(ch.tiktok?.token || ch.tiktok?.clientKey),
       count: s.byPlatform?.tiktok || 0
@@ -1226,11 +1408,11 @@ function renderDashChannels(s){
       <div>
         <div class="channel-header">
           <div class="channel-title">
-            <div class="channel-badge-icon ${c.cls}">${c.icon}</div>
+            <div class="channel-badge-icon ${c.cls}">${c.badge}</div>
             ${c.name}
           </div>
           <span class="channel-status ${c.enabled ? (c.ready ? 'active' : 'warn') : 'inactive'}">
-            ${c.enabled ? (c.ready ? 'Active' : 'Via .env') : 'Disabled'}
+            ${c.enabled ? (c.ready ? 'Active' : 'Configured') : 'Disabled'}
           </span>
         </div>
         <div class="channel-body">
@@ -1239,7 +1421,7 @@ function renderDashChannels(s){
       </div>
       <div class="channel-footer">
         <button class="btn sm" onclick="testChannel('${c.id}')">Test Ping</button>
-        <button class="btn sm ghost" onclick="switchTab('channels')">Configure →</button>
+        <button class="btn sm ghost" onclick="switchTab('channels')">Configure</button>
       </div>
     </div>
   `).join('');
@@ -1278,12 +1460,11 @@ function renderRecentActivity(recent){
           <span class="badge plat ${platCls}">${m.platform.slice(0,2)}</span>
           ${esc(m.name || 'Customer')}
         </span>
-        <span class="activity-msg">${m.direction==='out' ? '↳ AI: ' : ''}${esc(m.text)}</span>
+        <span class="activity-msg">${m.direction==='out' ? 'AI: ' : ''}${esc(m.text)}</span>
         <span class="activity-time">${time}</span>
       </div>`;
   }).join('');
 }
-
 
 function updateChannelUrls(){
   const origin = location.origin;
@@ -1305,14 +1486,14 @@ async function testChannel(platform){
     });
     const data = await res.json();
     if(data.ok){
-      if(el) el.innerHTML = `<span style="color:var(--good);font-weight:700">✓ ${data.info || 'Connected!'}</span>`;
-      else alert(`✓ ${platform.toUpperCase()}: ${data.info || 'Connected!'}`);
+      if(el) el.innerHTML = `<span style="color:var(--good);font-weight:700">${data.info || 'Connected'}</span>`;
+      else alert(`${platform.toUpperCase()}: ${data.info || 'Connected'}`);
     } else {
-      if(el) el.innerHTML = `<span style="color:var(--danger);font-weight:700">✕ ${data.error || 'Connection failed.'}</span>`;
-      else alert(`✕ ${platform.toUpperCase()}: ${data.error || 'Connection failed.'}`);
+      if(el) el.innerHTML = `<span style="color:var(--danger);font-weight:700">${data.error || 'Connection failed'}</span>`;
+      else alert(`${platform.toUpperCase()}: ${data.error || 'Connection failed'}`);
     }
   } catch(e) {
-    if(el) el.innerHTML = `<span style="color:var(--danger);font-weight:700">✕ Error: ${e.message}</span>`;
+    if(el) el.innerHTML = `<span style="color:var(--danger);font-weight:700">Error: ${e.message}</span>`;
   }
 }
 
@@ -1337,23 +1518,29 @@ function renderMenu(){
   const w = document.getElementById('menuList');
   if(!w || !S?.menu) return;
   w.innerHTML = '';
-  let count = 0, soldOut = 0;
-
+  if(!S.menu.length){
+    w.innerHTML = '<div class="empty">No menu categories yet. Click "+ Category" or import.</div>';
+    return;
+  }
   S.menu.forEach((cat, ci) => {
-    count += cat.items.length;
-    soldOut += cat.items.filter(i => !i.available).length;
     const d = document.createElement('div');
     d.className = 'cat';
-    const items = cat.items.map((it, ii) => `
-      <div class="item ${it.available ? '' : 'gone'}">
-        <input class="iname" type="text" value="${esc(it.name)}" data-ci="${ci}" data-ii="${ii}" data-k="name" placeholder="Item name">
-        <input class="idesc" type="text" value="${esc(it.desc||'')}" data-ci="${ci}" data-ii="${ii}" data-k="desc" placeholder="Ingredients / description">
-        <input class="iprice" type="number" value="${it.price??''}" data-ci="${ci}" data-ii="${ii}" data-k="price" placeholder="Price (Tk)">
-        <span class="iact row">
+    const items = (cat.items||[]).map((it, ii) => `
+      <div class="item">
+        <span class="col name">
+          <input type="text" value="${esc(it.name)}" data-ci="${ci}" data-ii="${ii}" data-k="name" placeholder="Item Name">
+        </span>
+        <span class="col desc">
+          <input type="text" value="${esc(it.desc)}" data-ci="${ci}" data-ii="${ii}" data-k="desc" placeholder="Description / Ingredients">
+        </span>
+        <span class="col price">
+          <input type="number" value="${it.price ?? ''}" data-ci="${ci}" data-ii="${ii}" data-k="price" placeholder="Tk">
+        </span>
+        <span class="col act">
           <label class="chk" title="In Stock / Available">
             <input type="checkbox" ${it.available?'checked':''} data-ci="${ci}" data-ii="${ii}" data-k="available">
           </label>
-          <button class="btn ghost sm" data-del="${ci}:${ii}" title="Delete Item">✕</button>
+          <button class="btn ghost sm" data-del="${ci}:${ii}" title="Delete Item">Delete</button>
         </span>
       </div>`).join('');
 
@@ -1361,130 +1548,137 @@ function renderMenu(){
       <div class="cathead">
         <input type="text" value="${esc(cat.name)}" data-cn="${ci}" placeholder="Category Name">
         <button class="btn sm" data-addi="${ci}">+ Item</button>
-        <button class="btn ghost sm" data-delc="${ci}" title="Delete Category">✕</button>
+        <button class="btn ghost sm" data-delc="${ci}" title="Delete Category">Delete</button>
       </div>
       <div class="items">${items || '<div class="empty">No items in this category yet.</div>'}</div>`;
     w.appendChild(d);
   });
-
-  document.getElementById('menuCount').textContent =
-    count ? `${count} total menu items across ${S.menu.length} categories (${soldOut} marked sold-out)` : 'Menu is currently empty.';
 }
+
+document.getElementById('addCat').onclick = () => {
+  S.menu = S.menu || [];
+  S.menu.push({ id: uid(), name: 'New Category', items: [] });
+  save(); renderMenu();
+};
 
 document.getElementById('menuList').addEventListener('input', e => {
   const t = e.target;
-  if(t.dataset.cn !== undefined){ S.menu[+t.dataset.cn].name = t.value; save(); return; }
-  if(t.dataset.k){
-    const it = S.menu[+t.dataset.ci].items[+t.dataset.ii];
-    it[t.dataset.k] = t.dataset.k === 'price' ? (t.value===''?null:+t.value) : t.value;
+  if(t.dataset.cn !== undefined){
+    S.menu[+t.dataset.cn].name = t.value;
+    save();
+  } else if(t.dataset.k){
+    const {ci, ii, k} = t.dataset;
+    const it = S.menu[+ci].items[+ii];
+    it[k] = k === 'price' ? (t.value==='' ? null : +t.value)
+          : k === 'available' ? t.checked : t.value;
     save();
   }
 });
 
 document.getElementById('menuList').addEventListener('change', e => {
   const t = e.target;
-  if(t.type === 'checkbox' && t.dataset.k === 'available'){
-    S.menu[+t.dataset.ci].items[+t.dataset.ii].available = t.checked;
+  if(t.dataset.k === 'available'){
+    const {ci, ii} = t.dataset;
+    S.menu[+ci].items[+ii].available = t.checked;
     save();
-    renderMenu();
   }
 });
 
 document.getElementById('menuList').addEventListener('click', e => {
   const b = e.target.closest('button'); if(!b) return;
   if(b.dataset.addi !== undefined){
-    S.menu[+b.dataset.addi].items.push({ id: uid(), name: '', desc: '', price: null, available: true });
-  } else if(b.dataset.del){
+    const cat = S.menu[+b.dataset.addi];
+    cat.items = cat.items || [];
+    cat.items.push({ id: uid(), name: '', desc: '', price: null, available: true });
+  } else if(b.dataset.del !== undefined){
     const [ci, ii] = b.dataset.del.split(':').map(Number);
     S.menu[ci].items.splice(ii, 1);
   } else if(b.dataset.delc !== undefined){
-    if(!confirm('Delete this whole category?')) return;
+    if(!confirm('Are you sure you want to delete this entire category?')) return;
     S.menu.splice(+b.dataset.delc, 1);
   } else return;
   save();
   renderMenu();
 });
 
-document.getElementById('addCat').onclick = () => {
-  S.menu.push({ id: uid(), name: 'New Category', items: [] });
-  save();
-  renderMenu();
+document.getElementById('importToggle').onclick = () => {
+  const box = document.getElementById('importBox');
+  const btn = document.getElementById('importBtn');
+  const msg = document.getElementById('importMsg');
+  const open = box.style.display !== 'none';
+  box.style.display = open ? 'none' : 'block';
+  btn.style.display = open ? 'none' : 'inline-flex';
+  msg.style.display = open ? 'none' : 'block';
 };
 
 document.getElementById('importBtn').onclick = async () => {
-  const txt = document.getElementById('importBox').value.trim();
+  const text = document.getElementById('importBox').value.trim();
   const msg = document.getElementById('importMsg');
-  if(!txt){ msg.textContent = 'Paste text first.'; return; }
-  const btn = document.getElementById('importBtn');
-  btn.disabled = true; msg.textContent = 'Parsing items with AI…';
-
+  if(!text){ msg.textContent = 'Paste menu text first.'; return; }
+  msg.textContent = 'AI is structuring menu…';
   try {
-    const r = await api('/api/import-menu', {method:'POST', body:JSON.stringify({text:txt})});
-    if(!r.ok) throw new Error((await r.json()).error);
-    const { rows } = await r.json();
+    const r = await api('/api/import-menu', {method:'POST', body:JSON.stringify({text})});
+    const d = await r.json();
+    if(!r.ok) throw new Error(d.error || 'Failed');
+    const rows = d.rows || [];
+    if(!rows.length){ msg.textContent = 'No items found.'; return; }
     const byCat = {};
     rows.forEach(x => {
-      const k = (x.category || 'General').trim();
-      (byCat[k] = byCat[k] || []).push({
-        id: uid(),
-        name: String(x.name||'').trim(),
-        desc: String(x.desc||'').trim(),
-        price: (x.price==null || isNaN(+x.price)) ? null : +x.price,
-        available: true
-      });
+      const c = x.category || 'General';
+      byCat[c] = byCat[c] || [];
+      byCat[c].push({ id: uid(), name: x.name, desc: x.desc||'', price: x.price ?? null, available: true });
     });
     Object.entries(byCat).forEach(([name, items]) => S.menu.push({ id: uid(), name, items }));
     save();
     renderMenu();
-    msg.textContent = `Parsed and added ${rows.length} items!`;
+    msg.textContent = `Parsed and added ${rows.length} items.`;
     document.getElementById('importBox').value = '';
   } catch(e) {
     msg.textContent = e.message || 'Could not parse text.';
   }
-  btn.disabled = false;
 };
 
-/* ---------- FAQ MANAGER ---------- */
+/* ---------- FAQ MANAGEMENT ---------- */
 function renderFaq(){
   const w = document.getElementById('faqList');
   if(!w || !S?.faqs) return;
   w.innerHTML = '';
-  if(!S.faqs.length){ w.innerHTML = '<div class="empty">No FAQs configured yet.</div>'; return; }
-
+  if(!S.faqs.length){
+    w.innerHTML = '<div class="empty">No verified FAQs yet. Add questions below.</div>';
+    return;
+  }
   S.faqs.forEach((f, i) => {
     const d = document.createElement('div');
-    d.style.cssText = 'padding:14px 0; border-bottom:1px solid var(--line)';
+    d.className = 'faq';
     d.innerHTML = `
       <div class="row" style="margin-bottom:8px">
         <input type="text" value="${esc(f.q)}" data-fq="${i}" placeholder="Customer Question" style="flex:1; font-weight:600">
-        <button class="btn ghost sm" data-fdel="${i}" title="Delete FAQ">✕</button>
+        <button class="btn ghost sm" data-fdel="${i}" title="Delete FAQ">Delete</button>
       </div>
       <textarea data-fa="${i}" placeholder="Official verified answer">${esc(f.a)}</textarea>`;
     w.appendChild(d);
   });
 }
 
+document.getElementById('addFaq').onclick = () => {
+  S.faqs = S.faqs || [];
+  S.faqs.push({ q: '', a: '' });
+  save(); renderFaq();
+};
+
 document.getElementById('faqList').addEventListener('input', e => {
   const t = e.target;
-  if(t.dataset.fq !== undefined) S.faqs[+t.dataset.fq].q = t.value;
-  else if(t.dataset.fa !== undefined) S.faqs[+t.dataset.fa].a = t.value;
-  save();
+  if(t.dataset.fq !== undefined){ S.faqs[+t.dataset.fq].q = t.value; save(); }
+  else if(t.dataset.fa !== undefined){ S.faqs[+t.dataset.fa].a = t.value; save(); }
 });
 
 document.getElementById('faqList').addEventListener('click', e => {
   const b = e.target.closest('[data-fdel]'); if(!b) return;
   S.faqs.splice(+b.dataset.fdel, 1);
-  save();
-  renderFaq();
+  save(); renderFaq();
 });
 
-document.getElementById('addFaq').onclick = () => {
-  S.faqs.push({ id: uid(), q: '', a: '' });
-  save();
-  renderFaq();
-};
-
-/* ---------- GUARDS & ESCALATION ---------- */
+/* ---------- HARD GUARDS & ESCALATIONS ---------- */
 function renderGuards(){
   const w = document.getElementById('guardList');
   if(!w || !S?.guards) return;
@@ -1495,7 +1689,7 @@ function renderGuards(){
     d.style.cssText = 'padding:6px 0; border-bottom:1px dashed var(--line)';
     d.innerHTML = `
       <input type="text" value="${esc(g)}" data-gi="${i}" style="flex:1">
-      <button class="btn ghost sm" data-gdel="${i}">✕</button>`;
+      <button class="btn ghost sm" data-gdel="${i}">Delete</button>`;
     w.appendChild(d);
   });
 }
@@ -1508,8 +1702,9 @@ document.getElementById('guardList').addEventListener('click', e => {
   S.guards.splice(+b.dataset.gdel, 1); save(); renderGuards();
 });
 document.getElementById('addGuard').onclick = () => {
-  const i = document.getElementById('guardIn'); if(!i.value.trim()) return;
-  S.guards.push(i.value.trim()); i.value = ''; save(); renderGuards();
+  S.guards = S.guards || [];
+  S.guards.push('Never promise discounts or refunds.');
+  save(); renderGuards();
 };
 
 function renderEsc(){
@@ -1519,7 +1714,7 @@ function renderEsc(){
   S.esc.forEach((k, i) => {
     const s = document.createElement('span');
     s.className = 'tag';
-    s.innerHTML = `${esc(k)} <button data-edel="${i}">×</button>`;
+    s.innerHTML = `${esc(k)} <button data-edel="${i}">x</button>`;
     w.appendChild(s);
   });
 }
@@ -1535,18 +1730,18 @@ document.getElementById('addEsc').onclick = () => {
 
 document.getElementById('copyPrompt').onclick = () => {
   navigator.clipboard?.writeText(document.getElementById('promptOut').textContent);
-  chip('Prompt copied to clipboard');
+  chip('Prompt copied');
 };
 document.getElementById('copyJson').onclick = () => {
   navigator.clipboard?.writeText(JSON.stringify(S, null, 2));
-  chip('Full JSON exported');
+  chip('JSON exported');
 };
 
 /* ---------- PLAYGROUND & SLIDE-OUT SIMULATOR ---------- */
 let turns = [];
 const QUICK_QUESTIONS = [
   'Ki ki coffee ache?',
-  'আপনাদের ঠিকানা কোথায়?',
+  'Apnader thikana kothay?',
   'Are you open right now?',
   'Traditional Breakfast er dam koto?',
   'Table reservation kora jabe?',
@@ -1597,10 +1792,13 @@ async function sendTest(){
   sendBtn.disabled = true;
 
   try {
-    const r = await api('/api/test', {method:'POST', body:JSON.stringify({text, history:turns})});
+    const r = await api('/api/test', {
+      method:'POST',
+      body:JSON.stringify({ text, history:turns, workspace_id: currentWorkspaceId })
+    });
     const d = await r.json();
     b.textContent = d.reply;
-    if(d.escalated) bubble('sys', `⚑ Escalation keyword matched: "${d.escalated}" — thread flagged.`);
+    if(d.escalated) bubble('sys', `Escalation keyword matched: "${d.escalated}" — thread flagged.`);
     bubble('sys', `Generated by: ${d.model}`);
     turns.push({direction:'in', text}, {direction:'out', text:d.reply});
     turns = turns.slice(-12);
@@ -1639,10 +1837,13 @@ async function sendDrawerTest(){
   sendBtn.disabled = true;
 
   try {
-    const r = await api('/api/test', {method:'POST', body:JSON.stringify({text, history:turns})});
+    const r = await api('/api/test', {
+      method:'POST',
+      body:JSON.stringify({ text, history:turns, workspace_id: currentWorkspaceId })
+    });
     const d = await r.json();
     b.textContent = d.reply;
-    if(d.escalated) bubble('sys', `⚑ Escalation keyword: "${d.escalated}"`, 'simDrawerLog');
+    if(d.escalated) bubble('sys', `Escalation keyword: "${d.escalated}"`, 'simDrawerLog');
     turns.push({direction:'in', text}, {direction:'out', text:d.reply});
     turns = turns.slice(-12);
   } catch(e) {
@@ -1653,7 +1854,7 @@ async function sendDrawerTest(){
 document.getElementById('simDrawerSend').onclick = sendDrawerTest;
 document.getElementById('simDrawerIn').addEventListener('keydown', e => { if(e.key==='Enter') sendDrawerTest(); });
 
-/* ---------- COMMAND PALETTE (⌘K) ---------- */
+/* ---------- COMMAND PALETTE (Ctrl+K) ---------- */
 const cmdModal = document.getElementById('cmdModal');
 const cmdInput = document.getElementById('cmdSearchIn');
 
@@ -1676,6 +1877,8 @@ window.addEventListener('keydown', e => {
   if(e.key === 'Escape'){
     closeCmd();
     closeSimulator();
+    closeWsModal();
+    closeManageWsModal();
   }
 });
 
@@ -1691,11 +1894,11 @@ document.getElementById('cmdList').addEventListener('click', e => {
 
 /* ---------- INBOX & LIVE CHAT ---------- */
 async function loadInbox(){
-  const d = await api('/api/conversations').then(r=>r.json()).catch(()=>({conversations:[]}));
+  const d = await api(`/api/conversations?workspace_id=${currentWorkspaceId}`).then(r=>r.json()).catch(()=>({conversations:[]}));
   const w = document.getElementById('convList');
   if(!w) return;
   if(!d.conversations?.length){
-    w.innerHTML = '<div class="empty">No customer conversations yet.</div>';
+    w.innerHTML = '<div class="empty">No customer conversations in this workspace.</div>';
     return;
   }
 
@@ -1722,7 +1925,7 @@ document.getElementById('convList').addEventListener('click', async e => {
   const log = document.getElementById('threadLog');
   log.innerHTML = '';
   d.messages.forEach(m => bubble(m.direction==='in'?'b':'u', m.text, 'threadLog'));
-  if(d.conversation?.flagged) bubble('sys', '⚑ ' + (d.conversation.flag_reason || 'Flagged thread'), 'threadLog');
+  if(d.conversation?.flagged) bubble('sys', (d.conversation.flag_reason || 'Flagged thread'), 'threadLog');
 
   document.getElementById('threadIn').disabled = false;
   document.getElementById('threadSend').disabled = false;
@@ -1755,9 +1958,9 @@ document.getElementById('refreshInbox').onclick = loadInbox;
 
 /* ---------- SYSTEM HEALTH & TELEMETRY ---------- */
 async function loadHealth(){
-  const h = await api('/api/health').then(r=>r.json()).catch(()=>({}));
-  const yn = v => v ? '<span style="color:var(--good);font-weight:700">✓ Operational</span>'
-                    : '<span style="color:var(--danger);font-weight:700">✕ Not Configured</span>';
+  const h = await api(`/api/health?workspace_id=${currentWorkspaceId}`).then(r=>r.json()).catch(()=>({}));
+  const yn = v => v ? '<span style="color:var(--good);font-weight:700">Operational</span>'
+                    : '<span style="color:var(--danger);font-weight:700">Not Configured</span>';
   
   document.getElementById('healthOut').innerHTML = `
     <div class="kv"><span>Meta Webhook (Facebook / Instagram / WhatsApp)</span><span class="mono">${esc(h.channels?.facebook?.webhookUrl || '')}</span></div>
@@ -1779,7 +1982,7 @@ function render(){
 }
 
 setInterval(() => {
-  if(S) api('/api/config').then(r=>r.json()).then(d => { paintOpen(d.open); paintStats(d.stats); });
+  if(S) api(`/api/config?workspace_id=${currentWorkspaceId}`).then(r=>r.json()).then(d => { paintOpen(d.open); paintStats(d.stats); });
 }, 30000);
 
 checkAuth();

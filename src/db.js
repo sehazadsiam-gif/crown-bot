@@ -15,9 +15,35 @@ CREATE TABLE IF NOT EXISTS config (
   updated  TEXT NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS workspaces (
+  id          INTEGER PRIMARY KEY AUTOINCREMENT,
+  name        TEXT NOT NULL,
+  created_at  TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS workspace_configs (
+  workspace_id INTEGER PRIMARY KEY REFERENCES workspaces(id) ON DELETE CASCADE,
+  json         TEXT NOT NULL,
+  updated      TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS channel_accounts (
+  id           INTEGER PRIMARY KEY AUTOINCREMENT,
+  workspace_id INTEGER NOT NULL REFERENCES workspaces(id) ON DELETE CASCADE,
+  platform     TEXT NOT NULL,               -- 'facebook' | 'instagram' | 'whatsapp' | 'tiktok'
+  account_id   TEXT NOT NULL,               -- page id, ig user id, wa phone id, tiktok key
+  name         TEXT,
+  token        TEXT,
+  config_json  TEXT,
+  enabled      INTEGER NOT NULL DEFAULT 1,
+  created_at   TEXT NOT NULL,
+  UNIQUE(platform, account_id)
+);
+
 CREATE TABLE IF NOT EXISTS conversations (
   id           INTEGER PRIMARY KEY AUTOINCREMENT,
-  platform     TEXT NOT NULL,               -- 'facebook' | 'instagram'
+  workspace_id INTEGER NOT NULL DEFAULT 1 REFERENCES workspaces(id),
+  platform     TEXT NOT NULL,               -- 'facebook' | 'instagram' | 'whatsapp' | 'tiktok'
   psid         TEXT NOT NULL,               -- page-scoped user id
   name         TEXT,
   bot_enabled  INTEGER NOT NULL DEFAULT 1,
@@ -41,12 +67,13 @@ CREATE INDEX IF NOT EXISTS idx_msg_conv ON messages(conv_id, id);
 CREATE UNIQUE INDEX IF NOT EXISTS idx_msg_mid ON messages(mid) WHERE mid IS NOT NULL;
 
 CREATE TABLE IF NOT EXISTS drafts (
-  id          INTEGER PRIMARY KEY AUTOINCREMENT,
-  conv_id     INTEGER NOT NULL REFERENCES conversations(id) ON DELETE CASCADE,
-  kind        TEXT NOT NULL,                -- 'order' | 'reservation'
-  details     TEXT NOT NULL,
-  status      TEXT NOT NULL DEFAULT 'pending',
-  created_at  TEXT NOT NULL
+  id           INTEGER PRIMARY KEY AUTOINCREMENT,
+  workspace_id INTEGER NOT NULL DEFAULT 1 REFERENCES workspaces(id),
+  conv_id      INTEGER NOT NULL REFERENCES conversations(id) ON DELETE CASCADE,
+  kind         TEXT NOT NULL,                -- 'order' | 'reservation'
+  details      TEXT NOT NULL,
+  status       TEXT NOT NULL DEFAULT 'pending',
+  created_at   TEXT NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS seen (
@@ -54,6 +81,25 @@ CREATE TABLE IF NOT EXISTS seen (
   at    INTEGER NOT NULL
 );
 `);
+
+// Dynamic column migrations for existing databases
+try {
+  const convCols = db.pragma('table_info(conversations)');
+  if (!convCols.some(c => c.name === 'workspace_id')) {
+    db.exec('ALTER TABLE conversations ADD COLUMN workspace_id INTEGER NOT NULL DEFAULT 1 REFERENCES workspaces(id)');
+  }
+} catch (e) {
+  // Column already exists or error
+}
+
+try {
+  const draftCols = db.pragma('table_info(drafts)');
+  if (!draftCols.some(c => c.name === 'workspace_id')) {
+    db.exec('ALTER TABLE drafts ADD COLUMN workspace_id INTEGER NOT NULL DEFAULT 1 REFERENCES workspaces(id)');
+  }
+} catch (e) {
+  // Column already exists or error
+}
 
 const now = () => new Date().toISOString();
 
@@ -937,52 +983,235 @@ export const DEFAULT_CONFIG = {
   runtime: { enabled: true, offHours: 'reply', fallbackText: 'Thanks for your message! Our team will reply shortly.' }
 };
 
-export function getConfig() {
-  const row = db.prepare('SELECT json FROM config WHERE id = 1').get();
+export function makeCleanTemplate(businessName = 'New Business') {
+  return {
+    cafe: {
+      name: businessName,
+      phone: '',
+      area: '',
+      address: '',
+      open: '09:00',
+      close: '21:00',
+      offDay: '',
+      holidayNote: 'Open all regular business hours. Last order 30 minutes before closing.',
+      wifi: 'Available',
+      parking: 'Available',
+      seating: 'Dine-in and takeaway',
+      payments: 'Cash, Card, Mobile Banking',
+      service: 'Customer service, inquiries, orders',
+      apps: '',
+      notes: ''
+    },
+    persona: {
+      tone: 'friendly, welcoming, professional, and clear',
+      length: '1 to 3 short sentences, concise and directly answering the customer',
+      emoji: false,
+      language: 'Banglish or English or Bengali depending on customer inquiry',
+      greeting: '',
+      disclose: false
+    },
+    menu: [],
+    faqs: [],
+    channels: {
+      facebook: { enabled: true, pageToken: '', pageId: '', appSecret: '', verifyToken: 'botcrowncoffee' },
+      instagram: { enabled: true, token: '', userId: '', graphHost: 'https://graph.facebook.com' },
+      whatsapp: { enabled: true, phoneNumberId: '', wabaId: '', token: '', verifyToken: 'botcrowncoffee' },
+      tiktok: { enabled: true, clientKey: '', clientSecret: '', token: '' }
+    },
+    scope: { answer: true, reserve: 'draft', order: 'draft', complaint: 'ack' },
+    guards: [
+      'Never state a price that is not in the menu/catalogue. If an item is not listed, say you will check and a team member will confirm.',
+      'Never invent items, ingredients, or false information.',
+      'Never confirm an order or reservation as final without human confirmation.',
+      'Never give medical or legal advice.',
+      'If you do not know something, say so plainly and offer to have a team member follow up.'
+    ],
+    esc: ['refund', 'complaint', 'manager', 'urgent', 'lawyer', 'press', 'ফেরত', 'অভিযোগ', 'ম্যানেজার'],
+    runtime: { enabled: true, offHours: 'reply', fallbackText: 'Thanks for your message. Our team will reply shortly.' }
+  };
+}
+
+/* ───────── Workspaces ───────── */
+export function listWorkspaces() {
+  return db.prepare(`
+    SELECT w.*,
+      (SELECT COUNT(*) FROM conversations c WHERE c.workspace_id = w.id) as conv_count,
+      (SELECT COUNT(*) FROM channel_accounts ca WHERE ca.workspace_id = w.id AND ca.enabled = 1) as channel_count
+    FROM workspaces w
+    ORDER BY w.id ASC
+  `).all();
+}
+
+export function createWorkspace(name) {
+  const wsName = (name || 'New Business Account').trim();
+  const info = db.prepare('INSERT INTO workspaces (name, created_at) VALUES (?, ?)').run(wsName, now());
+  const newId = Number(info.lastInsertRowid);
+  const cleanConf = makeCleanTemplate(wsName);
+  saveWorkspaceConfig(newId, cleanConf);
+  return { id: newId, name: wsName };
+}
+
+export function deleteWorkspace(id) {
+  const wsId = Number(id);
+  if (wsId === 1) throw new Error('Cannot delete default primary workspace.');
+  db.prepare('DELETE FROM workspaces WHERE id = ?').run(wsId);
+  db.prepare('DELETE FROM workspace_configs WHERE workspace_id = ?').run(wsId);
+  db.prepare('DELETE FROM channel_accounts WHERE workspace_id = ?').run(wsId);
+  return { ok: true };
+}
+
+export function renameWorkspace(id, name) {
+  const wsId = Number(id);
+  const wsName = (name || '').trim();
+  if (!wsName) throw new Error('Workspace name cannot be empty.');
+  db.prepare('UPDATE workspaces SET name = ? WHERE id = ?').run(wsName, wsId);
+  const cfg = getWorkspaceConfig(wsId);
+  cfg.cafe = cfg.cafe || {};
+  cfg.cafe.name = wsName;
+  saveWorkspaceConfig(wsId, cfg);
+  return { ok: true, id: wsId, name: wsName };
+}
+
+/* ───────── Config (Per-Workspace) ───────── */
+export function getWorkspaceConfig(workspaceId = 1) {
+  const wsId = Number(workspaceId) || 1;
+  const row = db.prepare('SELECT json FROM workspace_configs WHERE workspace_id = ?').get(wsId);
   if (!row) {
-    saveConfig(DEFAULT_CONFIG);
-    return structuredClone(DEFAULT_CONFIG);
+    const fallback = wsId === 1 ? DEFAULT_CONFIG : makeCleanTemplate(`Workspace #${wsId}`);
+    saveWorkspaceConfig(wsId, fallback);
+    return structuredClone(fallback);
   }
   try {
     const parsed = JSON.parse(row.json);
-    let updated = false;
-    const hasMenu = (parsed.menu || []).some(c => c.items?.length);
-    if (!hasMenu && DEFAULT_CONFIG.menu?.length) {
-      parsed.menu = structuredClone(DEFAULT_CONFIG.menu);
-      updated = true;
-    }
-    if ((!parsed.faqs || !parsed.faqs.length) && DEFAULT_CONFIG.faqs?.length) {
-      parsed.faqs = structuredClone(DEFAULT_CONFIG.faqs);
-      updated = true;
-    }
-    if (DEFAULT_CONFIG.cafe) {
-      for (const [k, v] of Object.entries(DEFAULT_CONFIG.cafe)) {
-        if (!parsed.cafe?.[k] && v) {
-          parsed.cafe = parsed.cafe || {};
-          parsed.cafe[k] = v;
-          updated = true;
+    const template = wsId === 1 ? DEFAULT_CONFIG : makeCleanTemplate(parsed.cafe?.name || `Workspace #${wsId}`);
+    
+    // For primary workspace 1, preserve initial menu / faqs if empty
+    if (wsId === 1) {
+      const hasMenu = (parsed.menu || []).some(c => c.items?.length);
+      if (!hasMenu && DEFAULT_CONFIG.menu?.length) {
+        parsed.menu = structuredClone(DEFAULT_CONFIG.menu);
+      }
+      if ((!parsed.faqs || !parsed.faqs.length) && DEFAULT_CONFIG.faqs?.length) {
+        parsed.faqs = structuredClone(DEFAULT_CONFIG.faqs);
+      }
+      if (DEFAULT_CONFIG.cafe) {
+        for (const [k, v] of Object.entries(DEFAULT_CONFIG.cafe)) {
+          if (!parsed.cafe?.[k] && v) {
+            parsed.cafe = parsed.cafe || {};
+            parsed.cafe[k] = v;
+          }
         }
       }
     }
+
     parsed.channels = parsed.channels || {};
-    for (const [ch, def] of Object.entries(DEFAULT_CONFIG.channels)) {
+    for (const [ch, def] of Object.entries(template.channels || {})) {
       parsed.channels[ch] = { ...def, ...(parsed.channels[ch] || {}) };
-      // Fallback to env vars if fields are empty
-      for (const [k, v] of Object.entries(def)) {
-        if (!parsed.channels[ch][k] && v) parsed.channels[ch][k] = v;
+      // Fallback to env vars only for Workspace 1
+      if (wsId === 1) {
+        for (const [k, v] of Object.entries(def)) {
+          if (!parsed.channels[ch][k] && v) parsed.channels[ch][k] = v;
+        }
       }
     }
-    const merged = { ...structuredClone(DEFAULT_CONFIG), ...parsed };
-    if (updated) saveConfig(merged);
-    return merged;
+    return { ...structuredClone(template), ...parsed };
+  } catch {
+    return wsId === 1 ? structuredClone(DEFAULT_CONFIG) : makeCleanTemplate(`Workspace #${wsId}`);
   }
-  catch { return structuredClone(DEFAULT_CONFIG); }
 }
 
-export function saveConfig(cfg) {
-  db.prepare(`INSERT INTO config (id, json, updated) VALUES (1, ?, ?)
-              ON CONFLICT(id) DO UPDATE SET json = excluded.json, updated = excluded.updated`)
-    .run(JSON.stringify(cfg), now());
+export function saveWorkspaceConfig(workspaceId = 1, cfg) {
+  const wsId = Number(workspaceId) || 1;
+  db.prepare(`INSERT INTO workspace_configs (workspace_id, json, updated) VALUES (?, ?, ?)
+              ON CONFLICT(workspace_id) DO UPDATE SET json = excluded.json, updated = excluded.updated`)
+    .run(wsId, JSON.stringify(cfg), now());
+  
+  if (wsId === 1) {
+    db.prepare(`INSERT INTO config (id, json, updated) VALUES (1, ?, ?)
+                ON CONFLICT(id) DO UPDATE SET json = excluded.json, updated = excluded.updated`)
+      .run(JSON.stringify(cfg), now());
+  }
+
+  if (cfg.channels) {
+    syncChannelAccounts(wsId, cfg.channels);
+  }
+}
+
+export const getConfig = () => getWorkspaceConfig(1);
+export const saveConfig = (cfg) => saveWorkspaceConfig(1, cfg);
+
+/* ───────── Multi-Account Channel Sync & Routing ───────── */
+export function syncChannelAccounts(workspaceId, channels) {
+  const wsId = Number(workspaceId) || 1;
+  if (!channels || typeof channels !== 'object') return;
+
+  if (channels.facebook?.pageId && channels.facebook?.pageToken) {
+    const pageId = String(channels.facebook.pageId).trim();
+    const token = String(channels.facebook.pageToken).trim();
+    const enabled = channels.facebook.enabled !== false ? 1 : 0;
+    const json = JSON.stringify({ appSecret: channels.facebook.appSecret, verifyToken: channels.facebook.verifyToken });
+    db.prepare(`INSERT INTO channel_accounts (workspace_id, platform, account_id, name, token, config_json, enabled, created_at)
+                VALUES (?, 'facebook', ?, 'Facebook Page', ?, ?, ?, ?)
+                ON CONFLICT(platform, account_id) DO UPDATE SET
+                  workspace_id = excluded.workspace_id,
+                  token = excluded.token,
+                  config_json = excluded.config_json,
+                  enabled = excluded.enabled`).run(wsId, pageId, token, json, enabled, now());
+  }
+
+  if (channels.instagram?.userId && channels.instagram?.token) {
+    const userId = String(channels.instagram.userId).trim();
+    const token = String(channels.instagram.token).trim();
+    const enabled = channels.instagram.enabled !== false ? 1 : 0;
+    const json = JSON.stringify({ graphHost: channels.instagram.graphHost });
+    db.prepare(`INSERT INTO channel_accounts (workspace_id, platform, account_id, name, token, config_json, enabled, created_at)
+                VALUES (?, 'instagram', ?, 'Instagram Account', ?, ?, ?, ?)
+                ON CONFLICT(platform, account_id) DO UPDATE SET
+                  workspace_id = excluded.workspace_id,
+                  token = excluded.token,
+                  config_json = excluded.config_json,
+                  enabled = excluded.enabled`).run(wsId, userId, token, json, enabled, now());
+  }
+
+  if (channels.whatsapp?.phoneNumberId && channels.whatsapp?.token) {
+    const phoneId = String(channels.whatsapp.phoneNumberId).trim();
+    const token = String(channels.whatsapp.token).trim();
+    const enabled = channels.whatsapp.enabled !== false ? 1 : 0;
+    const json = JSON.stringify({ wabaId: channels.whatsapp.wabaId, verifyToken: channels.whatsapp.verifyToken });
+    db.prepare(`INSERT INTO channel_accounts (workspace_id, platform, account_id, name, token, config_json, enabled, created_at)
+                VALUES (?, 'whatsapp', ?, 'WhatsApp Business', ?, ?, ?, ?)
+                ON CONFLICT(platform, account_id) DO UPDATE SET
+                  workspace_id = excluded.workspace_id,
+                  token = excluded.token,
+                  config_json = excluded.config_json,
+                  enabled = excluded.enabled`).run(wsId, phoneId, token, json, enabled, now());
+  }
+
+  if (channels.tiktok?.clientKey && channels.tiktok?.token) {
+    const clientKey = String(channels.tiktok.clientKey).trim();
+    const token = String(channels.tiktok.token).trim();
+    const enabled = channels.tiktok.enabled !== false ? 1 : 0;
+    const json = JSON.stringify({ clientSecret: channels.tiktok.clientSecret });
+    db.prepare(`INSERT INTO channel_accounts (workspace_id, platform, account_id, name, token, config_json, enabled, created_at)
+                VALUES (?, 'tiktok', ?, 'TikTok Business', ?, ?, ?, ?)
+                ON CONFLICT(platform, account_id) DO UPDATE SET
+                  workspace_id = excluded.workspace_id,
+                  token = excluded.token,
+                  config_json = excluded.config_json,
+                  enabled = excluded.enabled`).run(wsId, clientKey, token, json, enabled, now());
+  }
+}
+
+export function findAccountByPlatformAndId(platform, accountId) {
+  if (!platform || !accountId) return null;
+  const cleanId = String(accountId).trim();
+  const row = db.prepare('SELECT * FROM channel_accounts WHERE platform = ? AND account_id = ? AND enabled = 1').get(platform, cleanId);
+  return row || null;
+}
+
+export function listWorkspaceChannels(workspaceId) {
+  const wsId = Number(workspaceId) || 1;
+  return db.prepare('SELECT * FROM channel_accounts WHERE workspace_id = ?').all(wsId);
 }
 
 /* ───────── dedupe ───────── */
@@ -996,19 +1225,31 @@ export function alreadySeen(mid) {
 }
 
 /* ───────── conversations ───────── */
-export function upsertConversation(platform, psid, name) {
-  db.prepare(`INSERT INTO conversations (platform, psid, name, last_msg_at, created_at)
-              VALUES (?, ?, ?, ?, ?)
+export function upsertConversation(platform, psid, name, workspaceId = 1) {
+  const wsId = Number(workspaceId) || 1;
+  db.prepare(`INSERT INTO conversations (platform, psid, name, workspace_id, last_msg_at, created_at)
+              VALUES (?, ?, ?, ?, ?, ?)
               ON CONFLICT(platform, psid) DO UPDATE SET
                 last_msg_at = excluded.last_msg_at,
+                workspace_id = COALESCE(conversations.workspace_id, excluded.workspace_id),
                 name = COALESCE(excluded.name, conversations.name)`)
-    .run(platform, psid, name || null, now(), now());
+    .run(platform, psid, name || null, wsId, now(), now());
   return db.prepare('SELECT * FROM conversations WHERE platform = ? AND psid = ?').get(platform, psid);
 }
 
-export const listConversations = () => db.prepare(`
-  SELECT c.*, (SELECT text FROM messages m WHERE m.conv_id = c.id ORDER BY m.id DESC LIMIT 1) AS preview
-  FROM conversations c ORDER BY c.flagged DESC, c.last_msg_at DESC LIMIT 200`).all();
+export function listConversations(workspaceId = null) {
+  if (workspaceId) {
+    return db.prepare(`
+      SELECT c.*, (SELECT text FROM messages m WHERE m.conv_id = c.id ORDER BY m.id DESC LIMIT 1) AS preview
+      FROM conversations c
+      WHERE c.workspace_id = ?
+      ORDER BY c.flagged DESC, c.last_msg_at DESC LIMIT 200`).all(Number(workspaceId));
+  }
+  return db.prepare(`
+    SELECT c.*, (SELECT text FROM messages m WHERE m.conv_id = c.id ORDER BY m.id DESC LIMIT 1) AS preview
+    FROM conversations c
+    ORDER BY c.flagged DESC, c.last_msg_at DESC LIMIT 200`).all();
+}
 
 export const getConversation = id =>
   db.prepare('SELECT * FROM conversations WHERE id = ?').get(id);
@@ -1029,32 +1270,55 @@ export const setBotEnabled = (id, on) =>
 export const setFlag = (id, on, reason = null) =>
   db.prepare('UPDATE conversations SET flagged = ?, flag_reason = ? WHERE id = ?').run(on ? 1 : 0, reason, id);
 
-export const addDraft = (convId, kind, details) =>
-  db.prepare('INSERT INTO drafts (conv_id, kind, details, created_at) VALUES (?,?,?,?)')
-    .run(convId, kind, details, now());
+export const addDraft = (convId, kind, details, workspaceId = 1) =>
+  db.prepare('INSERT INTO drafts (workspace_id, conv_id, kind, details, created_at) VALUES (?,?,?,?,?)')
+    .run(Number(workspaceId) || 1, convId, kind, details, now());
 
-export const listDrafts = () => db.prepare(`
-  SELECT d.*, c.name, c.platform FROM drafts d JOIN conversations c ON c.id = d.conv_id
-  WHERE d.status = 'pending' ORDER BY d.id DESC`).all();
+export function listDrafts(workspaceId = null) {
+  if (workspaceId) {
+    return db.prepare(`
+      SELECT d.*, c.name, c.platform FROM drafts d JOIN conversations c ON c.id = d.conv_id
+      WHERE d.status = 'pending' AND d.workspace_id = ? ORDER BY d.id DESC`).all(Number(workspaceId));
+  }
+  return db.prepare(`
+    SELECT d.*, c.name, c.platform FROM drafts d JOIN conversations c ON c.id = d.conv_id
+    WHERE d.status = 'pending' ORDER BY d.id DESC`).all();
+}
 
-export function stats() {
+export function stats(workspaceId = null) {
+  const wsId = workspaceId ? Number(workspaceId) : null;
   const q = (s, ...args) => (db.prepare(s).get(...args) || {}).n || 0;
-  const byPlatform = db.prepare('SELECT platform, COUNT(*) as count FROM conversations GROUP BY platform').all();
+  
+  const byPlatform = wsId
+    ? db.prepare('SELECT platform, COUNT(*) as count FROM conversations WHERE workspace_id = ? GROUP BY platform').all(wsId)
+    : db.prepare('SELECT platform, COUNT(*) as count FROM conversations GROUP BY platform').all();
+  
   const platformCounts = { facebook: 0, instagram: 0, whatsapp: 0, tiktok: 0 };
   for (const row of byPlatform) {
     if (row.platform in platformCounts) platformCounts[row.platform] = row.count;
   }
 
-  const aiReplies = q("SELECT COUNT(*) n FROM messages WHERE direction = 'out' AND (model IS NULL OR model != 'human')");
-  const humanReplies = q("SELECT COUNT(*) n FROM messages WHERE direction = 'out' AND model = 'human'");
+  const aiReplies = wsId
+    ? q("SELECT COUNT(*) n FROM messages WHERE direction = 'out' AND (model IS NULL OR model != 'human') AND conv_id IN (SELECT id FROM conversations WHERE workspace_id = ?)", wsId)
+    : q("SELECT COUNT(*) n FROM messages WHERE direction = 'out' AND (model IS NULL OR model != 'human')");
+
+  const humanReplies = wsId
+    ? q("SELECT COUNT(*) n FROM messages WHERE direction = 'out' AND model = 'human' AND conv_id IN (SELECT id FROM conversations WHERE workspace_id = ?)", wsId)
+    : q("SELECT COUNT(*) n FROM messages WHERE direction = 'out' AND model = 'human'");
 
   // Hourly message distribution for Dhaka time (+6 hours)
-  const hourlyRows = db.prepare(`
-    SELECT strftime('%H', datetime(created_at, '+6 hours')) as hour, COUNT(*) as count
-    FROM messages
-    WHERE date(datetime(created_at, '+6 hours')) = date('now', '+6 hours')
-    GROUP BY hour
-  `).all();
+  const hourlySql = wsId
+    ? `SELECT strftime('%H', datetime(created_at, '+6 hours')) as hour, COUNT(*) as count
+       FROM messages
+       WHERE date(datetime(created_at, '+6 hours')) = date('now', '+6 hours')
+         AND conv_id IN (SELECT id FROM conversations WHERE workspace_id = ?)
+       GROUP BY hour`
+    : `SELECT strftime('%H', datetime(created_at, '+6 hours')) as hour, COUNT(*) as count
+       FROM messages
+       WHERE date(datetime(created_at, '+6 hours')) = date('now', '+6 hours')
+       GROUP BY hour`;
+  
+  const hourlyRows = wsId ? db.prepare(hourlySql).all(wsId) : db.prepare(hourlySql).all();
   
   const hourlyMap = {};
   for (let i = 0; i < 24; i++) {
@@ -1066,27 +1330,65 @@ export function stats() {
   }
 
   // Recent messages for live telemetry feed
-  const recent = db.prepare(`
-    SELECT m.id, m.direction, m.text, m.model, m.created_at, c.platform, c.name, c.id as conv_id
-    FROM messages m
-    JOIN conversations c ON c.id = m.conv_id
-    ORDER BY m.id DESC
-    LIMIT 6
-  `).all();
+  const recentSql = wsId
+    ? `SELECT m.id, m.direction, m.text, m.model, m.created_at, c.platform, c.name, c.id as conv_id
+       FROM messages m
+       JOIN conversations c ON c.id = m.conv_id
+       WHERE c.workspace_id = ?
+       ORDER BY m.id DESC
+       LIMIT 6`
+    : `SELECT m.id, m.direction, m.text, m.model, m.created_at, c.platform, c.name, c.id as conv_id
+       FROM messages m
+       JOIN conversations c ON c.id = m.conv_id
+       ORDER BY m.id DESC
+       LIMIT 6`;
+
+  const recent = wsId ? db.prepare(recentSql).all(wsId) : db.prepare(recentSql).all();
 
   return {
-    conversations: q('SELECT COUNT(*) n FROM conversations'),
-    messagesIn:    q("SELECT COUNT(*) n FROM messages WHERE direction = 'in'"),
-    messagesOut:   q("SELECT COUNT(*) n FROM messages WHERE direction = 'out'"),
-    flagged:       q('SELECT COUNT(*) n FROM conversations WHERE flagged = 1'),
-    today:         q("SELECT COUNT(*) n FROM messages WHERE date(created_at, '+6 hours') = date('now', '+6 hours')"),
-    todayIn:       q("SELECT COUNT(*) n FROM messages WHERE direction = 'in' AND date(created_at, '+6 hours') = date('now', '+6 hours')"),
-    todayOut:      q("SELECT COUNT(*) n FROM messages WHERE direction = 'out' AND date(created_at, '+6 hours') = date('now', '+6 hours')"),
+    conversations: wsId ? q('SELECT COUNT(*) n FROM conversations WHERE workspace_id = ?', wsId) : q('SELECT COUNT(*) n FROM conversations'),
+    messagesIn:    wsId ? q("SELECT COUNT(*) n FROM messages WHERE direction = 'in' AND conv_id IN (SELECT id FROM conversations WHERE workspace_id = ?)", wsId) : q("SELECT COUNT(*) n FROM messages WHERE direction = 'in'"),
+    messagesOut:   wsId ? q("SELECT COUNT(*) n FROM messages WHERE direction = 'out' AND conv_id IN (SELECT id FROM conversations WHERE workspace_id = ?)", wsId) : q("SELECT COUNT(*) n FROM messages WHERE direction = 'out'"),
+    flagged:       wsId ? q('SELECT COUNT(*) n FROM conversations WHERE flagged = 1 AND workspace_id = ?', wsId) : q('SELECT COUNT(*) n FROM conversations WHERE flagged = 1'),
+    today:         wsId ? q("SELECT COUNT(*) n FROM messages WHERE date(created_at, '+6 hours') = date('now', '+6 hours') AND conv_id IN (SELECT id FROM conversations WHERE workspace_id = ?)", wsId) : q("SELECT COUNT(*) n FROM messages WHERE date(created_at, '+6 hours') = date('now', '+6 hours')"),
+    todayIn:       wsId ? q("SELECT COUNT(*) n FROM messages WHERE direction = 'in' AND date(created_at, '+6 hours') = date('now', '+6 hours') AND conv_id IN (SELECT id FROM conversations WHERE workspace_id = ?)", wsId) : q("SELECT COUNT(*) n FROM messages WHERE direction = 'in' AND date(created_at, '+6 hours') = date('now', '+6 hours')"),
+    todayOut:      wsId ? q("SELECT COUNT(*) n FROM messages WHERE direction = 'out' AND date(created_at, '+6 hours') = date('now', '+6 hours') AND conv_id IN (SELECT id FROM conversations WHERE workspace_id = ?)", wsId) : q("SELECT COUNT(*) n FROM messages WHERE direction = 'out' AND date(created_at, '+6 hours') = date('now', '+6 hours')"),
     aiReplies,
     humanReplies,
     byPlatform: platformCounts,
     hourly: hourlyMap,
     recent
   };
+}
+
+/* ───────── Initializer ───────── */
+try {
+  const defaultWs = db.prepare('SELECT * FROM workspaces WHERE id = 1').get();
+  if (!defaultWs) {
+    db.prepare('INSERT INTO workspaces (id, name, created_at) VALUES (1, ?, ?)').run('Crown Coffee (Default)', now());
+  }
+} catch (e) {
+  // table exists
+}
+
+try {
+  const ws1 = db.prepare('SELECT * FROM workspace_configs WHERE workspace_id = 1').get();
+  if (!ws1) {
+    const old = db.prepare('SELECT json, updated FROM config WHERE id = 1').get();
+    if (old) {
+      db.prepare('INSERT INTO workspace_configs (workspace_id, json, updated) VALUES (1, ?, ?)').run(old.json, old.updated);
+    } else {
+      db.prepare('INSERT INTO workspace_configs (workspace_id, json, updated) VALUES (1, ?, ?)').run(JSON.stringify(DEFAULT_CONFIG), now());
+    }
+  }
+} catch (e) {
+  // table exists
+}
+
+try {
+  const cfg1 = getWorkspaceConfig(1);
+  if (cfg1.channels) syncChannelAccounts(1, cfg1.channels);
+} catch (e) {
+  // channel sync
 }
 

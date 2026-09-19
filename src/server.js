@@ -8,6 +8,8 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 
 import {
+  listWorkspaces, createWorkspace, deleteWorkspace, renameWorkspace,
+  getWorkspaceConfig, saveWorkspaceConfig, findAccountByPlatformAndId, listWorkspaceChannels,
   getConfig, saveConfig, alreadySeen, upsertConversation, listConversations,
   getConversation, getMessages, addMessage, setBotEnabled, setFlag,
   listDrafts, stats, db
@@ -133,20 +135,60 @@ app.post(`${BASE}/api/logout`, async (req, reply) => {
   return { ok: true };
 });
 
-
 app.get(`${BASE}/api/me`, async req => ({ authed: !!readToken(req.cookies.cc_session) }));
 
-/* ───────────────────────── admin API ───────────────────────── */
-app.get(`${BASE}/api/config`, { preHandler: requireAuth }, async () => {
-  const cfg = getConfig();
-  return { config: cfg, prompt: buildPrompt(cfg), open: openState(cfg), stats: stats() };
+/* ───────────────────────── Multi-Tenant Workspace API ───────────────────────── */
+app.get(`${BASE}/api/workspaces`, { preHandler: requireAuth }, async () => {
+  return { workspaces: listWorkspaces() };
+});
+
+app.post(`${BASE}/api/workspaces`, { preHandler: requireAuth }, async (req, reply) => {
+  const name = String(req.body?.name || '').trim();
+  if (!name) return reply.code(400).send({ error: 'Workspace name is required.' });
+  const ws = createWorkspace(name);
+  return { ok: true, workspace: ws };
+});
+
+app.put(`${BASE}/api/workspaces/:id/rename`, { preHandler: requireAuth }, async (req, reply) => {
+  const id = Number(req.params.id);
+  const name = String(req.body?.name || '').trim();
+  if (!name) return reply.code(400).send({ error: 'Workspace name is required.' });
+  try {
+    return renameWorkspace(id, name);
+  } catch (e) {
+    return reply.code(400).send({ error: e.message });
+  }
+});
+
+app.delete(`${BASE}/api/workspaces/:id`, { preHandler: requireAuth }, async (req, reply) => {
+  const id = Number(req.params.id);
+  if (id === 1) return reply.code(400).send({ error: 'Primary workspace cannot be deleted.' });
+  try {
+    deleteWorkspace(id);
+    return { ok: true };
+  } catch (e) {
+    return reply.code(400).send({ error: e.message });
+  }
+});
+
+/* ───────────────────────── admin API (Workspace Scoped) ───────────────────────── */
+app.get(`${BASE}/api/config`, { preHandler: requireAuth }, async (req) => {
+  const wsId = Number(req.query?.workspace_id) || 1;
+  const cfg = getWorkspaceConfig(wsId);
+  return { config: cfg, prompt: buildPrompt(cfg), open: openState(cfg), stats: stats(wsId), workspaceId: wsId };
 });
 
 app.put(`${BASE}/api/config`, { preHandler: requireAuth }, async (req, reply) => {
   const cfg = req.body?.config;
+  const wsId = Number(req.body?.workspace_id || req.query?.workspace_id) || 1;
   if (!cfg || typeof cfg !== 'object') return reply.code(400).send({ error: 'bad config' });
-  saveConfig(cfg);
-  return { ok: true, prompt: buildPrompt(cfg), open: openState(cfg), stats: stats() };
+  saveWorkspaceConfig(wsId, cfg);
+  return { ok: true, prompt: buildPrompt(cfg), open: openState(cfg), stats: stats(wsId), workspaceId: wsId };
+});
+
+app.get(`${BASE}/api/stats`, { preHandler: requireAuth }, async (req) => {
+  const wsId = req.query?.workspace_id ? Number(req.query.workspace_id) : null;
+  return { stats: stats(wsId) };
 });
 
 app.post(`${BASE}/api/channels/test`, { preHandler: requireAuth }, async (req, reply) => {
@@ -177,7 +219,8 @@ app.post(`${BASE}/api/import-menu`, { preHandler: requireAuth }, async (req, rep
 });
 
 app.post(`${BASE}/api/test`, { preHandler: requireAuth }, async req => {
-  const cfg = getConfig();
+  const wsId = Number(req.body?.workspace_id) || 1;
+  const cfg = getWorkspaceConfig(wsId);
   const history = (req.body?.history || []).slice(-12);
   const text = String(req.body?.text || '');
   const hit = escalationHit(cfg, text);
@@ -185,8 +228,10 @@ app.post(`${BASE}/api/test`, { preHandler: requireAuth }, async req => {
   return { reply, model, escalated: hit };
 });
 
-app.get(`${BASE}/api/conversations`, { preHandler: requireAuth }, async () =>
-  ({ conversations: listConversations(), drafts: listDrafts() }));
+app.get(`${BASE}/api/conversations`, { preHandler: requireAuth }, async (req) => {
+  const wsId = req.query?.workspace_id ? Number(req.query.workspace_id) : null;
+  return { conversations: listConversations(wsId), drafts: listDrafts(wsId) };
+});
 
 app.get(`${BASE}/api/conversations/:id`, { preHandler: requireAuth }, async req =>
   ({ conversation: getConversation(req.params.id), messages: getMessages(req.params.id) }));
@@ -207,10 +252,11 @@ app.post(`${BASE}/api/conversations/:id/reply`, { preHandler: requireAuth }, asy
   const text = String(req.body?.text || '').trim();
   if (!text) return reply.code(400).send({ error: 'empty' });
   try {
+    const wsId = conv.workspace_id || 1;
     if (conv.platform === 'tiktok') {
-      await sendTikTokMessage(conv.psid, text);
+      await sendTikTokMessage(conv.psid, text, null, wsId);
     } else {
-      await sendMessage(conv.platform, conv.psid, text);
+      await sendMessage(conv.platform, conv.psid, text, null, wsId);
     }
     addMessage(conv.id, 'out', text, 'human');
     setFlag(conv.id, false);
@@ -221,8 +267,9 @@ app.post(`${BASE}/api/conversations/:id/reply`, { preHandler: requireAuth }, asy
   }
 });
 
-app.get(`${BASE}/api/health`, async () => {
-  const cfg = getConfig();
+app.get(`${BASE}/api/health`, async (req) => {
+  const wsId = Number(req.query?.workspace_id) || 1;
+  const cfg = getWorkspaceConfig(wsId);
   const publicUrl = (process.env.PUBLIC_URL || '').replace(/\/$/, '');
   return {
     ok: true,
@@ -250,7 +297,7 @@ app.get(`${BASE}/api/health`, async () => {
         webhookUrl: `${publicUrl}/webhook/tiktok`
       }
     },
-    stats: stats()
+    stats: stats(wsId)
   };
 });
 
@@ -324,20 +371,32 @@ function enqueue(ev, log) {
 }
 
 async function handleEvent(ev, log) {
-  const { platform, senderId, mid, text, contactName } = ev;
-  if (!senderId || isSelf(platform, senderId)) return;
+  const { platform, senderId, mid, text, contactName, recipientAccountId } = ev;
+  if (!senderId) return;
+
+  // Resolve target workspace & channel account
+  let channelAcc = null;
+  let workspaceId = 1;
+  if (recipientAccountId) {
+    channelAcc = findAccountByPlatformAndId(platform, recipientAccountId);
+    if (channelAcc) {
+      workspaceId = channelAcc.workspace_id;
+    }
+  }
+
+  if (isSelf(platform, senderId, channelAcc, workspaceId)) return;
   if (alreadySeen(mid)) return;
 
-  const cfg = getConfig();
+  const cfg = getWorkspaceConfig(workspaceId);
   const ch = cfg.channels?.[platform];
-  if (ch && ch.enabled === false) return log.info(`Channel ${platform} is disabled in config.`);
+  if (ch && ch.enabled === false) return log.info(`Channel ${platform} is disabled in workspace #${workspaceId}`);
 
-  const name = contactName || await fetchProfileName(platform, senderId, ev);
-  const conv = upsertConversation(platform, senderId, name);
+  const name = contactName || await fetchProfileName(platform, senderId, ev, channelAcc, workspaceId);
+  const conv = upsertConversation(platform, senderId, name, workspaceId);
   addMessage(conv.id, 'in', text, null, mid);
 
-  if (!cfg.runtime?.enabled) return log.info('bot globally disabled');
-  if (!conv.bot_enabled) return log.info(`bot off for conversation ${conv.id}`);
+  if (!cfg.runtime?.enabled) return log.info(`Bot globally disabled for workspace #${workspaceId}`);
+  if (!conv.bot_enabled) return log.info(`Bot off for conversation ${conv.id}`);
 
   const hit = escalationHit(cfg, text);
   if (hit) {
@@ -347,7 +406,7 @@ async function handleEvent(ev, log) {
 
   const st = openState(cfg);
   if (!st.open && cfg.runtime?.offHours === 'silent') {
-    return log.info('closed, off-hours set to silent');
+    return log.info(`Closed, off-hours set to silent for workspace #${workspaceId}`);
   }
 
   const history = getMessages(conv.id, 12).slice(0, -1);
@@ -355,9 +414,9 @@ async function handleEvent(ev, log) {
 
   try {
     if (platform === 'tiktok') {
-      await sendTikTokMessage(senderId, replyText);
+      await sendTikTokMessage(senderId, replyText, channelAcc, workspaceId);
     } else {
-      await sendMessage(platform, senderId, replyText);
+      await sendMessage(platform, senderId, replyText, channelAcc, workspaceId);
     }
     addMessage(conv.id, 'out', replyText, model);
     if (hit) setFlag(conv.id, true, `keyword: ${hit} (acknowledged, needs you)`);
