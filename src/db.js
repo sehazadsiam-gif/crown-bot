@@ -1663,15 +1663,41 @@ try {
   // table exists
 }
 
-// Seed Workspace #1 Tenant User & Subscription
+export function authenticateTenantByPasswordOnly(password) {
+  if (!password) return null;
+  const pwd = String(password).trim();
+  const users = db.prepare('SELECT * FROM workspace_users').all();
+  for (const u of users) {
+    if (verifyPassword(pwd, u.password_hash)) {
+      const ws = db.prepare('SELECT * FROM workspaces WHERE id = ?').get(u.workspace_id);
+      if (!ws) continue;
+      return {
+        id: u.id,
+        workspace_id: u.workspace_id,
+        workspace_name: ws.name,
+        email: u.email,
+        must_change_password: !!u.must_change_password,
+        role: u.role
+      };
+    }
+  }
+  return null;
+}
+
+// Seed or Update Workspace #1 Tenant User (Password: ccadmin6789)
 try {
   const user1 = db.prepare('SELECT * FROM workspace_users WHERE workspace_id = 1').get();
+  const pHash = hashPassword('ccadmin6789');
   if (!user1) {
-    const pHash = hashPassword('crowncoffee@12345');
     db.prepare(`
       INSERT INTO workspace_users (workspace_id, email, password_hash, must_change_password, role, created_at, updated_at)
-      VALUES (1, 'admin@crowncoffee.com', ?, 0, 'tenant_admin', ?, ?)
+      VALUES (1, 'tenant@crowncoffee.local', ?, 0, 'tenant_admin', ?, ?)
     `).run(pHash, now(), now());
+  } else {
+    db.prepare(`
+      UPDATE workspace_users SET email = 'tenant@crowncoffee.local', password_hash = ?, must_change_password = 0, updated_at = ?
+      WHERE workspace_id = 1
+    `).run(pHash, now());
   }
 } catch (e) {
   // table exists

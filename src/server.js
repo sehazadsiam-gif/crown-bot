@@ -13,7 +13,7 @@ import {
   getConfig, saveConfig, alreadySeen, upsertConversation, listConversations,
   getConversation, getMessages, addMessage, setBotEnabled, setFlag,
   listDrafts, stats, db,
-  authenticateTenant, updateTenantCredentials, resetTenantPassword,
+  authenticateTenant, authenticateTenantByPasswordOnly, updateTenantCredentials, resetTenantPassword,
   getTenantUser, getSubscription, isSubscriptionActive, updateSubscription,
   listTenantsOverview, createWorkspaceWithTenant
 } from './db.js';
@@ -131,16 +131,22 @@ app.post(`${BASE}/api/login`, async (req, reply) => {
 
   const { email, password } = req.body || {};
   const supplied = typeof email === 'string' ? email.trim().toLowerCase() : '';
-  const suppliedPass = String(password || '');
+  const suppliedPass = String(password || '').trim();
 
-  // 1. Check Master Admin Credentials (.env)
-  const expectedAdmin = ADMIN_EMAIL.trim().toLowerCase();
-  const isMasterEmail = supplied !== '' && supplied === expectedAdmin;
+  if (!suppliedPass) {
+    noteFail(ip);
+    return reply.code(400).send({ error: 'Password is required.' });
+  }
+
+  // 1. Check Master Admin Credentials (.env: ADMIN_PASSWORD / ADMIN_PASSWORD_HASH)
+  // Master Admin can log in with password 1590 (with or without email)
   const isMasterPass = await verifyPassword(suppliedPass, ADMIN_PASSWORD, ADMIN_PASSWORD_HASH);
+  const expectedAdmin = (ADMIN_EMAIL || '').trim().toLowerCase();
+  const isMasterEmail = !supplied || supplied === expectedAdmin;
 
-  if (isMasterEmail && isMasterPass) {
+  if (isMasterPass && isMasterEmail) {
     attempts.delete(ip);
-    const tok = makeToken({ role: 'master_admin', email: ADMIN_EMAIL });
+    const tok = makeToken({ role: 'master_admin', email: ADMIN_EMAIL || 'admin@crowncoffee.com' });
     reply.setCookie('cc_session', tok, {
       path: '/',
       httpOnly: true,
@@ -148,11 +154,40 @@ app.post(`${BASE}/api/login`, async (req, reply) => {
       secure: false,
       maxAge: SESSION_TTL / 1000
     });
-    return { ok: true, role: 'master_admin', email: ADMIN_EMAIL };
+    return { ok: true, role: 'master_admin', email: ADMIN_EMAIL || 'admin@crowncoffee.com' };
   }
 
-  // 2. Check Tenant Credentials (workspace_users)
-  const tenant = authenticateTenant(supplied, suppliedPass);
+  // 2. Check Crown Coffee Tenant 1 (Dedicated Password: ccadmin6789)
+  if (suppliedPass === 'ccadmin6789') {
+    attempts.delete(ip);
+    const tok = makeToken({
+      role: 'tenant_admin',
+      workspace_id: 1,
+      user_id: 1,
+      email: 'tenant@crowncoffee.local',
+      must_change_password: 0
+    });
+    reply.setCookie('cc_session', tok, {
+      path: '/',
+      httpOnly: true,
+      sameSite: 'lax',
+      secure: false,
+      maxAge: SESSION_TTL / 1000
+    });
+    return {
+      ok: true,
+      role: 'tenant_admin',
+      workspace_id: 1,
+      workspace_name: 'Crown Coffee',
+      email: 'tenant@crowncoffee.local',
+      must_change_password: 0
+    };
+  }
+
+  // 3. Check Other Tenant Credentials (email + password OR password-only)
+  const tenant = (supplied ? authenticateTenant(supplied, suppliedPass) : null)
+    || authenticateTenantByPasswordOnly(suppliedPass);
+
   if (tenant) {
     attempts.delete(ip);
     const tok = makeToken({
@@ -180,7 +215,7 @@ app.post(`${BASE}/api/login`, async (req, reply) => {
   }
 
   noteFail(ip);
-  return reply.code(401).send({ error: 'Wrong email or password.' });
+  return reply.code(401).send({ error: 'Wrong password or credentials.' });
 });
 
 app.post(`${BASE}/api/logout`, async (req, reply) => {
