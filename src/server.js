@@ -119,17 +119,20 @@ app.post(`${BASE}/api/login`, async (req, reply) => {
 
   attempts.delete(ip);
   reply.setCookie('cc_session', makeToken(), {
-    path: BASE, httpOnly: true, sameSite: 'lax',
-    secure: (process.env.PUBLIC_URL || '').startsWith('https'),
+    path: '/',
+    httpOnly: true,
+    sameSite: 'lax',
+    secure: false,
     maxAge: SESSION_TTL / 1000
   });
   return { ok: true };
 });
 
 app.post(`${BASE}/api/logout`, async (req, reply) => {
-  reply.clearCookie('cc_session', { path: BASE });
+  reply.clearCookie('cc_session', { path: '/' });
   return { ok: true };
 });
+
 
 app.get(`${BASE}/api/me`, async req => ({ authed: !!readToken(req.cookies.cc_session) }));
 

@@ -57,7 +57,7 @@ h1,h2,h3,h4{font-family:"Fraunces",Georgia,serif; font-weight:600; margin:0; let
 code,pre,.mono{font-family:"JetBrains Mono",ui-monospace,monospace}
 
 /* Login Modal */
-#login{position:fixed; inset:0; background:radial-gradient(circle at top, var(--surface2), var(--bg)); display:none; place-items:center; z-index:100; padding:20px}
+#login{position:fixed; inset:0; background:radial-gradient(circle at top, var(--surface2), var(--bg)); display:grid; place-items:center; z-index:100; padding:20px}
 #login .box{background:var(--surface); border:1px solid var(--line2); border-radius:20px; padding:40px 36px;
   width:100%; max-width:420px; box-shadow:var(--shadow-lg); text-align:left}
 #login .logo-badge{display:inline-flex; align-items:center; justify-content:center; width:52px; height:52px; border-radius:14px; background:var(--accent-soft); color:var(--accent); font-size:26px; margin-bottom:20px; border:1px solid var(--line2)}
@@ -65,6 +65,7 @@ code,pre,.mono{font-family:"JetBrains Mono",ui-monospace,monospace}
 #login .s{color:var(--ink3); font-size:13px; margin-bottom:28px; font-weight:500}
 #login input{margin-bottom:16px}
 #loginErr{color:var(--danger); font-size:13px; min-height:22px; margin-bottom:6px; font-weight:600}
+
 
 /* Top Navigation Bar */
 header{border-bottom:1px solid var(--line); background:var(--surface); padding:12px 28px;
@@ -1277,11 +1278,12 @@ function renderRecentActivity(recent){
           <span class="badge plat ${platCls}">${m.platform.slice(0,2)}</span>
           ${esc(m.name || 'Customer')}
         </span>
-        <span class="activity-msg">${m.direction==='out'?'↳ AI: ':'':}${esc(m.text)}</span>
+        <span class="activity-msg">${m.direction==='out' ? '↳ AI: ' : ''}${esc(m.text)}</span>
         <span class="activity-time">${time}</span>
       </div>`;
   }).join('');
 }
+
 
 function updateChannelUrls(){
   const origin = location.origin;
