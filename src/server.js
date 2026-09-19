@@ -626,7 +626,10 @@ async function handleEvent(ev, log) {
   }
 }
 
-/* ───────────────────────── pages ───────────────────────── */
+/* ───────────────────────── pages & assets ───────────────────────── */
+app.get('/favicon.ico', (req, reply) => reply.sendFile('favicon.svg'));
+app.get('/favicon.svg', (req, reply) => reply.sendFile('favicon.svg'));
+app.get(`${BASE}/favicon.ico`, (req, reply) => reply.sendFile('favicon.svg'));
 app.get('/', (req, reply) => reply.redirect(`${BASE}/`));
 app.get(BASE, (req, reply) => reply.redirect(`${BASE}/`));
 app.setNotFoundHandler((req, reply) => {
