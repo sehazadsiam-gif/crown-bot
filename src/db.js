@@ -64,8 +64,14 @@ export const DEFAULT_CONFIG = {
     phone: '01806-576024',
     area: 'Sector 13, Uttara, Dhaka',
     address: '6 Shah Makhdum Avenue, Assure Ayan Tower, Sector 13, Uttara, Dhaka',
-    open: '11:00', close: '23:00', offDay: '', holidayNote: '',
-    wifi: '', parking: '', seating: '', payments: '', service: '', apps: '', notes: ''
+    open: '11:00', close: '23:00', offDay: '', holidayNote: 'Open every day including Fridays and public holidays. Last order at 22:30.',
+    wifi: 'Yes, free high-speed guest Wi-Fi and power outlets available for work/study',
+    parking: 'Roadside and building parking available for cars and bikes',
+    seating: 'Comfortable seating for dine-in, work/study, and birthday/private events',
+    payments: 'Cash, Cards (Visa, Mastercard, Amex), bKash, Nagad',
+    service: 'Dine-in, takeaway, and event reservations',
+    apps: 'Foodpanda, Pathao Food',
+    notes: 'Separate designated smoking zone available. All food and meats are 100% Halal. All menu prices are inclusive of VAT.'
   },
   menu: [
     {
@@ -824,7 +830,63 @@ export const DEFAULT_CONFIG = {
       ]
     }
   ],
-  faqs: [],
+  faqs: [
+    {
+      id: 'f1',
+      q: 'Where exactly in Sector 13 are you located? Any nearby landmark?',
+      a: 'We are located at 6 Shah Makhdum Avenue, Assure Ayan Tower, Sector 13, Uttara, Dhaka.'
+    },
+    {
+      id: 'f2',
+      q: 'Is there parking available for cars and bikes?',
+      a: 'Yes, roadside and building parking is available for cars and bikes.'
+    },
+    {
+      id: 'f3',
+      q: 'Are you open on Fridays and government/Eid holidays?',
+      a: 'Yes, we are open every day from 11:00 AM to 11:00 PM, including Fridays and public holidays.'
+    },
+    {
+      id: 'f4',
+      q: 'What is the last order time?',
+      a: 'Our kitchen takes last orders at 10:30 PM (22:30).'
+    },
+    {
+      id: 'f5',
+      q: 'Is the cafe suitable for work/study with laptops and charging ports?',
+      a: 'Yes! We have high-speed Wi-Fi, comfortable seating, and power outlets near tables.'
+    },
+    {
+      id: 'f6',
+      q: 'Do you have a dedicated smoking zone or outdoor seating?',
+      a: 'Yes, we have a separate designated smoking zone.'
+    },
+    {
+      id: 'f7',
+      q: 'Can we arrange birthday celebrations or private events?',
+      a: 'Yes, you can celebrate birthdays and private events! For custom decoration or group bookings, please message us or call 01806-576024.'
+    },
+    {
+      id: 'f8',
+      q: 'Is all food 100% Halal?',
+      a: 'Yes, all our food items and meat are 100% Halal certified.'
+    },
+    {
+      id: 'f9',
+      q: 'What payment methods do you accept?',
+      a: 'We accept Cash, Cards (Visa, Mastercard, Amex), bKash, and Nagad.'
+    },
+    {
+      id: 'f10',
+      q: 'Do you offer home delivery or are you on Foodpanda/Pathao?',
+      a: 'Yes, you can order directly for takeaway/parcel, and find us on Foodpanda and Pathao Food.'
+    },
+    {
+      id: 'f11',
+      q: 'Are menu prices inclusive of VAT/Service Charge?',
+      a: 'Yes, all prices shown on our menu are inclusive of VAT.'
+    }
+  ],
   persona: {
     tone: 'Polite and professional, warm but not chatty',
     length: 'Short — 1 to 3 sentences',
@@ -855,15 +917,24 @@ export function getConfig() {
   }
   try {
     const parsed = JSON.parse(row.json);
-    const hasMenu = (parsed.menu || []).some(c => c.items?.length);
     let updated = false;
+    const hasMenu = (parsed.menu || []).some(c => c.items?.length);
     if (!hasMenu && DEFAULT_CONFIG.menu?.length) {
       parsed.menu = structuredClone(DEFAULT_CONFIG.menu);
       updated = true;
     }
-    if (!parsed.cafe?.wifi && DEFAULT_CONFIG.cafe?.wifi) {
-      parsed.cafe = { ...parsed.cafe, wifi: DEFAULT_CONFIG.cafe.wifi };
+    if ((!parsed.faqs || !parsed.faqs.length) && DEFAULT_CONFIG.faqs?.length) {
+      parsed.faqs = structuredClone(DEFAULT_CONFIG.faqs);
       updated = true;
+    }
+    if (DEFAULT_CONFIG.cafe) {
+      for (const [k, v] of Object.entries(DEFAULT_CONFIG.cafe)) {
+        if (!parsed.cafe?.[k] && v) {
+          parsed.cafe = parsed.cafe || {};
+          parsed.cafe[k] = v;
+          updated = true;
+        }
+      }
     }
     const merged = { ...structuredClone(DEFAULT_CONFIG), ...parsed };
     if (updated) saveConfig(merged);
