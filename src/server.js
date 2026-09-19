@@ -20,7 +20,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const BASE = (process.env.BASE_PATH || '/chatbotadmin').replace(/\/$/, '');
 const {
   PORT = 3000, HOST = '0.0.0.0',
-  SESSION_SECRET, ADMIN_EMAIL, ADMIN_PASSWORD_HASH, META_VERIFY_TOKEN
+  SESSION_SECRET, ADMIN_EMAIL, ADMIN_PASSWORD, ADMIN_PASSWORD_HASH, META_VERIFY_TOKEN
 } = process.env;
 
 if (!SESSION_SECRET || SESSION_SECRET.length < 32) {
@@ -28,10 +28,26 @@ if (!SESSION_SECRET || SESSION_SECRET.length < 32) {
   process.exit(1);
 }
 
-if (!ADMIN_EMAIL || !ADMIN_PASSWORD_HASH) {
-  console.error('ADMIN_EMAIL and ADMIN_PASSWORD_HASH are both required.');
-  console.error('Generate the hash with: npm run hash -- "your-password"');
+const activePassword = ADMIN_PASSWORD || ADMIN_PASSWORD_HASH;
+if (!ADMIN_EMAIL || !activePassword) {
+  console.error('ADMIN_EMAIL and ADMIN_PASSWORD (or ADMIN_PASSWORD_HASH) are both required.');
   process.exit(1);
+}
+
+async function verifyPassword(inputPassword, plainPassword, hashedPassword) {
+  const input = String(inputPassword || '');
+  if (plainPassword && input === plainPassword) return true;
+  if (hashedPassword) {
+    if (hashedPassword.startsWith('$2')) {
+      try {
+        return await bcrypt.compare(input, hashedPassword);
+      } catch {
+        return false;
+      }
+    }
+    return input === hashedPassword;
+  }
+  return false;
 }
 
 const app = Fastify({
@@ -95,8 +111,8 @@ app.post(`${BASE}/api/login`, async (req, reply) => {
   const { email, password } = req.body || {};
   const supplied = typeof email === 'string' ? email.trim().toLowerCase() : '';
   const expected = ADMIN_EMAIL.trim().toLowerCase();
-  const ok = supplied !== '' && supplied === expected
-          && await bcrypt.compare(String(password || ''), ADMIN_PASSWORD_HASH);
+  const passwordOk = await verifyPassword(password, ADMIN_PASSWORD, ADMIN_PASSWORD_HASH);
+  const ok = supplied !== '' && supplied === expected && passwordOk;
 
   if (!ok) { noteFail(ip); return reply.code(401).send({ error: 'Wrong email or password.' }); }
 
