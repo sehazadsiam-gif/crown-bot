@@ -123,19 +123,97 @@ export async function generateReply(cfg, history, userText, log = console) {
 
 /** One-shot helper used by the menu importer in the admin panel. */
 export async function parseMenuText(raw) {
-  const instruction =
-    'Parse this cafe menu into structured data. Reply with ONLY a JSON array of objects with keys: ' +
-    'category (string), name (string), desc (string, may be empty), price (number in BDT, or null). ' +
-    'Keep item names exactly as written. Use the category headings in the text; infer sensible ones if absent. ' +
-    'No markdown fences, no commentary.\n\nMENU TEXT:\n' + raw;
+  if (!raw || !raw.trim()) throw new Error('Menu text is empty');
 
-  let out;
-  try { out = await callGemini('You output only valid JSON.', [], instruction); }
-  catch {
-    try { out = await callGroq('You output only valid JSON.', [], instruction); }
-    catch { throw new Error('no AI provider available to parse the menu'); }
+  const instruction =
+    'Parse this cafe menu into a JSON array of objects. ' +
+    'Each object MUST have keys: ' +
+    '"category" (string, e.g. "Hot Coffee", "Cold Coffee", "Food", "Dessert"), ' +
+    '"name" (string, the item name), ' +
+    '"desc" (string, description or ingredients if mentioned, otherwise empty string ""), ' +
+    '"price" (number in BDT/Tk, or null if unlisted). ' +
+    'Keep item names and categories organized as in the text. ' +
+    'Output ONLY a valid JSON array.\n\nMENU TEXT:\n' + raw;
+
+  let out = null;
+
+  if (GEMINI_API_KEY) {
+    const modelsToTry = Array.from(new Set([GEMINI_MODEL, 'gemini-3.5-flash', 'gemini-3.6-flash', 'gemini-3.5-flash-lite']));
+    for (const model of modelsToTry) {
+      try {
+        const res = await post(
+          `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`,
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'x-goog-api-key': GEMINI_API_KEY },
+            body: JSON.stringify({
+              contents: [{ role: 'user', parts: [{ text: instruction }] }],
+              generationConfig: {
+                temperature: 0.1,
+                maxOutputTokens: 8192,
+                responseMimeType: 'application/json',
+                thinkingConfig: { thinkingBudget: 0 }
+              }
+            })
+          }
+        );
+        if (res.ok) {
+          const data = await res.json();
+          out = data?.candidates?.[0]?.content?.parts?.map(p => p.text).filter(Boolean).join('').trim();
+          if (out) break;
+        }
+      } catch {}
+    }
   }
-  const m = out?.match(/\[[\s\S]*\]/);
-  if (!m) throw new Error('no JSON array in reply');
-  return JSON.parse(m[0]);
+
+  if (!out && GROQ_API_KEY) {
+    try {
+      out = await callGroq('You output only valid JSON.', [], instruction);
+    } catch {}
+  }
+
+  if (!out) {
+    try { out = await callGemini('You output only valid JSON.', [], instruction); }
+    catch { throw new Error('No AI provider available to parse the menu.'); }
+  }
+
+  let cleaned = out.trim()
+    .replace(/^```json\s*/i, '')
+    .replace(/^```\s*/i, '')
+    .replace(/\s*```$/i, '')
+    .trim();
+
+  let parsed;
+  try {
+    parsed = JSON.parse(cleaned);
+  } catch {
+    const m = cleaned.match(/\[[\s\S]*\]/);
+    if (m) {
+      try { parsed = JSON.parse(m[0]); } catch {}
+    }
+    if (!parsed) {
+      const objMatch = cleaned.match(/\{[\s\S]*\}/);
+      if (objMatch) {
+        try {
+          const obj = JSON.parse(objMatch[0]);
+          parsed = obj.menu || obj.items || obj.rows || Object.values(obj).find(v => Array.isArray(v));
+        } catch {}
+      }
+    }
+  }
+
+  if (!Array.isArray(parsed) && parsed && typeof parsed === 'object') {
+    parsed = parsed.items || parsed.menu || parsed.rows || Object.values(parsed).find(v => Array.isArray(v));
+  }
+
+  if (!Array.isArray(parsed) || !parsed.length) {
+    throw new Error('Could not extract menu items from text. Please paste the text clearly.');
+  }
+
+  return parsed.map(item => ({
+    category: String(item.category || 'General').trim(),
+    name: String(item.name || '').trim(),
+    desc: String(item.desc || '').trim(),
+    price: (item.price != null && !isNaN(+item.price)) ? +item.price : null
+  })).filter(item => item.name.length > 0);
 }
