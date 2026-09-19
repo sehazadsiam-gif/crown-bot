@@ -278,7 +278,7 @@ app.post(`${BASE}/api/admin/tenants/:id/send-renewal-email`, { preHandler: requi
   const sub = getSubscription(id);
   const user = getTenantUser(id);
   const recipient = req.body?.recipient || sub.contact_email || user?.email || `admin@${slugify(ws.name)}.com`;
-  const amount = Number(req.body?.amount || sub.monthly_fee || 5000);
+  const amount = Number(req.body?.amount || sub.monthly_fee || 500);
   const dueDate = req.body?.due_date || (sub.active_until ? new Date(sub.active_until).toLocaleDateString() : 'Immediate');
 
   const emailSubject = `[Invoice] Crown Operations - Monthly Chatbot Platform Renewal for ${ws.name}`;

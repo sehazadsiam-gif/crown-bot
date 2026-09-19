@@ -45,7 +45,7 @@ CREATE TABLE IF NOT EXISTS subscriptions (
   plan_name            TEXT NOT NULL DEFAULT '14-Day Free Trial',
   trial_ends_at        TEXT NOT NULL,
   active_until         TEXT,
-  monthly_fee          INTEGER NOT NULL DEFAULT 5000,
+  monthly_fee          INTEGER NOT NULL DEFAULT 500,
   contact_email        TEXT,
   contact_phone        TEXT,
   notes                TEXT,
@@ -1410,7 +1410,7 @@ export function slugify(text) {
     .replace(/[^a-z0-9]/g, '') || 'client';
 }
 
-export function createWorkspaceWithTenant(name, monthlyFee = 5000, contactEmail = '') {
+export function createWorkspaceWithTenant(name, monthlyFee = 500, contactEmail = '') {
   const ws = createWorkspace(name);
   const slug = slugify(name);
   const defaultEmail = contactEmail ? String(contactEmail).trim().toLowerCase() : `admin@${slug}.com`;
@@ -1426,7 +1426,7 @@ export function createWorkspaceWithTenant(name, monthlyFee = 5000, contactEmail 
   db.prepare(`
     INSERT INTO subscriptions (workspace_id, status, plan_name, trial_ends_at, active_until, monthly_fee, contact_email, notes, updated_at)
     VALUES (?, 'trial', '14-Day Free Trial', ?, NULL, ?, ?, '', ?)
-  `).run(ws.id, trialEnds, Number(monthlyFee) || 5000, defaultEmail, now());
+  `).run(ws.id, trialEnds, Number(monthlyFee) || 500, defaultEmail, now());
 
   return {
     workspace: ws,
@@ -1525,7 +1525,7 @@ export function getSubscription(workspaceId) {
       const trialEnds = new Date(Date.now() + 14 * 86400 * 1000).toISOString();
       db.prepare(`
         INSERT INTO subscriptions (workspace_id, status, plan_name, trial_ends_at, active_until, monthly_fee, contact_email, updated_at)
-        VALUES (?, 'trial', '14-Day Free Trial', ?, NULL, 5000, '', ?)
+        VALUES (?, 'trial', '14-Day Free Trial', ?, NULL, 500, '', ?)
       `).run(wsId, trialEnds, now());
       sub = db.prepare('SELECT * FROM subscriptions WHERE workspace_id = ?').get(wsId);
     }

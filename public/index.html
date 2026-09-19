@@ -2034,7 +2034,7 @@ table.clean-table tr:hover td {
       <div class="grid g2" style="margin-bottom:18px">
         <div>
           <label class="f">Monthly Fee (BDT)</label>
-          <input type="number" id="ntFeeIn" value="5000" placeholder="5000">
+          <input type="number" id="ntFeeIn" value="500" placeholder="500">
         </div>
         <div>
           <label class="f">Contact Email (Optional)</label>
@@ -2084,7 +2084,7 @@ table.clean-table tr:hover td {
     <div class="grid g2" style="margin-bottom:14px">
       <div>
         <label class="f">Renewal Amount (BDT)</label>
-        <input type="number" id="rnAmountIn" value="5000">
+        <input type="number" id="rnAmountIn" value="500">
       </div>
       <div>
         <label class="f">Payment Due Date</label>
@@ -2346,7 +2346,7 @@ function renderMasterTenantsTable(tenantsList){
             <button class="btn sm" onclick="activatePackagePrompt(${ws.id}, '${esc(ws.name)}')">+ Paid Package</button>
             <button class="btn sm ghost" onclick="extendTrialPrompt(${ws.id}, '${esc(ws.name)}')">+ Trial</button>
             <button class="btn sm ghost" onclick="openResetPassModal(${ws.id}, '${esc(ws.name)}')">Reset Pass</button>
-            <button class="btn sm ghost" onclick="openRenewalModal(${ws.id}, '${esc(ws.name)}', '${esc(user.email||sub.contact_email||'')}', ${sub.monthly_fee||5000}, '${sub.active_until||''}')">Invoice</button>
+            <button class="btn sm ghost" onclick="openRenewalModal(${ws.id}, '${esc(ws.name)}', '${esc(user.email||sub.contact_email||'')}', ${sub.monthly_fee||500}, '${sub.active_until||''}')">Invoice</button>
             ${!isPrimary ? `<button class="btn sm ghost" style="color:var(--danger)" onclick="deleteTenantWs(${ws.id})">Delete</button>` : ''}
           </div>
         </td>
@@ -2430,7 +2430,7 @@ function openNewTenantModal(){
   document.getElementById('newTenantResultView').style.display = 'none';
   document.getElementById('ntNameIn').value = '';
   document.getElementById('ntEmailIn').value = '';
-  document.getElementById('ntFeeIn').value = '5000';
+  document.getElementById('ntFeeIn').value = '500';
   document.getElementById('newTenantModal').classList.add('open');
   document.getElementById('ntNameIn').focus();
 }
@@ -2502,7 +2502,7 @@ function openRenewalModal(wsId, wsName, email, fee, activeUntil){
 
 function updateRenewalPreview(){
   const name = document.getElementById('rnWsNameIn').value;
-  const amount = Number(document.getElementById('rnAmountIn').value || 5000);
+  const amount = Number(document.getElementById('rnAmountIn').value || 500);
   const due = document.getElementById('rnDueDateIn').value;
 
   document.getElementById('rnPreviewText').value = 
