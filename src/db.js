@@ -68,11 +68,761 @@ export const DEFAULT_CONFIG = {
     wifi: '', parking: '', seating: '', payments: '', service: '', apps: '', notes: ''
   },
   menu: [
-    { id: 'c1', name: 'Hot Coffee', items: [] },
-    { id: 'c2', name: 'Cold Coffee', items: [] },
-    { id: 'c3', name: 'Tea & Other Drinks', items: [] },
-    { id: 'c4', name: 'Food', items: [] },
-    { id: 'c5', name: 'Desserts', items: [] }
+    {
+      "id": "1yx9u0",
+      "name": "Breakfast",
+      "items": [
+        {
+          "id": "5x75b8",
+          "name": "Traditional Breakfast",
+          "desc": "Paratha, eggs, chicken and lemon butter.",
+          "price": 390,
+          "available": true
+        },
+        {
+          "id": "j2vdrr",
+          "name": "American Breakfast",
+          "desc": "Eggs, sausages, baked beans, mushrooms, toast and peanut butter.",
+          "price": 370,
+          "available": true
+        },
+        {
+          "id": "jky6vi",
+          "name": "Brunch Delight",
+          "desc": "Bread, eggs, baked beans, sausages, chicken, butter and jelly.",
+          "price": 430,
+          "available": true
+        }
+      ]
+    },
+    {
+      "id": "8ixq4p",
+      "name": "Sandwich",
+      "items": [
+        {
+          "id": "27i4tc",
+          "name": "Chicken Sandwich",
+          "desc": "Smoky tender chicken in a fresh sandwich.",
+          "price": 385,
+          "available": true
+        },
+        {
+          "id": "d9dgyn",
+          "name": "Mushroom Sandwich",
+          "desc": "Chicken and mushrooms, perfectly seasoned and generously filled.",
+          "price": 490,
+          "available": true
+        },
+        {
+          "id": "h7dhsi",
+          "name": "Classic Club Sandwich",
+          "desc": "Classic club sandwich with a satisfying crunch.",
+          "price": 580,
+          "available": true
+        }
+      ]
+    },
+    {
+      "id": "ckgc1r",
+      "name": "Appetizers",
+      "items": [
+        {
+          "id": "xtmdlj",
+          "name": "French Fries",
+          "desc": "Simple and classic.",
+          "price": 210,
+          "available": true
+        },
+        {
+          "id": "xb870w",
+          "name": "Japanese Fried Chicken",
+          "desc": "Crispy bite-sized chicken, juicy inside and golden outside.",
+          "price": 365,
+          "available": true
+        },
+        {
+          "id": "uo3gfy",
+          "name": "Chicken Nanban",
+          "desc": "Crispy chicken with creamy sweet-spicy sauce.",
+          "price": 345,
+          "available": true
+        },
+        {
+          "id": "xzmjyr",
+          "name": "Chicken Gyoza",
+          "desc": "Crispy golden chicken gyoza.",
+          "price": 340,
+          "available": true
+        },
+        {
+          "id": "1ky4gu",
+          "name": "Steamed Wonton",
+          "desc": "Steamed wontons with a light savory filling.",
+          "price": 290,
+          "available": true
+        },
+        {
+          "id": "hny8aj",
+          "name": "Fried Sesame Dory",
+          "desc": "Crispy fried dory with aromatic sesame.",
+          "price": 520,
+          "available": true
+        },
+        {
+          "id": "b8tpe0",
+          "name": "Fish & Chips",
+          "desc": "Crispy fried dory with toasted sesame and tangy sauce.",
+          "price": 570,
+          "available": true
+        },
+        {
+          "id": "31ms31",
+          "name": "High Tea (1:4)",
+          "desc": "Wonton, chicken wings, chicken satay, fish fingers and fries.",
+          "price": 745,
+          "available": true
+        }
+      ]
+    },
+    {
+      "id": "4wdev4",
+      "name": "Soup",
+      "items": [
+        {
+          "id": "i35tsj",
+          "name": "Thai Clear Soup",
+          "desc": "Chicken, fresh herbs and a hint of citrus.",
+          "price": 260,
+          "available": true
+        },
+        {
+          "id": "l39ln4",
+          "name": "Thai Thick Soup",
+          "desc": "Prawns, chicken, ginger, lime and chilli paste.",
+          "price": 310,
+          "available": true
+        },
+        {
+          "id": "fq88d9",
+          "name": "Cream of Mushroom Soup",
+          "desc": "Roasted mushroom, garlic, onion, celery, cream and parsley.",
+          "price": 380,
+          "available": true
+        }
+      ]
+    },
+    {
+      "id": "zj7qdb",
+      "name": "Pasta",
+      "items": [
+        {
+          "id": "e0jrmt",
+          "name": "Creamy Fettuccine Alfredo",
+          "desc": "Tender meats in a creamy Alfredo sauce.",
+          "price": 490,
+          "available": true
+        },
+        {
+          "id": "dng91x",
+          "name": "Beef Bolognese Pasta",
+          "desc": "Beef Bolognese in rich tomato sauce.",
+          "price": 580,
+          "available": true
+        },
+        {
+          "id": "l3gsg6",
+          "name": "Pasta De La Casa",
+          "desc": "Prawns and chicken with Alfredo, chilli and herbs.",
+          "price": 895,
+          "available": true
+        }
+      ]
+    },
+    {
+      "id": "yw8dat",
+      "name": "Noodles",
+      "items": [
+        {
+          "id": "rkpuq2",
+          "name": "Stir Fried Chicken Noodles",
+          "desc": "Chicken, onion, sauce and herbs.",
+          "price": 380,
+          "available": true
+        },
+        {
+          "id": "jzy6xy",
+          "name": "Stir Fried Beef Noodles",
+          "desc": "Spicy beef noodles with herbs and spices.",
+          "price": 460,
+          "available": true
+        }
+      ]
+    },
+    {
+      "id": "600vsz",
+      "name": "Salad",
+      "items": [
+        {
+          "id": "z0do2l",
+          "name": "Cashew Nut Salad",
+          "desc": "Chicken, vegetables and roasted cashews with light tangy dressing.",
+          "price": 465,
+          "available": true
+        },
+        {
+          "id": "yaj7uu",
+          "name": "Spanish Grilled Chicken Salad",
+          "desc": "Grilled chicken, seasonal vegetables and balsamic dressing.",
+          "price": 380,
+          "available": true
+        }
+      ]
+    },
+    {
+      "id": "jz33s4",
+      "name": "Pizza",
+      "items": [
+        {
+          "id": "9p6soj",
+          "name": "BBQ Chicken Pizza (9\")",
+          "desc": "Grilled chicken, cheddar, mozzarella and BBQ sauce.",
+          "price": 595,
+          "available": true
+        },
+        {
+          "id": "1jt7xf",
+          "name": "BBQ Chicken Pizza (12\")",
+          "desc": "Grilled chicken, cheddar, mozzarella and BBQ sauce.",
+          "price": 980,
+          "available": true
+        },
+        {
+          "id": "gr6tqr",
+          "name": "Beef Bolognese Pizza (9\")",
+          "desc": "Beef, cheese and aromatic seasoning.",
+          "price": 845,
+          "available": true
+        },
+        {
+          "id": "hbnhm6",
+          "name": "Beef Bolognese Pizza (12\")",
+          "desc": "Beef, cheese and aromatic seasoning.",
+          "price": 1330,
+          "available": true
+        },
+        {
+          "id": "22kkek",
+          "name": "CC Special Four Seasons",
+          "desc": "Beef, chicken, squid, dory and overloaded cheese.",
+          "price": 1495,
+          "available": true
+        }
+      ]
+    },
+    {
+      "id": "js6xgo",
+      "name": "Main Course",
+      "items": [
+        {
+          "id": "q90vqb",
+          "name": "Chicken Schnitzel",
+          "desc": "Breaded chicken breast served with rice.",
+          "price": 580,
+          "available": true
+        },
+        {
+          "id": "6ilbmp",
+          "name": "Turkish Savory",
+          "desc": "Fluffy rice with spiced chicken and sautéed vegetables.",
+          "price": 395,
+          "available": true
+        },
+        {
+          "id": "lmh5j4",
+          "name": "Basil Leaf Beef (Spicy)",
+          "desc": "Spicy basil beef served with rice.",
+          "price": 460,
+          "available": true
+        },
+        {
+          "id": "39ywrj",
+          "name": "Herbed Dory with Salsa",
+          "desc": "Grilled dory with spicy salsa and rice.",
+          "price": 440,
+          "available": true
+        },
+        {
+          "id": "uxbhfp",
+          "name": "King Prawn",
+          "desc": "King prawns with rice and sautéed vegetables.",
+          "price": 690,
+          "available": true
+        },
+        {
+          "id": "3xei9e",
+          "name": "Peri Peri Chicken",
+          "desc": "Peri peri chicken with fragrant rice and vegetables.",
+          "price": 410,
+          "available": true
+        },
+        {
+          "id": "58oyzx",
+          "name": "Crown Coffee Special Rice",
+          "desc": "Chicken, beef, prawn and calamari mixed rice.",
+          "price": 760,
+          "available": true
+        }
+      ]
+    },
+    {
+      "id": "36yp27",
+      "name": "Dessert",
+      "items": [
+        {
+          "id": "pysa3v",
+          "name": "Chawanmushi",
+          "desc": "Silky Japanese steamed egg custard.",
+          "price": 195,
+          "available": true
+        },
+        {
+          "id": "kow2ft",
+          "name": "Crêpe",
+          "desc": "Soft and thin crepe with delicious toppings.",
+          "price": 260,
+          "available": true
+        },
+        {
+          "id": "q4txcq",
+          "name": "Sweet Madness",
+          "desc": "Two scoops of ice cream, Swiss cake and fresh fruits.",
+          "price": 340,
+          "available": true
+        },
+        {
+          "id": "jg2ems",
+          "name": "Chocolate Lava",
+          "desc": "Chocolate lava dessert with ice cream.",
+          "price": 220,
+          "available": true
+        }
+      ]
+    },
+    {
+      "id": "8ede41",
+      "name": "Coffee",
+      "items": [
+        {
+          "id": "117dfa",
+          "name": "Espresso",
+          "desc": "",
+          "price": 190,
+          "available": true
+        },
+        {
+          "id": "wfs327",
+          "name": "Macchiato",
+          "desc": "",
+          "price": 195,
+          "available": true
+        },
+        {
+          "id": "525rmb",
+          "name": "Americano",
+          "desc": "",
+          "price": 199,
+          "available": true
+        },
+        {
+          "id": "51tlr6",
+          "name": "Cappuccino",
+          "desc": "",
+          "price": 280,
+          "available": true
+        },
+        {
+          "id": "3tmh6v",
+          "name": "Cappuccino Small",
+          "desc": "",
+          "price": 180,
+          "available": true
+        },
+        {
+          "id": "8sevij",
+          "name": "Latte",
+          "desc": "",
+          "price": 310,
+          "available": true
+        },
+        {
+          "id": "co35z5",
+          "name": "Affogato",
+          "desc": "",
+          "price": 229,
+          "available": true
+        },
+        {
+          "id": "n6eofe",
+          "name": "Flat White",
+          "desc": "",
+          "price": 240,
+          "available": true
+        }
+      ]
+    },
+    {
+      "id": "amm3ra",
+      "name": "Boba Special",
+      "items": [
+        {
+          "id": "20fagb",
+          "name": "Iced Coffee Boba Milk Tea",
+          "desc": "",
+          "price": 289,
+          "available": true
+        }
+      ]
+    },
+    {
+      "id": "zhb1sa",
+      "name": "Shakes",
+      "items": [
+        {
+          "id": "45iyb5",
+          "name": "Nutella",
+          "desc": "",
+          "price": 399,
+          "available": true
+        }
+      ]
+    },
+    {
+      "id": "c86s0f",
+      "name": "Iced Coffee",
+      "items": [
+        {
+          "id": "rv6zkb",
+          "name": "Iced Americano",
+          "desc": "",
+          "price": 230,
+          "available": true
+        },
+        {
+          "id": "8q8k3y",
+          "name": "Iced Cappuccino",
+          "desc": "",
+          "price": 290,
+          "available": true
+        },
+        {
+          "id": "z4ror0",
+          "name": "Iced Latte",
+          "desc": "",
+          "price": 330,
+          "available": true
+        }
+      ]
+    },
+    {
+      "id": "no0im6",
+      "name": "Smoothie",
+      "items": [
+        {
+          "id": "p6rs58",
+          "name": "Mango",
+          "desc": "",
+          "price": 399,
+          "available": true
+        },
+        {
+          "id": "7s6cu8",
+          "name": "Strawberry",
+          "desc": "",
+          "price": 399,
+          "available": true
+        },
+        {
+          "id": "1p2brl",
+          "name": "Peach",
+          "desc": "",
+          "price": 419,
+          "available": true
+        }
+      ]
+    },
+    {
+      "id": "iiarg1",
+      "name": "Hot Chocolate",
+      "items": [
+        {
+          "id": "5huyn1",
+          "name": "Regular Hot Chocolate",
+          "desc": "",
+          "price": 289,
+          "available": true
+        },
+        {
+          "id": "n7c2qs",
+          "name": "Frozen Hot Chocolate",
+          "desc": "",
+          "price": 299,
+          "available": true
+        }
+      ]
+    },
+    {
+      "id": "rol8qb",
+      "name": "Mocktails",
+      "items": [
+        {
+          "id": "189t0t",
+          "name": "Mint Lemonade",
+          "desc": "",
+          "price": 239,
+          "available": true
+        },
+        {
+          "id": "7keqwo",
+          "name": "Blu Ocean",
+          "desc": "",
+          "price": 299,
+          "available": true
+        },
+        {
+          "id": "z9gbcn",
+          "name": "Vanilla",
+          "desc": "",
+          "price": 299,
+          "available": true
+        },
+        {
+          "id": "mvb0j9",
+          "name": "Chocolate",
+          "desc": "",
+          "price": 299,
+          "available": true
+        },
+        {
+          "id": "pmp1x0",
+          "name": "Oreo",
+          "desc": "",
+          "price": 299,
+          "available": true
+        },
+        {
+          "id": "tm8yx6",
+          "name": "Mango",
+          "desc": "",
+          "price": 299,
+          "available": true
+        },
+        {
+          "id": "3fjx9o",
+          "name": "Blueberry",
+          "desc": "",
+          "price": 299,
+          "available": true
+        },
+        {
+          "id": "71pf0l",
+          "name": "Strawberry",
+          "desc": "",
+          "price": 299,
+          "available": true
+        },
+        {
+          "id": "8d0mma",
+          "name": "Hurricane",
+          "desc": "",
+          "price": 399,
+          "available": true
+        },
+        {
+          "id": "gil0m7",
+          "name": "Crown Coffee Special",
+          "desc": "",
+          "price": 410,
+          "available": true
+        }
+      ]
+    },
+    {
+      "id": "zochif",
+      "name": "Frappe",
+      "items": [
+        {
+          "id": "fsjf3k",
+          "name": "Hazelnut",
+          "desc": "",
+          "price": 409,
+          "available": true
+        },
+        {
+          "id": "d4hobm",
+          "name": "Caramel",
+          "desc": "",
+          "price": 409,
+          "available": true
+        },
+        {
+          "id": "h6619e",
+          "name": "Salted Caramel",
+          "desc": "",
+          "price": 409,
+          "available": true
+        },
+        {
+          "id": "660tjo",
+          "name": "Vanilla",
+          "desc": "",
+          "price": 399,
+          "available": true
+        },
+        {
+          "id": "r2ids7",
+          "name": "Mocha",
+          "desc": "",
+          "price": 399,
+          "available": true
+        },
+        {
+          "id": "ni0x4a",
+          "name": "Tiramisu",
+          "desc": "",
+          "price": 415,
+          "available": true
+        }
+      ]
+    },
+    {
+      "id": "52xmf7",
+      "name": "Fresh Juices",
+      "items": [
+        {
+          "id": "fjyyxm",
+          "name": "Orange Juice",
+          "desc": "",
+          "price": 289,
+          "available": true
+        },
+        {
+          "id": "nuillc",
+          "name": "Pineapple Juice",
+          "desc": "",
+          "price": 209,
+          "available": true
+        },
+        {
+          "id": "o01la7",
+          "name": "Papaya Juice",
+          "desc": "",
+          "price": 159,
+          "available": true
+        },
+        {
+          "id": "idg8d2",
+          "name": "Apple Juice",
+          "desc": "",
+          "price": 489,
+          "available": true
+        }
+      ]
+    },
+    {
+      "id": "cuxerz",
+      "name": "Ice Cream",
+      "items": [
+        {
+          "id": "yf5s36",
+          "name": "Vanilla",
+          "desc": "",
+          "price": 155,
+          "available": true
+        },
+        {
+          "id": "1lwn53",
+          "name": "Chocolate",
+          "desc": "",
+          "price": 155,
+          "available": true
+        },
+        {
+          "id": "sijqz6",
+          "name": "Mango",
+          "desc": "",
+          "price": 155,
+          "available": true
+        }
+      ]
+    },
+    {
+      "id": "nqx817",
+      "name": "Add-on Flavours",
+      "items": [
+        {
+          "id": "j4yabh",
+          "name": "Hazelnut",
+          "desc": "",
+          "price": 99,
+          "available": true
+        },
+        {
+          "id": "vog5jy",
+          "name": "Caramel",
+          "desc": "",
+          "price": 99,
+          "available": true
+        },
+        {
+          "id": "usrrv1",
+          "name": "Vanilla",
+          "desc": "",
+          "price": 99,
+          "available": true
+        },
+        {
+          "id": "prg0s7",
+          "name": "Mocha",
+          "desc": "",
+          "price": 99,
+          "available": true
+        },
+        {
+          "id": "ds1v3q",
+          "name": "Salted Caramel",
+          "desc": "",
+          "price": 99,
+          "available": true
+        },
+        {
+          "id": "uqmp7b",
+          "name": "Tiramisu",
+          "desc": "",
+          "price": 99,
+          "available": true
+        }
+      ]
+    },
+    {
+      "id": "0mery9",
+      "name": "Traditionals",
+      "items": [
+        {
+          "id": "ojib2e",
+          "name": "Mango Lassi",
+          "desc": "",
+          "price": 319,
+          "available": true
+        },
+        {
+          "id": "fpoxid",
+          "name": "Strawberry Lassi",
+          "desc": "",
+          "price": 339,
+          "available": true
+        }
+      ]
+    }
   ],
   faqs: [],
   persona: {
@@ -103,7 +853,22 @@ export function getConfig() {
     saveConfig(DEFAULT_CONFIG);
     return structuredClone(DEFAULT_CONFIG);
   }
-  try { return { ...structuredClone(DEFAULT_CONFIG), ...JSON.parse(row.json) }; }
+  try {
+    const parsed = JSON.parse(row.json);
+    const hasMenu = (parsed.menu || []).some(c => c.items?.length);
+    let updated = false;
+    if (!hasMenu && DEFAULT_CONFIG.menu?.length) {
+      parsed.menu = structuredClone(DEFAULT_CONFIG.menu);
+      updated = true;
+    }
+    if (!parsed.cafe?.wifi && DEFAULT_CONFIG.cafe?.wifi) {
+      parsed.cafe = { ...parsed.cafe, wifi: DEFAULT_CONFIG.cafe.wifi };
+      updated = true;
+    }
+    const merged = { ...structuredClone(DEFAULT_CONFIG), ...parsed };
+    if (updated) saveConfig(merged);
+    return merged;
+  }
   catch { return structuredClone(DEFAULT_CONFIG); }
 }
 

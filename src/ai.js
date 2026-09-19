@@ -1,9 +1,12 @@
+import 'dotenv/config';
 import { buildPrompt } from './prompt.js';
 
-const {
-  GEMINI_API_KEY, GEMINI_MODEL = 'gemini-3.5-flash',
-  GROQ_API_KEY, GROQ_MODEL = 'llama-3.3-70b-versatile'
-} = process.env;
+const getEnv = () => ({
+  geminiKey: process.env.GEMINI_API_KEY,
+  geminiModel: process.env.GEMINI_MODEL || 'gemini-3.5-flash',
+  groqKey: process.env.GROQ_API_KEY,
+  groqModel: process.env.GROQ_MODEL || 'llama-3.3-70b-versatile'
+});
 
 const TIMEOUT = 25_000;
 
@@ -16,7 +19,8 @@ async function post(url, opts) {
 
 /* history: [{direction:'in'|'out', text}] oldest first */
 async function callGemini(system, history, userText) {
-  if (!GEMINI_API_KEY) throw Object.assign(new Error('no gemini key'), { code: 'no_key' });
+  const { geminiKey, geminiModel } = getEnv();
+  if (!geminiKey) throw Object.assign(new Error('no gemini key'), { code: 'no_key' });
 
   const raw = [
     ...history.map(m => ({ role: m.direction === 'in' ? 'user' : 'model', text: m.text })),
@@ -31,7 +35,7 @@ async function callGemini(system, history, userText) {
   while (merged.length && merged[0].role !== 'user') merged.shift();
   const contents = merged.map(t => ({ role: t.role, parts: [{ text: t.text }] }));
 
-  const modelsToTry = Array.from(new Set([GEMINI_MODEL, 'gemini-3.5-flash', 'gemini-3.6-flash', 'gemini-3.5-flash-lite', 'gemini-3.1-flash-lite']));
+  const modelsToTry = Array.from(new Set([geminiModel, 'gemini-3.5-flash', 'gemini-3.6-flash', 'gemini-3.5-flash-lite', 'gemini-3.1-flash-lite']));
 
   let lastError;
   for (const model of modelsToTry) {
@@ -40,7 +44,7 @@ async function callGemini(system, history, userText) {
         `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`,
         {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'x-goog-api-key': GEMINI_API_KEY },
+          headers: { 'Content-Type': 'application/json', 'x-goog-api-key': geminiKey },
           body: JSON.stringify({
             system_instruction: { parts: [{ text: system }] },
             contents,
@@ -54,23 +58,21 @@ async function callGemini(system, history, userText) {
         }
       );
 
-      if (res.status === 429) throw Object.assign(new Error('gemini rate limited'), { code: 'rate_limited' });
       if (!res.ok) {
         const errText = await res.text();
-        if (res.status === 404) {
-          lastError = new Error(`gemini model ${model} not found`);
-          continue;
-        }
-        throw Object.assign(new Error(`gemini ${res.status}: ${errText}`), { code: 'upstream' });
+        lastError = new Error(`gemini model ${model} failed (${res.status}): ${errText}`);
+        continue;
       }
 
       const data = await res.json();
       const text = data?.candidates?.[0]?.content?.parts?.map(p => p.text).filter(Boolean).join('').trim();
-      if (!text) throw Object.assign(new Error('gemini empty'), { code: 'empty' });
+      if (!text) {
+        lastError = new Error(`gemini model ${model} returned empty output`);
+        continue;
+      }
       return text;
     } catch (e) {
       lastError = e;
-      if (e.code === 'rate_limited') throw e;
     }
   }
 
@@ -78,7 +80,8 @@ async function callGemini(system, history, userText) {
 }
 
 async function callGroq(system, history, userText) {
-  if (!GROQ_API_KEY) throw Object.assign(new Error('no groq key'), { code: 'no_key' });
+  const { groqKey, groqModel } = getEnv();
+  if (!groqKey) throw Object.assign(new Error('no groq key'), { code: 'no_key' });
 
   const messages = [
     { role: 'system', content: system },
@@ -88,8 +91,8 @@ async function callGroq(system, history, userText) {
 
   const res = await post('https://api.groq.com/openai/v1/chat/completions', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${GROQ_API_KEY}` },
-    body: JSON.stringify({ model: GROQ_MODEL, messages, temperature: 0.4, max_tokens: 400 })
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${groqKey}` },
+    body: JSON.stringify({ model: groqModel, messages, temperature: 0.4, max_tokens: 400 })
   });
 
   if (res.status === 429) throw Object.assign(new Error('groq rate limited'), { code: 'rate_limited' });
@@ -124,6 +127,7 @@ export async function generateReply(cfg, history, userText, log = console) {
 /** One-shot helper used by the menu importer in the admin panel. */
 export async function parseMenuText(raw) {
   if (!raw || !raw.trim()) throw new Error('Menu text is empty');
+  const { geminiKey, geminiModel, groqKey } = getEnv();
 
   const instruction =
     'Parse this cafe menu into a JSON array of objects. ' +
@@ -137,15 +141,15 @@ export async function parseMenuText(raw) {
 
   let out = null;
 
-  if (GEMINI_API_KEY) {
-    const modelsToTry = Array.from(new Set([GEMINI_MODEL, 'gemini-3.5-flash', 'gemini-3.6-flash', 'gemini-3.5-flash-lite']));
+  if (geminiKey) {
+    const modelsToTry = Array.from(new Set([geminiModel, 'gemini-3.5-flash', 'gemini-3.6-flash', 'gemini-3.5-flash-lite']));
     for (const model of modelsToTry) {
       try {
         const res = await post(
           `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`,
           {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'x-goog-api-key': GEMINI_API_KEY },
+            headers: { 'Content-Type': 'application/json', 'x-goog-api-key': geminiKey },
             body: JSON.stringify({
               contents: [{ role: 'user', parts: [{ text: instruction }] }],
               generationConfig: {
@@ -166,7 +170,7 @@ export async function parseMenuText(raw) {
     }
   }
 
-  if (!out && GROQ_API_KEY) {
+  if (!out && groqKey) {
     try {
       out = await callGroq('You output only valid JSON.', [], instruction);
     } catch {}
