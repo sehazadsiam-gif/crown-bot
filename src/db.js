@@ -1048,6 +1048,32 @@ export function stats() {
   const aiReplies = q("SELECT COUNT(*) n FROM messages WHERE direction = 'out' AND (model IS NULL OR model != 'human')");
   const humanReplies = q("SELECT COUNT(*) n FROM messages WHERE direction = 'out' AND model = 'human'");
 
+  // Hourly message distribution for Dhaka time (+6 hours)
+  const hourlyRows = db.prepare(`
+    SELECT strftime('%H', datetime(created_at, '+6 hours')) as hour, COUNT(*) as count
+    FROM messages
+    WHERE date(datetime(created_at, '+6 hours')) = date('now', '+6 hours')
+    GROUP BY hour
+  `).all();
+  
+  const hourlyMap = {};
+  for (let i = 0; i < 24; i++) {
+    const hStr = String(i).padStart(2, '0');
+    hourlyMap[hStr] = 0;
+  }
+  for (const r of hourlyRows) {
+    if (r.hour in hourlyMap) hourlyMap[r.hour] = r.count;
+  }
+
+  // Recent messages for live telemetry feed
+  const recent = db.prepare(`
+    SELECT m.id, m.direction, m.text, m.model, m.created_at, c.platform, c.name, c.id as conv_id
+    FROM messages m
+    JOIN conversations c ON c.id = m.conv_id
+    ORDER BY m.id DESC
+    LIMIT 6
+  `).all();
+
   return {
     conversations: q('SELECT COUNT(*) n FROM conversations'),
     messagesIn:    q("SELECT COUNT(*) n FROM messages WHERE direction = 'in'"),
@@ -1058,6 +1084,9 @@ export function stats() {
     todayOut:      q("SELECT COUNT(*) n FROM messages WHERE direction = 'out' AND date(created_at, '+6 hours') = date('now', '+6 hours')"),
     aiReplies,
     humanReplies,
-    byPlatform: platformCounts
+    byPlatform: platformCounts,
+    hourly: hourlyMap,
+    recent
   };
 }
+

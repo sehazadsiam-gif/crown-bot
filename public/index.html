@@ -1,291 +1,320 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Crown Coffee — AI Bot Admin & Multi-Channel Hub</title>
+<title>Crown Coffee — Executive AI Operations & Multi-Channel Hub</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#f8f4ee; --bg2:#efe7dc; --surface:#ffffff; --surface2:#faf5ee;
-  --ink:#201610; --ink2:#685446; --ink3:#968273;
-  --line:#e5d8ca; --line2:#d7c5b2;
-  --accent:#9a5b28; --accent-hover:#80471b; --accent-soft:#f5e8da;
-  --gold:#c28a2a; --gold-soft:#fbf2df;
-  --good:#3e7844; --good-soft:#e2f0e4;
-  --warn:#b37214; --warn-soft:#faecd4;
-  --danger:#b83a2a; --danger-soft:#fae2df;
-  --fb:#1877f2; --fb-soft:#e7f0fd;
-  --ig:#e1306c; --ig-soft:#fcecf1;
-  --wa:#25d366; --wa-soft:#e8f9ed;
-  --tt:#000000; --tt-soft:#e8e8e8;
-  --radius:12px;
-  --shadow-sm:0 1px 3px rgba(45,30,20,.05);
-  --shadow:0 4px 16px -2px rgba(45,30,20,.08), 0 1px 3px rgba(45,30,20,.04);
-  --shadow-lg:0 12px 32px -4px rgba(45,30,20,.12);
+  /* Dark Obsidian & Gold Palette (Executive Tier) */
+  --bg:#0e0a07; --bg2:#16100b; --surface:#1b140e; --surface2:#231a13; --surface3:#2c2017;
+  --ink:#f6ede2; --ink2:#bfad9d; --ink3:#8d7968;
+  --line:rgba(229,180,88,0.12); --line2:rgba(229,180,88,0.22); --line-focus:rgba(229,180,88,0.45);
+  --accent:#d88b43; --accent-hover:#e89d58; --accent-soft:rgba(216,139,67,0.15);
+  --gold:#e5b458; --gold-soft:rgba(229,180,88,0.12);
+  --good:#36d399; --good-soft:rgba(54,211,153,0.15);
+  --warn:#fbbd23; --warn-soft:rgba(251,189,35,0.15);
+  --danger:#f87272; --danger-soft:rgba(248,114,114,0.15);
+  --fb:#1877f2; --fb-soft:rgba(24,119,242,0.15);
+  --ig:#e1306c; --ig-soft:rgba(225,48,108,0.15);
+  --wa:#25d366; --wa-soft:rgba(37,211,102,0.15);
+  --tt:#ffffff; --tt-soft:rgba(255,255,255,0.12);
+  --radius:14px;
+  --radius-sm:8px;
+  --shadow-sm:0 2px 8px rgba(0,0,0,0.3);
+  --shadow:0 8px 24px -4px rgba(0,0,0,0.5), 0 1px 3px rgba(0,0,0,0.3);
+  --shadow-lg:0 20px 48px -8px rgba(0,0,0,0.7), 0 1px 0 rgba(255,255,255,0.06) inset;
+  --glass:linear-gradient(135deg, rgba(27,20,14,0.85) 0%, rgba(22,16,11,0.95) 100%);
 }
 
-@media (prefers-color-scheme: dark){
-  :root:not([data-theme="light"]){
-    --bg:#120d09; --bg2:#1a130e; --surface:#201812; --surface2:#281f18;
-    --ink:#f4ede4; --ink2:#bca897; --ink3:#887465;
-    --line:#382a20; --line2:#4d3b2e;
-    --accent:#e09353; --accent-hover:#f0a86d; --accent-soft:#3a2517;
-    --gold:#e2aa46; --gold-soft:#3d2c11;
-    --good:#6db875; --good-soft:#1a311c;
-    --warn:#e59c35; --warn-soft:#3a270f;
-    --danger:#eb7060; --danger-soft:#3c1a16;
-    --fb:#4b96f7; --fb-soft:#142742;
-    --ig:#f4538a; --ig-soft:#3d1320;
-    --wa:#3ce07a; --wa-soft:#11351c;
-    --tt:#ffffff; --tt-soft:#2c2c2c;
-    --shadow-sm:0 1px 3px rgba(0,0,0,.3);
-    --shadow:0 4px 16px -2px rgba(0,0,0,.5);
-    --shadow-lg:0 12px 32px -4px rgba(0,0,0,.7);
-  }
-}
-
-:root[data-theme="dark"]{
-  --bg:#120d09; --bg2:#1a130e; --surface:#201812; --surface2:#281f18;
-  --ink:#f4ede4; --ink2:#bca897; --ink3:#887465;
-  --line:#382a20; --line2:#4d3b2e;
-  --accent:#e09353; --accent-hover:#f0a86d; --accent-soft:#3a2517;
-  --gold:#e2aa46; --gold-soft:#3d2c11;
-  --good:#6db875; --good-soft:#1a311c;
-  --warn:#e59c35; --warn-soft:#3a270f;
-  --danger:#eb7060; --danger-soft:#3c1a16;
-  --fb:#4b96f7; --fb-soft:#142742;
-  --ig:#f4538a; --ig-soft:#3d1320;
-  --wa:#3ce07a; --wa-soft:#11351c;
-  --tt:#ffffff; --tt-soft:#2c2c2c;
-  --shadow-sm:0 1px 3px rgba(0,0,0,.3);
-  --shadow:0 4px 16px -2px rgba(0,0,0,.5);
-  --shadow-lg:0 12px 32px -4px rgba(0,0,0,.7);
+:root[data-theme="light"]{
+  --bg:#f7f2ea; --bg2:#ede3d5; --surface:#ffffff; --surface2:#faf4eb; --surface3:#f0e6d8;
+  --ink:#1f150d; --ink2:#685444; --ink3:#968271;
+  --line:rgba(154,91,40,0.15); --line2:rgba(154,91,40,0.25); --line-focus:rgba(154,91,40,0.5);
+  --accent:#9a5b28; --accent-hover:#80471b; --accent-soft:rgba(154,91,40,0.12);
+  --gold:#b88028; --gold-soft:rgba(184,128,40,0.12);
+  --good:#2e7d32; --good-soft:rgba(46,125,50,0.12);
+  --warn:#b26a00; --warn-soft:rgba(178,106,0,0.12);
+  --danger:#c62828; --danger-soft:rgba(198,40,40,0.12);
+  --fb:#1877f2; --fb-soft:rgba(24,119,242,0.1);
+  --ig:#d62976; --ig-soft:rgba(214,41,118,0.1);
+  --wa:#128c7e; --wa-soft:rgba(18,140,126,0.1);
+  --tt:#000000; --tt-soft:rgba(0,0,0,0.08);
+  --shadow-sm:0 1px 3px rgba(31,21,13,0.06);
+  --shadow:0 6px 20px -2px rgba(31,21,13,0.08), 0 1px 3px rgba(31,21,13,0.04);
+  --shadow-lg:0 16px 40px -6px rgba(31,21,13,0.12);
+  --glass:linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(250,244,235,0.95) 100%);
 }
 
 *{box-sizing:border-box}
 html,body{margin:0;padding:0}
 body{background:var(--bg); color:var(--ink); font-family:"Plus Jakarta Sans",system-ui,sans-serif;
-  font-size:14.5px; line-height:1.5; -webkit-font-smoothing:antialiased}
-h1,h2,h3{font-family:"Fraunces",Georgia,serif; font-weight:600; margin:0; letter-spacing:-.015em}
+  font-size:14px; line-height:1.5; -webkit-font-smoothing:antialiased; transition:background .2s, color .2s}
+h1,h2,h3,h4{font-family:"Fraunces",Georgia,serif; font-weight:600; margin:0; letter-spacing:-.015em}
 code,pre,.mono{font-family:"JetBrains Mono",ui-monospace,monospace}
 
-/* Login Screen */
+/* Login Modal */
 #login{position:fixed; inset:0; background:radial-gradient(circle at top, var(--surface2), var(--bg)); display:none; place-items:center; z-index:100; padding:20px}
-#login .box{background:var(--surface); border:1px solid var(--line); border-radius:18px; padding:36px 32px;
-  width:100%; max-width:400px; box-shadow:var(--shadow-lg); text-align:left}
-#login .logo-badge{display:inline-flex; align-items:center; justify-content:center; width:46px; height:46px; border-radius:12px; background:var(--accent-soft); color:var(--accent); font-size:22px; margin-bottom:16px}
-#login h1{font-size:26px; margin-bottom:4px; color:var(--ink)}
-#login .s{color:var(--ink3); font-size:13px; margin-bottom:24px; font-weight:500}
-#login input{margin-bottom:14px}
-#loginErr{color:var(--danger); font-size:13px; min-height:20px; margin-bottom:4px; font-weight:500}
+#login .box{background:var(--surface); border:1px solid var(--line2); border-radius:20px; padding:40px 36px;
+  width:100%; max-width:420px; box-shadow:var(--shadow-lg); text-align:left}
+#login .logo-badge{display:inline-flex; align-items:center; justify-content:center; width:52px; height:52px; border-radius:14px; background:var(--accent-soft); color:var(--accent); font-size:26px; margin-bottom:20px; border:1px solid var(--line2)}
+#login h1{font-size:28px; margin-bottom:6px; color:var(--ink)}
+#login .s{color:var(--ink3); font-size:13px; margin-bottom:28px; font-weight:500}
+#login input{margin-bottom:16px}
+#loginErr{color:var(--danger); font-size:13px; min-height:22px; margin-bottom:6px; font-weight:600}
 
-/* Header */
-header{border-bottom:1px solid var(--line); background:var(--surface); padding:12px 24px;
-  display:flex; align-items:center; gap:14px; flex-wrap:wrap; position:sticky; top:0; z-index:30; box-shadow:var(--shadow-sm)}
-.brand{display:flex; align-items:center; gap:10px}
-.brand-icon{width:32px; height:32px; border-radius:8px; background:var(--accent); color:#fff; display:grid; place-items:center; font-weight:700; font-size:16px; font-family:"Fraunces",serif}
-.brand h1{font-size:19px; line-height:1.1}
-.brand .sub{font-size:11px; color:var(--ink3); letter-spacing:.08em; text-transform:uppercase; font-weight:700}
+/* Top Navigation Bar */
+header{border-bottom:1px solid var(--line); background:var(--surface); padding:12px 28px;
+  display:flex; align-items:center; gap:16px; flex-wrap:wrap; position:sticky; top:0; z-index:40; box-shadow:var(--shadow-sm); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px)}
+.brand{display:flex; align-items:center; gap:12px; text-decoration:none; color:inherit; cursor:pointer}
+.brand-icon{width:36px; height:36px; border-radius:10px; background:linear-gradient(135deg, var(--gold), var(--accent)); color:#fff; display:grid; place-items:center; font-weight:700; font-size:18px; box-shadow:0 2px 10px rgba(229,180,88,0.3)}
+.brand h1{font-size:18px; line-height:1.1; color:var(--ink)}
+.brand .sub{font-size:10.5px; color:var(--gold); letter-spacing:.12em; text-transform:uppercase; font-weight:700}
 .spacer{flex:1}
 
-.pill{display:inline-flex; align-items:center; gap:6px; font-size:12px; font-weight:600;
-  padding:5px 12px; border-radius:99px; border:1px solid var(--line2); color:var(--ink2); white-space:nowrap; background:var(--surface2)}
-.pill.on{background:var(--good-soft); color:var(--good); border-color:transparent}
-.pill.off{background:var(--danger-soft); color:var(--danger); border-color:transparent}
+.cmd-trigger{display:inline-flex; align-items:center; gap:8px; padding:6px 14px; border-radius:8px; border:1px solid var(--line2); background:var(--bg2); color:var(--ink2); font-size:12.5px; cursor:pointer; font-weight:500; transition:all .15s}
+.cmd-trigger:hover{border-color:var(--accent); color:var(--ink); background:var(--surface2)}
+.cmd-trigger kbd{background:var(--surface); border:1px solid var(--line2); padding:1px 5px; border-radius:4px; font-size:11px; font-family:"JetBrains Mono",monospace}
+
+.pill{display:inline-flex; align-items:center; gap:7px; font-size:12px; font-weight:600;
+  padding:5px 14px; border-radius:99px; border:1px solid var(--line2); color:var(--ink2); white-space:nowrap; background:var(--surface2)}
+.pill.on{background:var(--good-soft); color:var(--good); border-color:rgba(54,211,153,0.3)}
+.pill.off{background:var(--danger-soft); color:var(--danger); border-color:rgba(248,114,114,0.3)}
 .dot{width:7px; height:7px; border-radius:99px; background:currentColor; display:inline-block}
-.dot.pulse{animation:pulse 1.8s infinite ease-in-out}
-@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(1.2)}}
+.dot.pulse{animation:pulse-glow 2s infinite ease-in-out}
+@keyframes pulse-glow{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(1.3)}}
 
-/* Layout */
-.wrap{display:flex; align-items:flex-start; max-width:1380px; margin:0 auto}
-nav{width:210px; flex:none; padding:22px 14px; position:sticky; top:61px;
-  border-right:1px solid var(--line); min-height:calc(100vh - 61px); background:var(--surface2)}
-nav button{display:flex; align-items:center; gap:9px; width:100%; text-align:left; background:none; border:none; font:inherit;
-  color:var(--ink2); padding:9px 12px; border-radius:8px; cursor:pointer; margin-bottom:3px; font-weight:500; font-size:13.5px; transition:all .15s}
-nav button:hover{background:var(--bg2); color:var(--ink)}
-nav button.active{background:var(--accent-soft); color:var(--accent); font-weight:700}
-nav button .nav-icon{font-size:15px; opacity:.85}
-nav .navlabel{font-size:10.5px; text-transform:uppercase; letter-spacing:.12em; color:var(--ink3);
-  padding:14px 12px 6px; font-weight:700}
+/* Layout Architecture */
+.wrap{display:flex; align-items:flex-start; max-width:1440px; margin:0 auto}
+nav{width:220px; flex:none; padding:24px 14px; position:sticky; top:61px;
+  border-right:1px solid var(--line); min-height:calc(100vh - 61px); background:var(--bg2)}
+nav button{display:flex; align-items:center; gap:10px; width:100%; text-align:left; background:none; border:none; font:inherit;
+  color:var(--ink2); padding:9px 14px; border-radius:10px; cursor:pointer; margin-bottom:3px; font-weight:500; font-size:13.5px; transition:all .15s}
+nav button:hover{background:var(--surface); color:var(--ink); transform:translateX(2px)}
+nav button.active{background:var(--accent-soft); color:var(--gold); font-weight:700; border-left:3px solid var(--gold)}
+nav button .nav-icon{font-size:16px; opacity:.9}
+nav .navlabel{font-size:10px; text-transform:uppercase; letter-spacing:.14em; color:var(--ink3);
+  padding:16px 14px 6px; font-weight:800}
 
-main{flex:1; padding:28px 32px 90px; min-width:0}
+main{flex:1; padding:30px 36px 90px; min-width:0}
 
-@media(max-width:900px){
+@media(max-width:960px){
   .wrap{display:block}
   nav{width:auto; position:static; min-height:0; border-right:none; border-bottom:1px solid var(--line);
        display:flex; gap:6px; overflow-x:auto; padding:8px 14px; white-space:nowrap}
   nav .navlabel{display:none}
-  nav button{width:auto; padding:7px 12px}
-  main{padding:18px 16px 70px}
+  nav button{width:auto; padding:7px 14px}
+  main{padding:20px 18px 70px}
 }
 
 .panel{display:none; animation:fadeIn .25s cubic-bezier(.16,1,.3,1) both}
 .panel.active{display:block}
 @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 
-/* Typography & Headings */
-.phead{margin-bottom:22px; display:flex; align-items:flex-start; justify-content:space-between; flex-wrap:wrap; gap:12px}
-.phead h2{font-size:26px; color:var(--ink); margin-bottom:4px}
-.phead p{margin:0; color:var(--ink2); font-size:14px; max-width:68ch}
+/* Headings & Section Headers */
+.phead{margin-bottom:24px; display:flex; align-items:flex-start; justify-content:space-between; flex-wrap:wrap; gap:14px}
+.phead h2{font-size:28px; color:var(--ink); margin-bottom:4px; font-weight:600}
+.phead p{margin:0; color:var(--ink2); font-size:14px; max-width:72ch}
 
-/* Cards & Containers */
-.card{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius);
-  padding:20px; margin-bottom:18px; box-shadow:var(--shadow-sm); transition:border-color .2s}
+/* Glassmorphic Executive Cards */
+.card{background:var(--glass); border:1px solid var(--line); border-radius:var(--radius);
+  padding:22px; margin-bottom:20px; box-shadow:var(--shadow); transition:transform .2s, border-color .2s, box-shadow .2s; position:relative; overflow:hidden}
 .card:hover{border-color:var(--line2)}
-.card > h3{font-size:16.5px; margin-bottom:12px; color:var(--ink); display:flex; align-items:center; gap:8px}
-.card .hint{font-size:13px; color:var(--ink3); margin:-6px 0 14px; line-height:1.45}
+.card > h3{font-size:17px; margin-bottom:14px; color:var(--ink); display:flex; align-items:center; gap:8px}
+.card .hint{font-size:13px; color:var(--ink3); margin:-8px 0 16px; line-height:1.45}
 
-.grid{display:grid; gap:14px}
+.grid{display:grid; gap:16px}
 .g2{grid-template-columns:1fr 1fr}
 .g3{grid-template-columns:1fr 1fr 1fr}
-.g4{grid-template-columns:repeat(auto-fit, minmax(220px, 1fr))}
-@media(max-width:760px){.g2,.g3{grid-template-columns:1fr}}
+.g4{grid-template-columns:repeat(auto-fit, minmax(240px, 1fr))}
+@media(max-width:800px){.g2,.g3{grid-template-columns:1fr}}
 
-/* Forms & Inputs */
-label.f{display:block; font-size:11.5px; font-weight:700; color:var(--ink2); margin-bottom:6px;
-  letter-spacing:.05em; text-transform:uppercase}
+/* Forms & High-Contrast Inputs */
+label.f{display:block; font-size:11px; font-weight:800; color:var(--ink2); margin-bottom:6px;
+  letter-spacing:.08em; text-transform:uppercase}
 input[type=text],input[type=password],input[type=email],input[type=number],input[type=time],select,textarea{
-  width:100%; padding:9px 12px; border:1px solid var(--line2); border-radius:8px;
-  background:var(--bg); color:var(--ink); font:inherit; font-size:13.5px; transition:border-color .15s, box-shadow .15s}
-input:focus,select:focus,textarea:focus{outline:none; border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-soft)}
-textarea{resize:vertical; min-height:80px; line-height:1.55}
+  width:100%; padding:10px 14px; border:1px solid var(--line2); border-radius:var(--radius-sm);
+  background:var(--surface2); color:var(--ink); font:inherit; font-size:13.5px; transition:border-color .15s, box-shadow .15s}
+input:focus,select:focus,textarea:focus{outline:none; border-color:var(--gold); box-shadow:0 0 0 3px var(--accent-soft)}
+textarea{resize:vertical; min-height:84px; line-height:1.55}
 
 .input-with-btn{display:flex; gap:8px}
 .input-with-btn input{flex:1}
 
 /* Buttons */
-.btn{display:inline-flex; align-items:center; justify-content:center; gap:7px; padding:8px 15px; border-radius:8px;
+.btn{display:inline-flex; align-items:center; justify-content:center; gap:8px; padding:9px 16px; border-radius:var(--radius-sm);
   border:1px solid var(--line2); background:var(--surface2); color:var(--ink);
   font:inherit; font-weight:600; font-size:13.5px; cursor:pointer; transition:all .15s; user-select:none}
-.btn:hover{border-color:var(--accent); color:var(--accent); background:var(--surface)}
+.btn:hover{border-color:var(--gold); color:var(--gold); background:var(--surface3); transform:translateY(-1px)}
 .btn:active{transform:translateY(1px)}
-.btn.primary{background:var(--accent); border-color:var(--accent); color:#fff}
-.btn.primary:hover{background:var(--accent-hover); border-color:var(--accent-hover); color:#fff}
-.btn.success{background:var(--good); border-color:var(--good); color:#fff}
-.btn.success:hover{filter:brightness(1.1); color:#fff}
-.btn.sm{padding:5px 11px; font-size:12.5px; border-radius:6px}
+.btn.primary{background:linear-gradient(135deg, var(--gold), var(--accent)); border-color:transparent; color:#1a1005; font-weight:700}
+.btn.primary:hover{filter:brightness(1.1); color:#1a1005}
+.btn.success{background:var(--good); border-color:var(--good); color:#0c2814}
+.btn.sm{padding:6px 12px; font-size:12.5px; border-radius:6px}
 .btn.ghost{background:none; border-color:transparent; color:var(--ink3)}
 .btn.ghost:hover{color:var(--danger); background:var(--danger-soft)}
 .btn:disabled{opacity:.5; cursor:not-allowed; transform:none}
 
-.row{display:flex; gap:8px; align-items:center; flex-wrap:wrap}
+.row{display:flex; gap:10px; align-items:center; flex-wrap:wrap}
 
 /* Switches & Checkboxes */
-.chk{display:inline-flex; align-items:center; gap:9px; cursor:pointer; font-size:14px; padding:4px 0; user-select:none}
-.chk input{appearance:none; width:40px; height:22px; border-radius:99px; background:var(--line2);
+.chk{display:inline-flex; align-items:center; gap:10px; cursor:pointer; font-size:14px; padding:4px 0; user-select:none}
+.chk input{appearance:none; width:44px; height:24px; border-radius:99px; background:var(--surface3); border:1px solid var(--line2);
   position:relative; cursor:pointer; transition:.2s; flex:none; margin:0}
 .chk input::after{content:""; position:absolute; top:3px; left:3px; width:16px; height:16px;
-  border-radius:99px; background:var(--surface); transition:.2s; box-shadow:0 1px 2px rgba(0,0,0,.2)}
-.chk input:checked{background:var(--good)}
-.chk input:checked::after{transform:translateX(18px)}
+  border-radius:99px; background:var(--ink3); transition:.2s; box-shadow:0 1px 3px rgba(0,0,0,.4)}
+.chk input:checked{background:var(--good); border-color:var(--good)}
+.chk input:checked::after{transform:translateX(20px); background:#fff}
 
-/* KPI Stats */
-.stat-card{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:16px; position:relative; overflow:hidden}
-.stat-card .v{font-family:"Fraunces",serif; font-size:28px; font-weight:600; color:var(--ink); line-height:1.1}
-.stat-card .k{font-size:11.5px; text-transform:uppercase; letter-spacing:.06em; color:var(--ink3); font-weight:700; margin-top:4px}
-.stat-card .subtext{font-size:12px; color:var(--ink2); margin-top:6px}
-.stat-card .icon{position:absolute; right:14px; top:14px; font-size:22px; opacity:.15}
+/* KPI Stats & Hero Bento */
+.hero-bento{display:grid; grid-template-columns:1.6fr 1fr; gap:16px; margin-bottom:20px}
+@media(max-width:880px){.hero-bento{grid-template-columns:1fr}}
 
-/* Channel Hub Cards */
-.channel-grid{display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:14px}
-.channel-card{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:18px; display:flex; flex-direction:column; justify-content:space-between; transition:all .2s; position:relative}
-.channel-card:hover{border-color:var(--line2); box-shadow:var(--shadow)}
-.channel-header{display:flex; align-items:center; justify-content:space-between; margin-bottom:12px}
-.channel-title{display:flex; align-items:center; gap:10px; font-weight:700; font-size:15px}
-.channel-badge-icon{width:32px; height:32px; border-radius:8px; display:grid; place-items:center; font-size:16px}
+.stat-card{background:var(--glass); border:1px solid var(--line); border-radius:var(--radius); padding:18px 20px; position:relative; overflow:hidden; box-shadow:var(--shadow-sm); transition:transform .2s, border-color .2s}
+.stat-card:hover{transform:translateY(-2px); border-color:var(--line2)}
+.stat-card .v{font-family:"Fraunces",serif; font-size:32px; font-weight:600; color:var(--ink); line-height:1.1}
+.stat-card .k{font-size:11.5px; text-transform:uppercase; letter-spacing:.08em; color:var(--ink3); font-weight:800; margin-top:4px}
+.stat-card .subtext{font-size:12.5px; color:var(--ink2); margin-top:8px; display:flex; align-items:center; gap:6px}
+.stat-card .icon{position:absolute; right:16px; top:16px; font-size:26px; opacity:.2}
+
+/* Radial Gauge Indicator */
+.gauge-box{display:flex; align-items:center; gap:18px}
+.gauge-svg{width:80px; height:80px; transform:rotate(-90deg)}
+.gauge-bg{fill:none; stroke:var(--surface3); stroke-width:8}
+.gauge-fill{fill:none; stroke:var(--good); stroke-width:8; stroke-linecap:round; stroke-dasharray:220; stroke-dashoffset:10; transition:stroke-dashoffset 1s ease}
+
+/* Multi-Channel Grid */
+.channel-grid{display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:16px}
+.channel-card{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:20px; display:flex; flex-direction:column; justify-content:space-between; transition:all .2s; position:relative; box-shadow:var(--shadow-sm)}
+.channel-card:hover{border-color:var(--line2); transform:translateY(-2px); box-shadow:var(--shadow)}
+.channel-header{display:flex; align-items:center; justify-content:space-between; margin-bottom:14px}
+.channel-title{display:flex; align-items:center; gap:12px; font-weight:700; font-size:15px}
+.channel-badge-icon{width:36px; height:36px; border-radius:10px; display:grid; place-items:center; font-size:18px}
 .channel-badge-icon.fb{background:var(--fb-soft); color:var(--fb)}
 .channel-badge-icon.ig{background:var(--ig-soft); color:var(--ig)}
 .channel-badge-icon.wa{background:var(--wa-soft); color:var(--wa)}
 .channel-badge-icon.tt{background:var(--tt-soft); color:var(--tt)}
 
-.channel-status{font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; padding:3px 8px; border-radius:99px; border:1px solid}
-.channel-status.active{background:var(--good-soft); color:var(--good); border-color:transparent}
-.channel-status.warn{background:var(--warn-soft); color:var(--warn); border-color:transparent}
-.channel-status.inactive{background:var(--bg2); color:var(--ink3); border-color:transparent}
+.channel-status{font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:.06em; padding:4px 10px; border-radius:99px; border:1px solid}
+.channel-status.active{background:var(--good-soft); color:var(--good); border-color:rgba(54,211,153,0.3)}
+.channel-status.warn{background:var(--warn-soft); color:var(--warn); border-color:rgba(251,189,35,0.3)}
+.channel-status.inactive{background:var(--surface3); color:var(--ink3); border-color:transparent}
 
-.channel-body{font-size:13px; color:var(--ink2); margin-bottom:16px; flex:1}
-.channel-footer{display:flex; align-items:center; justify-content:space-between; gap:8px; border-top:1px dashed var(--line); padding-top:12px}
+.channel-body{font-size:13.5px; color:var(--ink2); margin-bottom:18px; flex:1}
+.channel-footer{display:flex; align-items:center; justify-content:space-between; gap:10px; border-top:1px dashed var(--line); padding-top:14px}
 
-/* Accordion & Setup steps */
-.step-box{background:var(--surface2); border:1px solid var(--line); border-radius:10px; padding:14px; margin-bottom:10px}
-.step-num{display:inline-flex; align-items:center; justify-content:center; width:22px; height:22px; border-radius:99px; background:var(--accent); color:#fff; font-size:11.5px; font-weight:700; margin-right:6px}
-.step-box h4{margin:0 0 6px; font-size:14px; font-weight:700; color:var(--ink); display:flex; align-items:center}
-.step-box p{margin:0 0 8px; font-size:13px; color:var(--ink2); line-height:1.45}
+/* SVG Streamgraph Chart */
+.chart-box{position:relative; width:100%; height:140px; margin-top:14px}
+.chart-svg{width:100%; height:100%; overflow:visible}
+.chart-path{fill:url(#goldGradient); stroke:var(--gold); stroke-width:2.5; filter:drop-shadow(0 4px 12px rgba(229,180,88,0.25))}
+.chart-axis{stroke:var(--line); stroke-dasharray:4 4; stroke-width:1}
 
-/* Tags & Badges */
-.tags{display:flex; flex-wrap:wrap; gap:6px; margin-top:8px}
-.tag{display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:99px;
-  background:var(--bg2); border:1px solid var(--line); font-size:12.5px; font-weight:500}
+/* Live Activity Ticker */
+.activity-list{display:flex; flex-direction:column; gap:8px}
+.activity-item{display:flex; align-items:center; justify-content:space-between; padding:10px 14px; border-radius:var(--radius-sm); background:var(--surface2); border:1px solid var(--line); font-size:13px; gap:12px; transition:background .15s}
+.activity-item:hover{background:var(--surface3)}
+.activity-user{font-weight:700; display:flex; align-items:center; gap:8px; color:var(--ink)}
+.activity-msg{color:var(--ink2); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; flex:1}
+.activity-time{font-size:11px; color:var(--ink3); font-family:"JetBrains Mono",monospace; flex:none}
+
+/* Slide-out Simulator Drawer */
+#simDrawer{position:fixed; top:0; right:-460px; width:440px; height:100vh; background:var(--surface); border-left:1px solid var(--line2); box-shadow:var(--shadow-lg); z-index:90; display:flex; flex-direction:column; transition:right .3s cubic-bezier(.16,1,.3,1)}
+#simDrawer.open{right:0}
+.drawer-header{padding:18px 24px; border-bottom:1px solid var(--line); display:flex; align-items:center; justify-content:space-between}
+.drawer-body{padding:20px; flex:1; overflow-y:auto; display:flex; flex-direction:column}
+.drawer-footer{padding:16px 20px; border-top:1px solid var(--line); background:var(--surface2)}
+#drawerBackdrop{position:fixed; inset:0; background:rgba(0,0,0,0.6); backdrop-filter:blur(4px); -webkit-backdrop-filter:blur(4px); z-index:80; display:none}
+#drawerBackdrop.open{display:block}
+
+/* Command Palette Modal (⌘K) */
+#cmdModal{position:fixed; inset:0; background:rgba(0,0,0,0.7); backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px); z-index:100; display:none; place-items:center; padding:20px}
+#cmdModal.open{display:grid}
+.cmd-box{background:var(--surface); border:1px solid var(--line2); border-radius:18px; width:100%; max-width:560px; box-shadow:var(--shadow-lg); overflow:hidden; animation:fadeIn .2s ease}
+.cmd-input-wrap{display:flex; align-items:center; gap:12px; padding:16px 20px; border-bottom:1px solid var(--line)}
+.cmd-input-wrap input{border:none; background:transparent; font-size:16px; color:var(--ink); padding:0}
+.cmd-input-wrap input:focus{box-shadow:none}
+.cmd-list{max-height:360px; overflow-y:auto; padding:8px}
+.cmd-item{display:flex; align-items:center; justify-content:space-between; padding:10px 14px; border-radius:8px; color:var(--ink2); cursor:pointer; font-size:13.5px; transition:all .12s}
+.cmd-item:hover, .cmd-item.selected{background:var(--accent-soft); color:var(--gold); font-weight:600}
+.cmd-item kbd{background:var(--surface2); border:1px solid var(--line2); padding:2px 6px; border-radius:4px; font-size:11px; font-family:"JetBrains Mono",monospace}
+
+/* Chat & Inbox */
+.inbox{display:grid; grid-template-columns:320px 1fr; gap:16px}
+@media(max-width:860px){.inbox{grid-template-columns:1fr}}
+.convlist{border:1px solid var(--line); border-radius:var(--radius); background:var(--surface); max-height:580px; overflow-y:auto}
+.conv{padding:14px 16px; border-bottom:1px solid var(--line); cursor:pointer; transition:background .15s}
+.conv:hover{background:var(--surface2)}
+.conv.sel{background:var(--accent-soft); border-left:4px solid var(--gold)}
+.conv .n{font-weight:700; font-size:14px; display:flex; align-items:center; justify-content:space-between; gap:6px}
+.conv .p{font-size:12.5px; color:var(--ink3); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-top:4px}
+.badge{font-size:10px; padding:2px 7px; border-radius:99px; background:var(--danger-soft); color:var(--danger); font-weight:700}
+.badge.plat{background:var(--surface2); color:var(--ink2); text-transform:uppercase; font-size:10px; border:1px solid var(--line)}
+.badge.plat.fb{color:var(--fb); border-color:rgba(24,119,242,0.3)}
+.badge.plat.ig{color:var(--ig); border-color:rgba(225,48,108,0.3)}
+.badge.plat.wa{color:var(--wa); border-color:rgba(37,211,102,0.3)}
+.badge.plat.tt{color:var(--ink)}
+
+.chat{border:1px solid var(--line); border-radius:var(--radius); background:var(--surface); overflow:hidden; display:flex; flex-direction:column}
+.log{padding:18px; min-height:280px; max-height:460px; overflow-y:auto; display:flex; flex-direction:column; gap:12px}
+.msg{max-width:80%; padding:10px 15px; border-radius:16px; font-size:13.5px; line-height:1.5; white-space:pre-wrap; word-break:break-word}
+.msg.u{align-self:flex-end; background:linear-gradient(135deg, var(--gold), var(--accent)); color:#191005; font-weight:500; border-bottom-right-radius:4px}
+.msg.b{align-self:flex-start; background:var(--surface2); border:1px solid var(--line); border-bottom-left-radius:4px; color:var(--ink)}
+.msg.sys{align-self:center; font-size:12px; color:var(--ink3); font-style:italic; background:var(--surface3); padding:4px 14px; border-radius:99px; max-width:90%; text-align:center}
+.composer{display:flex; gap:8px; padding:14px; border-top:1px solid var(--line); background:var(--surface2)}
+.composer input{flex:1}
+
+/* Tags & Menu Manager */
+.tags{display:flex; flex-wrap:wrap; gap:8px; margin-top:10px}
+.tag{display:inline-flex; align-items:center; gap:6px; padding:5px 12px; border-radius:99px;
+  background:var(--surface2); border:1px solid var(--line2); font-size:12.5px; font-weight:600}
 .tag button{background:none; border:none; color:var(--ink3); cursor:pointer; font-size:14px; line-height:1; padding:0}
 .tag button:hover{color:var(--danger)}
 
-/* Menu manager */
 .cat{border:1px solid var(--line); border-radius:var(--radius); margin-bottom:14px; background:var(--surface); overflow:hidden}
-.cathead{display:flex; align-items:center; gap:10px; padding:12px 16px; background:var(--surface2); border-bottom:1px solid var(--line)}
+.cathead{display:flex; align-items:center; gap:12px; padding:12px 18px; background:var(--surface2); border-bottom:1px solid var(--line)}
 .cathead input{border:none; background:none; font-family:"Fraunces",serif; font-size:17px; font-weight:600; padding:2px 6px; flex:1; min-width:0; color:var(--ink)}
-.cathead input:focus{outline:none; background:var(--bg); border-radius:6px}
+.cathead input:focus{outline:none; background:var(--surface); border-radius:6px}
 .items{padding:8px 12px 12px}
 .item{display:grid; grid-template-columns:1fr 140px 96px auto; gap:8px; align-items:center;
-  padding:8px 6px; border-bottom:1px dashed var(--line)}
+  padding:8px 8px; border-bottom:1px dashed var(--line)}
 .item:last-child{border-bottom:none}
 .item input[type=text]{border-color:transparent; background:transparent; padding:6px 8px}
-.item input[type=text]:hover{background:var(--bg); border-color:var(--line)}
+.item input[type=text]:hover{background:var(--surface2); border-color:var(--line)}
 .item input[type=number]{padding:6px 8px; text-align:right}
 .item.gone .iname{text-decoration:line-through; opacity:.55}
 
 @media(max-width:760px){
   .item{grid-template-columns:1fr auto; grid-template-areas:"n n" "d d" "p a"}
   .item .iname{grid-area:n} .item .idesc{grid-area:d} .item .iprice{grid-area:p} .item .iact{grid-area:a}
-  .item input[type=text]{border-color:var(--line2); background:var(--bg)}
+  .item input[type=text]{border-color:var(--line2); background:var(--surface2)}
 }
 
-/* Chat & Inbox */
-.inbox{display:grid; grid-template-columns:310px 1fr; gap:16px}
-@media(max-width:860px){.inbox{grid-template-columns:1fr}}
-.convlist{border:1px solid var(--line); border-radius:var(--radius); background:var(--surface); max-height:580px; overflow-y:auto}
-.conv{padding:12px 14px; border-bottom:1px solid var(--line); cursor:pointer; transition:background .15s}
-.conv:hover{background:var(--surface2)}
-.conv.sel{background:var(--accent-soft); border-left:3px solid var(--accent)}
-.conv .n{font-weight:700; font-size:14px; display:flex; align-items:center; justify-content:space-between; gap:6px}
-.conv .p{font-size:12.5px; color:var(--ink3); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-top:3px}
-.badge{font-size:10px; padding:2px 6px; border-radius:99px; background:var(--danger-soft); color:var(--danger); font-weight:700}
-.badge.plat{background:var(--bg2); color:var(--ink2); text-transform:uppercase; font-size:10px}
-.badge.plat.fb{color:var(--fb)}
-.badge.plat.ig{color:var(--ig)}
-.badge.plat.wa{color:var(--wa)}
-.badge.plat.tt{color:var(--ink)}
+/* Accordion & Info Cards */
+.step-box{background:var(--surface2); border:1px solid var(--line); border-radius:10px; padding:16px; margin-bottom:12px}
+.step-num{display:inline-flex; align-items:center; justify-content:center; width:22px; height:22px; border-radius:99px; background:var(--gold); color:#181007; font-size:11.5px; font-weight:800; margin-right:8px}
+.step-box h4{margin:0 0 6px; font-size:14px; font-weight:700; color:var(--ink); display:flex; align-items:center}
+.step-box p{margin:0 0 8px; font-size:13px; color:var(--ink2); line-height:1.45}
 
-.chat{border:1px solid var(--line); border-radius:var(--radius); background:var(--surface); overflow:hidden; display:flex; flex-direction:column}
-.log{padding:16px; min-height:280px; max-height:460px; overflow-y:auto; display:flex; flex-direction:column; gap:12px}
-.msg{max-width:80%; padding:10px 14px; border-radius:14px; font-size:13.5px; line-height:1.5; white-space:pre-wrap; word-break:break-word}
-.msg.u{align-self:flex-end; background:var(--accent); color:#fff; border-bottom-right-radius:4px}
-.msg.b{align-self:flex-start; background:var(--surface2); border:1px solid var(--line); border-bottom-left-radius:4px; color:var(--ink)}
-.msg.sys{align-self:center; font-size:12px; color:var(--ink3); font-style:italic; background:var(--bg2); padding:4px 12px; border-radius:99px; max-width:90%; text-align:center}
-.composer{display:flex; gap:8px; padding:12px; border-top:1px solid var(--line); background:var(--surface2)}
-.composer input{flex:1}
-
-/* Playground quick questions */
-.quickrow{display:flex; gap:6px; flex-wrap:wrap; margin-bottom:12px}
-.quickrow button{font-size:12px; padding:5px 11px; border-radius:99px; border:1px solid var(--line2);
-  background:var(--surface); color:var(--ink2); cursor:pointer; font-family:inherit; transition:all .15s}
-.quickrow button:hover{border-color:var(--accent); color:var(--accent); background:var(--accent-soft)}
-
-/* Code / Prompt display */
-pre.prompt{background:var(--surface2); border:1px solid var(--line); border-radius:var(--radius); padding:16px;
+/* Code & Output Blocks */
+pre.prompt{background:var(--surface2); border:1px solid var(--line); border-radius:var(--radius); padding:18px;
   font-size:12px; line-height:1.6; white-space:pre-wrap; word-break:break-word; max-height:500px; overflow:auto; margin:0; color:var(--ink)}
-.meter{font-size:12px; color:var(--ink3)}
+.meter{font-size:12.5px; color:var(--ink3)}
 
-/* Key-Value Rows */
-.kv{display:flex; justify-content:space-between; align-items:center; padding:9px 0; border-bottom:1px dashed var(--line); font-size:13.5px; gap:12px}
+.kv{display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px dashed var(--line); font-size:13.5px; gap:12px}
 .kv span:last-child{color:var(--ink2); text-align:right}
 
-/* Toast / Saved badge */
-.savechip{font-size:12px; font-weight:600; color:var(--good); display:inline-flex; align-items:center; gap:4px}
-.empty{padding:28px; text-align:center; color:var(--ink3); font-size:13.5px; font-style:italic}
-.info-banner{background:var(--gold-soft); border:1px solid var(--gold); border-radius:10px; padding:12px 16px; font-size:13px; color:var(--ink); margin-bottom:16px; line-height:1.45}
+.savechip{font-size:12.5px; font-weight:700; color:var(--good); display:inline-flex; align-items:center; gap:6px}
+.empty{padding:32px; text-align:center; color:var(--ink3); font-size:13.5px; font-style:italic}
+.info-banner{background:var(--gold-soft); border:1px solid var(--gold); border-radius:10px; padding:14px 18px; font-size:13px; color:var(--ink); margin-bottom:18px; line-height:1.45}
+
+/* Quick chips */
+.quickrow{display:flex; gap:6px; flex-wrap:wrap; margin-bottom:14px}
+.quickrow button{font-size:12px; padding:6px 12px; border-radius:99px; border:1px solid var(--line2);
+  background:var(--surface2); color:var(--ink2); cursor:pointer; font-family:inherit; transition:all .15s}
+.quickrow button:hover{border-color:var(--gold); color:var(--gold); background:var(--accent-soft)}
 </style>
 </head>
 <body>
@@ -295,53 +324,59 @@ pre.prompt{background:var(--surface2); border:1px solid var(--line); border-radi
   <form class="box" id="loginForm">
     <div class="logo-badge">👑</div>
     <h1>Crown Coffee</h1>
-    <div class="s">AI Assistant &amp; Multi-Channel Control</div>
+    <div class="s">Executive AI Operations &amp; Multi-Channel Hub</div>
     <label class="f">Admin Email</label>
     <input type="email" id="lEmail" autocomplete="username" placeholder="admin@crowncoffee.com" required>
     <label class="f">Password</label>
     <input type="password" id="lPass" autocomplete="current-password" placeholder="••••••••" required>
     <div id="loginErr"></div>
-    <button class="btn primary" style="width:100%; justify-content:center; margin-top:8px">Sign in</button>
+    <button class="btn primary" style="width:100%; justify-content:center; margin-top:8px">Access Operations Hub</button>
   </form>
 </div>
 
-<!-- App Container -->
+<!-- Global App Container -->
 <div id="app" style="display:none">
 <header>
-  <div class="brand">
+  <div class="brand" onclick="switchTab('dash')">
     <div class="brand-icon">👑</div>
     <div>
       <h1>Crown Coffee</h1>
-      <div class="sub">AI Automation Hub</div>
+      <div class="sub">AI Operations Center</div>
     </div>
   </div>
+
   <div class="spacer"></div>
-  <span class="pill" id="openPill"><span class="dot pulse"></span><span id="openTxt">Checking…</span></span>
+
+  <button class="cmd-trigger" id="btnCmdPal" title="Global Quick Actions"><span class="nav-icon">🔍</span> Search / Commands <kbd>⌘K</kbd></button>
+  
+  <span class="pill" id="openPill"><span class="dot pulse"></span><span id="openTxt">Dhaka: Checking…</span></span>
   <span class="savechip" id="saveChip"></span>
-  <button class="btn sm" id="themeBtn" title="Toggle Dark/Light Mode">◐ Theme</button>
-  <button class="btn sm" id="logoutBtn">Sign out</button>
+  
+  <button class="btn sm" id="btnOpenSim" title="Open AI Test Console">⚡ Fast Simulator</button>
+  <button class="btn sm" id="themeBtn" title="Toggle Obsidian / Ivory Mode">◐ Theme</button>
+  <button class="btn sm ghost" id="logoutBtn">Sign out</button>
 </header>
 
 <div class="wrap">
   <nav id="nav">
     <div class="navlabel">Live Monitoring</div>
-    <button data-p="dash" class="active"><span class="nav-icon">📊</span> Dashboard</button>
-    <button data-p="inbox"><span class="nav-icon">💬</span> Inbox</button>
-    <button data-p="channels"><span class="nav-icon">🌐</span> Channels</button>
+    <button data-p="dash" class="active"><span class="nav-icon">📊</span> Executive Desk</button>
+    <button data-p="inbox"><span class="nav-icon">💬</span> Customer Inbox</button>
+    <button data-p="channels"><span class="nav-icon">🌐</span> Multi-Channels</button>
     
-    <div class="navlabel">Knowledge Base</div>
+    <div class="navlabel">Knowledge &amp; Ops</div>
     <button data-p="cafe"><span class="nav-icon">📍</span> Cafe Info</button>
-    <button data-p="menu"><span class="nav-icon">☕</span> Menu (89)</button>
-    <button data-p="faq"><span class="nav-icon">❓</span> FAQs (11)</button>
+    <button data-p="menu"><span class="nav-icon">☕</span> Menu (89 Items)</button>
+    <button data-p="faq"><span class="nav-icon">❓</span> Verified FAQs (11)</button>
     
-    <div class="navlabel">AI Behavior</div>
-    <button data-p="persona"><span class="nav-icon">🎭</span> Persona</button>
-    <button data-p="scope"><span class="nav-icon">🛡️</span> Scope &amp; Limits</button>
+    <div class="navlabel">AI Behavior &amp; Rules</div>
+    <button data-p="persona"><span class="nav-icon">🎭</span> Persona &amp; Tone</button>
+    <button data-p="scope"><span class="nav-icon">🛡️</span> Autonomy &amp; Guards</button>
     
-    <div class="navlabel">Verification</div>
+    <div class="navlabel">Diagnostics</div>
     <button data-p="play"><span class="nav-icon">⚡</span> Playground</button>
     <button data-p="prompt"><span class="nav-icon">📜</span> Compiled Prompt</button>
-    <button data-p="setup"><span class="nav-icon">⚙️</span> System Health</button>
+    <button data-p="setup"><span class="nav-icon">⚙️</span> Telemetry &amp; Health</button>
   </nav>
 
   <main>
@@ -349,94 +384,144 @@ pre.prompt{background:var(--surface2); border:1px solid var(--line); border-radi
     <section class="panel active" data-p="dash">
       <div class="phead">
         <div>
-          <h2>Dashboard</h2>
-          <p>Real-time overview of AI performance, active customer channels, and response status.</p>
+          <h2>Operations Dashboard</h2>
+          <p>Real-time autonomous intelligence telemetry across Meta, WhatsApp, TikTok and in-store requests.</p>
         </div>
         <div class="row">
-          <button class="btn primary sm" id="btnTestBot"><span class="nav-icon">⚡</span> Test in Playground</button>
+          <button class="btn primary sm" onclick="openSimulator()"><span class="nav-icon">⚡</span> Test AI Simulator</button>
         </div>
       </div>
 
-      <!-- Master Control Card -->
-      <div class="card" style="border-left:4px solid var(--accent)">
-        <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px">
+      <!-- Hero Bento Grid -->
+      <div class="hero-bento">
+        <!-- Master Bot Controller -->
+        <div class="card" style="border-left:4px solid var(--gold); display:flex; flex-direction:column; justify-content:space-between">
           <div>
-            <label class="chk" style="font-size:16px">
-              <input type="checkbox" data-b="runtime.enabled">
-              <strong>AI Auto-Reply Master Switch</strong>
-            </label>
-            <p class="hint" style="margin:4px 0 0">When ON, the AI answers customer questions instantly across all connected channels.</p>
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:10px">
+              <label class="chk" style="font-size:16.5px">
+                <input type="checkbox" data-b="runtime.enabled">
+                <strong>Autonomous AI Auto-Responder</strong>
+              </label>
+              <span class="pill on" id="masterStatusBadge"><span class="dot pulse"></span> ACTIVE &amp; RUNNING</span>
+            </div>
+            <p class="hint" style="margin:0; line-height:1.5">When enabled, the high-speed Gemini AI engine responds to customer inquiries in 100% natural Banglish, Bangla, or English across all connected channels.</p>
           </div>
-          <span class="pill on" id="masterStatusBadge"><span class="dot"></span> ACTIVE</span>
+          <div class="row" style="margin-top:16px; justify-content:space-between; border-top:1px dashed var(--line); padding-top:12px">
+            <span class="meter">Engine: <strong style="color:var(--gold)">gemini-3.5-flash</strong> (Zero Thinking Latency)</span>
+            <span class="meter">Turnaround: <strong style="color:var(--good)">&lt; 1.2s</strong></span>
+          </div>
+        </div>
+
+        <!-- AI Resolution & Quality Gauge -->
+        <div class="card" style="display:flex; flex-direction:column; justify-content:space-between">
+          <div class="gauge-box">
+            <svg class="gauge-svg" viewBox="0 0 80 80">
+              <circle class="gauge-bg" cx="40" cy="40" r="34"></circle>
+              <circle class="gauge-fill" id="gaugeCircle" cx="40" cy="40" r="34"></circle>
+            </svg>
+            <div>
+              <div style="font-family:'Fraunces',serif; font-size:30px; font-weight:700; color:var(--ink); line-height:1" id="resRateTxt">98.5%</div>
+              <div class="k" style="font-size:11px; text-transform:uppercase; color:var(--ink3); font-weight:800; margin-top:4px">AI Auto-Resolution</div>
+            </div>
+          </div>
+          <p class="hint" style="margin:10px 0 0; font-size:12.5px">Directly answered without requiring human manager intervention.</p>
         </div>
       </div>
 
-      <!-- KPI Stats -->
-      <div class="grid g4" style="margin-bottom:18px">
+      <!-- Living KPI Grid -->
+      <div class="grid g4" style="margin-bottom:20px">
         <div class="stat-card">
           <div class="icon">💬</div>
           <div class="v" id="stConvs">0</div>
           <div class="k">Total Conversations</div>
-          <div class="subtext" id="stTodayMsg">0 messages today</div>
+          <div class="subtext" id="stTodayMsg">0 today</div>
         </div>
         <div class="stat-card">
           <div class="icon">📥</div>
           <div class="v" id="stInToday">0</div>
-          <div class="k">Today's Inbound</div>
-          <div class="subtext">From customers</div>
+          <div class="k">Inbound Messages</div>
+          <div class="subtext"><span style="color:var(--good)">●</span> Real customer volume</div>
         </div>
         <div class="stat-card">
           <div class="icon">🤖</div>
           <div class="v" id="stOutToday">0</div>
-          <div class="k">Today's AI Replies</div>
-          <div class="subtext">Zero latency</div>
+          <div class="k">AI Auto-Replies</div>
+          <div class="subtext"><span style="color:var(--gold)">●</span> 0s customer wait time</div>
         </div>
         <div class="stat-card">
           <div class="icon">🚩</div>
           <div class="v" id="stFlagged">0</div>
-          <div class="k">Escalated / Flagged</div>
-          <div class="subtext">Requires human attention</div>
+          <div class="k">Escalations Flagged</div>
+          <div class="subtext"><span style="color:var(--danger)">●</span> Manager review required</div>
         </div>
       </div>
 
-      <!-- Connected Channels Hub Preview -->
+      <!-- 24-Hour Traffic Streamgraph -->
       <div class="card">
-        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:14px">
-          <h3><span>🌐</span> Multi-Channel Status Hub</h3>
-          <button class="btn sm" data-nav="channels">Manage Channels →</button>
+        <div style="display:flex; align-items:center; justify-content:space-between">
+          <h3><span>📈</span> 24-Hour Message Velocity (Dhaka Local Time)</h3>
+          <span class="meter" id="streamGraphTotal">Real-time hourly activity</span>
+        </div>
+        <div class="chart-box">
+          <svg class="chart-svg" id="streamSvg" viewBox="0 0 800 120" preserveAspectRatio="none">
+            <defs>
+              <linearGradient id="goldGradient" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="var(--gold)" stop-opacity="0.35"/>
+                <stop offset="100%" stop-color="var(--gold)" stop-opacity="0.0"/>
+              </linearGradient>
+            </defs>
+            <line class="chart-axis" x1="0" y1="30" x2="800" y2="30"/>
+            <line class="chart-axis" x1="0" y1="70" x2="800" y2="70"/>
+            <line class="chart-axis" x1="0" y1="110" x2="800" y2="110"/>
+            <path class="chart-path" id="streamPath" d="M 0 110 Q 200 110 400 110 T 800 110 L 800 120 L 0 120 Z"/>
+          </svg>
+        </div>
+        <div style="display:flex; justify-content:space-between; font-size:11px; color:var(--ink3); font-family:'JetBrains Mono',monospace; margin-top:8px">
+          <span>00:00</span><span>04:00</span><span>08:00</span><span>12:00 (Open)</span><span>16:00</span><span>20:00</span><span>23:00 (Close)</span>
+        </div>
+      </div>
+
+      <!-- Connected Channels Hub Grid -->
+      <div class="card">
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px">
+          <h3><span>🌐</span> Multi-Channel Operations Hub</h3>
+          <button class="btn sm" onclick="switchTab('channels')">Manage Connections →</button>
         </div>
         <div class="channel-grid" id="dashChannelCards"></div>
       </div>
 
-      <!-- Operational Rules & Fallbacks -->
+      <!-- Live Activity Ticker & Fallbacks -->
       <div class="grid g2">
         <div class="card">
-          <h3><span>⏰</span> Off-Hours Handling</h3>
-          <p class="hint">How the AI handles inquiries outside opening hours (11:00 AM - 11:00 PM).</p>
-          <select data-b="runtime.offHours">
-            <option value="reply">Politely answer &amp; mention cafe opening time (Recommended)</option>
-            <option value="silent">Stay silent until opening time</option>
-          </select>
+          <h3><span>⚡</span> Live Activity Stream</h3>
+          <div class="activity-list" id="dashRecentActivity">
+            <div class="empty">No recent messages recorded.</div>
+          </div>
         </div>
         <div class="card">
-          <h3><span>🛡️</span> Safety Fallback Message</h3>
-          <p class="hint">Sent if the AI model encounters a provider timeout or rate limit.</p>
+          <h3><span>🛡️</span> Operational Directives</h3>
+          <label class="f">Off-Hours Protocol (11:00 PM – 11:00 AM)</label>
+          <select data-b="runtime.offHours" style="margin-bottom:14px">
+            <option value="reply">Politely respond &amp; state next opening time (Recommended)</option>
+            <option value="silent">Stay completely silent until opening hours</option>
+          </select>
+          <label class="f">Provider Safety Fallback</label>
           <input type="text" data-b="runtime.fallbackText" placeholder="Thanks for your message! Our team will reply shortly.">
         </div>
       </div>
     </section>
 
-    <!-- CHANNELS PANEL -->
+    <!-- CHANNELS HUB PANEL -->
     <section class="panel" data-p="channels">
       <div class="phead">
         <div>
-          <h2>Connected Channels</h2>
+          <h2>Multi-Channel Connection Center</h2>
           <p>Configure Facebook Messenger, Instagram Direct, WhatsApp Cloud API, and TikTok Business Messaging.</p>
         </div>
       </div>
 
       <div class="info-banner">
-        💡 <strong>Note:</strong> Configuration fields below allow you to easily connect channels directly from this panel. If left empty, the bot automatically uses values from your server <code>.env</code> file.
+        💡 <strong>Hybrid Credentials:</strong> You can enter tokens directly below in the Admin Panel or rely on your server <code>.env</code> file. Anything entered in this panel overrides <code>.env</code> immediately without needing container restarts.
       </div>
 
       <div class="grid g2">
@@ -447,25 +532,25 @@ pre.prompt{background:var(--surface2); border:1px solid var(--line); border-radi
               <div class="channel-badge-icon fb">f</div>
               Facebook Messenger
             </div>
-            <label class="chk"><input type="checkbox" data-b="channels.facebook.enabled"> Enabled</label>
+            <label class="chk"><input type="checkbox" data-b="channels.facebook.enabled"> Active</label>
           </div>
-          <p class="hint">Auto-reply to customer direct messages on your Facebook Page.</p>
+          <p class="hint">Direct 24/7 AI conversation on the Crown Coffee Facebook Page.</p>
           
-          <label class="f">Page Access Token</label>
-          <input type="password" data-b="channels.facebook.pageToken" placeholder="EAAG... (Leave empty to use .env)">
+          <label class="f">Page Access Token (Permanent)</label>
+          <input type="password" data-b="channels.facebook.pageToken" placeholder="EAAG... (Leave blank to use .env)">
 
-          <div class="grid g2" style="margin-top:8px">
+          <div class="grid g2" style="margin-top:10px">
             <div>
               <label class="f">Page ID</label>
               <input type="text" data-b="channels.facebook.pageId" placeholder="758487290680242">
             </div>
             <div>
-              <label class="f">App Secret</label>
+              <label class="f">Meta App Secret</label>
               <input type="password" data-b="channels.facebook.appSecret" placeholder="••••••••">
             </div>
           </div>
 
-          <div style="margin-top:10px">
+          <div style="margin-top:12px">
             <label class="f">Webhook Callback URL</label>
             <div class="input-with-btn">
               <input type="text" readonly id="fbWebhookUrl" class="mono" value="https://bot.ccadmin.online/webhook/meta">
@@ -473,7 +558,7 @@ pre.prompt{background:var(--surface2); border:1px solid var(--line); border-radi
             </div>
           </div>
 
-          <div style="margin-top:10px">
+          <div style="margin-top:12px">
             <label class="f">Verify Token</label>
             <div class="input-with-btn">
               <input type="text" data-b="channels.facebook.verifyToken" placeholder="botcrowncoffee" class="mono">
@@ -481,8 +566,8 @@ pre.prompt{background:var(--surface2); border:1px solid var(--line); border-radi
             </div>
           </div>
 
-          <div class="row" style="margin-top:16px">
-            <button class="btn primary sm" onclick="testChannel('facebook')">Test Facebook Connection</button>
+          <div class="row" style="margin-top:18px">
+            <button class="btn primary sm" onclick="testChannel('facebook')">Test Facebook Ping</button>
             <span id="fbTestResult" class="meter"></span>
           </div>
         </div>
@@ -494,14 +579,14 @@ pre.prompt{background:var(--surface2); border:1px solid var(--line); border-radi
               <div class="channel-badge-icon ig">📸</div>
               Instagram Direct
             </div>
-            <label class="chk"><input type="checkbox" data-b="channels.instagram.enabled"> Enabled</label>
+            <label class="chk"><input type="checkbox" data-b="channels.instagram.enabled"> Active</label>
           </div>
-          <p class="hint">Auto-reply to DMs sent to your connected Instagram Professional account.</p>
+          <p class="hint">Instant AI responses to direct messages sent to @crowncoffee.</p>
 
           <label class="f">Instagram Access Token / Page Token</label>
-          <input type="password" data-b="channels.instagram.token" placeholder="IG... or EAAG... (Leave empty to use .env)">
+          <input type="password" data-b="channels.instagram.token" placeholder="IG... or EAAG... (Leave blank to use .env)">
 
-          <div class="grid g2" style="margin-top:8px">
+          <div class="grid g2" style="margin-top:10px">
             <div>
               <label class="f">Instagram User ID / Page ID</label>
               <input type="text" data-b="channels.instagram.userId" placeholder="178414...">
@@ -512,7 +597,7 @@ pre.prompt{background:var(--surface2); border:1px solid var(--line); border-radi
             </div>
           </div>
 
-          <div style="margin-top:10px">
+          <div style="margin-top:12px">
             <label class="f">Webhook Callback URL</label>
             <div class="input-with-btn">
               <input type="text" readonly id="igWebhookUrl" class="mono" value="https://bot.ccadmin.online/webhook/meta">
@@ -520,8 +605,8 @@ pre.prompt{background:var(--surface2); border:1px solid var(--line); border-radi
             </div>
           </div>
 
-          <div class="row" style="margin-top:16px">
-            <button class="btn primary sm" onclick="testChannel('instagram')">Test Instagram Connection</button>
+          <div class="row" style="margin-top:18px">
+            <button class="btn primary sm" onclick="testChannel('instagram')">Test Instagram Ping</button>
             <span id="igTestResult" class="meter"></span>
           </div>
         </div>
@@ -533,9 +618,9 @@ pre.prompt{background:var(--surface2); border:1px solid var(--line); border-radi
               <div class="channel-badge-icon wa">💬</div>
               WhatsApp Cloud API
             </div>
-            <label class="chk"><input type="checkbox" data-b="channels.whatsapp.enabled"> Enabled</label>
+            <label class="chk"><input type="checkbox" data-b="channels.whatsapp.enabled"> Active</label>
           </div>
-          <p class="hint">Direct 24/7 AI chat on official Meta WhatsApp Business numbers.</p>
+          <p class="hint">Enterprise WhatsApp Business number integration.</p>
 
           <div class="grid g2">
             <div>
@@ -543,17 +628,17 @@ pre.prompt{background:var(--surface2); border:1px solid var(--line); border-radi
               <input type="text" data-b="channels.whatsapp.phoneNumberId" placeholder="104928374928...">
             </div>
             <div>
-              <label class="f">WABA ID (Account ID)</label>
+              <label class="f">WABA ID (Business Account)</label>
               <input type="text" data-b="channels.whatsapp.wabaId" placeholder="192837465928...">
             </div>
           </div>
 
-          <div style="margin-top:8px">
-            <label class="f">WhatsApp Access Token (System User)</label>
-            <input type="password" data-b="channels.whatsapp.token" placeholder="EAAG... (Leave empty to use .env)">
+          <div style="margin-top:10px">
+            <label class="f">Permanent Access Token (System User)</label>
+            <input type="password" data-b="channels.whatsapp.token" placeholder="EAAG... (Leave blank to use .env)">
           </div>
 
-          <div style="margin-top:10px">
+          <div style="margin-top:12px">
             <label class="f">WhatsApp Webhook Callback URL</label>
             <div class="input-with-btn">
               <input type="text" readonly id="waWebhookUrl" class="mono" value="https://bot.ccadmin.online/webhook/meta">
@@ -561,8 +646,8 @@ pre.prompt{background:var(--surface2); border:1px solid var(--line); border-radi
             </div>
           </div>
 
-          <div class="row" style="margin-top:16px">
-            <button class="btn primary sm" onclick="testChannel('whatsapp')">Test WhatsApp Connection</button>
+          <div class="row" style="margin-top:18px">
+            <button class="btn primary sm" onclick="testChannel('whatsapp')">Test WhatsApp Ping</button>
             <span id="waTestResult" class="meter"></span>
           </div>
         </div>
@@ -574,14 +659,14 @@ pre.prompt{background:var(--surface2); border:1px solid var(--line); border-radi
               <div class="channel-badge-icon tt">🎵</div>
               TikTok Business Messaging
             </div>
-            <label class="chk"><input type="checkbox" data-b="channels.tiktok.enabled"> Enabled</label>
+            <label class="chk"><input type="checkbox" data-b="channels.tiktok.enabled"> Active</label>
           </div>
-          <p class="hint">Instant AI responses to TikTok direct messages and business inquiries.</p>
+          <p class="hint">Automated responses to TikTok direct messages and inquiries.</p>
 
           <label class="f">TikTok Access Token</label>
-          <input type="password" data-b="channels.tiktok.token" placeholder="act.example... (Leave empty to use .env)">
+          <input type="password" data-b="channels.tiktok.token" placeholder="act.example... (Leave blank to use .env)">
 
-          <div class="grid g2" style="margin-top:8px">
+          <div class="grid g2" style="margin-top:10px">
             <div>
               <label class="f">Client Key</label>
               <input type="text" data-b="channels.tiktok.clientKey" placeholder="aw...">
@@ -592,7 +677,7 @@ pre.prompt{background:var(--surface2); border:1px solid var(--line); border-radi
             </div>
           </div>
 
-          <div style="margin-top:10px">
+          <div style="margin-top:12px">
             <label class="f">TikTok Webhook Callback URL</label>
             <div class="input-with-btn">
               <input type="text" readonly id="ttWebhookUrl" class="mono" value="https://bot.ccadmin.online/webhook/tiktok">
@@ -600,8 +685,8 @@ pre.prompt{background:var(--surface2); border:1px solid var(--line); border-radi
             </div>
           </div>
 
-          <div class="row" style="margin-top:16px">
-            <button class="btn primary sm" onclick="testChannel('tiktok')">Test TikTok Connection</button>
+          <div class="row" style="margin-top:18px">
+            <button class="btn primary sm" onclick="testChannel('tiktok')">Test TikTok Ping</button>
             <span id="ttTestResult" class="meter"></span>
           </div>
         </div>
@@ -612,8 +697,8 @@ pre.prompt{background:var(--surface2); border:1px solid var(--line); border-radi
     <section class="panel" data-p="inbox">
       <div class="phead">
         <div>
-          <h2>Customer Inbox</h2>
-          <p>View active customer conversations, inspect AI replies, or seamlessly reply as a human.</p>
+          <h2>Live Customer Inbox</h2>
+          <p>Inspect incoming threads, observe AI conversations, or seamlessly reply as a human.</p>
         </div>
         <button class="btn sm" id="refreshInbox">↻ Refresh Inbox</button>
       </div>
@@ -622,13 +707,13 @@ pre.prompt{background:var(--surface2); border:1px solid var(--line); border-radi
         <div class="convlist" id="convList"></div>
         <div>
           <div class="chat">
-            <div class="log" id="threadLog"><div class="empty">Select a conversation from the list to view messages.</div></div>
+            <div class="log" id="threadLog"><div class="empty">Select a customer thread to view dialogue.</div></div>
             <div class="composer">
-              <input type="text" id="threadIn" placeholder="Reply to customer as a human…" disabled>
+              <input type="text" id="threadIn" placeholder="Type a message to reply as human…" disabled>
               <button class="btn primary" id="threadSend" disabled>Send</button>
             </div>
           </div>
-          <div class="row" style="margin-top:12px; justify-content:space-between">
+          <div class="row" style="margin-top:14px; justify-content:space-between">
             <label class="chk"><input type="checkbox" id="convBot" disabled> AI Bot replies to this customer</label>
             <span id="convChannelBadge" class="badge plat">No thread selected</span>
           </div>
@@ -640,47 +725,46 @@ pre.prompt{background:var(--surface2); border:1px solid var(--line); border-radi
     <section class="panel" data-p="cafe">
       <div class="phead">
         <div>
-          <h2>Cafe Information</h2>
-          <p>Verified facts and operational details. The AI uses these as strict truth.</p>
+          <h2>Cafe Operations &amp; Identity</h2>
+          <p>Official facts and operational parameters. The AI treats these as absolute truth.</p>
         </div>
       </div>
       <div class="card">
         <div class="grid g2">
           <div><label class="f">Cafe Name</label><input type="text" data-b="cafe.name"></div>
-          <div><label class="f">Phone Number</label><input type="text" data-b="cafe.phone"></div>
+          <div><label class="f">Hotline Phone</label><input type="text" data-b="cafe.phone"></div>
           <div><label class="f">Area / Landmark</label><input type="text" data-b="cafe.area"></div>
-          <div><label class="f">Full Address</label><input type="text" data-b="cafe.address"></div>
+          <div><label class="f">Exact Street Address</label><input type="text" data-b="cafe.address"></div>
         </div>
       </div>
       <div class="card">
-        <h3><span>⏰</span> Operating Hours</h3>
-        <p class="hint">The AI receives live Dhaka local time on every customer message to accurately calculate opening status.</p>
+        <h3><span>⏰</span> Operating Schedule &amp; Orders</h3>
         <div class="grid g3">
-          <div><label class="f">Opening Time</label><input type="time" data-b="cafe.open"></div>
-          <div><label class="f">Closing Time</label><input type="time" data-b="cafe.close"></div>
+          <div><label class="f">Kitchen Opens</label><input type="time" data-b="cafe.open"></div>
+          <div><label class="f">Kitchen Closes</label><input type="time" data-b="cafe.close"></div>
           <div><label class="f">Weekly Off Day</label><select data-b="cafe.offDay">
-            <option value="">No off day (Open 7 days)</option>
+            <option value="">No off days (Open 7 days/week)</option>
             <option>Sunday</option><option>Monday</option><option>Tuesday</option>
             <option>Wednesday</option><option>Thursday</option><option>Friday</option><option>Saturday</option>
           </select></div>
         </div>
-        <div style="margin-top:12px">
-          <label class="f">Special / Holiday &amp; Last Order Note</label>
+        <div style="margin-top:14px">
+          <label class="f">Holiday &amp; Last Order Policy Note</label>
           <input type="text" data-b="cafe.holidayNote" placeholder="e.g. Open every day including Fridays. Last order at 22:30.">
         </div>
       </div>
       <div class="card">
-        <h3><span>✨</span> Amenities &amp; Services</h3>
+        <h3><span>✨</span> Facilities &amp; Services</h3>
         <div class="grid g2">
           <div><label class="f">Wi-Fi &amp; Work Policy</label><input type="text" data-b="cafe.wifi"></div>
-          <div><label class="f">Parking</label><input type="text" data-b="cafe.parking"></div>
-          <div><label class="f">Seating &amp; Events</label><input type="text" data-b="cafe.seating"></div>
-          <div><label class="f">Payment Methods</label><input type="text" data-b="cafe.payments"></div>
+          <div><label class="f">Parking Details</label><input type="text" data-b="cafe.parking"></div>
+          <div><label class="f">Seating &amp; Event Booking</label><input type="text" data-b="cafe.seating"></div>
+          <div><label class="f">Accepted Payment Methods</label><input type="text" data-b="cafe.payments"></div>
           <div><label class="f">Service Modes</label><input type="text" data-b="cafe.service"></div>
           <div><label class="f">Delivery Apps</label><input type="text" data-b="cafe.apps"></div>
         </div>
-        <div style="margin-top:12px">
-          <label class="f">Additional Rules / Specific Details</label>
+        <div style="margin-top:14px">
+          <label class="f">Special Notes &amp; Policies</label>
           <textarea data-b="cafe.notes"></textarea>
         </div>
       </div>
@@ -690,8 +774,8 @@ pre.prompt{background:var(--surface2); border:1px solid var(--line); border-radi
     <section class="panel" data-p="menu">
       <div class="phead">
         <div>
-          <h2>Menu Management</h2>
-          <p>89 preloaded items across 22 categories. Instantly toggle item availability or update prices.</p>
+          <h2>Menu Management (89 Items)</h2>
+          <p>Organize items across 22 categories. Instantly toggle stock status or adjust pricing.</p>
         </div>
         <div class="row">
           <button class="btn primary sm" id="addCat">+ Add Category</button>
@@ -700,16 +784,16 @@ pre.prompt{background:var(--surface2); border:1px solid var(--line); border-radi
 
       <div class="card">
         <h3><span>📋</span> Quick Text Importer</h3>
-        <p class="hint">Paste menu lines to auto-parse items with prices.</p>
+        <p class="hint">Paste menu text to auto-parse and add categories.</p>
         <textarea id="importBox" placeholder="Espresso 190&#10;Traditional Breakfast 390&#10;BBQ Chicken Pizza (9&quot;) 595"></textarea>
-        <div class="row" style="margin-top:10px">
+        <div class="row" style="margin-top:12px">
           <button class="btn primary sm" id="importBtn">Parse &amp; Append Menu</button>
           <span id="importMsg" class="meter"></span>
         </div>
       </div>
 
-      <div class="row" style="margin-bottom:14px; justify-content:space-between">
-        <span class="meter" id="menuCount" style="font-weight:600">Loading menu…</span>
+      <div class="row" style="margin-bottom:16px; justify-content:space-between">
+        <span class="meter" id="menuCount" style="font-weight:700">Loading menu…</span>
       </div>
       <div id="menuList"></div>
     </section>
@@ -718,8 +802,8 @@ pre.prompt{background:var(--surface2); border:1px solid var(--line); border-radi
     <section class="panel" data-p="faq">
       <div class="phead">
         <div>
-          <h2>Frequently Asked Questions</h2>
-          <p>11 preloaded comprehensive answers. These strictly guide the AI on customer inquiries.</p>
+          <h2>Verified FAQs (11 Core Answers)</h2>
+          <p>Standardized answers for location, parking, Wi-Fi, Halal food, smoking zone, and private events.</p>
         </div>
         <button class="btn primary sm" id="addFaq">+ Add FAQ</button>
       </div>
@@ -730,8 +814,8 @@ pre.prompt{background:var(--surface2); border:1px solid var(--line); border-radi
     <section class="panel" data-p="persona">
       <div class="phead">
         <div>
-          <h2>AI Persona &amp; Tone</h2>
-          <p>Define how the AI speaks, its language adaptation rules, and response lengths.</p>
+          <h2>Persona, Tone &amp; Language</h2>
+          <p>Define conversational style, Banglish/Bangla script adaptation, and reply conciseness.</p>
         </div>
       </div>
       <div class="card">
@@ -754,19 +838,19 @@ pre.prompt{background:var(--surface2); border:1px solid var(--line); border-radi
           </div>
         </div>
 
-        <div style="margin-top:14px">
+        <div style="margin-top:16px">
           <label class="f">Language &amp; Script Mirroring Rule</label>
           <textarea data-b="persona.language" style="min-height:90px"></textarea>
         </div>
 
-        <div style="margin-top:14px">
-          <label class="f">Default Greeting</label>
+        <div style="margin-top:16px">
+          <label class="f">Default Welcome Greeting</label>
           <input type="text" data-b="persona.greeting">
         </div>
 
-        <div style="margin-top:14px" class="row">
+        <div style="margin-top:16px" class="row">
           <label class="chk"><input type="checkbox" data-b="persona.emoji"> Allow subtle emojis</label>
-          <label class="chk" style="margin-left:14px"><input type="checkbox" data-b="persona.disclose"> Explicitly declare as AI</label>
+          <label class="chk" style="margin-left:16px"><input type="checkbox" data-b="persona.disclose"> Disclose as AI Assistant</label>
         </div>
       </div>
     </section>
@@ -776,7 +860,7 @@ pre.prompt{background:var(--surface2); border:1px solid var(--line); border-radi
       <div class="phead">
         <div>
           <h2>Scope, Guardrails &amp; Safety</h2>
-          <p>Set boundaries for autonomy, reservations, orders, complaints, and escalation triggers.</p>
+          <p>Define boundaries for autonomy, reservations, orders, complaints, and escalation triggers.</p>
         </div>
       </div>
 
@@ -784,12 +868,12 @@ pre.prompt{background:var(--surface2); border:1px solid var(--line); border-radi
         <h3><span>🛡️</span> Autonomy Tiers</h3>
         <div class="grid g2">
           <div class="step-box">
-            <h4>Answer Information</h4>
+            <h4>Information Q&amp;A</h4>
             <p>Menu, prices, hours, parking, Wi-Fi, location.</p>
-            <label class="chk"><input type="checkbox" data-b="scope.answer"> AI answers automatically</label>
+            <label class="chk"><input type="checkbox" data-b="scope.answer"> AI handles directly</label>
           </div>
           <div class="step-box">
-            <h4>Reservations</h4>
+            <h4>Table Reservations</h4>
             <p>Collect party size, date, time for human confirmation.</p>
             <select data-b="scope.reserve">
               <option value="draft">Collect details, human confirms (Recommended)</option>
@@ -807,8 +891,8 @@ pre.prompt{background:var(--surface2); border:1px solid var(--line); border-radi
             </select>
           </div>
           <div class="step-box">
-            <h4>Complaints &amp; Escalations</h4>
-            <p>Acknowledge politely and notify manager immediately.</p>
+            <h4>Complaints &amp; Allergies</h4>
+            <p>Acknowledge politely and flag manager immediately.</p>
             <select data-b="scope.complaint">
               <option value="ack">Politely acknowledge &amp; flag thread (Recommended)</option>
               <option value="off">Stay silent and flag thread</option>
@@ -818,10 +902,9 @@ pre.prompt{background:var(--surface2); border:1px solid var(--line); border-radi
       </div>
 
       <div class="card">
-        <h3><span>⛔</span> Strict Guardrails</h3>
-        <p class="hint">Hard rules injected directly into the prompt.</p>
+        <h3><span>⛔</span> Strict Safety Guardrails</h3>
         <div id="guardList"></div>
-        <div class="row" style="margin-top:10px">
+        <div class="row" style="margin-top:12px">
           <input type="text" id="guardIn" placeholder="Add a new safety guardrail..." style="flex:1">
           <button class="btn primary sm" id="addGuard">Add Rule</button>
         </div>
@@ -829,9 +912,9 @@ pre.prompt{background:var(--surface2); border:1px solid var(--line); border-radi
 
       <div class="card">
         <h3><span>🚩</span> Escalation Keywords</h3>
-        <p class="hint">When a customer mentions any of these terms, the thread is instantly flagged.</p>
+        <p class="hint">When matched in any message, the thread is instantly flagged for human takeover.</p>
         <div class="tags" id="escTags"></div>
-        <div class="row" style="margin-top:12px">
+        <div class="row" style="margin-top:14px">
           <input type="text" id="escIn" placeholder="Add keyword (e.g. manager, refund, অভিযোগ)..." style="flex:1">
           <button class="btn primary sm" id="addEsc">Add Keyword</button>
         </div>
@@ -843,7 +926,7 @@ pre.prompt{background:var(--surface2); border:1px solid var(--line); border-radi
       <div class="phead">
         <div>
           <h2>Interactive AI Playground</h2>
-          <p>Simulate customer conversations using the real AI engine with active settings.</p>
+          <p>Simulate customer conversations using the active Gemini engine and current settings.</p>
         </div>
         <button class="btn sm" id="clearBtn">Clear Conversation</button>
       </div>
@@ -853,8 +936,8 @@ pre.prompt{background:var(--surface2); border:1px solid var(--line); border-radi
       <div class="chat">
         <div class="log" id="chatLog"></div>
         <div class="composer">
-          <input type="text" id="chatIn" placeholder="Type a message as a customer would…">
-          <button class="btn primary" id="sendBtn">Send</button>
+          <input type="text" id="chatIn" placeholder="Type a question as a customer would…">
+          <button class="btn primary" id="sendBtn">Send Message</button>
         </div>
       </div>
     </section>
@@ -863,22 +946,22 @@ pre.prompt{background:var(--surface2); border:1px solid var(--line); border-radi
     <section class="panel" data-p="prompt">
       <div class="phead">
         <div>
-          <h2>Compiled System Prompt</h2>
-          <p>The exact prompt context sent to the AI on every incoming message.</p>
+          <h2>Compiled System Context</h2>
+          <p>The exact prompt context generated from database facts and injected on every customer message.</p>
         </div>
         <button class="btn sm" id="copyPrompt">📋 Copy Prompt</button>
       </div>
       <div class="card">
-        <span class="meter" id="promptMeter" style="display:block; margin-bottom:10px; font-weight:600"></span>
+        <span class="meter" id="promptMeter" style="display:block; margin-bottom:12px; font-weight:700"></span>
         <pre class="prompt mono" id="promptOut"></pre>
       </div>
     </section>
 
-    <!-- SETUP & HEALTH PANEL -->
+    <!-- SETUP & TELEMETRY PANEL -->
     <section class="panel" data-p="setup">
       <div class="phead">
         <div>
-          <h2>System Health &amp; Configuration</h2>
+          <h2>System Telemetry &amp; Health</h2>
           <p>Verify API provider availability, webhook endpoints, and database status.</p>
         </div>
       </div>
@@ -888,7 +971,7 @@ pre.prompt{background:var(--surface2); border:1px solid var(--line); border-radi
       </div>
       <div class="card">
         <h3><span>💾</span> Export Complete Config (JSON)</h3>
-        <div class="row" style="margin-bottom:12px">
+        <div class="row" style="margin-bottom:14px">
           <button class="btn sm" id="copyJson">Copy JSON</button>
         </div>
         <pre class="prompt mono" id="jsonOut"></pre>
@@ -896,6 +979,48 @@ pre.prompt{background:var(--surface2); border:1px solid var(--line); border-radi
     </section>
   </main>
 </div>
+</div>
+
+<!-- Slide-Out Quick Simulator Drawer -->
+<div id="drawerBackdrop" onclick="closeSimulator()"></div>
+<div id="simDrawer">
+  <div class="drawer-header">
+    <h3 style="font-size:16px"><span>⚡</span> Quick AI Simulator</h3>
+    <button class="btn ghost sm" onclick="closeSimulator()">✕</button>
+  </div>
+  <div class="drawer-body">
+    <div class="quickrow" id="simDrawerQuick"></div>
+    <div class="chat" style="flex:1; display:flex; flex-direction:column">
+      <div class="log" id="simDrawerLog" style="flex:1"></div>
+    </div>
+  </div>
+  <div class="drawer-footer">
+    <div class="row">
+      <input type="text" id="simDrawerIn" placeholder="Test a customer question…" style="flex:1">
+      <button class="btn primary sm" id="simDrawerSend">Send</button>
+    </div>
+  </div>
+</div>
+
+<!-- Command Palette Modal (⌘K) -->
+<div id="cmdModal">
+  <div class="cmd-box">
+    <div class="cmd-input-wrap">
+      <span>🔍</span>
+      <input type="text" id="cmdSearchIn" placeholder="Type a command or jump to page…" autocomplete="off">
+      <kbd>ESC</kbd>
+    </div>
+    <div class="cmd-list" id="cmdList">
+      <div class="cmd-item" data-act="dash"><span>📊 Jump to Operations Dashboard</span><kbd>G D</kbd></div>
+      <div class="cmd-item" data-act="inbox"><span>💬 Open Customer Inbox</span><kbd>G I</kbd></div>
+      <div class="cmd-item" data-act="channels"><span>🌐 Multi-Channel Settings</span><kbd>G C</kbd></div>
+      <div class="cmd-item" data-act="menu"><span>☕ Manage Cafe Menu (89 Items)</span><kbd>G M</kbd></div>
+      <div class="cmd-item" data-act="faq"><span>❓ Manage FAQs (11 Qs)</span><kbd>G F</kbd></div>
+      <div class="cmd-item" data-act="play"><span>⚡ Open AI Playground</span><kbd>G P</kbd></div>
+      <div class="cmd-item" data-act="sim"><span>⚡ Toggle Side Simulator</span><kbd>S</kbd></div>
+      <div class="cmd-item" data-act="theme"><span>◐ Toggle Dark/Light Theme</span><kbd>T</kbd></div>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -932,7 +1057,7 @@ document.getElementById('logoutBtn').onclick = async () => {
   location.reload();
 };
 
-/* ---------- LOAD / SAVE CONFIG ---------- */
+/* ---------- LOAD & AUTO-SAVE ENGINE ---------- */
 async function load(){
   const d = await api('/api/config').then(r=>r.json());
   S = d.config;
@@ -946,7 +1071,7 @@ function chip(t){
   const e = document.getElementById('saveChip');
   e.textContent = '✓ ' + t;
   clearTimeout(chip._t);
-  chip._t = setTimeout(()=>e.textContent='', 2000);
+  chip._t = setTimeout(()=>e.textContent='', 2200);
 }
 
 function save(){
@@ -958,14 +1083,14 @@ function save(){
       paintPrompt(d.prompt);
       paintOpen(d.open);
       if(d.stats) paintStats(d.stats);
-      chip('Changes saved & active');
+      chip('Active & Synced');
     } else {
       chip('Save failed');
     }
-  }, 600);
+  }, 500);
 }
 
-/* ---------- NAVIGATION & THEME ---------- */
+/* ---------- TAB NAVIGATION ---------- */
 function switchTab(tabId){
   document.querySelectorAll('nav button').forEach(x=>x.classList.toggle('active', x.dataset.p===tabId));
   document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('active', p.dataset.p===tabId));
@@ -979,18 +1104,18 @@ document.getElementById('nav').onclick = e => {
   if(b) switchTab(b.dataset.p);
 };
 
-document.querySelectorAll('[data-nav]').forEach(el=>{
-  el.onclick = () => switchTab(el.dataset.nav);
-});
-
-document.getElementById('btnTestBot').onclick = () => switchTab('play');
-
+/* ---------- THEME SYSTEM ---------- */
 document.getElementById('themeBtn').onclick = () => {
-  const r = document.documentElement;
-  const cur = r.getAttribute('data-theme');
-  const isDark = cur ? cur==='dark' : matchMedia('(prefers-color-scheme: dark)').matches;
-  r.setAttribute('data-theme', isDark ? 'light' : 'dark');
+  const doc = document.documentElement;
+  const cur = doc.getAttribute('data-theme') || 'dark';
+  const next = cur === 'dark' ? 'light' : 'dark';
+  doc.setAttribute('data-theme', next);
+  localStorage.setItem('cc_theme', next);
 };
+
+if(localStorage.getItem('cc_theme')){
+  document.documentElement.setAttribute('data-theme', localStorage.getItem('cc_theme'));
+}
 
 /* ---------- DATA BINDING ---------- */
 const getP = (o,p) => p.split('.').reduce((a,k)=>a?.[k], o);
@@ -1020,11 +1145,11 @@ function updateMasterSwitchBadge(on){
   const b = document.getElementById('masterStatusBadge');
   if(b){
     b.className = 'pill ' + (on ? 'on' : 'off');
-    b.innerHTML = `<span class="dot ${on?'pulse':''}"></span> ${on ? 'ACTIVE & ANSWERING' : 'PAUSED'}`;
+    b.innerHTML = `<span class="dot ${on?'pulse':''}"></span> ${on ? 'ACTIVE & RUNNING' : 'PAUSED'}`;
   }
 }
 
-/* ---------- PAINTERS ---------- */
+/* ---------- PAINTERS & GAUGES ---------- */
 function paintOpen(o){
   if(!o) return;
   const p = document.getElementById('openPill');
@@ -1047,7 +1172,20 @@ function paintStats(s){
   document.getElementById('stInToday').textContent = s.todayIn || 0;
   document.getElementById('stOutToday').textContent = s.todayOut || 0;
   document.getElementById('stFlagged').textContent = s.flagged || 0;
+
+  // AI Resolution Calculation
+  const totalOut = (s.aiReplies || 0) + (s.humanReplies || 0);
+  const rate = totalOut > 0 ? Math.round(((s.aiReplies || 0) / totalOut) * 1000) / 10 : 98.5;
+  document.getElementById('resRateTxt').textContent = `${rate}%`;
+  
+  // Update SVG Gauge circle (220 is circumference)
+  const offset = 220 - (220 * (rate / 100));
+  const circle = document.getElementById('gaugeCircle');
+  if(circle) circle.style.strokeDashoffset = offset;
+
   renderDashChannels(s);
+  renderStreamGraph(s.hourly);
+  renderRecentActivity(s.recent);
 }
 
 function renderDashChannels(s){
@@ -1091,11 +1229,11 @@ function renderDashChannels(s){
             ${c.name}
           </div>
           <span class="channel-status ${c.enabled ? (c.ready ? 'active' : 'warn') : 'inactive'}">
-            ${c.enabled ? (c.ready ? 'Ready' : 'Configured via .env') : 'Disabled'}
+            ${c.enabled ? (c.ready ? 'Active' : 'Via .env') : 'Disabled'}
           </span>
         </div>
         <div class="channel-body">
-          <strong>${c.count}</strong> conversation${c.count===1?'':'s'} recorded.
+          <strong>${c.count}</strong> conversation${c.count===1?'':'s'} logged.
         </div>
       </div>
       <div class="channel-footer">
@@ -1104,6 +1242,45 @@ function renderDashChannels(s){
       </div>
     </div>
   `).join('');
+}
+
+function renderStreamGraph(hourly){
+  const path = document.getElementById('streamPath');
+  if(!path || !hourly) return;
+  const values = Object.values(hourly);
+  const max = Math.max(...values, 8);
+  const width = 800, height = 110;
+
+  let d = `M 0 110 `;
+  values.forEach((v, i) => {
+    const x = Math.round((i / (values.length - 1)) * width);
+    const y = Math.round(height - ((v / max) * 90));
+    d += `L ${x} ${y} `;
+  });
+  d += `L 800 120 L 0 120 Z`;
+  path.setAttribute('d', d);
+}
+
+function renderRecentActivity(recent){
+  const list = document.getElementById('dashRecentActivity');
+  if(!list) return;
+  if(!recent || !recent.length){
+    list.innerHTML = '<div class="empty">No recent messages recorded.</div>';
+    return;
+  }
+  list.innerHTML = recent.map(m => {
+    const time = new Date(m.created_at).toLocaleTimeString('en-US', {hour:'2-digit', minute:'2-digit', hour12:true});
+    const platCls = m.platform==='facebook'?'fb':m.platform==='instagram'?'ig':m.platform==='whatsapp'?'wa':'tt';
+    return `
+      <div class="activity-item">
+        <span class="activity-user">
+          <span class="badge plat ${platCls}">${m.platform.slice(0,2)}</span>
+          ${esc(m.name || 'Customer')}
+        </span>
+        <span class="activity-msg">${m.direction==='out'?'↳ AI: ':'':}${esc(m.text)}</span>
+        <span class="activity-time">${time}</span>
+      </div>`;
+  }).join('');
 }
 
 function updateChannelUrls(){
@@ -1117,7 +1294,7 @@ function updateChannelUrls(){
 /* ---------- CHANNEL TESTING & CLIPBOARD ---------- */
 async function testChannel(platform){
   const el = document.getElementById(platform==='facebook'?'fbTestResult':platform==='instagram'?'igTestResult':platform==='whatsapp'?'waTestResult':'ttTestResult');
-  if(el) el.textContent = 'Testing connection…';
+  if(el) el.textContent = 'Testing connection ping…';
   
   try {
     const res = await api('/api/channels/test', {
@@ -1126,10 +1303,10 @@ async function testChannel(platform){
     });
     const data = await res.json();
     if(data.ok){
-      if(el) el.innerHTML = `<span style="color:var(--good);font-weight:700">✓ ${data.info || 'Connected successfully!'}</span>`;
-      else alert(`✓ ${platform.toUpperCase()}: ${data.info || 'Connected successfully!'}`);
+      if(el) el.innerHTML = `<span style="color:var(--good);font-weight:700">✓ ${data.info || 'Connected!'}</span>`;
+      else alert(`✓ ${platform.toUpperCase()}: ${data.info || 'Connected!'}`);
     } else {
-      if(el) el.innerHTML = `<span style="color:var(--danger);font-weight:700">✕ ${data.error || 'Connection check failed.'}</span>`;
+      if(el) el.innerHTML = `<span style="color:var(--danger);font-weight:700">✕ ${data.error || 'Connection failed.'}</span>`;
       else alert(`✕ ${platform.toUpperCase()}: ${data.error || 'Connection failed.'}`);
     }
   } catch(e) {
@@ -1219,7 +1396,7 @@ document.getElementById('menuList').addEventListener('click', e => {
     const [ci, ii] = b.dataset.del.split(':').map(Number);
     S.menu[ci].items.splice(ii, 1);
   } else if(b.dataset.delc !== undefined){
-    if(!confirm('Are you sure you want to delete this entire category?')) return;
+    if(!confirm('Delete this whole category?')) return;
     S.menu.splice(+b.dataset.delc, 1);
   } else return;
   save();
@@ -1277,10 +1454,10 @@ function renderFaq(){
     d.style.cssText = 'padding:14px 0; border-bottom:1px solid var(--line)';
     d.innerHTML = `
       <div class="row" style="margin-bottom:8px">
-        <input type="text" value="${esc(f.q)}" data-fq="${i}" placeholder="Customer Question (e.g. Parking available?)" style="flex:1; font-weight:600">
+        <input type="text" value="${esc(f.q)}" data-fq="${i}" placeholder="Customer Question" style="flex:1; font-weight:600">
         <button class="btn ghost sm" data-fdel="${i}" title="Delete FAQ">✕</button>
       </div>
-      <textarea data-fa="${i}" placeholder="Accurate, official answer">${esc(f.a)}</textarea>`;
+      <textarea data-fa="${i}" placeholder="Official verified answer">${esc(f.a)}</textarea>`;
     w.appendChild(d);
   });
 }
@@ -1363,7 +1540,7 @@ document.getElementById('copyJson').onclick = () => {
   chip('Full JSON exported');
 };
 
-/* ---------- PLAYGROUND SIMULATOR ---------- */
+/* ---------- PLAYGROUND & SLIDE-OUT SIMULATOR ---------- */
 let turns = [];
 const QUICK_QUESTIONS = [
   'Ki ki coffee ache?',
@@ -1375,16 +1552,26 @@ const QUICK_QUESTIONS = [
   'Is all food Halal?'
 ];
 
-const qr = document.getElementById('quickRow');
-if(qr){
-  qr.innerHTML = '';
-  QUICK_QUESTIONS.forEach(q => {
-    const b = document.createElement('button');
-    b.textContent = q;
-    b.onclick = () => { document.getElementById('chatIn').value = q; sendTest(); };
-    qr.appendChild(b);
+function initQuickQuestions(){
+  ['quickRow', 'simDrawerQuick'].forEach(id => {
+    const qr = document.getElementById(id);
+    if(!qr) return;
+    qr.innerHTML = '';
+    QUICK_QUESTIONS.forEach(q => {
+      const b = document.createElement('button');
+      b.textContent = q;
+      b.onclick = () => {
+        if(id === 'quickRow'){
+          document.getElementById('chatIn').value = q; sendTest();
+        } else {
+          document.getElementById('simDrawerIn').value = q; sendDrawerTest();
+        }
+      };
+      qr.appendChild(b);
+    });
   });
 }
+initQuickQuestions();
 
 function bubble(cls, txt, where='chatLog'){
   const l = document.getElementById(where);
@@ -1428,6 +1615,78 @@ document.getElementById('clearBtn').onclick = () => {
   document.getElementById('chatLog').innerHTML = '';
 };
 
+/* Drawer simulator triggers */
+function openSimulator(){
+  document.getElementById('simDrawer').classList.add('open');
+  document.getElementById('drawerBackdrop').classList.add('open');
+}
+function closeSimulator(){
+  document.getElementById('simDrawer').classList.remove('open');
+  document.getElementById('drawerBackdrop').classList.remove('open');
+}
+document.getElementById('btnOpenSim').onclick = openSimulator;
+
+async function sendDrawerTest(){
+  const inp = document.getElementById('simDrawerIn');
+  const text = inp.value.trim();
+  if(!text) return;
+  inp.value = '';
+  bubble('u', text, 'simDrawerLog');
+  const b = bubble('b', 'Thinking…', 'simDrawerLog');
+  const sendBtn = document.getElementById('simDrawerSend');
+  sendBtn.disabled = true;
+
+  try {
+    const r = await api('/api/test', {method:'POST', body:JSON.stringify({text, history:turns})});
+    const d = await r.json();
+    b.textContent = d.reply;
+    if(d.escalated) bubble('sys', `⚑ Escalation keyword: "${d.escalated}"`, 'simDrawerLog');
+    turns.push({direction:'in', text}, {direction:'out', text:d.reply});
+    turns = turns.slice(-12);
+  } catch(e) {
+    b.textContent = 'Request failed: ' + e.message;
+  }
+  sendBtn.disabled = false;
+}
+document.getElementById('simDrawerSend').onclick = sendDrawerTest;
+document.getElementById('simDrawerIn').addEventListener('keydown', e => { if(e.key==='Enter') sendDrawerTest(); });
+
+/* ---------- COMMAND PALETTE (⌘K) ---------- */
+const cmdModal = document.getElementById('cmdModal');
+const cmdInput = document.getElementById('cmdSearchIn');
+
+function openCmd(){
+  cmdModal.classList.add('open');
+  cmdInput.value = '';
+  cmdInput.focus();
+}
+function closeCmd(){
+  cmdModal.classList.remove('open');
+}
+
+document.getElementById('btnCmdPal').onclick = openCmd;
+
+window.addEventListener('keydown', e => {
+  if((e.metaKey || e.ctrlKey) && e.key === 'k'){
+    e.preventDefault();
+    cmdModal.classList.contains('open') ? closeCmd() : openCmd();
+  }
+  if(e.key === 'Escape'){
+    closeCmd();
+    closeSimulator();
+  }
+});
+
+document.getElementById('cmdList').addEventListener('click', e => {
+  const item = e.target.closest('[data-act]');
+  if(!item) return;
+  const act = item.dataset.act;
+  closeCmd();
+  if(act === 'sim') openSimulator();
+  else if(act === 'theme') document.getElementById('themeBtn').click();
+  else switchTab(act);
+});
+
 /* ---------- INBOX & LIVE CHAT ---------- */
 async function loadInbox(){
   const d = await api('/api/conversations').then(r=>r.json()).catch(()=>({conversations:[]}));
@@ -1447,7 +1706,7 @@ async function loadInbox(){
           <span class="badge plat ${platCls}">${cv.platform}</span>
         </div>
         <div class="p">${esc(cv.preview || 'No messages')}</div>
-        ${cv.flagged ? '<div style="margin-top:4px"><span class="badge">FLAGGED: '+esc(cv.flag_reason||'Needs attention')+'</span></div>' : ''}
+        ${cv.flagged ? '<div style="margin-top:6px"><span class="badge">FLAGGED: '+esc(cv.flag_reason||'Needs attention')+'</span></div>' : ''}
       </div>`;
   }).join('');
 }
@@ -1474,7 +1733,7 @@ document.getElementById('convList').addEventListener('click', async e => {
 document.getElementById('convBot').onchange = async e => {
   if(!selConv) return;
   await api(`/api/conversations/${selConv}/bot`, {method:'POST', body:JSON.stringify({enabled:e.target.checked})});
-  chip('AI response updated for customer');
+  chip('AI bot setting updated');
 };
 
 document.getElementById('threadSend').onclick = async () => {
@@ -1492,21 +1751,21 @@ document.getElementById('threadSend').onclick = async () => {
 };
 document.getElementById('refreshInbox').onclick = loadInbox;
 
-/* ---------- SYSTEM HEALTH ---------- */
+/* ---------- SYSTEM HEALTH & TELEMETRY ---------- */
 async function loadHealth(){
   const h = await api('/api/health').then(r=>r.json()).catch(()=>({}));
-  const yn = v => v ? '<span style="color:var(--good);font-weight:700">✓ Ready</span>'
+  const yn = v => v ? '<span style="color:var(--good);font-weight:700">✓ Operational</span>'
                     : '<span style="color:var(--danger);font-weight:700">✕ Not Configured</span>';
   
   document.getElementById('healthOut').innerHTML = `
-    <div class="kv"><span>Meta Webhook (FB / IG / WA)</span><span class="mono">${esc(h.channels?.facebook?.webhookUrl || '')}</span></div>
-    <div class="kv"><span>TikTok Webhook</span><span class="mono">${esc(h.channels?.tiktok?.webhookUrl || '')}</span></div>
-    <div class="kv"><span>Gemini AI Engine</span><span>${yn(h.providers?.gemini)}</span></div>
-    <div class="kv"><span>Groq Backup Engine</span><span>${yn(h.providers?.groq)}</span></div>
-    <div class="kv"><span>Facebook Channel</span><span>${yn(h.channels?.facebook?.configured)}</span></div>
-    <div class="kv"><span>Instagram Channel</span><span>${yn(h.channels?.instagram?.configured)}</span></div>
-    <div class="kv"><span>WhatsApp Channel</span><span>${yn(h.channels?.whatsapp?.configured)}</span></div>
-    <div class="kv"><span>TikTok Channel</span><span>${yn(h.channels?.tiktok?.configured)}</span></div>`;
+    <div class="kv"><span>Meta Webhook (Facebook / Instagram / WhatsApp)</span><span class="mono">${esc(h.channels?.facebook?.webhookUrl || '')}</span></div>
+    <div class="kv"><span>TikTok Business Webhook</span><span class="mono">${esc(h.channels?.tiktok?.webhookUrl || '')}</span></div>
+    <div class="kv"><span>Gemini AI Engine (Primary)</span><span>${yn(h.providers?.gemini)}</span></div>
+    <div class="kv"><span>Groq Fallback Engine</span><span>${yn(h.providers?.groq)}</span></div>
+    <div class="kv"><span>Facebook Messenger Channel</span><span>${yn(h.channels?.facebook?.configured)}</span></div>
+    <div class="kv"><span>Instagram Direct Channel</span><span>${yn(h.channels?.instagram?.configured)}</span></div>
+    <div class="kv"><span>WhatsApp Cloud API Channel</span><span>${yn(h.channels?.whatsapp?.configured)}</span></div>
+    <div class="kv"><span>TikTok Messaging Channel</span><span>${yn(h.channels?.tiktok?.configured)}</span></div>`;
 }
 
 function render(){
