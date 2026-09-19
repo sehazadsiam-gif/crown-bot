@@ -28,6 +28,12 @@ if (!SESSION_SECRET || SESSION_SECRET.length < 32) {
   process.exit(1);
 }
 
+if (!ADMIN_EMAIL || !ADMIN_PASSWORD_HASH) {
+  console.error('ADMIN_EMAIL and ADMIN_PASSWORD_HASH are both required.');
+  console.error('Generate the hash with: npm run hash -- "your-password"');
+  process.exit(1);
+}
+
 const app = Fastify({
   logger: { level: process.env.LOG_LEVEL || 'info' },
   trustProxy: true,
@@ -35,7 +41,7 @@ const app = Fastify({
 });
 
 await app.register(cookie, { secret: SESSION_SECRET });
-await app.register(fstatic, { root: join(__dirname, '..', 'public'), prefix: `${BASE}/`, decorateReply: false });
+await app.register(fstatic, { root: join(__dirname, '..', 'public'), prefix: `${BASE}/` });
 
 /* Capture the raw body so we can verify Meta's HMAC signature. */
 app.addContentTypeParser('application/json', { parseAs: 'buffer' }, (req, body, done) => {
@@ -87,8 +93,9 @@ app.post(`${BASE}/api/login`, async (req, reply) => {
   if (throttled(ip)) return reply.code(429).send({ error: 'Too many attempts. Wait 15 minutes.' });
 
   const { email, password } = req.body || {};
-  const ok = email?.toLowerCase() === ADMIN_EMAIL?.toLowerCase()
-          && ADMIN_PASSWORD_HASH
+  const supplied = typeof email === 'string' ? email.trim().toLowerCase() : '';
+  const expected = ADMIN_EMAIL.trim().toLowerCase();
+  const ok = supplied !== '' && supplied === expected
           && await bcrypt.compare(String(password || ''), ADMIN_PASSWORD_HASH);
 
   if (!ok) { noteFail(ip); return reply.code(401).send({ error: 'Wrong email or password.' }); }
@@ -205,8 +212,19 @@ app.post('/webhook/meta', async (req, reply) => {
   reply.code(200).send('EVENT_RECEIVED');
 
   const events = parseWebhook(req.body);
-  for (const ev of events) setImmediate(() => handleEvent(ev, req.log).catch(e => req.log.error(e)));
+  for (const ev of events) enqueue(ev, req.log);
 });
+
+const chains = new Map();
+function enqueue(ev, log) {
+  const key = `${ev.platform}:${ev.senderId}`;
+  const prev = chains.get(key) || Promise.resolve();
+  const next = prev
+    .then(() => handleEvent(ev, log))
+    .catch(e => log.error(e))
+    .finally(() => { if (chains.get(key) === next) chains.delete(key); });
+  chains.set(key, next);
+}
 
 async function handleEvent(ev, log) {
   const { platform, senderId, mid, text } = ev;

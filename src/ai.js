@@ -18,10 +18,18 @@ async function post(url, opts) {
 async function callGemini(system, history, userText) {
   if (!GEMINI_API_KEY) throw Object.assign(new Error('no gemini key'), { code: 'no_key' });
 
-  const contents = [
-    ...history.map(m => ({ role: m.direction === 'in' ? 'user' : 'model', parts: [{ text: m.text }] })),
-    { role: 'user', parts: [{ text: userText }] }
+  const raw = [
+    ...history.map(m => ({ role: m.direction === 'in' ? 'user' : 'model', text: m.text })),
+    { role: 'user', text: userText }
   ];
+  const merged = [];
+  for (const turn of raw) {
+    const last = merged[merged.length - 1];
+    if (last && last.role === turn.role) last.text += '\n' + turn.text;
+    else merged.push({ ...turn });
+  }
+  while (merged.length && merged[0].role !== 'user') merged.shift();
+  const contents = merged.map(t => ({ role: t.role, parts: [{ text: t.text }] }));
 
   const res = await post(
     `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`,
@@ -100,9 +108,11 @@ export async function parseMenuText(raw) {
 
   let out;
   try { out = await callGemini('You output only valid JSON.', [], instruction); }
-  catch { out = await callGroq('You output only valid JSON.', [], instruction); }
-
-  const m = out.match(/\[[\s\S]*\]/);
+  catch {
+    try { out = await callGroq('You output only valid JSON.', [], instruction); }
+    catch { throw new Error('no AI provider available to parse the menu'); }
+  }
+  const m = out?.match(/\[[\s\S]*\]/);
   if (!m) throw new Error('no JSON array in reply');
   return JSON.parse(m[0]);
 }

@@ -172,6 +172,6 @@ export function stats() {
     messagesIn:    q("SELECT COUNT(*) n FROM messages WHERE direction = 'in'"),
     messagesOut:   q("SELECT COUNT(*) n FROM messages WHERE direction = 'out'"),
     flagged:       q('SELECT COUNT(*) n FROM conversations WHERE flagged = 1'),
-    today:         q("SELECT COUNT(*) n FROM messages WHERE date(created_at) = date('now')")
+    today:         q("SELECT COUNT(*) n FROM messages WHERE date(created_at, '+6 hours') = date('now', '+6 hours')")
   };
 }

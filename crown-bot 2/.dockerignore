@@ -1,9 +1,0 @@
-node_modules
-data
-.env
-.git
-.gitignore
-*.zip
-Caddyfile
-crown-bot.service
-README.md

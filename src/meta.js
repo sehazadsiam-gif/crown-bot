@@ -3,12 +3,13 @@ import crypto from 'node:crypto';
 const {
   META_APP_SECRET, GRAPH_VERSION = 'v21.0',
   FB_PAGE_TOKEN, FB_PAGE_ID,
-  IG_TOKEN, IG_USER_ID
+  IG_TOKEN, IG_USER_ID,
+  IG_GRAPH_HOST = 'https://graph.instagram.com'
 } = process.env;
 
 /** Constant-time check of Meta's X-Hub-Signature-256 header. */
 export function verifySignature(rawBody, header) {
-  if (!META_APP_SECRET) return false;
+  if (!META_APP_SECRET || !rawBody) return false;
   if (!header?.startsWith('sha256=')) return false;
   const expected = 'sha256=' + crypto.createHmac('sha256', META_APP_SECRET).update(rawBody).digest('hex');
   const a = Buffer.from(header), b = Buffer.from(expected);
@@ -22,18 +23,17 @@ export function isSelf(platform, senderId) {
 
 export async function sendMessage(platform, psid, text) {
   const isFb = platform === 'facebook';
-  const host = isFb ? 'https://graph.facebook.com' : 'https://graph.instagram.com';
+  const host = isFb ? 'https://graph.facebook.com' : IG_GRAPH_HOST;
   const token = isFb ? FB_PAGE_TOKEN : IG_TOKEN;
   if (!token) throw new Error(`no access token configured for ${platform}`);
+
+  const body = { recipient: { id: psid }, message: { text: text.slice(0, 1900) } };
+  if (isFb) body.messaging_type = 'RESPONSE';
 
   const res = await fetch(`${host}/${GRAPH_VERSION}/me/messages`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-    body: JSON.stringify({
-      recipient: { id: psid },
-      message: { text: text.slice(0, 1900) },
-      messaging_type: 'RESPONSE'
-    })
+    body: JSON.stringify(body)
   });
 
   if (!res.ok) throw new Error(`${platform} send failed ${res.status}: ${await res.text()}`);
@@ -44,7 +44,7 @@ export async function sendMessage(platform, psid, text) {
 export async function fetchProfileName(platform, psid) {
   try {
     const isFb = platform === 'facebook';
-    const host = isFb ? 'https://graph.facebook.com' : 'https://graph.instagram.com';
+    const host = isFb ? 'https://graph.facebook.com' : IG_GRAPH_HOST;
     const token = isFb ? FB_PAGE_TOKEN : IG_TOKEN;
     const field = isFb ? 'name' : 'username';
     const res = await fetch(`${host}/${GRAPH_VERSION}/${psid}?fields=${field}`, {
