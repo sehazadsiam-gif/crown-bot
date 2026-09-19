@@ -111,19 +111,19 @@ CREATE TABLE IF NOT EXISTS seen (
 try {
   const convCols = db.pragma('table_info(conversations)');
   if (!convCols.some(c => c.name === 'workspace_id')) {
-    db.exec('ALTER TABLE conversations ADD COLUMN workspace_id INTEGER NOT NULL DEFAULT 1 REFERENCES workspaces(id)');
+    db.exec('ALTER TABLE conversations ADD COLUMN workspace_id INTEGER DEFAULT 1');
   }
 } catch (e) {
-  // Column already exists or error
+  console.error('Migration warning (conversations.workspace_id):', e.message);
 }
 
 try {
   const draftCols = db.pragma('table_info(drafts)');
   if (!draftCols.some(c => c.name === 'workspace_id')) {
-    db.exec('ALTER TABLE drafts ADD COLUMN workspace_id INTEGER NOT NULL DEFAULT 1 REFERENCES workspaces(id)');
+    db.exec('ALTER TABLE drafts ADD COLUMN workspace_id INTEGER DEFAULT 1');
   }
 } catch (e) {
-  // Column already exists or error
+  console.error('Migration warning (drafts.workspace_id):', e.message);
 }
 
 const now = () => new Date().toISOString();
@@ -1314,11 +1314,19 @@ export function listDrafts(workspaceId = null) {
 
 export function stats(workspaceId = null) {
   const wsId = workspaceId ? Number(workspaceId) : null;
-  const q = (s, ...args) => (db.prepare(s).get(...args) || {}).n || 0;
+  const q = (s, ...args) => {
+    try { return (db.prepare(s).get(...args) || {}).n || 0; }
+    catch { return 0; }
+  };
   
-  const byPlatform = wsId
-    ? db.prepare('SELECT platform, COUNT(*) as count FROM conversations WHERE workspace_id = ? GROUP BY platform').all(wsId)
-    : db.prepare('SELECT platform, COUNT(*) as count FROM conversations GROUP BY platform').all();
+  let byPlatform = [];
+  try {
+    byPlatform = wsId
+      ? db.prepare('SELECT platform, COUNT(*) as count FROM conversations WHERE workspace_id = ? GROUP BY platform').all(wsId)
+      : db.prepare('SELECT platform, COUNT(*) as count FROM conversations GROUP BY platform').all();
+  } catch {
+    try { byPlatform = db.prepare('SELECT platform, COUNT(*) as count FROM conversations GROUP BY platform').all(); } catch {}
+  }
   
   const platformCounts = { facebook: 0, instagram: 0, whatsapp: 0, tiktok: 0 };
   for (const row of byPlatform) {
@@ -1334,18 +1342,20 @@ export function stats(workspaceId = null) {
     : q("SELECT COUNT(*) n FROM messages WHERE direction = 'out' AND model = 'human'");
 
   // Hourly message distribution for Dhaka time (+6 hours)
-  const hourlySql = wsId
-    ? `SELECT strftime('%H', datetime(created_at, '+6 hours')) as hour, COUNT(*) as count
-       FROM messages
-       WHERE date(datetime(created_at, '+6 hours')) = date('now', '+6 hours')
-         AND conv_id IN (SELECT id FROM conversations WHERE workspace_id = ?)
-       GROUP BY hour`
-    : `SELECT strftime('%H', datetime(created_at, '+6 hours')) as hour, COUNT(*) as count
-       FROM messages
-       WHERE date(datetime(created_at, '+6 hours')) = date('now', '+6 hours')
-       GROUP BY hour`;
-  
-  const hourlyRows = wsId ? db.prepare(hourlySql).all(wsId) : db.prepare(hourlySql).all();
+  let hourlyRows = [];
+  try {
+    const hourlySql = wsId
+      ? `SELECT strftime('%H', datetime(created_at, '+6 hours')) as hour, COUNT(*) as count
+         FROM messages
+         WHERE date(datetime(created_at, '+6 hours')) = date('now', '+6 hours')
+           AND conv_id IN (SELECT id FROM conversations WHERE workspace_id = ?)
+         GROUP BY hour`
+      : `SELECT strftime('%H', datetime(created_at, '+6 hours')) as hour, COUNT(*) as count
+         FROM messages
+         WHERE date(datetime(created_at, '+6 hours')) = date('now', '+6 hours')
+         GROUP BY hour`;
+    hourlyRows = wsId ? db.prepare(hourlySql).all(wsId) : db.prepare(hourlySql).all();
+  } catch {}
   
   const hourlyMap = {};
   for (let i = 0; i < 24; i++) {
@@ -1357,20 +1367,22 @@ export function stats(workspaceId = null) {
   }
 
   // Recent messages for live telemetry feed
-  const recentSql = wsId
-    ? `SELECT m.id, m.direction, m.text, m.model, m.created_at, c.platform, c.name, c.id as conv_id
-       FROM messages m
-       JOIN conversations c ON c.id = m.conv_id
-       WHERE c.workspace_id = ?
-       ORDER BY m.id DESC
-       LIMIT 6`
-    : `SELECT m.id, m.direction, m.text, m.model, m.created_at, c.platform, c.name, c.id as conv_id
-       FROM messages m
-       JOIN conversations c ON c.id = m.conv_id
-       ORDER BY m.id DESC
-       LIMIT 6`;
-
-  const recent = wsId ? db.prepare(recentSql).all(wsId) : db.prepare(recentSql).all();
+  let recent = [];
+  try {
+    const recentSql = wsId
+      ? `SELECT m.id, m.direction, m.text, m.model, m.created_at, c.platform, c.name, c.id as conv_id
+         FROM messages m
+         JOIN conversations c ON c.id = m.conv_id
+         WHERE c.workspace_id = ?
+         ORDER BY m.id DESC
+         LIMIT 6`
+      : `SELECT m.id, m.direction, m.text, m.model, m.created_at, c.platform, c.name, c.id as conv_id
+         FROM messages m
+         JOIN conversations c ON c.id = m.conv_id
+         ORDER BY m.id DESC
+         LIMIT 6`;
+    recent = wsId ? db.prepare(recentSql).all(wsId) : db.prepare(recentSql).all();
+  } catch {}
 
   return {
     conversations: wsId ? q('SELECT COUNT(*) n FROM conversations WHERE workspace_id = ?', wsId) : q('SELECT COUNT(*) n FROM conversations'),
