@@ -1,7 +1,7 @@
 import { buildPrompt } from './prompt.js';
 
 const {
-  GEMINI_API_KEY, GEMINI_MODEL = 'gemini-flash-latest',
+  GEMINI_API_KEY, GEMINI_MODEL = 'gemini-3.5-flash',
   GROQ_API_KEY, GROQ_MODEL = 'llama-3.3-70b-versatile'
 } = process.env;
 
@@ -31,7 +31,7 @@ async function callGemini(system, history, userText) {
   while (merged.length && merged[0].role !== 'user') merged.shift();
   const contents = merged.map(t => ({ role: t.role, parts: [{ text: t.text }] }));
 
-  const modelsToTry = Array.from(new Set([GEMINI_MODEL, 'gemini-flash-latest', 'gemini-3.6-flash', 'gemini-1.5-flash']));
+  const modelsToTry = Array.from(new Set([GEMINI_MODEL, 'gemini-3.5-flash', 'gemini-3.6-flash', 'gemini-3.5-flash-lite', 'gemini-3.1-flash-lite']));
 
   let lastError;
   for (const model of modelsToTry) {
@@ -44,7 +44,11 @@ async function callGemini(system, history, userText) {
           body: JSON.stringify({
             system_instruction: { parts: [{ text: system }] },
             contents,
-            generationConfig: { temperature: 0.4, maxOutputTokens: 400 },
+            generationConfig: {
+              temperature: 0.3,
+              maxOutputTokens: 1000,
+              thinkingConfig: { thinkingBudget: 0 }
+            },
             safetySettings: []
           })
         }

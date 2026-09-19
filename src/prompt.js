@@ -94,7 +94,7 @@ export function buildPrompt(cfg) {
     L.push(`- If the message mentions any of: ${cfg.esc.join(', ')} — do not attempt to resolve it. Acknowledge and hand over to a human.`);
   }
 
-  L.push('', 'Reply with the message text only. No subject line, no signature, no quotation marks around it.');
+  L.push('', 'Reply with the clean message text only in natural, conversational sentences. Do not include markdown headers, bullet asterisks, reasoning thoughts, quotation marks, subject lines, or signatures.');
   return L.join('\n');
 }
 
