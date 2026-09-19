@@ -1,7 +1,7 @@
 import { buildPrompt } from './prompt.js';
 
 const {
-  GEMINI_API_KEY, GEMINI_MODEL = 'gemini-2.5-flash',
+  GEMINI_API_KEY, GEMINI_MODEL = 'gemini-flash-latest',
   GROQ_API_KEY, GROQ_MODEL = 'llama-3.3-70b-versatile'
 } = process.env;
 
@@ -31,27 +31,46 @@ async function callGemini(system, history, userText) {
   while (merged.length && merged[0].role !== 'user') merged.shift();
   const contents = merged.map(t => ({ role: t.role, parts: [{ text: t.text }] }));
 
-  const res = await post(
-    `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`,
-    {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'x-goog-api-key': GEMINI_API_KEY },
-      body: JSON.stringify({
-        system_instruction: { parts: [{ text: system }] },
-        contents,
-        generationConfig: { temperature: 0.4, maxOutputTokens: 400 },
-        safetySettings: []
-      })
+  const modelsToTry = Array.from(new Set([GEMINI_MODEL, 'gemini-flash-latest', 'gemini-3.6-flash', 'gemini-1.5-flash']));
+
+  let lastError;
+  for (const model of modelsToTry) {
+    try {
+      const res = await post(
+        `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'x-goog-api-key': GEMINI_API_KEY },
+          body: JSON.stringify({
+            system_instruction: { parts: [{ text: system }] },
+            contents,
+            generationConfig: { temperature: 0.4, maxOutputTokens: 400 },
+            safetySettings: []
+          })
+        }
+      );
+
+      if (res.status === 429) throw Object.assign(new Error('gemini rate limited'), { code: 'rate_limited' });
+      if (!res.ok) {
+        const errText = await res.text();
+        if (res.status === 404) {
+          lastError = new Error(`gemini model ${model} not found`);
+          continue;
+        }
+        throw Object.assign(new Error(`gemini ${res.status}: ${errText}`), { code: 'upstream' });
+      }
+
+      const data = await res.json();
+      const text = data?.candidates?.[0]?.content?.parts?.map(p => p.text).filter(Boolean).join('').trim();
+      if (!text) throw Object.assign(new Error('gemini empty'), { code: 'empty' });
+      return text;
+    } catch (e) {
+      lastError = e;
+      if (e.code === 'rate_limited') throw e;
     }
-  );
+  }
 
-  if (res.status === 429) throw Object.assign(new Error('gemini rate limited'), { code: 'rate_limited' });
-  if (!res.ok) throw Object.assign(new Error(`gemini ${res.status}: ${await res.text()}`), { code: 'upstream' });
-
-  const data = await res.json();
-  const text = data?.candidates?.[0]?.content?.parts?.map(p => p.text).filter(Boolean).join('').trim();
-  if (!text) throw Object.assign(new Error('gemini empty'), { code: 'empty' });
-  return text;
+  throw lastError || new Error('All gemini models failed');
 }
 
 async function callGroq(system, history, userText) {
