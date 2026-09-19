@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Crown Coffee — AI Operations and Multi-Channel Hub</title>
+<title>ccadminchatbot — AI Operations Hub</title>
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="shortcut icon" type="image/svg+xml" href="favicon.svg">
 <style>
@@ -1189,15 +1189,15 @@ table.clean-table tr:hover td {
 <!-- Login Modal -->
 <div id="login">
   <form class="box" id="loginForm">
-    <div class="logo-badge">AI</div>
-    <h1>Platform Login</h1>
+    <div class="logo-badge">CC</div>
+    <h1>ccadminchatbot</h1>
     <div class="s">Operations Hub</div>
     <label class="f">Email Address (Optional)</label>
-    <input type="text" id="lEmail" autocomplete="username" placeholder="Optional (e.g. admin@crowncoffee.com)">
+    <input type="text" id="lEmail" autocomplete="username" placeholder="Optional (leave empty for password-only)">
     <label class="f">Password</label>
     <input type="password" id="lPass" autocomplete="current-password" placeholder="Enter password" required autofocus>
     <div id="loginErr"></div>
-    <button class="btn primary" style="width:100%; justify-content:center; margin-top:8px">Sign In to Dashboard</button>
+    <button class="btn primary" style="width:100%; justify-content:center; margin-top:8px">Access ccadminchatbot</button>
   </form>
 </div>
 
@@ -2205,9 +2205,9 @@ async function checkAuth(){
       if(tenantControls) tenantControls.style.display = 'none';
       if(tenantExpiredBanner) tenantExpiredBanner.style.display = 'none';
       
-      document.getElementById('brandTitleTxt').textContent = 'Crown Operations';
+      document.getElementById('brandTitleTxt').textContent = 'ccadminchatbot';
       document.getElementById('brandSubTxt').textContent = 'Master Control Hub';
-      document.getElementById('brandLogoBadge').textContent = 'MO';
+      document.getElementById('brandLogoBadge').textContent = 'CC';
 
       switchTab('tenants');
       await loadMasterTenants();
