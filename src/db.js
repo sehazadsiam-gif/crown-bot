@@ -895,6 +895,34 @@ export const DEFAULT_CONFIG = {
     emoji: false,
     disclose: false
   },
+  channels: {
+    facebook: {
+      enabled: true,
+      pageToken: process.env.FB_PAGE_TOKEN || '',
+      pageId: process.env.FB_PAGE_ID || '',
+      appSecret: process.env.META_APP_SECRET || '',
+      verifyToken: process.env.META_VERIFY_TOKEN || 'botcrowncoffee'
+    },
+    instagram: {
+      enabled: !!(process.env.IG_TOKEN || process.env.IG_USER_ID),
+      token: process.env.IG_TOKEN || '',
+      userId: process.env.IG_USER_ID || '',
+      graphHost: process.env.IG_GRAPH_HOST || 'https://graph.facebook.com'
+    },
+    whatsapp: {
+      enabled: !!(process.env.WA_TOKEN || process.env.WA_PHONE_NUMBER_ID),
+      phoneNumberId: process.env.WA_PHONE_NUMBER_ID || '',
+      wabaId: process.env.WA_BUSINESS_ACCOUNT_ID || '',
+      token: process.env.WA_TOKEN || '',
+      verifyToken: process.env.WA_VERIFY_TOKEN || process.env.META_VERIFY_TOKEN || 'botcrowncoffee'
+    },
+    tiktok: {
+      enabled: !!(process.env.TIKTOK_ACCESS_TOKEN || process.env.TIKTOK_CLIENT_KEY),
+      clientKey: process.env.TIKTOK_CLIENT_KEY || '',
+      clientSecret: process.env.TIKTOK_CLIENT_SECRET || '',
+      token: process.env.TIKTOK_ACCESS_TOKEN || ''
+    }
+  },
   scope: { answer: true, reserve: 'draft', order: 'draft', complaint: 'ack' },
   guards: [
     'Never state a price that is not in the menu below. If an item is not listed, say you will check and a team member will confirm.',
@@ -934,6 +962,14 @@ export function getConfig() {
           parsed.cafe[k] = v;
           updated = true;
         }
+      }
+    }
+    parsed.channels = parsed.channels || {};
+    for (const [ch, def] of Object.entries(DEFAULT_CONFIG.channels)) {
+      parsed.channels[ch] = { ...def, ...(parsed.channels[ch] || {}) };
+      // Fallback to env vars if fields are empty
+      for (const [k, v] of Object.entries(def)) {
+        if (!parsed.channels[ch][k] && v) parsed.channels[ch][k] = v;
       }
     }
     const merged = { ...structuredClone(DEFAULT_CONFIG), ...parsed };
@@ -1002,12 +1038,26 @@ export const listDrafts = () => db.prepare(`
   WHERE d.status = 'pending' ORDER BY d.id DESC`).all();
 
 export function stats() {
-  const q = s => db.prepare(s).get().n;
+  const q = (s, ...args) => (db.prepare(s).get(...args) || {}).n || 0;
+  const byPlatform = db.prepare('SELECT platform, COUNT(*) as count FROM conversations GROUP BY platform').all();
+  const platformCounts = { facebook: 0, instagram: 0, whatsapp: 0, tiktok: 0 };
+  for (const row of byPlatform) {
+    if (row.platform in platformCounts) platformCounts[row.platform] = row.count;
+  }
+
+  const aiReplies = q("SELECT COUNT(*) n FROM messages WHERE direction = 'out' AND (model IS NULL OR model != 'human')");
+  const humanReplies = q("SELECT COUNT(*) n FROM messages WHERE direction = 'out' AND model = 'human'");
+
   return {
     conversations: q('SELECT COUNT(*) n FROM conversations'),
     messagesIn:    q("SELECT COUNT(*) n FROM messages WHERE direction = 'in'"),
     messagesOut:   q("SELECT COUNT(*) n FROM messages WHERE direction = 'out'"),
     flagged:       q('SELECT COUNT(*) n FROM conversations WHERE flagged = 1'),
-    today:         q("SELECT COUNT(*) n FROM messages WHERE date(created_at, '+6 hours') = date('now', '+6 hours')")
+    today:         q("SELECT COUNT(*) n FROM messages WHERE date(created_at, '+6 hours') = date('now', '+6 hours')"),
+    todayIn:       q("SELECT COUNT(*) n FROM messages WHERE direction = 'in' AND date(created_at, '+6 hours') = date('now', '+6 hours')"),
+    todayOut:      q("SELECT COUNT(*) n FROM messages WHERE direction = 'out' AND date(created_at, '+6 hours') = date('now', '+6 hours')"),
+    aiReplies,
+    humanReplies,
+    byPlatform: platformCounts
   };
 }

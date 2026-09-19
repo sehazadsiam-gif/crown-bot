@@ -3,423 +3,896 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Crown Coffee — Bot Admin</title>
+<title>Crown Coffee — AI Bot Admin & Multi-Channel Hub</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Karla:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#f7f1e8; --bg2:#efe4d5; --surface:#fffaf3; --surface2:#f9f1e6;
-  --ink:#2a1d16; --ink2:#7a6252; --ink3:#9d8877;
-  --line:#e2d3c0; --line2:#d3c0a9;
-  --accent:#a8551f; --accent-soft:#f0dcc9;
-  --good:#5f7a4a; --good-soft:#e4ecd9;
-  --warn:#9a6b1c; --warn-soft:#f6e6c9;
-  --danger:#a33a2a; --danger-soft:#f5dcd6;
-  --radius:10px;
-  --shadow:0 1px 2px rgba(60,38,20,.06), 0 8px 24px -12px rgba(60,38,20,.18);
+  --bg:#f8f4ee; --bg2:#efe7dc; --surface:#ffffff; --surface2:#faf5ee;
+  --ink:#201610; --ink2:#685446; --ink3:#968273;
+  --line:#e5d8ca; --line2:#d7c5b2;
+  --accent:#9a5b28; --accent-hover:#80471b; --accent-soft:#f5e8da;
+  --gold:#c28a2a; --gold-soft:#fbf2df;
+  --good:#3e7844; --good-soft:#e2f0e4;
+  --warn:#b37214; --warn-soft:#faecd4;
+  --danger:#b83a2a; --danger-soft:#fae2df;
+  --fb:#1877f2; --fb-soft:#e7f0fd;
+  --ig:#e1306c; --ig-soft:#fcecf1;
+  --wa:#25d366; --wa-soft:#e8f9ed;
+  --tt:#000000; --tt-soft:#e8e8e8;
+  --radius:12px;
+  --shadow-sm:0 1px 3px rgba(45,30,20,.05);
+  --shadow:0 4px 16px -2px rgba(45,30,20,.08), 0 1px 3px rgba(45,30,20,.04);
+  --shadow-lg:0 12px 32px -4px rgba(45,30,20,.12);
 }
+
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
-    --bg:#15100c; --bg2:#1c1510; --surface:#221a14; --surface2:#2a201a;
-    --ink:#f2e7d9; --ink2:#b09a88; --ink3:#8a7565;
-    --line:#382b21; --line2:#4a3a2d;
-    --accent:#dd9250; --accent-soft:#3b2717;
-    --good:#a3bb7f; --good-soft:#26301c;
-    --warn:#d6a54e; --warn-soft:#332715;
-    --danger:#e0806a; --danger-soft:#3a1f19;
-    --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.6);
+    --bg:#120d09; --bg2:#1a130e; --surface:#201812; --surface2:#281f18;
+    --ink:#f4ede4; --ink2:#bca897; --ink3:#887465;
+    --line:#382a20; --line2:#4d3b2e;
+    --accent:#e09353; --accent-hover:#f0a86d; --accent-soft:#3a2517;
+    --gold:#e2aa46; --gold-soft:#3d2c11;
+    --good:#6db875; --good-soft:#1a311c;
+    --warn:#e59c35; --warn-soft:#3a270f;
+    --danger:#eb7060; --danger-soft:#3c1a16;
+    --fb:#4b96f7; --fb-soft:#142742;
+    --ig:#f4538a; --ig-soft:#3d1320;
+    --wa:#3ce07a; --wa-soft:#11351c;
+    --tt:#ffffff; --tt-soft:#2c2c2c;
+    --shadow-sm:0 1px 3px rgba(0,0,0,.3);
+    --shadow:0 4px 16px -2px rgba(0,0,0,.5);
+    --shadow-lg:0 12px 32px -4px rgba(0,0,0,.7);
   }
 }
+
 :root[data-theme="dark"]{
-  --bg:#15100c; --bg2:#1c1510; --surface:#221a14; --surface2:#2a201a;
-  --ink:#f2e7d9; --ink2:#b09a88; --ink3:#8a7565;
-  --line:#382b21; --line2:#4a3a2d;
-  --accent:#dd9250; --accent-soft:#3b2717;
-  --good:#a3bb7f; --good-soft:#26301c;
-  --warn:#d6a54e; --warn-soft:#332715;
-  --danger:#e0806a; --danger-soft:#3a1f19;
-  --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.6);
+  --bg:#120d09; --bg2:#1a130e; --surface:#201812; --surface2:#281f18;
+  --ink:#f4ede4; --ink2:#bca897; --ink3:#887465;
+  --line:#382a20; --line2:#4d3b2e;
+  --accent:#e09353; --accent-hover:#f0a86d; --accent-soft:#3a2517;
+  --gold:#e2aa46; --gold-soft:#3d2c11;
+  --good:#6db875; --good-soft:#1a311c;
+  --warn:#e59c35; --warn-soft:#3a270f;
+  --danger:#eb7060; --danger-soft:#3c1a16;
+  --fb:#4b96f7; --fb-soft:#142742;
+  --ig:#f4538a; --ig-soft:#3d1320;
+  --wa:#3ce07a; --wa-soft:#11351c;
+  --tt:#ffffff; --tt-soft:#2c2c2c;
+  --shadow-sm:0 1px 3px rgba(0,0,0,.3);
+  --shadow:0 4px 16px -2px rgba(0,0,0,.5);
+  --shadow-lg:0 12px 32px -4px rgba(0,0,0,.7);
 }
+
 *{box-sizing:border-box}
 html,body{margin:0;padding:0}
-body{background:var(--bg); color:var(--ink); font-family:"Karla",system-ui,sans-serif;
-  font-size:15px; line-height:1.5; -webkit-font-smoothing:antialiased}
-h1,h2,h3{font-family:"Fraunces",Georgia,serif; font-weight:600; margin:0; letter-spacing:-.01em}
-code,pre,.mono{font-family:"IBM Plex Mono",ui-monospace,monospace}
+body{background:var(--bg); color:var(--ink); font-family:"Plus Jakarta Sans",system-ui,sans-serif;
+  font-size:14.5px; line-height:1.5; -webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:"Fraunces",Georgia,serif; font-weight:600; margin:0; letter-spacing:-.015em}
+code,pre,.mono{font-family:"JetBrains Mono",ui-monospace,monospace}
 
-/* login */
-#login{position:fixed; inset:0; background:var(--bg); display:none; place-items:center; z-index:100; padding:20px}
-#login .box{background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:32px;
-  width:100%; max-width:380px; box-shadow:var(--shadow)}
-#login h1{font-size:26px; margin-bottom:4px}
-#login .s{color:var(--ink3); font-size:13px; margin-bottom:22px; letter-spacing:.06em; text-transform:uppercase}
-#login input{margin-bottom:12px}
-#loginErr{color:var(--danger); font-size:13px; min-height:18px}
+/* Login Screen */
+#login{position:fixed; inset:0; background:radial-gradient(circle at top, var(--surface2), var(--bg)); display:none; place-items:center; z-index:100; padding:20px}
+#login .box{background:var(--surface); border:1px solid var(--line); border-radius:18px; padding:36px 32px;
+  width:100%; max-width:400px; box-shadow:var(--shadow-lg); text-align:left}
+#login .logo-badge{display:inline-flex; align-items:center; justify-content:center; width:46px; height:46px; border-radius:12px; background:var(--accent-soft); color:var(--accent); font-size:22px; margin-bottom:16px}
+#login h1{font-size:26px; margin-bottom:4px; color:var(--ink)}
+#login .s{color:var(--ink3); font-size:13px; margin-bottom:24px; font-weight:500}
+#login input{margin-bottom:14px}
+#loginErr{color:var(--danger); font-size:13px; min-height:20px; margin-bottom:4px; font-weight:500}
 
-header{border-bottom:1px solid var(--line); background:var(--surface); padding:14px 20px;
-  display:flex; align-items:center; gap:14px; flex-wrap:wrap; position:sticky; top:0; z-index:20}
-.brand{display:flex; align-items:baseline; gap:10px}
-.brand h1{font-size:21px}
-.brand .sub{font-size:12px; color:var(--ink3); letter-spacing:.08em; text-transform:uppercase}
+/* Header */
+header{border-bottom:1px solid var(--line); background:var(--surface); padding:12px 24px;
+  display:flex; align-items:center; gap:14px; flex-wrap:wrap; position:sticky; top:0; z-index:30; box-shadow:var(--shadow-sm)}
+.brand{display:flex; align-items:center; gap:10px}
+.brand-icon{width:32px; height:32px; border-radius:8px; background:var(--accent); color:#fff; display:grid; place-items:center; font-weight:700; font-size:16px; font-family:"Fraunces",serif}
+.brand h1{font-size:19px; line-height:1.1}
+.brand .sub{font-size:11px; color:var(--ink3); letter-spacing:.08em; text-transform:uppercase; font-weight:700}
 .spacer{flex:1}
+
 .pill{display:inline-flex; align-items:center; gap:6px; font-size:12px; font-weight:600;
-  padding:4px 10px; border-radius:99px; border:1px solid var(--line2); color:var(--ink2); white-space:nowrap}
+  padding:5px 12px; border-radius:99px; border:1px solid var(--line2); color:var(--ink2); white-space:nowrap; background:var(--surface2)}
 .pill.on{background:var(--good-soft); color:var(--good); border-color:transparent}
 .pill.off{background:var(--danger-soft); color:var(--danger); border-color:transparent}
-.dot{width:7px;height:7px;border-radius:99px;background:currentColor}
+.dot{width:7px; height:7px; border-radius:99px; background:currentColor; display:inline-block}
+.dot.pulse{animation:pulse 1.8s infinite ease-in-out}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(1.2)}}
 
-.wrap{display:flex; align-items:flex-start; max-width:1240px; margin:0 auto}
-nav{width:196px; flex:none; padding:20px 12px; position:sticky; top:64px;
-  border-right:1px solid var(--line); min-height:calc(100vh - 64px)}
-nav button{display:block; width:100%; text-align:left; background:none; border:none; font:inherit;
-  color:var(--ink2); padding:8px 12px; border-radius:8px; cursor:pointer; margin-bottom:2px; font-weight:500}
+/* Layout */
+.wrap{display:flex; align-items:flex-start; max-width:1380px; margin:0 auto}
+nav{width:210px; flex:none; padding:22px 14px; position:sticky; top:61px;
+  border-right:1px solid var(--line); min-height:calc(100vh - 61px); background:var(--surface2)}
+nav button{display:flex; align-items:center; gap:9px; width:100%; text-align:left; background:none; border:none; font:inherit;
+  color:var(--ink2); padding:9px 12px; border-radius:8px; cursor:pointer; margin-bottom:3px; font-weight:500; font-size:13.5px; transition:all .15s}
 nav button:hover{background:var(--bg2); color:var(--ink)}
 nav button.active{background:var(--accent-soft); color:var(--accent); font-weight:700}
-nav .navlabel{font-size:11px; text-transform:uppercase; letter-spacing:.1em; color:var(--ink3);
-  padding:12px 12px 6px; font-weight:700}
-main{flex:1; padding:24px 24px 80px; min-width:0}
-@media(max-width:860px){
+nav button .nav-icon{font-size:15px; opacity:.85}
+nav .navlabel{font-size:10.5px; text-transform:uppercase; letter-spacing:.12em; color:var(--ink3);
+  padding:14px 12px 6px; font-weight:700}
+
+main{flex:1; padding:28px 32px 90px; min-width:0}
+
+@media(max-width:900px){
   .wrap{display:block}
   nav{width:auto; position:static; min-height:0; border-right:none; border-bottom:1px solid var(--line);
-       display:flex; gap:4px; overflow-x:auto; padding:8px 12px; white-space:nowrap}
+       display:flex; gap:6px; overflow-x:auto; padding:8px 14px; white-space:nowrap}
   nav .navlabel{display:none}
-  nav button{width:auto; padding:6px 12px}
-  main{padding:18px 14px 70px}
+  nav button{width:auto; padding:7px 12px}
+  main{padding:18px 16px 70px}
 }
-.panel{display:none; animation:fade .25s ease both}
+
+.panel{display:none; animation:fadeIn .25s cubic-bezier(.16,1,.3,1) both}
 .panel.active{display:block}
-@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
-.phead{margin-bottom:18px}
-.phead h2{font-size:26px; margin-bottom:4px}
-.phead p{margin:0; color:var(--ink2); font-size:14px; max-width:62ch}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+/* Typography & Headings */
+.phead{margin-bottom:22px; display:flex; align-items:flex-start; justify-content:space-between; flex-wrap:wrap; gap:12px}
+.phead h2{font-size:26px; color:var(--ink); margin-bottom:4px}
+.phead p{margin:0; color:var(--ink2); font-size:14px; max-width:68ch}
+
+/* Cards & Containers */
 .card{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius);
-  padding:18px; margin-bottom:16px; box-shadow:var(--shadow)}
-.card > h3{font-size:16px; margin-bottom:12px}
-.card .hint{font-size:13px; color:var(--ink3); margin:-6px 0 14px}
-.grid{display:grid; gap:12px}
+  padding:20px; margin-bottom:18px; box-shadow:var(--shadow-sm); transition:border-color .2s}
+.card:hover{border-color:var(--line2)}
+.card > h3{font-size:16.5px; margin-bottom:12px; color:var(--ink); display:flex; align-items:center; gap:8px}
+.card .hint{font-size:13px; color:var(--ink3); margin:-6px 0 14px; line-height:1.45}
+
+.grid{display:grid; gap:14px}
 .g2{grid-template-columns:1fr 1fr}
 .g3{grid-template-columns:1fr 1fr 1fr}
-@media(max-width:700px){.g2,.g3{grid-template-columns:1fr}}
-label.f{display:block; font-size:12px; font-weight:700; color:var(--ink2); margin-bottom:5px;
-  letter-spacing:.04em; text-transform:uppercase}
+.g4{grid-template-columns:repeat(auto-fit, minmax(220px, 1fr))}
+@media(max-width:760px){.g2,.g3{grid-template-columns:1fr}}
+
+/* Forms & Inputs */
+label.f{display:block; font-size:11.5px; font-weight:700; color:var(--ink2); margin-bottom:6px;
+  letter-spacing:.05em; text-transform:uppercase}
 input[type=text],input[type=password],input[type=email],input[type=number],input[type=time],select,textarea{
-  width:100%; padding:9px 11px; border:1px solid var(--line2); border-radius:8px;
-  background:var(--bg); color:var(--ink); font:inherit; font-size:14px}
-input:focus,select:focus,textarea:focus{outline:2px solid var(--accent); outline-offset:-1px; border-color:transparent}
-textarea{resize:vertical; min-height:76px; line-height:1.55}
-.btn{display:inline-flex; align-items:center; gap:7px; padding:8px 14px; border-radius:8px;
+  width:100%; padding:9px 12px; border:1px solid var(--line2); border-radius:8px;
+  background:var(--bg); color:var(--ink); font:inherit; font-size:13.5px; transition:border-color .15s, box-shadow .15s}
+input:focus,select:focus,textarea:focus{outline:none; border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-soft)}
+textarea{resize:vertical; min-height:80px; line-height:1.55}
+
+.input-with-btn{display:flex; gap:8px}
+.input-with-btn input{flex:1}
+
+/* Buttons */
+.btn{display:inline-flex; align-items:center; justify-content:center; gap:7px; padding:8px 15px; border-radius:8px;
   border:1px solid var(--line2); background:var(--surface2); color:var(--ink);
-  font:inherit; font-weight:600; font-size:14px; cursor:pointer; transition:.15s}
-.btn:hover{border-color:var(--accent); color:var(--accent)}
+  font:inherit; font-weight:600; font-size:13.5px; cursor:pointer; transition:all .15s; user-select:none}
+.btn:hover{border-color:var(--accent); color:var(--accent); background:var(--surface)}
+.btn:active{transform:translateY(1px)}
 .btn.primary{background:var(--accent); border-color:var(--accent); color:#fff}
-.btn.primary:hover{filter:brightness(1.08); color:#fff}
-.btn.sm{padding:5px 10px; font-size:13px}
+.btn.primary:hover{background:var(--accent-hover); border-color:var(--accent-hover); color:#fff}
+.btn.success{background:var(--good); border-color:var(--good); color:#fff}
+.btn.success:hover{filter:brightness(1.1); color:#fff}
+.btn.sm{padding:5px 11px; font-size:12.5px; border-radius:6px}
 .btn.ghost{background:none; border-color:transparent; color:var(--ink3)}
 .btn.ghost:hover{color:var(--danger); background:var(--danger-soft)}
-.btn:disabled{opacity:.5; cursor:not-allowed}
+.btn:disabled{opacity:.5; cursor:not-allowed; transform:none}
+
 .row{display:flex; gap:8px; align-items:center; flex-wrap:wrap}
-.chk{display:inline-flex; align-items:center; gap:8px; cursor:pointer; font-size:14px; padding:5px 0}
-.chk input{appearance:none; width:38px; height:22px; border-radius:99px; background:var(--line2);
-  position:relative; cursor:pointer; transition:.18s; flex:none; margin:0}
+
+/* Switches & Checkboxes */
+.chk{display:inline-flex; align-items:center; gap:9px; cursor:pointer; font-size:14px; padding:4px 0; user-select:none}
+.chk input{appearance:none; width:40px; height:22px; border-radius:99px; background:var(--line2);
+  position:relative; cursor:pointer; transition:.2s; flex:none; margin:0}
 .chk input::after{content:""; position:absolute; top:3px; left:3px; width:16px; height:16px;
-  border-radius:99px; background:var(--surface); transition:.18s}
+  border-radius:99px; background:var(--surface); transition:.2s; box-shadow:0 1px 2px rgba(0,0,0,.2)}
 .chk input:checked{background:var(--good)}
-.chk input:checked::after{transform:translateX(16px)}
+.chk input:checked::after{transform:translateX(18px)}
+
+/* KPI Stats */
+.stat-card{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:16px; position:relative; overflow:hidden}
+.stat-card .v{font-family:"Fraunces",serif; font-size:28px; font-weight:600; color:var(--ink); line-height:1.1}
+.stat-card .k{font-size:11.5px; text-transform:uppercase; letter-spacing:.06em; color:var(--ink3); font-weight:700; margin-top:4px}
+.stat-card .subtext{font-size:12px; color:var(--ink2); margin-top:6px}
+.stat-card .icon{position:absolute; right:14px; top:14px; font-size:22px; opacity:.15}
+
+/* Channel Hub Cards */
+.channel-grid{display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:14px}
+.channel-card{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:18px; display:flex; flex-direction:column; justify-content:space-between; transition:all .2s; position:relative}
+.channel-card:hover{border-color:var(--line2); box-shadow:var(--shadow)}
+.channel-header{display:flex; align-items:center; justify-content:space-between; margin-bottom:12px}
+.channel-title{display:flex; align-items:center; gap:10px; font-weight:700; font-size:15px}
+.channel-badge-icon{width:32px; height:32px; border-radius:8px; display:grid; place-items:center; font-size:16px}
+.channel-badge-icon.fb{background:var(--fb-soft); color:var(--fb)}
+.channel-badge-icon.ig{background:var(--ig-soft); color:var(--ig)}
+.channel-badge-icon.wa{background:var(--wa-soft); color:var(--wa)}
+.channel-badge-icon.tt{background:var(--tt-soft); color:var(--tt)}
+
+.channel-status{font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; padding:3px 8px; border-radius:99px; border:1px solid}
+.channel-status.active{background:var(--good-soft); color:var(--good); border-color:transparent}
+.channel-status.warn{background:var(--warn-soft); color:var(--warn); border-color:transparent}
+.channel-status.inactive{background:var(--bg2); color:var(--ink3); border-color:transparent}
+
+.channel-body{font-size:13px; color:var(--ink2); margin-bottom:16px; flex:1}
+.channel-footer{display:flex; align-items:center; justify-content:space-between; gap:8px; border-top:1px dashed var(--line); padding-top:12px}
+
+/* Accordion & Setup steps */
+.step-box{background:var(--surface2); border:1px solid var(--line); border-radius:10px; padding:14px; margin-bottom:10px}
+.step-num{display:inline-flex; align-items:center; justify-content:center; width:22px; height:22px; border-radius:99px; background:var(--accent); color:#fff; font-size:11.5px; font-weight:700; margin-right:6px}
+.step-box h4{margin:0 0 6px; font-size:14px; font-weight:700; color:var(--ink); display:flex; align-items:center}
+.step-box p{margin:0 0 8px; font-size:13px; color:var(--ink2); line-height:1.45}
+
+/* Tags & Badges */
 .tags{display:flex; flex-wrap:wrap; gap:6px; margin-top:8px}
-.tag{display:inline-flex; align-items:center; gap:6px; padding:4px 9px; border-radius:99px;
-  background:var(--bg2); border:1px solid var(--line); font-size:13px}
-.tag button{background:none;border:none;color:var(--ink3);cursor:pointer;font-size:15px;line-height:1;padding:0}
+.tag{display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:99px;
+  background:var(--bg2); border:1px solid var(--line); font-size:12.5px; font-weight:500}
+.tag button{background:none; border:none; color:var(--ink3); cursor:pointer; font-size:14px; line-height:1; padding:0}
 .tag button:hover{color:var(--danger)}
-.cat{border:1px solid var(--line); border-radius:var(--radius); margin-bottom:12px; background:var(--surface); overflow:hidden}
-.cathead{display:flex; align-items:center; gap:10px; padding:11px 14px; background:var(--surface2); border-bottom:1px solid var(--line)}
-.cathead input{border:none; background:none; font-family:"Fraunces",serif; font-size:17px; font-weight:600; padding:2px 4px; flex:1; min-width:0}
-.cathead input:focus{outline:1px solid var(--accent); border-radius:5px}
-.items{padding:6px 10px 10px}
-.item{display:grid; grid-template-columns:1fr 130px 92px auto; gap:8px; align-items:center;
-  padding:7px 4px; border-bottom:1px dashed var(--line)}
+
+/* Menu manager */
+.cat{border:1px solid var(--line); border-radius:var(--radius); margin-bottom:14px; background:var(--surface); overflow:hidden}
+.cathead{display:flex; align-items:center; gap:10px; padding:12px 16px; background:var(--surface2); border-bottom:1px solid var(--line)}
+.cathead input{border:none; background:none; font-family:"Fraunces",serif; font-size:17px; font-weight:600; padding:2px 6px; flex:1; min-width:0; color:var(--ink)}
+.cathead input:focus{outline:none; background:var(--bg); border-radius:6px}
+.items{padding:8px 12px 12px}
+.item{display:grid; grid-template-columns:1fr 140px 96px auto; gap:8px; align-items:center;
+  padding:8px 6px; border-bottom:1px dashed var(--line)}
 .item:last-child{border-bottom:none}
 .item input[type=text]{border-color:transparent; background:transparent; padding:6px 8px}
-.item input[type=text]:hover{background:var(--bg)}
+.item input[type=text]:hover{background:var(--bg); border-color:var(--line)}
 .item input[type=number]{padding:6px 8px; text-align:right}
 .item.gone .iname{text-decoration:line-through; opacity:.55}
-@media(max-width:740px){
+
+@media(max-width:760px){
   .item{grid-template-columns:1fr auto; grid-template-areas:"n n" "d d" "p a"}
   .item .iname{grid-area:n} .item .idesc{grid-area:d} .item .iprice{grid-area:p} .item .iact{grid-area:a}
   .item input[type=text]{border-color:var(--line2); background:var(--bg)}
 }
-.empty{padding:22px; text-align:center; color:var(--ink3); font-size:14px; font-style:italic}
-pre.prompt{background:var(--bg2); border:1px solid var(--line); border-radius:var(--radius); padding:16px;
-  font-size:12.5px; line-height:1.62; white-space:pre-wrap; word-break:break-word;
-  max-height:520px; overflow:auto; margin:0; color:var(--ink)}
-.meter{font-size:12px; color:var(--ink3)}
-.chat{border:1px solid var(--line); border-radius:var(--radius); background:var(--surface); overflow:hidden}
-.log{padding:14px; min-height:240px; max-height:440px; overflow-y:auto; display:flex; flex-direction:column; gap:10px}
-.msg{max-width:82%; padding:9px 13px; border-radius:14px; font-size:14px; line-height:1.5; white-space:pre-wrap}
+
+/* Chat & Inbox */
+.inbox{display:grid; grid-template-columns:310px 1fr; gap:16px}
+@media(max-width:860px){.inbox{grid-template-columns:1fr}}
+.convlist{border:1px solid var(--line); border-radius:var(--radius); background:var(--surface); max-height:580px; overflow-y:auto}
+.conv{padding:12px 14px; border-bottom:1px solid var(--line); cursor:pointer; transition:background .15s}
+.conv:hover{background:var(--surface2)}
+.conv.sel{background:var(--accent-soft); border-left:3px solid var(--accent)}
+.conv .n{font-weight:700; font-size:14px; display:flex; align-items:center; justify-content:space-between; gap:6px}
+.conv .p{font-size:12.5px; color:var(--ink3); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-top:3px}
+.badge{font-size:10px; padding:2px 6px; border-radius:99px; background:var(--danger-soft); color:var(--danger); font-weight:700}
+.badge.plat{background:var(--bg2); color:var(--ink2); text-transform:uppercase; font-size:10px}
+.badge.plat.fb{color:var(--fb)}
+.badge.plat.ig{color:var(--ig)}
+.badge.plat.wa{color:var(--wa)}
+.badge.plat.tt{color:var(--ink)}
+
+.chat{border:1px solid var(--line); border-radius:var(--radius); background:var(--surface); overflow:hidden; display:flex; flex-direction:column}
+.log{padding:16px; min-height:280px; max-height:460px; overflow-y:auto; display:flex; flex-direction:column; gap:12px}
+.msg{max-width:80%; padding:10px 14px; border-radius:14px; font-size:13.5px; line-height:1.5; white-space:pre-wrap; word-break:break-word}
 .msg.u{align-self:flex-end; background:var(--accent); color:#fff; border-bottom-right-radius:4px}
-.msg.b{align-self:flex-start; background:var(--bg2); border:1px solid var(--line); border-bottom-left-radius:4px}
-.msg.sys{align-self:center; font-size:12.5px; color:var(--ink3); font-style:italic; background:none; max-width:100%; text-align:center}
-.composer{display:flex; gap:8px; padding:11px; border-top:1px solid var(--line); background:var(--surface2)}
+.msg.b{align-self:flex-start; background:var(--surface2); border:1px solid var(--line); border-bottom-left-radius:4px; color:var(--ink)}
+.msg.sys{align-self:center; font-size:12px; color:var(--ink3); font-style:italic; background:var(--bg2); padding:4px 12px; border-radius:99px; max-width:90%; text-align:center}
+.composer{display:flex; gap:8px; padding:12px; border-top:1px solid var(--line); background:var(--surface2)}
 .composer input{flex:1}
+
+/* Playground quick questions */
 .quickrow{display:flex; gap:6px; flex-wrap:wrap; margin-bottom:12px}
-.quickrow button{font-size:12.5px; padding:5px 10px; border-radius:99px; border:1px dashed var(--line2);
-  background:none; color:var(--ink2); cursor:pointer; font-family:inherit}
-.quickrow button:hover{border-style:solid; border-color:var(--accent); color:var(--accent)}
-.notice{padding:11px 14px; border-radius:8px; font-size:13.5px; margin-bottom:14px; border:1px solid}
-.notice.info{background:var(--warn-soft); border-color:transparent; color:var(--warn)}
-.notice.ok{background:var(--good-soft); border-color:transparent; color:var(--good)}
-.notice.err{background:var(--danger-soft); border-color:transparent; color:var(--danger)}
-.savechip{font-size:12px; color:var(--ink3)}
-.tierbox{border:1px solid var(--line); border-radius:8px; padding:12px; margin-bottom:10px; background:var(--bg)}
-.tierbox h4{margin:0 0 3px; font-size:14px; font-family:"Karla"; font-weight:700}
-.tierbox p{margin:0 0 8px; font-size:13px; color:var(--ink2)}
-.inbox{display:grid; grid-template-columns:280px 1fr; gap:14px}
-@media(max-width:820px){.inbox{grid-template-columns:1fr}}
-.convlist{border:1px solid var(--line); border-radius:var(--radius); background:var(--surface); max-height:560px; overflow-y:auto}
-.conv{padding:11px 13px; border-bottom:1px solid var(--line); cursor:pointer}
-.conv:hover{background:var(--bg2)}
-.conv.sel{background:var(--accent-soft)}
-.conv .n{font-weight:700; font-size:14px; display:flex; align-items:center; gap:6px}
-.conv .p{font-size:12.5px; color:var(--ink3); white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
-.badge{font-size:10px; padding:1px 6px; border-radius:99px; background:var(--danger-soft); color:var(--danger); font-weight:700}
-.badge.plat{background:var(--bg2); color:var(--ink3)}
-.statgrid{display:grid; grid-template-columns:repeat(auto-fit,minmax(110px,1fr)); gap:10px}
-.stat{background:var(--bg); border:1px solid var(--line); border-radius:8px; padding:12px}
-.stat .v{font-family:"Fraunces",serif; font-size:24px; font-weight:600}
-.stat .k{font-size:11px; text-transform:uppercase; letter-spacing:.07em; color:var(--ink3)}
-.kv{display:flex; justify-content:space-between; padding:7px 0; border-bottom:1px dashed var(--line); font-size:14px; gap:12px}
-.kv span:last-child{color:var(--ink2); text-align:right; word-break:break-all}
+.quickrow button{font-size:12px; padding:5px 11px; border-radius:99px; border:1px solid var(--line2);
+  background:var(--surface); color:var(--ink2); cursor:pointer; font-family:inherit; transition:all .15s}
+.quickrow button:hover{border-color:var(--accent); color:var(--accent); background:var(--accent-soft)}
+
+/* Code / Prompt display */
+pre.prompt{background:var(--surface2); border:1px solid var(--line); border-radius:var(--radius); padding:16px;
+  font-size:12px; line-height:1.6; white-space:pre-wrap; word-break:break-word; max-height:500px; overflow:auto; margin:0; color:var(--ink)}
+.meter{font-size:12px; color:var(--ink3)}
+
+/* Key-Value Rows */
+.kv{display:flex; justify-content:space-between; align-items:center; padding:9px 0; border-bottom:1px dashed var(--line); font-size:13.5px; gap:12px}
+.kv span:last-child{color:var(--ink2); text-align:right}
+
+/* Toast / Saved badge */
+.savechip{font-size:12px; font-weight:600; color:var(--good); display:inline-flex; align-items:center; gap:4px}
+.empty{padding:28px; text-align:center; color:var(--ink3); font-size:13.5px; font-style:italic}
+.info-banner{background:var(--gold-soft); border:1px solid var(--gold); border-radius:10px; padding:12px 16px; font-size:13px; color:var(--ink); margin-bottom:16px; line-height:1.45}
 </style>
 </head>
 <body>
 
+<!-- Login Modal -->
 <div id="login">
   <form class="box" id="loginForm">
+    <div class="logo-badge">👑</div>
     <h1>Crown Coffee</h1>
-    <div class="s">Bot Admin</div>
-    <label class="f">Email</label>
-    <input type="email" id="lEmail" autocomplete="username" required>
+    <div class="s">AI Assistant &amp; Multi-Channel Control</div>
+    <label class="f">Admin Email</label>
+    <input type="email" id="lEmail" autocomplete="username" placeholder="admin@crowncoffee.com" required>
     <label class="f">Password</label>
-    <input type="password" id="lPass" autocomplete="current-password" required>
+    <input type="password" id="lPass" autocomplete="current-password" placeholder="••••••••" required>
     <div id="loginErr"></div>
     <button class="btn primary" style="width:100%; justify-content:center; margin-top:8px">Sign in</button>
   </form>
 </div>
 
+<!-- App Container -->
 <div id="app" style="display:none">
 <header>
-  <div class="brand"><h1>Crown Coffee</h1><span class="sub">Bot Admin</span></div>
+  <div class="brand">
+    <div class="brand-icon">👑</div>
+    <div>
+      <h1>Crown Coffee</h1>
+      <div class="sub">AI Automation Hub</div>
+    </div>
+  </div>
   <div class="spacer"></div>
-  <span class="pill" id="openPill"><span class="dot"></span><span id="openTxt">—</span></span>
+  <span class="pill" id="openPill"><span class="dot pulse"></span><span id="openTxt">Checking…</span></span>
   <span class="savechip" id="saveChip"></span>
-  <button class="btn sm" id="themeBtn">◐</button>
+  <button class="btn sm" id="themeBtn" title="Toggle Dark/Light Mode">◐ Theme</button>
   <button class="btn sm" id="logoutBtn">Sign out</button>
 </header>
 
 <div class="wrap">
   <nav id="nav">
-    <div class="navlabel">Live</div>
-    <button data-p="dash" class="active">Dashboard</button>
-    <button data-p="inbox">Inbox</button>
-    <div class="navlabel">Knowledge</div>
-    <button data-p="cafe">Cafe Info</button>
-    <button data-p="menu">Menu</button>
-    <button data-p="faq">FAQs</button>
-    <div class="navlabel">Behaviour</div>
-    <button data-p="persona">Persona</button>
-    <button data-p="scope">Scope &amp; Limits</button>
-    <div class="navlabel">Check</div>
-    <button data-p="prompt">Compiled Prompt</button>
-    <button data-p="play">Playground</button>
-    <button data-p="setup">Setup</button>
+    <div class="navlabel">Live Monitoring</div>
+    <button data-p="dash" class="active"><span class="nav-icon">📊</span> Dashboard</button>
+    <button data-p="inbox"><span class="nav-icon">💬</span> Inbox</button>
+    <button data-p="channels"><span class="nav-icon">🌐</span> Channels</button>
+    
+    <div class="navlabel">Knowledge Base</div>
+    <button data-p="cafe"><span class="nav-icon">📍</span> Cafe Info</button>
+    <button data-p="menu"><span class="nav-icon">☕</span> Menu (89)</button>
+    <button data-p="faq"><span class="nav-icon">❓</span> FAQs (11)</button>
+    
+    <div class="navlabel">AI Behavior</div>
+    <button data-p="persona"><span class="nav-icon">🎭</span> Persona</button>
+    <button data-p="scope"><span class="nav-icon">🛡️</span> Scope &amp; Limits</button>
+    
+    <div class="navlabel">Verification</div>
+    <button data-p="play"><span class="nav-icon">⚡</span> Playground</button>
+    <button data-p="prompt"><span class="nav-icon">📜</span> Compiled Prompt</button>
+    <button data-p="setup"><span class="nav-icon">⚙️</span> System Health</button>
   </nav>
 
   <main>
+    <!-- DASHBOARD PANEL -->
     <section class="panel active" data-p="dash">
-      <div class="phead"><h2>Dashboard</h2><p>Live status of the bot.</p></div>
-      <div class="card">
-        <label class="chk"><input type="checkbox" data-b="runtime.enabled">
-          <strong>Bot is answering messages</strong></label>
-        <p class="hint" style="margin:6px 0 0">Turn this off to stop all automatic replies immediately. Messages still arrive in the Inbox.</p>
+      <div class="phead">
+        <div>
+          <h2>Dashboard</h2>
+          <p>Real-time overview of AI performance, active customer channels, and response status.</p>
+        </div>
+        <div class="row">
+          <button class="btn primary sm" id="btnTestBot"><span class="nav-icon">⚡</span> Test in Playground</button>
+        </div>
       </div>
-      <div class="card"><h3>Activity</h3><div class="statgrid" id="statGrid"></div></div>
-      <div class="card">
-        <h3>When closed</h3>
-        <select data-b="runtime.offHours" style="max-width:340px">
-          <option value="reply">Still reply (bot mentions opening time)</option>
-          <option value="silent">Stay silent until opening</option>
-        </select>
+
+      <!-- Master Control Card -->
+      <div class="card" style="border-left:4px solid var(--accent)">
+        <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px">
+          <div>
+            <label class="chk" style="font-size:16px">
+              <input type="checkbox" data-b="runtime.enabled">
+              <strong>AI Auto-Reply Master Switch</strong>
+            </label>
+            <p class="hint" style="margin:4px 0 0">When ON, the AI answers customer questions instantly across all connected channels.</p>
+          </div>
+          <span class="pill on" id="masterStatusBadge"><span class="dot"></span> ACTIVE</span>
+        </div>
       </div>
+
+      <!-- KPI Stats -->
+      <div class="grid g4" style="margin-bottom:18px">
+        <div class="stat-card">
+          <div class="icon">💬</div>
+          <div class="v" id="stConvs">0</div>
+          <div class="k">Total Conversations</div>
+          <div class="subtext" id="stTodayMsg">0 messages today</div>
+        </div>
+        <div class="stat-card">
+          <div class="icon">📥</div>
+          <div class="v" id="stInToday">0</div>
+          <div class="k">Today's Inbound</div>
+          <div class="subtext">From customers</div>
+        </div>
+        <div class="stat-card">
+          <div class="icon">🤖</div>
+          <div class="v" id="stOutToday">0</div>
+          <div class="k">Today's AI Replies</div>
+          <div class="subtext">Zero latency</div>
+        </div>
+        <div class="stat-card">
+          <div class="icon">🚩</div>
+          <div class="v" id="stFlagged">0</div>
+          <div class="k">Escalated / Flagged</div>
+          <div class="subtext">Requires human attention</div>
+        </div>
+      </div>
+
+      <!-- Connected Channels Hub Preview -->
       <div class="card">
-        <h3>Fallback message</h3>
-        <p class="hint">Sent if both AI providers fail. Never leave a customer with silence.</p>
-        <input type="text" data-b="runtime.fallbackText">
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:14px">
+          <h3><span>🌐</span> Multi-Channel Status Hub</h3>
+          <button class="btn sm" data-nav="channels">Manage Channels →</button>
+        </div>
+        <div class="channel-grid" id="dashChannelCards"></div>
+      </div>
+
+      <!-- Operational Rules & Fallbacks -->
+      <div class="grid g2">
+        <div class="card">
+          <h3><span>⏰</span> Off-Hours Handling</h3>
+          <p class="hint">How the AI handles inquiries outside opening hours (11:00 AM - 11:00 PM).</p>
+          <select data-b="runtime.offHours">
+            <option value="reply">Politely answer &amp; mention cafe opening time (Recommended)</option>
+            <option value="silent">Stay silent until opening time</option>
+          </select>
+        </div>
+        <div class="card">
+          <h3><span>🛡️</span> Safety Fallback Message</h3>
+          <p class="hint">Sent if the AI model encounters a provider timeout or rate limit.</p>
+          <input type="text" data-b="runtime.fallbackText" placeholder="Thanks for your message! Our team will reply shortly.">
+        </div>
       </div>
     </section>
 
+    <!-- CHANNELS PANEL -->
+    <section class="panel" data-p="channels">
+      <div class="phead">
+        <div>
+          <h2>Connected Channels</h2>
+          <p>Configure Facebook Messenger, Instagram Direct, WhatsApp Cloud API, and TikTok Business Messaging.</p>
+        </div>
+      </div>
+
+      <div class="info-banner">
+        💡 <strong>Note:</strong> Configuration fields below allow you to easily connect channels directly from this panel. If left empty, the bot automatically uses values from your server <code>.env</code> file.
+      </div>
+
+      <div class="grid g2">
+        <!-- Facebook Messenger -->
+        <div class="card">
+          <div class="channel-header">
+            <div class="channel-title">
+              <div class="channel-badge-icon fb">f</div>
+              Facebook Messenger
+            </div>
+            <label class="chk"><input type="checkbox" data-b="channels.facebook.enabled"> Enabled</label>
+          </div>
+          <p class="hint">Auto-reply to customer direct messages on your Facebook Page.</p>
+          
+          <label class="f">Page Access Token</label>
+          <input type="password" data-b="channels.facebook.pageToken" placeholder="EAAG... (Leave empty to use .env)">
+
+          <div class="grid g2" style="margin-top:8px">
+            <div>
+              <label class="f">Page ID</label>
+              <input type="text" data-b="channels.facebook.pageId" placeholder="758487290680242">
+            </div>
+            <div>
+              <label class="f">App Secret</label>
+              <input type="password" data-b="channels.facebook.appSecret" placeholder="••••••••">
+            </div>
+          </div>
+
+          <div style="margin-top:10px">
+            <label class="f">Webhook Callback URL</label>
+            <div class="input-with-btn">
+              <input type="text" readonly id="fbWebhookUrl" class="mono" value="https://bot.ccadmin.online/webhook/meta">
+              <button class="btn sm" onclick="copyId('fbWebhookUrl')">Copy</button>
+            </div>
+          </div>
+
+          <div style="margin-top:10px">
+            <label class="f">Verify Token</label>
+            <div class="input-with-btn">
+              <input type="text" data-b="channels.facebook.verifyToken" placeholder="botcrowncoffee" class="mono">
+              <button class="btn sm" onclick="copyVal('channels.facebook.verifyToken')">Copy</button>
+            </div>
+          </div>
+
+          <div class="row" style="margin-top:16px">
+            <button class="btn primary sm" onclick="testChannel('facebook')">Test Facebook Connection</button>
+            <span id="fbTestResult" class="meter"></span>
+          </div>
+        </div>
+
+        <!-- Instagram Direct -->
+        <div class="card">
+          <div class="channel-header">
+            <div class="channel-title">
+              <div class="channel-badge-icon ig">📸</div>
+              Instagram Direct
+            </div>
+            <label class="chk"><input type="checkbox" data-b="channels.instagram.enabled"> Enabled</label>
+          </div>
+          <p class="hint">Auto-reply to DMs sent to your connected Instagram Professional account.</p>
+
+          <label class="f">Instagram Access Token / Page Token</label>
+          <input type="password" data-b="channels.instagram.token" placeholder="IG... or EAAG... (Leave empty to use .env)">
+
+          <div class="grid g2" style="margin-top:8px">
+            <div>
+              <label class="f">Instagram User ID / Page ID</label>
+              <input type="text" data-b="channels.instagram.userId" placeholder="178414...">
+            </div>
+            <div>
+              <label class="f">Graph API Host</label>
+              <input type="text" data-b="channels.instagram.graphHost" placeholder="https://graph.facebook.com">
+            </div>
+          </div>
+
+          <div style="margin-top:10px">
+            <label class="f">Webhook Callback URL</label>
+            <div class="input-with-btn">
+              <input type="text" readonly id="igWebhookUrl" class="mono" value="https://bot.ccadmin.online/webhook/meta">
+              <button class="btn sm" onclick="copyId('igWebhookUrl')">Copy</button>
+            </div>
+          </div>
+
+          <div class="row" style="margin-top:16px">
+            <button class="btn primary sm" onclick="testChannel('instagram')">Test Instagram Connection</button>
+            <span id="igTestResult" class="meter"></span>
+          </div>
+        </div>
+
+        <!-- WhatsApp Cloud API -->
+        <div class="card">
+          <div class="channel-header">
+            <div class="channel-title">
+              <div class="channel-badge-icon wa">💬</div>
+              WhatsApp Cloud API
+            </div>
+            <label class="chk"><input type="checkbox" data-b="channels.whatsapp.enabled"> Enabled</label>
+          </div>
+          <p class="hint">Direct 24/7 AI chat on official Meta WhatsApp Business numbers.</p>
+
+          <div class="grid g2">
+            <div>
+              <label class="f">Phone Number ID</label>
+              <input type="text" data-b="channels.whatsapp.phoneNumberId" placeholder="104928374928...">
+            </div>
+            <div>
+              <label class="f">WABA ID (Account ID)</label>
+              <input type="text" data-b="channels.whatsapp.wabaId" placeholder="192837465928...">
+            </div>
+          </div>
+
+          <div style="margin-top:8px">
+            <label class="f">WhatsApp Access Token (System User)</label>
+            <input type="password" data-b="channels.whatsapp.token" placeholder="EAAG... (Leave empty to use .env)">
+          </div>
+
+          <div style="margin-top:10px">
+            <label class="f">WhatsApp Webhook Callback URL</label>
+            <div class="input-with-btn">
+              <input type="text" readonly id="waWebhookUrl" class="mono" value="https://bot.ccadmin.online/webhook/meta">
+              <button class="btn sm" onclick="copyId('waWebhookUrl')">Copy</button>
+            </div>
+          </div>
+
+          <div class="row" style="margin-top:16px">
+            <button class="btn primary sm" onclick="testChannel('whatsapp')">Test WhatsApp Connection</button>
+            <span id="waTestResult" class="meter"></span>
+          </div>
+        </div>
+
+        <!-- TikTok Business Messaging -->
+        <div class="card">
+          <div class="channel-header">
+            <div class="channel-title">
+              <div class="channel-badge-icon tt">🎵</div>
+              TikTok Business Messaging
+            </div>
+            <label class="chk"><input type="checkbox" data-b="channels.tiktok.enabled"> Enabled</label>
+          </div>
+          <p class="hint">Instant AI responses to TikTok direct messages and business inquiries.</p>
+
+          <label class="f">TikTok Access Token</label>
+          <input type="password" data-b="channels.tiktok.token" placeholder="act.example... (Leave empty to use .env)">
+
+          <div class="grid g2" style="margin-top:8px">
+            <div>
+              <label class="f">Client Key</label>
+              <input type="text" data-b="channels.tiktok.clientKey" placeholder="aw...">
+            </div>
+            <div>
+              <label class="f">Client Secret</label>
+              <input type="password" data-b="channels.tiktok.clientSecret" placeholder="••••••••">
+            </div>
+          </div>
+
+          <div style="margin-top:10px">
+            <label class="f">TikTok Webhook Callback URL</label>
+            <div class="input-with-btn">
+              <input type="text" readonly id="ttWebhookUrl" class="mono" value="https://bot.ccadmin.online/webhook/tiktok">
+              <button class="btn sm" onclick="copyId('ttWebhookUrl')">Copy</button>
+            </div>
+          </div>
+
+          <div class="row" style="margin-top:16px">
+            <button class="btn primary sm" onclick="testChannel('tiktok')">Test TikTok Connection</button>
+            <span id="ttTestResult" class="meter"></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- INBOX PANEL -->
     <section class="panel" data-p="inbox">
-      <div class="phead"><h2>Inbox</h2><p>Flagged threads first. Turn the bot off per conversation to take over.</p></div>
-      <div class="row" style="margin-bottom:12px"><button class="btn sm" id="refreshInbox">Refresh</button>
-        <span class="meter" id="inboxMeter"></span></div>
+      <div class="phead">
+        <div>
+          <h2>Customer Inbox</h2>
+          <p>View active customer conversations, inspect AI replies, or seamlessly reply as a human.</p>
+        </div>
+        <button class="btn sm" id="refreshInbox">↻ Refresh Inbox</button>
+      </div>
+
       <div class="inbox">
         <div class="convlist" id="convList"></div>
         <div>
           <div class="chat">
-            <div class="log" id="threadLog"><div class="empty">Select a conversation.</div></div>
+            <div class="log" id="threadLog"><div class="empty">Select a conversation from the list to view messages.</div></div>
             <div class="composer">
-              <input type="text" id="threadIn" placeholder="Reply as a human…" disabled>
+              <input type="text" id="threadIn" placeholder="Reply to customer as a human…" disabled>
               <button class="btn primary" id="threadSend" disabled>Send</button>
             </div>
           </div>
-          <div class="row" style="margin-top:10px">
-            <label class="chk"><input type="checkbox" id="convBot" disabled> Bot replies to this person</label>
+          <div class="row" style="margin-top:12px; justify-content:space-between">
+            <label class="chk"><input type="checkbox" id="convBot" disabled> AI Bot replies to this customer</label>
+            <span id="convChannelBadge" class="badge plat">No thread selected</span>
           </div>
         </div>
       </div>
     </section>
 
+    <!-- CAFE INFO PANEL -->
     <section class="panel" data-p="cafe">
-      <div class="phead"><h2>Cafe Info</h2><p>Facts the bot may state. Anything not here, it must not claim.</p></div>
-      <div class="card"><div class="grid g2">
-        <div><label class="f">Cafe name</label><input type="text" data-b="cafe.name"></div>
-        <div><label class="f">Phone</label><input type="text" data-b="cafe.phone"></div>
-        <div><label class="f">Area</label><input type="text" data-b="cafe.area"></div>
-        <div><label class="f">Full address</label><input type="text" data-b="cafe.address"></div>
-      </div></div>
-      <div class="card"><h3>Hours</h3>
-        <p class="hint">The bot is told the live Dhaka day and time on every message, so it always knows if you are open.</p>
-        <div class="grid g3">
-          <div><label class="f">Opens</label><input type="time" data-b="cafe.open"></div>
-          <div><label class="f">Closes</label><input type="time" data-b="cafe.close"></div>
-          <div><label class="f">Weekly off</label><select data-b="cafe.offDay">
-            <option value="">No weekly off</option><option>Sunday</option><option>Monday</option>
-            <option>Tuesday</option><option>Wednesday</option><option>Thursday</option>
-            <option>Friday</option><option>Saturday</option></select></div>
+      <div class="phead">
+        <div>
+          <h2>Cafe Information</h2>
+          <p>Verified facts and operational details. The AI uses these as strict truth.</p>
         </div>
-        <div style="margin-top:12px"><label class="f">Special / holiday note</label>
-          <input type="text" data-b="cafe.holidayNote" placeholder="e.g. Closed on Eid day"></div>
       </div>
-      <div class="card"><h3>Facilities &amp; service</h3><div class="grid g2">
-        <div><label class="f">Wifi</label><input type="text" data-b="cafe.wifi"></div>
-        <div><label class="f">Parking</label><input type="text" data-b="cafe.parking"></div>
-        <div><label class="f">Seating</label><input type="text" data-b="cafe.seating"></div>
-        <div><label class="f">Payment accepted</label><input type="text" data-b="cafe.payments" placeholder="Cash, bKash, Nagad, card"></div>
-        <div><label class="f">Service options</label><input type="text" data-b="cafe.service" placeholder="Dine-in, takeaway, delivery"></div>
-        <div><label class="f">Delivery apps</label><input type="text" data-b="cafe.apps" placeholder="Foodpanda, Pathao"></div>
+      <div class="card">
+        <div class="grid g2">
+          <div><label class="f">Cafe Name</label><input type="text" data-b="cafe.name"></div>
+          <div><label class="f">Phone Number</label><input type="text" data-b="cafe.phone"></div>
+          <div><label class="f">Area / Landmark</label><input type="text" data-b="cafe.area"></div>
+          <div><label class="f">Full Address</label><input type="text" data-b="cafe.address"></div>
+        </div>
       </div>
-      <div style="margin-top:12px"><label class="f">Anything else the bot should know</label>
-        <textarea data-b="cafe.notes"></textarea></div></div>
+      <div class="card">
+        <h3><span>⏰</span> Operating Hours</h3>
+        <p class="hint">The AI receives live Dhaka local time on every customer message to accurately calculate opening status.</p>
+        <div class="grid g3">
+          <div><label class="f">Opening Time</label><input type="time" data-b="cafe.open"></div>
+          <div><label class="f">Closing Time</label><input type="time" data-b="cafe.close"></div>
+          <div><label class="f">Weekly Off Day</label><select data-b="cafe.offDay">
+            <option value="">No off day (Open 7 days)</option>
+            <option>Sunday</option><option>Monday</option><option>Tuesday</option>
+            <option>Wednesday</option><option>Thursday</option><option>Friday</option><option>Saturday</option>
+          </select></div>
+        </div>
+        <div style="margin-top:12px">
+          <label class="f">Special / Holiday &amp; Last Order Note</label>
+          <input type="text" data-b="cafe.holidayNote" placeholder="e.g. Open every day including Fridays. Last order at 22:30.">
+        </div>
+      </div>
+      <div class="card">
+        <h3><span>✨</span> Amenities &amp; Services</h3>
+        <div class="grid g2">
+          <div><label class="f">Wi-Fi &amp; Work Policy</label><input type="text" data-b="cafe.wifi"></div>
+          <div><label class="f">Parking</label><input type="text" data-b="cafe.parking"></div>
+          <div><label class="f">Seating &amp; Events</label><input type="text" data-b="cafe.seating"></div>
+          <div><label class="f">Payment Methods</label><input type="text" data-b="cafe.payments"></div>
+          <div><label class="f">Service Modes</label><input type="text" data-b="cafe.service"></div>
+          <div><label class="f">Delivery Apps</label><input type="text" data-b="cafe.apps"></div>
+        </div>
+        <div style="margin-top:12px">
+          <label class="f">Additional Rules / Specific Details</label>
+          <textarea data-b="cafe.notes"></textarea>
+        </div>
+      </div>
     </section>
 
+    <!-- MENU PANEL -->
     <section class="panel" data-p="menu">
-      <div class="phead"><h2>Menu</h2><p>Switch an item off the moment it sells out. The bot stops offering it on the next message.</p></div>
-      <div class="card"><h3>Import from text</h3>
-        <p class="hint">Paste your menu however it is written. Check the prices afterwards.</p>
-        <textarea id="importBox" placeholder="Espresso 150&#10;Cappuccino 220&#10;Cafe Latte 240"></textarea>
-        <div class="row" style="margin-top:10px">
-          <button class="btn primary" id="importBtn">Parse menu</button>
-          <span id="importMsg" class="meter"></span></div>
+      <div class="phead">
+        <div>
+          <h2>Menu Management</h2>
+          <p>89 preloaded items across 22 categories. Instantly toggle item availability or update prices.</p>
+        </div>
+        <div class="row">
+          <button class="btn primary sm" id="addCat">+ Add Category</button>
+        </div>
       </div>
-      <div class="row" style="margin-bottom:12px">
-        <button class="btn" id="addCat">+ Add category</button>
-        <span class="meter" id="menuCount"></span></div>
+
+      <div class="card">
+        <h3><span>📋</span> Quick Text Importer</h3>
+        <p class="hint">Paste menu lines to auto-parse items with prices.</p>
+        <textarea id="importBox" placeholder="Espresso 190&#10;Traditional Breakfast 390&#10;BBQ Chicken Pizza (9&quot;) 595"></textarea>
+        <div class="row" style="margin-top:10px">
+          <button class="btn primary sm" id="importBtn">Parse &amp; Append Menu</button>
+          <span id="importMsg" class="meter"></span>
+        </div>
+      </div>
+
+      <div class="row" style="margin-bottom:14px; justify-content:space-between">
+        <span class="meter" id="menuCount" style="font-weight:600">Loading menu…</span>
+      </div>
       <div id="menuList"></div>
     </section>
 
+    <!-- FAQS PANEL -->
     <section class="panel" data-p="faq">
-      <div class="phead"><h2>FAQs</h2><p>Answers in your own words. These override anything the model would otherwise guess.</p></div>
-      <div class="card"><div id="faqList"></div>
-        <button class="btn" id="addFaq" style="margin-top:10px">+ Add question</button></div>
+      <div class="phead">
+        <div>
+          <h2>Frequently Asked Questions</h2>
+          <p>11 preloaded comprehensive answers. These strictly guide the AI on customer inquiries.</p>
+        </div>
+        <button class="btn primary sm" id="addFaq">+ Add FAQ</button>
+      </div>
+      <div class="card"><div id="faqList"></div></div>
     </section>
 
+    <!-- PERSONA PANEL -->
     <section class="panel" data-p="persona">
-      <div class="phead"><h2>Persona</h2><p>How the bot sounds. Test in the Playground before it goes live.</p></div>
-      <div class="card"><div class="grid g2">
-        <div><label class="f">Tone</label><select data-b="persona.tone">
-          <option>Polite and professional, warm but not chatty</option>
-          <option>Formal and respectful</option>
-          <option>Friendly and casual</option>
-          <option>Short and efficient</option></select></div>
-        <div><label class="f">Reply length</label><select data-b="persona.length">
-          <option>Short — 1 to 3 sentences</option>
-          <option>Medium — up to 5 sentences</option></select></div>
+      <div class="phead">
+        <div>
+          <h2>AI Persona &amp; Tone</h2>
+          <p>Define how the AI speaks, its language adaptation rules, and response lengths.</p>
+        </div>
       </div>
-      <div style="margin-top:12px"><label class="f">Language rule</label><textarea data-b="persona.language"></textarea></div>
-      <div style="margin-top:12px"><label class="f">Greeting for a first message</label><input type="text" data-b="persona.greeting"></div>
-      <div style="margin-top:10px">
-        <label class="chk"><input type="checkbox" data-b="persona.emoji"> Allow emoji</label>
-        <label class="chk"><input type="checkbox" data-b="persona.disclose"> Say it is an automated assistant</label>
-      </div></div>
-    </section>
-
-    <section class="panel" data-p="scope">
-      <div class="phead"><h2>Scope &amp; Limits</h2><p>What the bot settles alone, what needs your confirmation, what it must never touch.</p></div>
-      <div class="card"><h3>Autonomy tiers</h3>
-        <div class="tierbox"><h4>Answer questions</h4>
-          <p>Menu, prices, hours, location, facilities.</p>
-          <label class="chk"><input type="checkbox" data-b="scope.answer"> Bot handles alone</label></div>
-        <div class="tierbox"><h4>Reservations</h4>
-          <p>Bot collects details, then you confirm. It must never say "confirmed" itself.</p>
-          <select data-b="scope.reserve">
-            <option value="off">Do not handle — pass to human</option>
-            <option value="draft">Collect details, you confirm</option>
-            <option value="auto">Bot confirms directly (not recommended)</option></select></div>
-        <div class="tierbox"><h4>Orders</h4>
-          <p>A confirmed order your kitchen never saw is worse than a two-minute wait.</p>
-          <select data-b="scope.order">
-            <option value="off">Do not handle — pass to human</option>
-            <option value="draft">Collect details, you confirm</option>
-            <option value="auto">Bot confirms directly (not recommended)</option></select></div>
-        <div class="tierbox"><h4>Complaints, refunds, allergies</h4>
-          <p>Acknowledge once, then stop and flag. Never promises a refund, never gives allergy advice.</p>
-          <select data-b="scope.complaint">
-            <option value="ack">Acknowledge and flag (recommended)</option>
-            <option value="off">Say nothing, just flag</option></select></div>
-      </div>
-      <div class="card"><h3>Guardrails</h3>
-        <p class="hint">Hard rules, copied into the prompt verbatim.</p>
-        <div id="guardList"></div>
-        <div class="row" style="margin-top:8px">
-          <input type="text" id="guardIn" placeholder="Add a rule the bot must never break" style="flex:1">
-          <button class="btn" id="addGuard">Add</button></div>
-      </div>
-      <div class="card"><h3>Escalation keywords</h3>
-        <p class="hint">If a message contains any of these, the thread is flagged for you.</p>
-        <div class="tags" id="escTags"></div>
-        <div class="row" style="margin-top:10px">
-          <input type="text" id="escIn" placeholder="Add keyword (Bangla or English)" style="flex:1">
-          <button class="btn" id="addEsc">Add</button></div>
-      </div>
-    </section>
-
-    <section class="panel" data-p="prompt">
-      <div class="phead"><h2>Compiled Prompt</h2><p>Exactly what the model receives with every customer message.</p></div>
       <div class="card">
-        <div class="row" style="margin-bottom:12px">
-          <button class="btn sm" id="copyPrompt">Copy</button>
-          <span class="meter" id="promptMeter"></span></div>
+        <div class="grid g2">
+          <div>
+            <label class="f">Tone</label>
+            <select data-b="persona.tone">
+              <option>Polite and professional, warm but not chatty</option>
+              <option>Formal and respectful</option>
+              <option>Friendly, warm and hospitable</option>
+              <option>Short and direct</option>
+            </select>
+          </div>
+          <div>
+            <label class="f">Response Length</label>
+            <select data-b="persona.length">
+              <option>Short — 1 to 3 sentences</option>
+              <option>Medium — up to 5 sentences</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="margin-top:14px">
+          <label class="f">Language &amp; Script Mirroring Rule</label>
+          <textarea data-b="persona.language" style="min-height:90px"></textarea>
+        </div>
+
+        <div style="margin-top:14px">
+          <label class="f">Default Greeting</label>
+          <input type="text" data-b="persona.greeting">
+        </div>
+
+        <div style="margin-top:14px" class="row">
+          <label class="chk"><input type="checkbox" data-b="persona.emoji"> Allow subtle emojis</label>
+          <label class="chk" style="margin-left:14px"><input type="checkbox" data-b="persona.disclose"> Explicitly declare as AI</label>
+        </div>
+      </div>
+    </section>
+
+    <!-- SCOPE & LIMITS PANEL -->
+    <section class="panel" data-p="scope">
+      <div class="phead">
+        <div>
+          <h2>Scope, Guardrails &amp; Safety</h2>
+          <p>Set boundaries for autonomy, reservations, orders, complaints, and escalation triggers.</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3><span>🛡️</span> Autonomy Tiers</h3>
+        <div class="grid g2">
+          <div class="step-box">
+            <h4>Answer Information</h4>
+            <p>Menu, prices, hours, parking, Wi-Fi, location.</p>
+            <label class="chk"><input type="checkbox" data-b="scope.answer"> AI answers automatically</label>
+          </div>
+          <div class="step-box">
+            <h4>Reservations</h4>
+            <p>Collect party size, date, time for human confirmation.</p>
+            <select data-b="scope.reserve">
+              <option value="draft">Collect details, human confirms (Recommended)</option>
+              <option value="off">Pass immediately to human</option>
+              <option value="auto">AI confirms directly</option>
+            </select>
+          </div>
+          <div class="step-box">
+            <h4>Orders &amp; Takeaway</h4>
+            <p>Draft order details for kitchen verification.</p>
+            <select data-b="scope.order">
+              <option value="draft">Collect items, human confirms (Recommended)</option>
+              <option value="off">Pass immediately to human</option>
+              <option value="auto">AI confirms directly</option>
+            </select>
+          </div>
+          <div class="step-box">
+            <h4>Complaints &amp; Escalations</h4>
+            <p>Acknowledge politely and notify manager immediately.</p>
+            <select data-b="scope.complaint">
+              <option value="ack">Politely acknowledge &amp; flag thread (Recommended)</option>
+              <option value="off">Stay silent and flag thread</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3><span>⛔</span> Strict Guardrails</h3>
+        <p class="hint">Hard rules injected directly into the prompt.</p>
+        <div id="guardList"></div>
+        <div class="row" style="margin-top:10px">
+          <input type="text" id="guardIn" placeholder="Add a new safety guardrail..." style="flex:1">
+          <button class="btn primary sm" id="addGuard">Add Rule</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3><span>🚩</span> Escalation Keywords</h3>
+        <p class="hint">When a customer mentions any of these terms, the thread is instantly flagged.</p>
+        <div class="tags" id="escTags"></div>
+        <div class="row" style="margin-top:12px">
+          <input type="text" id="escIn" placeholder="Add keyword (e.g. manager, refund, অভিযোগ)..." style="flex:1">
+          <button class="btn primary sm" id="addEsc">Add Keyword</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- PLAYGROUND PANEL -->
+    <section class="panel" data-p="play">
+      <div class="phead">
+        <div>
+          <h2>Interactive AI Playground</h2>
+          <p>Simulate customer conversations using the real AI engine with active settings.</p>
+        </div>
+        <button class="btn sm" id="clearBtn">Clear Conversation</button>
+      </div>
+
+      <div class="quickrow" id="quickRow"></div>
+
+      <div class="chat">
+        <div class="log" id="chatLog"></div>
+        <div class="composer">
+          <input type="text" id="chatIn" placeholder="Type a message as a customer would…">
+          <button class="btn primary" id="sendBtn">Send</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- COMPILED PROMPT PANEL -->
+    <section class="panel" data-p="prompt">
+      <div class="phead">
+        <div>
+          <h2>Compiled System Prompt</h2>
+          <p>The exact prompt context sent to the AI on every incoming message.</p>
+        </div>
+        <button class="btn sm" id="copyPrompt">📋 Copy Prompt</button>
+      </div>
+      <div class="card">
+        <span class="meter" id="promptMeter" style="display:block; margin-bottom:10px; font-weight:600"></span>
         <pre class="prompt mono" id="promptOut"></pre>
       </div>
     </section>
 
-    <section class="panel" data-p="play">
-      <div class="phead"><h2>Playground</h2><p>Talk to your bot with the current settings, using the real AI provider. Nothing here touches Facebook or Instagram.</p></div>
-      <div class="quickrow" id="quickRow"></div>
-      <div class="chat">
-        <div class="log" id="chatLog"></div>
-        <div class="composer">
-          <input type="text" id="chatIn" placeholder="Type as a customer would…">
-          <button class="btn primary" id="sendBtn">Send</button>
-          <button class="btn sm" id="clearBtn">Clear</button></div>
-      </div>
-    </section>
-
+    <!-- SETUP & HEALTH PANEL -->
     <section class="panel" data-p="setup">
-      <div class="phead"><h2>Setup</h2><p>Connection status and the values Meta asks for.</p></div>
-      <div class="card"><h3>Health</h3><div id="healthOut"></div></div>
-      <div class="card"><h3>Export config</h3>
-        <div class="row" style="margin-bottom:12px"><button class="btn" id="copyJson">Copy JSON</button></div>
-        <pre class="prompt mono" id="jsonOut"></pre></div>
+      <div class="phead">
+        <div>
+          <h2>System Health &amp; Configuration</h2>
+          <p>Verify API provider availability, webhook endpoints, and database status.</p>
+        </div>
+      </div>
+      <div class="card">
+        <h3><span>🔌</span> Connectivity Diagnostic</h3>
+        <div id="healthOut"></div>
+      </div>
+      <div class="card">
+        <h3><span>💾</span> Export Complete Config (JSON)</h3>
+        <div class="row" style="margin-bottom:12px">
+          <button class="btn sm" id="copyJson">Copy JSON</button>
+        </div>
+        <pre class="prompt mono" id="jsonOut"></pre>
+      </div>
     </section>
   </main>
 </div>
@@ -431,291 +904,623 @@ const api = (p, opts={}) => fetch(API + p, {credentials:'same-origin', headers:{
 
 let S = null, saveT = null, selConv = null;
 
-/* ---------- auth ---------- */
+/* ---------- AUTHENTICATION ---------- */
 async function checkAuth(){
   const r = await api('/api/me').then(r=>r.json()).catch(()=>({authed:false}));
-  if(r.authed){ document.getElementById('login').style.display='none';
-                document.getElementById('app').style.display='block'; await load(); }
-  else { document.getElementById('login').style.display='grid';
-         document.getElementById('app').style.display='none'; }
+  if(r.authed){
+    document.getElementById('login').style.display='none';
+    document.getElementById('app').style.display='block';
+    await load();
+  } else {
+    document.getElementById('login').style.display='grid';
+    document.getElementById('app').style.display='none';
+  }
 }
-document.getElementById('loginForm').onsubmit = async e=>{
+
+document.getElementById('loginForm').onsubmit = async e => {
   e.preventDefault();
   const err = document.getElementById('loginErr'); err.textContent='';
-  const res = await api('/api/login',{method:'POST', body:JSON.stringify({
-    email:document.getElementById('lEmail').value, password:document.getElementById('lPass').value })});
-  if(res.ok) checkAuth(); else err.textContent = (await res.json()).error || 'Sign in failed.';
+  const email = document.getElementById('lEmail').value;
+  const password = document.getElementById('lPass').value;
+  const res = await api('/api/login', {method:'POST', body:JSON.stringify({email, password})});
+  if(res.ok) checkAuth();
+  else err.textContent = (await res.json()).error || 'Sign in failed.';
 };
-document.getElementById('logoutBtn').onclick = async ()=>{ await api('/api/logout',{method:'POST'}); location.reload(); };
 
-/* ---------- load / save ---------- */
+document.getElementById('logoutBtn').onclick = async () => {
+  await api('/api/logout', {method:'POST'});
+  location.reload();
+};
+
+/* ---------- LOAD / SAVE CONFIG ---------- */
 async function load(){
   const d = await api('/api/config').then(r=>r.json());
-  S = d.config; render(); paintPrompt(d.prompt); paintOpen(d.open); paintStats(d.stats);
+  S = d.config;
+  render();
+  paintPrompt(d.prompt);
+  paintOpen(d.open);
+  paintStats(d.stats);
 }
-function chip(t){ const e=document.getElementById('saveChip'); e.textContent=t;
-  clearTimeout(chip._t); chip._t=setTimeout(()=>e.textContent='',1800); }
+
+function chip(t){
+  const e = document.getElementById('saveChip');
+  e.textContent = '✓ ' + t;
+  clearTimeout(chip._t);
+  chip._t = setTimeout(()=>e.textContent='', 2000);
+}
+
 function save(){
   clearTimeout(saveT);
   saveT = setTimeout(async ()=>{
-    const r = await api('/api/config',{method:'PUT', body:JSON.stringify({config:S})});
-    if(r.ok){ const d = await r.json(); paintPrompt(d.prompt); paintOpen(d.open); chip('Saved'); }
-    else chip('Save failed');
-  }, 700);
+    const r = await api('/api/config', {method:'PUT', body:JSON.stringify({config:S})});
+    if(r.ok){
+      const d = await r.json();
+      paintPrompt(d.prompt);
+      paintOpen(d.open);
+      if(d.stats) paintStats(d.stats);
+      chip('Changes saved & active');
+    } else {
+      chip('Save failed');
+    }
+  }, 600);
 }
 
-/* ---------- nav / theme ---------- */
-document.getElementById('nav').onclick = e=>{
-  const b = e.target.closest('button[data-p]'); if(!b) return;
-  document.querySelectorAll('nav button').forEach(x=>x.classList.remove('active'));
-  b.classList.add('active');
-  document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('active', p.dataset.p===b.dataset.p));
-  if(b.dataset.p==='inbox') loadInbox();
-  if(b.dataset.p==='setup') loadHealth();
-};
-document.getElementById('themeBtn').onclick = ()=>{
-  const r=document.documentElement, cur=r.getAttribute('data-theme');
-  const dark = cur ? cur==='dark' : matchMedia('(prefers-color-scheme: dark)').matches;
-  r.setAttribute('data-theme', dark?'light':'dark');
+/* ---------- NAVIGATION & THEME ---------- */
+function switchTab(tabId){
+  document.querySelectorAll('nav button').forEach(x=>x.classList.toggle('active', x.dataset.p===tabId));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('active', p.dataset.p===tabId));
+  if(tabId==='inbox') loadInbox();
+  if(tabId==='setup') loadHealth();
+  if(tabId==='channels') updateChannelUrls();
+}
+
+document.getElementById('nav').onclick = e => {
+  const b = e.target.closest('button[data-p]');
+  if(b) switchTab(b.dataset.p);
 };
 
-/* ---------- bound fields ---------- */
-const getP=(o,p)=>p.split('.').reduce((a,k)=>a?.[k],o);
-const setP=(o,p,v)=>{const k=p.split('.'),l=k.pop();k.reduce((a,x)=>a[x],o)[l]=v};
-document.querySelectorAll('[data-b]').forEach(el=>{
-  const evt = (el.type==='checkbox'||el.tagName==='SELECT') ? 'change' : 'input';
-  el.addEventListener(evt, ()=>{ if(!S) return;
-    setP(S, el.dataset.b, el.type==='checkbox'?el.checked:el.value); save(); });
+document.querySelectorAll('[data-nav]').forEach(el=>{
+  el.onclick = () => switchTab(el.dataset.nav);
 });
-function fillBound(){ document.querySelectorAll('[data-b]').forEach(el=>{
-  const v=getP(S, el.dataset.b);
-  if(el.type==='checkbox') el.checked=!!v; else el.value = v ?? ''; }); }
 
-/* ---------- painters ---------- */
-function paintOpen(o){
-  const p=document.getElementById('openPill'); p.className='pill '+(o.open?'on':'off');
-  document.getElementById('openTxt').textContent = `${o.n.day} ${o.n.time} · ${o.open?'OPEN':'CLOSED'}`;
+document.getElementById('btnTestBot').onclick = () => switchTab('play');
+
+document.getElementById('themeBtn').onclick = () => {
+  const r = document.documentElement;
+  const cur = r.getAttribute('data-theme');
+  const isDark = cur ? cur==='dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+  r.setAttribute('data-theme', isDark ? 'light' : 'dark');
+};
+
+/* ---------- DATA BINDING ---------- */
+const getP = (o,p) => p.split('.').reduce((a,k)=>a?.[k], o);
+const setP = (o,p,v) => { const k=p.split('.'), l=k.pop(); k.reduce((a,x)=>{ a[x] = a[x] || {}; return a[x]; }, o)[l]=v; };
+
+document.querySelectorAll('[data-b]').forEach(el => {
+  const evt = (el.type==='checkbox'||el.tagName==='SELECT') ? 'change' : 'input';
+  el.addEventListener(evt, () => {
+    if(!S) return;
+    const val = el.type==='checkbox' ? el.checked : el.value;
+    setP(S, el.dataset.b, val);
+    if(el.dataset.b === 'runtime.enabled') updateMasterSwitchBadge(el.checked);
+    save();
+  });
+});
+
+function fillBound(){
+  document.querySelectorAll('[data-b]').forEach(el => {
+    const v = getP(S, el.dataset.b);
+    if(el.type==='checkbox') el.checked = !!v;
+    else el.value = v ?? '';
+  });
+  if(S?.runtime) updateMasterSwitchBadge(!!S.runtime.enabled);
 }
+
+function updateMasterSwitchBadge(on){
+  const b = document.getElementById('masterStatusBadge');
+  if(b){
+    b.className = 'pill ' + (on ? 'on' : 'off');
+    b.innerHTML = `<span class="dot ${on?'pulse':''}"></span> ${on ? 'ACTIVE & ANSWERING' : 'PAUSED'}`;
+  }
+}
+
+/* ---------- PAINTERS ---------- */
+function paintOpen(o){
+  if(!o) return;
+  const p = document.getElementById('openPill');
+  p.className = 'pill ' + (o.open ? 'on' : 'off');
+  document.getElementById('openTxt').textContent = `Dhaka: ${o.n.day} ${o.n.time} · ${o.open ? 'OPEN' : 'CLOSED'}`;
+}
+
 function paintPrompt(t){
+  if(!t) return;
   document.getElementById('promptOut').textContent = t;
   document.getElementById('promptMeter').textContent =
-    `${t.length.toLocaleString()} characters · roughly ${Math.round(t.length/4).toLocaleString()} tokens`;
-  document.getElementById('jsonOut').textContent = JSON.stringify(S,null,2);
+    `${t.length.toLocaleString()} characters · approx. ${Math.round(t.length/4).toLocaleString()} tokens`;
+  document.getElementById('jsonOut').textContent = JSON.stringify(S, null, 2);
 }
-function paintStats(s){
-  document.getElementById('statGrid').innerHTML = [
-    ['Conversations',s.conversations],['Messages today',s.today],
-    ['Received',s.messagesIn],['Sent',s.messagesOut],['Flagged',s.flagged]
-  ].map(([k,v])=>`<div class="stat"><div class="v">${v}</div><div class="k">${k}</div></div>`).join('');
-}
-const esc = s => String(s??'').replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));
-const c = () => Math.random().toString(36).slice(2,9);
 
-/* ---------- menu ---------- */
+function paintStats(s){
+  if(!s) return;
+  document.getElementById('stConvs').textContent = s.conversations || 0;
+  document.getElementById('stTodayMsg').textContent = `${s.today || 0} messages today`;
+  document.getElementById('stInToday').textContent = s.todayIn || 0;
+  document.getElementById('stOutToday').textContent = s.todayOut || 0;
+  document.getElementById('stFlagged').textContent = s.flagged || 0;
+  renderDashChannels(s);
+}
+
+function renderDashChannels(s){
+  const w = document.getElementById('dashChannelCards');
+  if(!w || !S) return;
+  const ch = S.channels || {};
+
+  const items = [
+    {
+      id: 'facebook', name: 'Facebook Messenger', icon: 'f', cls: 'fb',
+      enabled: ch.facebook?.enabled ?? true,
+      ready: !!(ch.facebook?.pageToken || ch.facebook?.pageId),
+      count: s.byPlatform?.facebook || 0
+    },
+    {
+      id: 'instagram', name: 'Instagram Direct', icon: '📸', cls: 'ig',
+      enabled: ch.instagram?.enabled ?? false,
+      ready: !!(ch.instagram?.token || ch.instagram?.userId),
+      count: s.byPlatform?.instagram || 0
+    },
+    {
+      id: 'whatsapp', name: 'WhatsApp Cloud', icon: '💬', cls: 'wa',
+      enabled: ch.whatsapp?.enabled ?? false,
+      ready: !!(ch.whatsapp?.phoneNumberId || ch.whatsapp?.token),
+      count: s.byPlatform?.whatsapp || 0
+    },
+    {
+      id: 'tiktok', name: 'TikTok Messaging', icon: '🎵', cls: 'tt',
+      enabled: ch.tiktok?.enabled ?? false,
+      ready: !!(ch.tiktok?.token || ch.tiktok?.clientKey),
+      count: s.byPlatform?.tiktok || 0
+    }
+  ];
+
+  w.innerHTML = items.map(c => `
+    <div class="channel-card">
+      <div>
+        <div class="channel-header">
+          <div class="channel-title">
+            <div class="channel-badge-icon ${c.cls}">${c.icon}</div>
+            ${c.name}
+          </div>
+          <span class="channel-status ${c.enabled ? (c.ready ? 'active' : 'warn') : 'inactive'}">
+            ${c.enabled ? (c.ready ? 'Ready' : 'Configured via .env') : 'Disabled'}
+          </span>
+        </div>
+        <div class="channel-body">
+          <strong>${c.count}</strong> conversation${c.count===1?'':'s'} recorded.
+        </div>
+      </div>
+      <div class="channel-footer">
+        <button class="btn sm" onclick="testChannel('${c.id}')">Test Ping</button>
+        <button class="btn sm ghost" onclick="switchTab('channels')">Configure →</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function updateChannelUrls(){
+  const origin = location.origin;
+  const fb = document.getElementById('fbWebhookUrl'); if(fb) fb.value = `${origin}/webhook/meta`;
+  const ig = document.getElementById('igWebhookUrl'); if(ig) ig.value = `${origin}/webhook/meta`;
+  const wa = document.getElementById('waWebhookUrl'); if(wa) wa.value = `${origin}/webhook/meta`;
+  const tt = document.getElementById('ttWebhookUrl'); if(tt) tt.value = `${origin}/webhook/tiktok`;
+}
+
+/* ---------- CHANNEL TESTING & CLIPBOARD ---------- */
+async function testChannel(platform){
+  const el = document.getElementById(platform==='facebook'?'fbTestResult':platform==='instagram'?'igTestResult':platform==='whatsapp'?'waTestResult':'ttTestResult');
+  if(el) el.textContent = 'Testing connection…';
+  
+  try {
+    const res = await api('/api/channels/test', {
+      method: 'POST',
+      body: JSON.stringify({ platform, config: S.channels?.[platform] })
+    });
+    const data = await res.json();
+    if(data.ok){
+      if(el) el.innerHTML = `<span style="color:var(--good);font-weight:700">✓ ${data.info || 'Connected successfully!'}</span>`;
+      else alert(`✓ ${platform.toUpperCase()}: ${data.info || 'Connected successfully!'}`);
+    } else {
+      if(el) el.innerHTML = `<span style="color:var(--danger);font-weight:700">✕ ${data.error || 'Connection check failed.'}</span>`;
+      else alert(`✕ ${platform.toUpperCase()}: ${data.error || 'Connection failed.'}`);
+    }
+  } catch(e) {
+    if(el) el.innerHTML = `<span style="color:var(--danger);font-weight:700">✕ Error: ${e.message}</span>`;
+  }
+}
+
+function copyId(id){
+  const el = document.getElementById(id);
+  if(!el) return;
+  navigator.clipboard?.writeText(el.value);
+  chip('Webhook URL copied');
+}
+
+function copyVal(path){
+  const v = getP(S, path);
+  if(v) navigator.clipboard?.writeText(v);
+  chip('Verify token copied');
+}
+
+/* ---------- MENU MANAGEMENT ---------- */
+const esc = s => String(s??'').replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));
+const uid = () => Math.random().toString(36).slice(2,9);
+
 function renderMenu(){
-  const w=document.getElementById('menuList'); w.innerHTML=''; let n=0,gone=0;
-  S.menu.forEach((cat,ci)=>{
-    n+=cat.items.length; gone+=cat.items.filter(i=>!i.available).length;
-    const d=document.createElement('div'); d.className='cat';
-    const items = cat.items.map((it,ii)=>`
-      <div class="item ${it.available?'':'gone'}">
+  const w = document.getElementById('menuList');
+  if(!w || !S?.menu) return;
+  w.innerHTML = '';
+  let count = 0, soldOut = 0;
+
+  S.menu.forEach((cat, ci) => {
+    count += cat.items.length;
+    soldOut += cat.items.filter(i => !i.available).length;
+    const d = document.createElement('div');
+    d.className = 'cat';
+    const items = cat.items.map((it, ii) => `
+      <div class="item ${it.available ? '' : 'gone'}">
         <input class="iname" type="text" value="${esc(it.name)}" data-ci="${ci}" data-ii="${ii}" data-k="name" placeholder="Item name">
-        <input class="idesc" type="text" value="${esc(it.desc||'')}" data-ci="${ci}" data-ii="${ii}" data-k="desc" placeholder="short description">
-        <input class="iprice" type="number" value="${it.price??''}" data-ci="${ci}" data-ii="${ii}" data-k="price" placeholder="Tk">
+        <input class="idesc" type="text" value="${esc(it.desc||'')}" data-ci="${ci}" data-ii="${ii}" data-k="desc" placeholder="Ingredients / description">
+        <input class="iprice" type="number" value="${it.price??''}" data-ci="${ci}" data-ii="${ii}" data-k="price" placeholder="Price (Tk)">
         <span class="iact row">
-          <label class="chk" title="Available"><input type="checkbox" ${it.available?'checked':''} data-ci="${ci}" data-ii="${ii}" data-k="available"></label>
-          <button class="btn ghost sm" data-del="${ci}:${ii}">✕</button></span>
+          <label class="chk" title="In Stock / Available">
+            <input type="checkbox" ${it.available?'checked':''} data-ci="${ci}" data-ii="${ii}" data-k="available">
+          </label>
+          <button class="btn ghost sm" data-del="${ci}:${ii}" title="Delete Item">✕</button>
+        </span>
       </div>`).join('');
-    d.innerHTML = `<div class="cathead">
-        <input type="text" value="${esc(cat.name)}" data-cn="${ci}">
+
+    d.innerHTML = `
+      <div class="cathead">
+        <input type="text" value="${esc(cat.name)}" data-cn="${ci}" placeholder="Category Name">
         <button class="btn sm" data-addi="${ci}">+ Item</button>
-        <button class="btn ghost sm" data-delc="${ci}">✕</button></div>
-      <div class="items">${items||'<div class="empty">No items yet — add your first one.</div>'}</div>`;
+        <button class="btn ghost sm" data-delc="${ci}" title="Delete Category">✕</button>
+      </div>
+      <div class="items">${items || '<div class="empty">No items in this category yet.</div>'}</div>`;
     w.appendChild(d);
   });
-  document.getElementById('menuCount').textContent = n ? `${n} items${gone?` · ${gone} sold out`:''}` : 'Menu is empty';
+
+  document.getElementById('menuCount').textContent =
+    count ? `${count} total menu items across ${S.menu.length} categories (${soldOut} marked sold-out)` : 'Menu is currently empty.';
 }
-document.getElementById('menuList').addEventListener('input', e=>{
-  const t=e.target;
-  if(t.dataset.cn!==undefined){ S.menu[+t.dataset.cn].name=t.value; save(); return; }
-  if(t.dataset.k){ const it=S.menu[+t.dataset.ci].items[+t.dataset.ii];
-    it[t.dataset.k] = t.dataset.k==='price' ? (t.value===''?null:+t.value) : t.value; save(); }
+
+document.getElementById('menuList').addEventListener('input', e => {
+  const t = e.target;
+  if(t.dataset.cn !== undefined){ S.menu[+t.dataset.cn].name = t.value; save(); return; }
+  if(t.dataset.k){
+    const it = S.menu[+t.dataset.ci].items[+t.dataset.ii];
+    it[t.dataset.k] = t.dataset.k === 'price' ? (t.value===''?null:+t.value) : t.value;
+    save();
+  }
 });
-document.getElementById('menuList').addEventListener('change', e=>{
-  const t=e.target;
-  if(t.type==='checkbox' && t.dataset.k==='available'){
-    S.menu[+t.dataset.ci].items[+t.dataset.ii].available=t.checked; save(); renderMenu(); }
+
+document.getElementById('menuList').addEventListener('change', e => {
+  const t = e.target;
+  if(t.type === 'checkbox' && t.dataset.k === 'available'){
+    S.menu[+t.dataset.ci].items[+t.dataset.ii].available = t.checked;
+    save();
+    renderMenu();
+  }
 });
-document.getElementById('menuList').addEventListener('click', e=>{
-  const b=e.target.closest('button'); if(!b) return;
-  if(b.dataset.addi!==undefined) S.menu[+b.dataset.addi].items.push({id:c(),name:'',desc:'',price:null,available:true});
-  else if(b.dataset.del){ const [ci,ii]=b.dataset.del.split(':').map(Number); S.menu[ci].items.splice(ii,1); }
-  else if(b.dataset.delc!==undefined){ if(!confirm('Delete this whole category?')) return; S.menu.splice(+b.dataset.delc,1); }
-  else return;
-  save(); renderMenu();
+
+document.getElementById('menuList').addEventListener('click', e => {
+  const b = e.target.closest('button'); if(!b) return;
+  if(b.dataset.addi !== undefined){
+    S.menu[+b.dataset.addi].items.push({ id: uid(), name: '', desc: '', price: null, available: true });
+  } else if(b.dataset.del){
+    const [ci, ii] = b.dataset.del.split(':').map(Number);
+    S.menu[ci].items.splice(ii, 1);
+  } else if(b.dataset.delc !== undefined){
+    if(!confirm('Are you sure you want to delete this entire category?')) return;
+    S.menu.splice(+b.dataset.delc, 1);
+  } else return;
+  save();
+  renderMenu();
 });
-document.getElementById('addCat').onclick=()=>{ S.menu.push({id:c(),name:'New category',items:[]}); save(); renderMenu(); };
-document.getElementById('importBtn').onclick = async ()=>{
-  const txt=document.getElementById('importBox').value.trim(), msg=document.getElementById('importMsg');
-  if(!txt){ msg.textContent='Paste your menu text first.'; return; }
-  const btn=document.getElementById('importBtn'); btn.disabled=true; msg.textContent='Reading your menu…';
-  try{
-    const r = await api('/api/import-menu',{method:'POST',body:JSON.stringify({text:txt})});
-    if(!r.ok) throw new Error((await r.json()).error);
-    const {rows} = await r.json();
-    const byCat={};
-    rows.forEach(x=>{ const k=(x.category||'Uncategorised').trim();
-      (byCat[k] ||= []).push({id:c(),name:String(x.name||'').trim(),desc:String(x.desc||'').trim(),
-        price:(x.price==null||isNaN(+x.price))?null:+x.price, available:true}); });
-    S.menu = Object.entries(byCat).map(([name,items])=>({id:c(),name,items}));
-    save(); renderMenu(); msg.textContent=`Imported ${rows.length} items. Check the prices.`;
-    document.getElementById('importBox').value='';
-  }catch(e){ msg.textContent = e.message || 'Could not parse that.'; }
-  btn.disabled=false;
+
+document.getElementById('addCat').onclick = () => {
+  S.menu.push({ id: uid(), name: 'New Category', items: [] });
+  save();
+  renderMenu();
 };
 
-/* ---------- faq / guards / esc ---------- */
+document.getElementById('importBtn').onclick = async () => {
+  const txt = document.getElementById('importBox').value.trim();
+  const msg = document.getElementById('importMsg');
+  if(!txt){ msg.textContent = 'Paste text first.'; return; }
+  const btn = document.getElementById('importBtn');
+  btn.disabled = true; msg.textContent = 'Parsing items with AI…';
+
+  try {
+    const r = await api('/api/import-menu', {method:'POST', body:JSON.stringify({text:txt})});
+    if(!r.ok) throw new Error((await r.json()).error);
+    const { rows } = await r.json();
+    const byCat = {};
+    rows.forEach(x => {
+      const k = (x.category || 'General').trim();
+      (byCat[k] = byCat[k] || []).push({
+        id: uid(),
+        name: String(x.name||'').trim(),
+        desc: String(x.desc||'').trim(),
+        price: (x.price==null || isNaN(+x.price)) ? null : +x.price,
+        available: true
+      });
+    });
+    Object.entries(byCat).forEach(([name, items]) => S.menu.push({ id: uid(), name, items }));
+    save();
+    renderMenu();
+    msg.textContent = `Parsed and added ${rows.length} items!`;
+    document.getElementById('importBox').value = '';
+  } catch(e) {
+    msg.textContent = e.message || 'Could not parse text.';
+  }
+  btn.disabled = false;
+};
+
+/* ---------- FAQ MANAGER ---------- */
 function renderFaq(){
-  const w=document.getElementById('faqList'); w.innerHTML='';
-  if(!S.faqs.length){ w.innerHTML='<div class="empty">No FAQs yet.</div>'; return; }
-  S.faqs.forEach((f,i)=>{ const d=document.createElement('div');
-    d.style.cssText='padding:11px 0;border-bottom:1px solid var(--line)';
-    d.innerHTML=`<div class="row" style="margin-bottom:7px">
-        <input type="text" value="${esc(f.q)}" data-fq="${i}" placeholder="Question customers ask" style="flex:1">
-        <button class="btn ghost sm" data-fdel="${i}">✕</button></div>
-      <textarea data-fa="${i}" placeholder="Your answer, in your words" style="min-height:56px">${esc(f.a)}</textarea>`;
-    w.appendChild(d); });
+  const w = document.getElementById('faqList');
+  if(!w || !S?.faqs) return;
+  w.innerHTML = '';
+  if(!S.faqs.length){ w.innerHTML = '<div class="empty">No FAQs configured yet.</div>'; return; }
+
+  S.faqs.forEach((f, i) => {
+    const d = document.createElement('div');
+    d.style.cssText = 'padding:14px 0; border-bottom:1px solid var(--line)';
+    d.innerHTML = `
+      <div class="row" style="margin-bottom:8px">
+        <input type="text" value="${esc(f.q)}" data-fq="${i}" placeholder="Customer Question (e.g. Parking available?)" style="flex:1; font-weight:600">
+        <button class="btn ghost sm" data-fdel="${i}" title="Delete FAQ">✕</button>
+      </div>
+      <textarea data-fa="${i}" placeholder="Accurate, official answer">${esc(f.a)}</textarea>`;
+    w.appendChild(d);
+  });
 }
-document.getElementById('faqList').addEventListener('input', e=>{
-  const t=e.target;
-  if(t.dataset.fq!==undefined) S.faqs[+t.dataset.fq].q=t.value;
-  else if(t.dataset.fa!==undefined) S.faqs[+t.dataset.fa].a=t.value; else return;
+
+document.getElementById('faqList').addEventListener('input', e => {
+  const t = e.target;
+  if(t.dataset.fq !== undefined) S.faqs[+t.dataset.fq].q = t.value;
+  else if(t.dataset.fa !== undefined) S.faqs[+t.dataset.fa].a = t.value;
   save();
 });
-document.getElementById('faqList').addEventListener('click', e=>{
-  const b=e.target.closest('[data-fdel]'); if(!b) return;
-  S.faqs.splice(+b.dataset.fdel,1); save(); renderFaq();
-});
-document.getElementById('addFaq').onclick=()=>{ S.faqs.push({id:c(),q:'',a:''}); save(); renderFaq(); };
 
+document.getElementById('faqList').addEventListener('click', e => {
+  const b = e.target.closest('[data-fdel]'); if(!b) return;
+  S.faqs.splice(+b.dataset.fdel, 1);
+  save();
+  renderFaq();
+});
+
+document.getElementById('addFaq').onclick = () => {
+  S.faqs.push({ id: uid(), q: '', a: '' });
+  save();
+  renderFaq();
+};
+
+/* ---------- GUARDS & ESCALATION ---------- */
 function renderGuards(){
-  const w=document.getElementById('guardList'); w.innerHTML='';
-  S.guards.forEach((g,i)=>{ const d=document.createElement('div'); d.className='row';
-    d.style.cssText='padding:6px 0;border-bottom:1px dashed var(--line)';
-    d.innerHTML=`<input type="text" value="${esc(g)}" data-gi="${i}" style="flex:1">
-      <button class="btn ghost sm" data-gdel="${i}">✕</button>`; w.appendChild(d); });
+  const w = document.getElementById('guardList');
+  if(!w || !S?.guards) return;
+  w.innerHTML = '';
+  S.guards.forEach((g, i) => {
+    const d = document.createElement('div');
+    d.className = 'row';
+    d.style.cssText = 'padding:6px 0; border-bottom:1px dashed var(--line)';
+    d.innerHTML = `
+      <input type="text" value="${esc(g)}" data-gi="${i}" style="flex:1">
+      <button class="btn ghost sm" data-gdel="${i}">✕</button>`;
+    w.appendChild(d);
+  });
 }
-document.getElementById('guardList').addEventListener('input', e=>{
-  if(e.target.dataset.gi!==undefined){ S.guards[+e.target.dataset.gi]=e.target.value; save(); } });
-document.getElementById('guardList').addEventListener('click', e=>{
-  const b=e.target.closest('[data-gdel]'); if(!b) return;
-  S.guards.splice(+b.dataset.gdel,1); save(); renderGuards(); });
-document.getElementById('addGuard').onclick=()=>{
-  const i=document.getElementById('guardIn'); if(!i.value.trim()) return;
-  S.guards.push(i.value.trim()); i.value=''; save(); renderGuards(); };
+
+document.getElementById('guardList').addEventListener('input', e => {
+  if(e.target.dataset.gi !== undefined){ S.guards[+e.target.dataset.gi] = e.target.value; save(); }
+});
+document.getElementById('guardList').addEventListener('click', e => {
+  const b = e.target.closest('[data-gdel]'); if(!b) return;
+  S.guards.splice(+b.dataset.gdel, 1); save(); renderGuards();
+});
+document.getElementById('addGuard').onclick = () => {
+  const i = document.getElementById('guardIn'); if(!i.value.trim()) return;
+  S.guards.push(i.value.trim()); i.value = ''; save(); renderGuards();
+};
 
 function renderEsc(){
-  const w=document.getElementById('escTags'); w.innerHTML='';
-  S.esc.forEach((k,i)=>{ const s=document.createElement('span'); s.className='tag';
-    s.innerHTML=`${esc(k)} <button data-edel="${i}">×</button>`; w.appendChild(s); });
+  const w = document.getElementById('escTags');
+  if(!w || !S?.esc) return;
+  w.innerHTML = '';
+  S.esc.forEach((k, i) => {
+    const s = document.createElement('span');
+    s.className = 'tag';
+    s.innerHTML = `${esc(k)} <button data-edel="${i}">×</button>`;
+    w.appendChild(s);
+  });
 }
-document.getElementById('escTags').addEventListener('click', e=>{
-  const b=e.target.closest('[data-edel]'); if(!b) return;
-  S.esc.splice(+b.dataset.edel,1); save(); renderEsc(); });
-document.getElementById('addEsc').onclick=()=>{
-  const i=document.getElementById('escIn'); if(!i.value.trim()) return;
-  S.esc.push(i.value.trim().toLowerCase()); i.value=''; save(); renderEsc(); };
 
-document.getElementById('copyPrompt').onclick=()=>{
-  navigator.clipboard?.writeText(document.getElementById('promptOut').textContent); chip('Prompt copied'); };
-document.getElementById('copyJson').onclick=()=>{
-  navigator.clipboard?.writeText(JSON.stringify(S,null,2)); chip('JSON copied'); };
+document.getElementById('escTags').addEventListener('click', e => {
+  const b = e.target.closest('[data-edel]'); if(!b) return;
+  S.esc.splice(+b.dataset.edel, 1); save(); renderEsc();
+});
+document.getElementById('addEsc').onclick = () => {
+  const i = document.getElementById('escIn'); if(!i.value.trim()) return;
+  S.esc.push(i.value.trim().toLowerCase()); i.value = ''; save(); renderEsc();
+};
 
-/* ---------- playground ---------- */
-let turns=[];
-const QUICK=['Ki ki coffee ache?','আপনাদের ঠিকানা কোথায়?','Are you open now?',
-             '4 jon er jonno table book kora jabe?','Latte er dam koto?','Delivery hoy?'];
-QUICK.forEach(q=>{ const b=document.createElement('button'); b.textContent=q;
-  b.onclick=()=>{document.getElementById('chatIn').value=q; sendTest();};
-  document.getElementById('quickRow').appendChild(b); });
+document.getElementById('copyPrompt').onclick = () => {
+  navigator.clipboard?.writeText(document.getElementById('promptOut').textContent);
+  chip('Prompt copied to clipboard');
+};
+document.getElementById('copyJson').onclick = () => {
+  navigator.clipboard?.writeText(JSON.stringify(S, null, 2));
+  chip('Full JSON exported');
+};
 
-function bubble(cls,txt,where='chatLog'){
-  const l=document.getElementById(where); const d=document.createElement('div');
-  d.className='msg '+cls; d.textContent=txt; l.appendChild(d); l.scrollTop=l.scrollHeight; return d;
+/* ---------- PLAYGROUND SIMULATOR ---------- */
+let turns = [];
+const QUICK_QUESTIONS = [
+  'Ki ki coffee ache?',
+  'আপনাদের ঠিকানা কোথায়?',
+  'Are you open right now?',
+  'Traditional Breakfast er dam koto?',
+  'Table reservation kora jabe?',
+  'Do you have Wi-Fi and parking?',
+  'Is all food Halal?'
+];
+
+const qr = document.getElementById('quickRow');
+if(qr){
+  qr.innerHTML = '';
+  QUICK_QUESTIONS.forEach(q => {
+    const b = document.createElement('button');
+    b.textContent = q;
+    b.onclick = () => { document.getElementById('chatIn').value = q; sendTest(); };
+    qr.appendChild(b);
+  });
 }
+
+function bubble(cls, txt, where='chatLog'){
+  const l = document.getElementById(where);
+  if(!l) return null;
+  const d = document.createElement('div');
+  d.className = 'msg ' + cls;
+  d.textContent = txt;
+  l.appendChild(d);
+  l.scrollTop = l.scrollHeight;
+  return d;
+}
+
 async function sendTest(){
-  const inp=document.getElementById('chatIn'); const text=inp.value.trim(); if(!text) return;
-  inp.value=''; bubble('u',text);
-  const b=bubble('b','Thinking…');
-  document.getElementById('sendBtn').disabled=true;
-  try{
-    const r = await api('/api/test',{method:'POST',body:JSON.stringify({text,history:turns})});
+  const inp = document.getElementById('chatIn');
+  const text = inp.value.trim();
+  if(!text) return;
+  inp.value = '';
+  bubble('u', text);
+  const b = bubble('b', 'Thinking…');
+  const sendBtn = document.getElementById('sendBtn');
+  sendBtn.disabled = true;
+
+  try {
+    const r = await api('/api/test', {method:'POST', body:JSON.stringify({text, history:turns})});
     const d = await r.json();
     b.textContent = d.reply;
-    if(d.escalated) bubble('sys',`⚑ Escalation keyword "${d.escalated}" — this thread would be flagged.`);
-    bubble('sys',`answered by ${d.model}`);
-    turns.push({direction:'in',text},{direction:'out',text:d.reply});
+    if(d.escalated) bubble('sys', `⚑ Escalation keyword matched: "${d.escalated}" — thread flagged.`);
+    bubble('sys', `Generated by: ${d.model}`);
+    turns.push({direction:'in', text}, {direction:'out', text:d.reply});
     turns = turns.slice(-12);
-  }catch(e){ b.textContent='Request failed.'; }
-  document.getElementById('sendBtn').disabled=false;
+  } catch(e) {
+    b.textContent = 'Request failed: ' + e.message;
+  }
+  sendBtn.disabled = false;
 }
-document.getElementById('sendBtn').onclick=sendTest;
-document.getElementById('chatIn').addEventListener('keydown',e=>{ if(e.key==='Enter') sendTest(); });
-document.getElementById('clearBtn').onclick=()=>{ turns=[]; document.getElementById('chatLog').innerHTML=''; };
 
-/* ---------- inbox ---------- */
+document.getElementById('sendBtn').onclick = sendTest;
+document.getElementById('chatIn').addEventListener('keydown', e => { if(e.key==='Enter') sendTest(); });
+document.getElementById('clearBtn').onclick = () => {
+  turns = [];
+  document.getElementById('chatLog').innerHTML = '';
+};
+
+/* ---------- INBOX & LIVE CHAT ---------- */
 async function loadInbox(){
-  const d = await api('/api/conversations').then(r=>r.json());
+  const d = await api('/api/conversations').then(r=>r.json()).catch(()=>({conversations:[]}));
   const w = document.getElementById('convList');
-  document.getElementById('inboxMeter').textContent = `${d.conversations.length} conversations`;
-  if(!d.conversations.length){ w.innerHTML='<div class="empty">No conversations yet.</div>'; return; }
-  w.innerHTML = d.conversations.map(cv=>`
-    <div class="conv ${selConv==cv.id?'sel':''}" data-cid="${cv.id}">
-      <div class="n">${esc(cv.name||'Unknown')}
-        <span class="badge plat">${cv.platform==='facebook'?'FB':'IG'}</span>
-        ${cv.flagged?'<span class="badge">FLAGGED</span>':''}</div>
-      <div class="p">${esc(cv.preview||'')}</div></div>`).join('');
+  if(!w) return;
+  if(!d.conversations?.length){
+    w.innerHTML = '<div class="empty">No customer conversations yet.</div>';
+    return;
+  }
+
+  w.innerHTML = d.conversations.map(cv => {
+    const platCls = cv.platform==='facebook'?'fb':cv.platform==='instagram'?'ig':cv.platform==='whatsapp'?'wa':'tt';
+    return `
+      <div class="conv ${selConv===cv.id?'sel':''}" data-cid="${cv.id}">
+        <div class="n">
+          <span>${esc(cv.name || 'Customer')}</span>
+          <span class="badge plat ${platCls}">${cv.platform}</span>
+        </div>
+        <div class="p">${esc(cv.preview || 'No messages')}</div>
+        ${cv.flagged ? '<div style="margin-top:4px"><span class="badge">FLAGGED: '+esc(cv.flag_reason||'Needs attention')+'</span></div>' : ''}
+      </div>`;
+  }).join('');
 }
-document.getElementById('convList').addEventListener('click', async e=>{
-  const el=e.target.closest('[data-cid]'); if(!el) return;
-  selConv = +el.dataset.cid; loadInbox();
-  const d = await api('/api/conversations/'+selConv).then(r=>r.json());
-  const log=document.getElementById('threadLog'); log.innerHTML='';
-  d.messages.forEach(m=>bubble(m.direction==='in'?'b':'u', m.text, 'threadLog'));
-  if(d.conversation.flagged) bubble('sys','⚑ '+(d.conversation.flag_reason||'flagged'),'threadLog');
-  document.getElementById('threadIn').disabled=false;
-  document.getElementById('threadSend').disabled=false;
-  const cb=document.getElementById('convBot'); cb.disabled=false; cb.checked=!!d.conversation.bot_enabled;
+
+document.getElementById('convList').addEventListener('click', async e => {
+  const el = e.target.closest('[data-cid]'); if(!el) return;
+  selConv = +el.dataset.cid;
+  loadInbox();
+
+  const d = await api('/api/conversations/' + selConv).then(r=>r.json());
+  const log = document.getElementById('threadLog');
+  log.innerHTML = '';
+  d.messages.forEach(m => bubble(m.direction==='in'?'b':'u', m.text, 'threadLog'));
+  if(d.conversation?.flagged) bubble('sys', '⚑ ' + (d.conversation.flag_reason || 'Flagged thread'), 'threadLog');
+
+  document.getElementById('threadIn').disabled = false;
+  document.getElementById('threadSend').disabled = false;
+  const cb = document.getElementById('convBot');
+  cb.disabled = false;
+  cb.checked = !!d.conversation?.bot_enabled;
+  document.getElementById('convChannelBadge').textContent = `Channel: ${d.conversation?.platform || 'Unknown'}`;
 });
-document.getElementById('convBot').onchange = async e=>{
-  if(!selConv) return;
-  await api(`/api/conversations/${selConv}/bot`,{method:'POST',body:JSON.stringify({enabled:e.target.checked})});
-  chip('Updated');
-};
-document.getElementById('threadSend').onclick = async ()=>{
-  const i=document.getElementById('threadIn'); const t=i.value.trim(); if(!t||!selConv) return;
-  const r = await api(`/api/conversations/${selConv}/reply`,{method:'POST',body:JSON.stringify({text:t})});
-  if(r.ok){ bubble('u',t,'threadLog'); i.value=''; loadInbox(); }
-  else bubble('sys','Send failed: '+((await r.json()).error||''),'threadLog');
-};
-document.getElementById('refreshInbox').onclick=loadInbox;
 
-/* ---------- health ---------- */
+document.getElementById('convBot').onchange = async e => {
+  if(!selConv) return;
+  await api(`/api/conversations/${selConv}/bot`, {method:'POST', body:JSON.stringify({enabled:e.target.checked})});
+  chip('AI response updated for customer');
+};
+
+document.getElementById('threadSend').onclick = async () => {
+  const i = document.getElementById('threadIn');
+  const t = i.value.trim();
+  if(!t || !selConv) return;
+  const r = await api(`/api/conversations/${selConv}/reply`, {method:'POST', body:JSON.stringify({text:t})});
+  if(r.ok){
+    bubble('u', t, 'threadLog');
+    i.value = '';
+    loadInbox();
+  } else {
+    bubble('sys', 'Send failed: ' + ((await r.json()).error || ''), 'threadLog');
+  }
+};
+document.getElementById('refreshInbox').onclick = loadInbox;
+
+/* ---------- SYSTEM HEALTH ---------- */
 async function loadHealth(){
-  const h = await api('/api/health').then(r=>r.json());
-  const yn = v => v ? '<span style="color:var(--good);font-weight:700">connected</span>'
-                    : '<span style="color:var(--danger);font-weight:700">not set</span>';
+  const h = await api('/api/health').then(r=>r.json()).catch(()=>({}));
+  const yn = v => v ? '<span style="color:var(--good);font-weight:700">✓ Ready</span>'
+                    : '<span style="color:var(--danger);font-weight:700">✕ Not Configured</span>';
+  
   document.getElementById('healthOut').innerHTML = `
-    <div class="kv"><span>Webhook URL (paste into Meta)</span><span class="mono">${esc(h.webhookUrl)}</span></div>
-    <div class="kv"><span>Gemini</span><span>${yn(h.providers.gemini)}</span></div>
-    <div class="kv"><span>Groq fallback</span><span>${yn(h.providers.groq)}</span></div>
-    <div class="kv"><span>Meta app secret</span><span>${yn(h.meta.appSecret)}</span></div>
-    <div class="kv"><span>Facebook page token</span><span>${yn(h.meta.facebook)}</span></div>
-    <div class="kv"><span>Instagram token</span><span>${yn(h.meta.instagram)}</span></div>`;
+    <div class="kv"><span>Meta Webhook (FB / IG / WA)</span><span class="mono">${esc(h.channels?.facebook?.webhookUrl || '')}</span></div>
+    <div class="kv"><span>TikTok Webhook</span><span class="mono">${esc(h.channels?.tiktok?.webhookUrl || '')}</span></div>
+    <div class="kv"><span>Gemini AI Engine</span><span>${yn(h.providers?.gemini)}</span></div>
+    <div class="kv"><span>Groq Backup Engine</span><span>${yn(h.providers?.groq)}</span></div>
+    <div class="kv"><span>Facebook Channel</span><span>${yn(h.channels?.facebook?.configured)}</span></div>
+    <div class="kv"><span>Instagram Channel</span><span>${yn(h.channels?.instagram?.configured)}</span></div>
+    <div class="kv"><span>WhatsApp Channel</span><span>${yn(h.channels?.whatsapp?.configured)}</span></div>
+    <div class="kv"><span>TikTok Channel</span><span>${yn(h.channels?.tiktok?.configured)}</span></div>`;
 }
 
-function render(){ fillBound(); renderMenu(); renderFaq(); renderGuards(); renderEsc(); }
-setInterval(()=>{ if(S) api('/api/config').then(r=>r.json()).then(d=>{paintOpen(d.open); paintStats(d.stats);}); }, 60000);
+function render(){
+  fillBound();
+  renderMenu();
+  renderFaq();
+  renderGuards();
+  renderEsc();
+}
+
+setInterval(() => {
+  if(S) api('/api/config').then(r=>r.json()).then(d => { paintOpen(d.open); paintStats(d.stats); });
+}, 30000);
+
 checkAuth();
 </script>
 </body>

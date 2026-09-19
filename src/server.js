@@ -14,13 +14,14 @@ import {
 } from './db.js';
 import { buildPrompt, openState, escalationHit } from './prompt.js';
 import { generateReply, parseMenuText } from './ai.js';
-import { verifySignature, isSelf, sendMessage, fetchProfileName, parseWebhook } from './meta.js';
+import { verifySignature, isSelf, sendMessage, fetchProfileName, parseWebhook, testMetaConnection } from './meta.js';
+import { sendTikTokMessage, parseTikTokWebhook, testTikTokConnection, verifyTikTokSignature } from './tiktok.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const BASE = (process.env.BASE_PATH || '/chatbotadmin').replace(/\/$/, '');
 const {
   PORT = 3000, HOST = '0.0.0.0',
-  SESSION_SECRET, ADMIN_EMAIL, ADMIN_PASSWORD, ADMIN_PASSWORD_HASH, META_VERIFY_TOKEN
+  SESSION_SECRET, ADMIN_EMAIL, ADMIN_PASSWORD, ADMIN_PASSWORD_HASH
 } = process.env;
 
 if (!SESSION_SECRET || SESSION_SECRET.length < 32) {
@@ -59,7 +60,7 @@ const app = Fastify({
 await app.register(cookie, { secret: SESSION_SECRET });
 await app.register(fstatic, { root: join(__dirname, '..', 'public'), prefix: `${BASE}/` });
 
-/* Capture the raw body so we can verify Meta's HMAC signature. */
+/* Capture raw body for webhook HMAC signature verification */
 app.addContentTypeParser('application/json', { parseAs: 'buffer' }, (req, body, done) => {
   req.rawBody = body;
   try { done(null, JSON.parse(body.toString('utf8') || '{}')); }
@@ -91,7 +92,7 @@ const requireAuth = async (req, reply) => {
   if (!readToken(req.cookies.cc_session)) return reply.code(401).send({ error: 'unauthorized' });
 };
 
-/* simple in-memory login throttle */
+/* In-memory login throttle */
 const attempts = new Map();
 function throttled(ip) {
   const a = attempts.get(ip);
@@ -142,7 +143,24 @@ app.put(`${BASE}/api/config`, { preHandler: requireAuth }, async (req, reply) =>
   const cfg = req.body?.config;
   if (!cfg || typeof cfg !== 'object') return reply.code(400).send({ error: 'bad config' });
   saveConfig(cfg);
-  return { ok: true, prompt: buildPrompt(cfg), open: openState(cfg) };
+  return { ok: true, prompt: buildPrompt(cfg), open: openState(cfg), stats: stats() };
+});
+
+app.post(`${BASE}/api/channels/test`, { preHandler: requireAuth }, async (req, reply) => {
+  const { platform, config } = req.body || {};
+  if (!platform) return reply.code(400).send({ error: 'Platform is required.' });
+
+  try {
+    if (platform === 'tiktok') {
+      return await testTikTokConnection(config);
+    } else if (['facebook', 'instagram', 'whatsapp'].includes(platform)) {
+      return await testMetaConnection(platform, config);
+    }
+    return reply.code(400).send({ ok: false, error: `Unsupported platform: ${platform}` });
+  } catch (e) {
+    req.log.error(e);
+    return reply.code(500).send({ ok: false, error: e.message });
+  }
 });
 
 app.post(`${BASE}/api/import-menu`, { preHandler: requireAuth }, async (req, reply) => {
@@ -186,7 +204,11 @@ app.post(`${BASE}/api/conversations/:id/reply`, { preHandler: requireAuth }, asy
   const text = String(req.body?.text || '').trim();
   if (!text) return reply.code(400).send({ error: 'empty' });
   try {
-    await sendMessage(conv.platform, conv.psid, text);
+    if (conv.platform === 'tiktok') {
+      await sendTikTokMessage(conv.psid, text);
+    } else {
+      await sendMessage(conv.platform, conv.psid, text);
+    }
     addMessage(conv.id, 'out', text, 'human');
     setFlag(conv.id, false);
     return { ok: true };
@@ -198,39 +220,95 @@ app.post(`${BASE}/api/conversations/:id/reply`, { preHandler: requireAuth }, asy
 
 app.get(`${BASE}/api/health`, async () => {
   const cfg = getConfig();
+  const publicUrl = (process.env.PUBLIC_URL || '').replace(/\/$/, '');
   return {
     ok: true,
     open: openState(cfg),
     providers: { gemini: !!process.env.GEMINI_API_KEY, groq: !!process.env.GROQ_API_KEY },
-    meta: { facebook: !!process.env.FB_PAGE_TOKEN, instagram: !!process.env.IG_TOKEN,
-            appSecret: !!process.env.META_APP_SECRET },
-    webhookUrl: `${process.env.PUBLIC_URL || ''}/webhook/meta`,
+    channels: {
+      facebook: {
+        enabled: cfg.channels?.facebook?.enabled ?? true,
+        configured: !!(cfg.channels?.facebook?.pageToken || process.env.FB_PAGE_TOKEN),
+        webhookUrl: `${publicUrl}/webhook/meta`
+      },
+      instagram: {
+        enabled: cfg.channels?.instagram?.enabled ?? false,
+        configured: !!(cfg.channels?.instagram?.token || process.env.IG_TOKEN),
+        webhookUrl: `${publicUrl}/webhook/meta`
+      },
+      whatsapp: {
+        enabled: cfg.channels?.whatsapp?.enabled ?? false,
+        configured: !!((cfg.channels?.whatsapp?.token || process.env.WA_TOKEN || process.env.FB_PAGE_TOKEN) && (cfg.channels?.whatsapp?.phoneNumberId || process.env.WA_PHONE_NUMBER_ID)),
+        webhookUrl: `${publicUrl}/webhook/meta`
+      },
+      tiktok: {
+        enabled: cfg.channels?.tiktok?.enabled ?? false,
+        configured: !!(cfg.channels?.tiktok?.token || process.env.TIKTOK_ACCESS_TOKEN),
+        webhookUrl: `${publicUrl}/webhook/tiktok`
+      }
+    },
     stats: stats()
   };
 });
 
-/* ───────────────────────── Meta webhook ───────────────────────── */
-app.get('/webhook/meta', async (req, reply) => {
+/* ───────────────────────── Meta Webhook (Facebook / Instagram / WhatsApp) ───────────────────────── */
+const handleMetaVerification = (req, reply) => {
   const q = req.query;
-  if (q['hub.mode'] === 'subscribe' && q['hub.verify_token'] === META_VERIFY_TOKEN) {
+  const cfg = getConfig();
+  const allowedTokens = [
+    process.env.META_VERIFY_TOKEN,
+    process.env.WA_VERIFY_TOKEN,
+    cfg.channels?.facebook?.verifyToken,
+    cfg.channels?.whatsapp?.verifyToken,
+    'botcrowncoffee'
+  ].filter(Boolean);
+
+  if (q['hub.mode'] === 'subscribe' && allowedTokens.includes(q['hub.verify_token'])) {
     return reply.code(200).type('text/plain').send(q['hub.challenge']);
   }
   return reply.code(403).send('forbidden');
-});
+};
+
+app.get('/webhook/meta', handleMetaVerification);
+app.get('/webhook/whatsapp', handleMetaVerification);
 
 app.post('/webhook/meta', async (req, reply) => {
   if (!verifySignature(req.rawBody, req.headers['x-hub-signature-256'])) {
-    req.log.warn('bad webhook signature');
+    req.log.warn('bad meta webhook signature');
     return reply.code(401).send('bad signature');
   }
 
-  // Acknowledge first — Meta disables webhooks that answer slowly.
+  // Fast acknowledge
   reply.code(200).send('EVENT_RECEIVED');
 
   const events = parseWebhook(req.body);
   for (const ev of events) enqueue(ev, req.log);
 });
 
+app.post('/webhook/whatsapp', async (req, reply) => {
+  reply.code(200).send('EVENT_RECEIVED');
+  const events = parseWebhook(req.body);
+  for (const ev of events) enqueue(ev, req.log);
+});
+
+/* ───────────────────────── TikTok Webhook ───────────────────────── */
+app.get('/webhook/tiktok', async (req, reply) => {
+  const q = req.query;
+  if (q['challenge']) return reply.code(200).type('text/plain').send(q['challenge']);
+  if (q['hub.challenge']) return reply.code(200).type('text/plain').send(q['hub.challenge']);
+  return reply.code(200).send('OK');
+});
+
+app.post('/webhook/tiktok', async (req, reply) => {
+  if (!verifyTikTokSignature(req.rawBody, req.headers['x-tiktok-signature'], req.headers['x-tiktok-timestamp'])) {
+    req.log.warn('bad tiktok webhook signature');
+  }
+  reply.code(200).send({ status: 'ok' });
+  const events = parseTikTokWebhook(req.body);
+  for (const ev of events) enqueue(ev, req.log);
+});
+
+/* ───────────────────────── Queue & Message Pipeline ───────────────────────── */
 const chains = new Map();
 function enqueue(ev, log) {
   const key = `${ev.platform}:${ev.senderId}`;
@@ -243,12 +321,15 @@ function enqueue(ev, log) {
 }
 
 async function handleEvent(ev, log) {
-  const { platform, senderId, mid, text } = ev;
+  const { platform, senderId, mid, text, contactName } = ev;
   if (!senderId || isSelf(platform, senderId)) return;
   if (alreadySeen(mid)) return;
 
   const cfg = getConfig();
-  const name = await fetchProfileName(platform, senderId);
+  const ch = cfg.channels?.[platform];
+  if (ch && ch.enabled === false) return log.info(`Channel ${platform} is disabled in config.`);
+
+  const name = contactName || await fetchProfileName(platform, senderId, ev);
   const conv = upsertConversation(platform, senderId, name);
   addMessage(conv.id, 'in', text, null, mid);
 
@@ -258,7 +339,7 @@ async function handleEvent(ev, log) {
   const hit = escalationHit(cfg, text);
   if (hit) {
     setFlag(conv.id, true, `keyword: ${hit}`);
-    if (cfg.scope.complaint !== 'ack') return;   // silent flag
+    if (cfg.scope.complaint !== 'ack') return; // silent flag
   }
 
   const st = openState(cfg);
@@ -266,22 +347,24 @@ async function handleEvent(ev, log) {
     return log.info('closed, off-hours set to silent');
   }
 
-  const history = getMessages(conv.id, 12).slice(0, -1);   // exclude the message we just stored
+  const history = getMessages(conv.id, 12).slice(0, -1);
   const { text: replyText, model } = await generateReply(cfg, history, text, log);
 
   try {
-    await sendMessage(platform, senderId, replyText);
+    if (platform === 'tiktok') {
+      await sendTikTokMessage(senderId, replyText);
+    } else {
+      await sendMessage(platform, senderId, replyText);
+    }
     addMessage(conv.id, 'out', replyText, model);
     if (hit) setFlag(conv.id, true, `keyword: ${hit} (acknowledged, needs you)`);
   } catch (e) {
-    log.error(`send failed: ${e.message}`);
+    log.error(`send failed (${platform}): ${e.message}`);
     setFlag(conv.id, true, 'send failed');
   }
 }
 
 /* ───────────────────────── pages ───────────────────────── */
-// The container is the public entry point under Coolify, so the app owns
-// the root redirect rather than the reverse proxy.
 app.get('/', (req, reply) => reply.redirect(`${BASE}/`));
 app.get(BASE, (req, reply) => reply.redirect(`${BASE}/`));
 app.setNotFoundHandler((req, reply) => {
