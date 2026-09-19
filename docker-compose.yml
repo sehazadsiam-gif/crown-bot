@@ -21,7 +21,7 @@ services:
       NODE_ENV: production
 
       # Set these in Coolify → Environment Variables
-      PUBLIC_URL: ${PUBLIC_URL:-https://ccadmin.online}
+      PUBLIC_URL: ${PUBLIC_URL:-https://bot.ccadmin.online}
       SESSION_SECRET: ${SESSION_SECRET}
       ADMIN_EMAIL: ${ADMIN_EMAIL}
       ADMIN_PASSWORD_HASH: ${ADMIN_PASSWORD_HASH}
