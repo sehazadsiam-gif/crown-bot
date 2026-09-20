@@ -253,14 +253,13 @@ function noteFail(ip) {
   attempts.set(ip, rec);
 }
 
-app.post(`${BASE}/api/login`, async (req, reply) => {
+async function handleLogin(req, reply) {
   const ip = req.ip;
   const { email, password } = req.body || {};
   const supplied = (email || '').trim().toLowerCase();
   const suppliedPass = (password || '').trim();
 
   if (!suppliedPass) {
-    noteFail(ip);
     return reply.code(400).send({ error: 'Password is required.' });
   }
 
@@ -284,12 +283,7 @@ app.post(`${BASE}/api/login`, async (req, reply) => {
     return { ok: true, role: 'master_admin', email: adminEmail, token: tok };
   }
 
-  // 2. Rate limit check for regular tenant logins
-  if (!checkRate(ip)) {
-    return reply.code(429).send({ error: 'Too many failed attempts. Try again in 5 minutes.' });
-  }
-
-  // 3. Check Tenant #1: CC (Dedicated Password: 1590)
+  // 2. Tenant #1: CC (Dedicated Password: 1590)
   if (suppliedPass === '1590') {
     attempts.delete(ip);
     const tok = makeToken({
@@ -317,10 +311,8 @@ app.post(`${BASE}/api/login`, async (req, reply) => {
     };
   }
 
-  // 4. Check Other Tenant Credentials (email + password OR password-only)
-  const tenant = (supplied ? authenticateTenant(supplied, suppliedPass) : null)
-    || authenticateTenantByPasswordOnly(suppliedPass);
-
+  // 3. Other Tenant Credentials (email, name, subdomain, or password-only)
+  const tenant = authenticateTenant(supplied, suppliedPass);
   if (tenant) {
     attempts.delete(ip);
     const tok = makeToken({
@@ -349,13 +341,18 @@ app.post(`${BASE}/api/login`, async (req, reply) => {
   }
 
   noteFail(ip);
-  return reply.code(401).send({ error: 'Wrong password or credentials.' });
-});
+  return reply.code(401).send({ error: 'Invalid username or password.' });
+}
 
-app.post(`${BASE}/api/logout`, async (req, reply) => {
+app.post('/api/login', handleLogin);
+app.post(`${BASE}/api/login`, handleLogin);
+
+async function handleLogout(req, reply) {
   reply.clearCookie('cc_session', { path: '/' });
   return { ok: true };
-});
+}
+app.post('/api/logout', handleLogout);
+app.post(`${BASE}/api/logout`, handleLogout);
 
 app.post(`${BASE}/api/signup`, async (req, reply) => {
   const ip = req.ip;
@@ -594,7 +591,7 @@ app.post(`${BASE}/api/admin/backup`, { preHandler: requireMasterAdmin }, async (
   }
 });
 
-app.get(`${BASE}/api/me`, async req => {
+async function handleMe(req) {
   const s = readToken(getToken(req));
   if (!s) return { authed: false };
   if (s.role === 'master_admin') {
@@ -612,7 +609,10 @@ app.get(`${BASE}/api/me`, async req => {
     must_change_password: s.workspace_id === 1 ? false : !!tenantUser?.must_change_password,
     subscription: sub
   };
-});
+}
+
+app.get('/api/me', handleMe);
+app.get(`${BASE}/api/me`, handleMe);
 
 /* ───────────────────────── Tenant Profile API ───────────────────────── */
 app.put(`${BASE}/api/tenant/profile`, { preHandler: requireAuth }, async (req, reply) => {

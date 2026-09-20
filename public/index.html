@@ -1686,26 +1686,21 @@ button.btn.dark-glass,
       <div class="login-form-pane">
         <!-- Sign In View -->
         <form id="loginForm" class="auth-form">
-          <h1 class="auth-title">WELCOME BACK</h1>
-          <p class="auth-subtitle">Welcome back! Please enter your details.</p>
+          <h1 class="auth-title">User Login</h1>
+          <p class="auth-subtitle">Please enter your credentials to access your dashboard.</p>
 
           <div class="form-group">
             <label class="form-label" for="lEmail">Username or Email</label>
-            <input type="text" id="lEmail" autocomplete="username" placeholder="masteradmin or tenant email" class="form-input">
+            <input type="text" id="lEmail" autocomplete="username" placeholder="Username or email" class="form-input">
           </div>
 
           <div class="form-group">
             <label class="form-label" for="lPass">Password</label>
             <div class="input-password-wrap">
-              <input type="password" id="lPass" autocomplete="current-password" placeholder="••••••••" required class="form-input">
+              <input type="password" id="lPass" autocomplete="current-password" placeholder="Password" required class="form-input">
               <button type="button" class="btn-toggle-eye" onclick="togglePassVisibility('lPass', this)" title="Toggle password visibility">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
               </button>
-            </div>
-            <div style="font-size:11.5px; color:var(--ink3); margin-top:5px; line-height:1.4">
-              Master Admin: <strong style="color:var(--ink)">masteradmin</strong> / <strong style="color:var(--ink)">ccadmin6789</strong><br>
-              Tenant #1 (CC): password <strong style="color:var(--ink)">1590</strong><br>
-              Other Tenants: Enter business name, email, or unique password
             </div>
           </div>
 
@@ -3071,7 +3066,7 @@ button.btn.dark-glass,
 </div>
 
 <script>
-const API = location.pathname.replace(/\/+$/,'') || '/chatbotadmin';
+const API = window.location.pathname.startsWith('/chatbotadmin') ? '/chatbotadmin' : '';
 const api = (p, opts={}) => {
   const token = localStorage.getItem('cc_token');
   const headers = {
@@ -3079,7 +3074,9 @@ const api = (p, opts={}) => {
     ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
     ...(opts.headers || {})
   };
-  return fetch(API + p, { credentials: 'same-origin', ...opts, headers });
+  const path = p.startsWith('/') ? p : '/' + p;
+  const url = API ? (API + path) : path;
+  return fetch(url, { credentials: 'same-origin', ...opts, headers });
 };
 
 let S = null, saveT = null, selConv = null;
