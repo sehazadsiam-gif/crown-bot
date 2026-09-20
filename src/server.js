@@ -30,13 +30,28 @@ import webpush from 'web-push';
 import { createReadStream } from 'node:fs';
 import { copyFile, mkdir, readdir, rm, stat } from 'node:fs/promises';
 
-// Configure VAPID for web push
-if (process.env.VAPID_PUBLIC_KEY && process.env.VAPID_PRIVATE_KEY) {
-  webpush.setVapidDetails(
-    process.env.VAPID_EMAIL || 'mailto:admin@ccadmin.online',
-    process.env.VAPID_PUBLIC_KEY,
-    process.env.VAPID_PRIVATE_KEY
-  );
+// Configure VAPID for web push (auto-generate keypair if not set in env)
+let vapidPublic = process.env.VAPID_PUBLIC_KEY || '';
+let vapidPrivate = process.env.VAPID_PRIVATE_KEY || '';
+if (!vapidPublic || !vapidPrivate) {
+  try {
+    const generated = webpush.generateVAPIDKeys();
+    vapidPublic = generated.publicKey;
+    vapidPrivate = generated.privateKey;
+  } catch (e) {
+    console.warn('VAPID key generation warning:', e.message);
+  }
+}
+if (vapidPublic && vapidPrivate) {
+  try {
+    webpush.setVapidDetails(
+      process.env.VAPID_EMAIL || 'mailto:admin@ccadmin.online',
+      vapidPublic,
+      vapidPrivate
+    );
+  } catch (e) {
+    console.warn('VAPID details setup warning:', e.message);
+  }
 }
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -467,15 +482,17 @@ app.post(`${BASE}/api/tenant/onboarding`, { preHandler: requireAuth }, async (re
 });
 
 /* ───────────────────────── Orders Bucket API ───────────────────────── */
-app.get(`${BASE}/api/orders`, { preHandler: requireAuth }, async req => {
+async function handleOrdersList(req) {
   const wsId = getScopedWorkspaceId(req);
   const status = String(req.query?.status || 'all').trim();
   const orders = listOrders(wsId, status);
   const orderStats = getOrderStats(wsId);
   return { ok: true, orders, stats: orderStats };
-});
+}
+app.get('/api/orders', { preHandler: requireAuth }, handleOrdersList);
+app.get(`${BASE}/api/orders`, { preHandler: requireAuth }, handleOrdersList);
 
-app.post(`${BASE}/api/orders`, { preHandler: requireAuth }, async (req, reply) => {
+async function handleOrdersCreate(req, reply) {
   const wsId = getScopedWorkspaceId(req);
   const { details, customer_name, customer_phone, customer_address, estimated_total, platform, notes } = req.body || {};
   if (!details || !String(details).trim()) {
@@ -496,9 +513,11 @@ app.post(`${BASE}/api/orders`, { preHandler: requireAuth }, async (req, reply) =
   } catch (e) {
     return reply.code(400).send({ error: e.message });
   }
-});
+}
+app.post('/api/orders', { preHandler: requireAuth }, handleOrdersCreate);
+app.post(`${BASE}/api/orders`, { preHandler: requireAuth }, handleOrdersCreate);
 
-app.post(`${BASE}/api/orders/:id/confirm`, { preHandler: requireAuth }, async (req, reply) => {
+async function handleOrderConfirm(req, reply) {
   const wsId = getScopedWorkspaceId(req);
   const orderId = Number(req.params.id);
   const notes = req.body?.notes || null;
@@ -508,9 +527,11 @@ app.post(`${BASE}/api/orders/:id/confirm`, { preHandler: requireAuth }, async (r
   } catch (e) {
     return reply.code(400).send({ error: e.message });
   }
-});
+}
+app.post('/api/orders/:id/confirm', { preHandler: requireAuth }, handleOrderConfirm);
+app.post(`${BASE}/api/orders/:id/confirm`, { preHandler: requireAuth }, handleOrderConfirm);
 
-app.post(`${BASE}/api/orders/:id/reject`, { preHandler: requireAuth }, async (req, reply) => {
+async function handleOrderReject(req, reply) {
   const wsId = getScopedWorkspaceId(req);
   const orderId = Number(req.params.id);
   const notes = req.body?.notes || null;
@@ -520,7 +541,51 @@ app.post(`${BASE}/api/orders/:id/reject`, { preHandler: requireAuth }, async (re
   } catch (e) {
     return reply.code(400).send({ error: e.message });
   }
-});
+}
+app.post('/api/orders/:id/reject', { preHandler: requireAuth }, handleOrderReject);
+app.post(`${BASE}/api/orders/:id/reject`, { preHandler: requireAuth }, handleOrderReject);
+
+async function handleSimulateOrder(req, reply) {
+  const wsId = getScopedWorkspaceId(req);
+  const cfg = getWorkspaceConfig(wsId);
+  const menuItems = (cfg.menu || []).slice(0, 3);
+  let orderDesc = '2x Specialty Items & Consultation';
+  let totalVal = 'BDT 850';
+  if (menuItems.length >= 2) {
+    orderDesc = `1x ${menuItems[0].name}, 1x ${menuItems[1].name}`;
+    const p1 = parseInt(String(menuItems[0].price || '').replace(/\D/g, '')) || 350;
+    const p2 = parseInt(String(menuItems[1].price || '').replace(/\D/g, '')) || 450;
+    totalVal = `BDT ${p1 + p2}`;
+  } else if (menuItems.length === 1) {
+    orderDesc = `2x ${menuItems[0].name}`;
+    const p = parseInt(String(menuItems[0].price || '').replace(/\D/g, '')) || 400;
+    totalVal = `BDT ${p * 2}`;
+  }
+
+  const sampleNames = ['Tanvir Ahmed', 'Farzana Rahman', 'Sadman Sakib', 'Nusrat Jahan', 'Rafiul Islam'];
+  const sampleAreas = ['Uttara Sector 4', 'Dhanmondi Road 27', 'Gulshan-2', 'Banani Block C', 'Mirpur DOHS'];
+  const randName = sampleNames[Math.floor(Math.random() * sampleNames.length)];
+  const randArea = sampleAreas[Math.floor(Math.random() * sampleAreas.length)];
+  const randPhone = `017${Math.floor(10000000 + Math.random() * 90000000)}`;
+
+  try {
+    const order = createOrder({
+      workspace_id: wsId,
+      platform: 'web-test',
+      customer_name: randName,
+      customer_phone: randPhone,
+      customer_address: `House ${Math.floor(1 + Math.random() * 40)}, ${randArea}, Dhaka`,
+      details: orderDesc,
+      estimated_total: totalVal,
+      notes: 'Autonomous AI simulation test'
+    });
+    return { ok: true, order };
+  } catch (e) {
+    return reply.code(400).send({ error: e.message });
+  }
+}
+app.post('/api/orders/simulate', { preHandler: requireAuth }, handleSimulateOrder);
+app.post(`${BASE}/api/orders/simulate`, { preHandler: requireAuth }, handleSimulateOrder);
 
 // CSV Export: Conversations
 app.get(`${BASE}/api/conversations/export.csv`, { preHandler: requireAuth }, async (req, reply) => {
@@ -549,11 +614,11 @@ app.get(`${BASE}/api/webhook-logs`, { preHandler: requireAuth }, async (req) => 
 });
 
 // Push Notification Routes
-app.get(`${BASE}/api/push/vapid-public-key`, async () => ({
-  key: process.env.VAPID_PUBLIC_KEY || ''
-}));
+const handleVapidKey = async () => ({ key: vapidPublic || '' });
+app.get('/api/push/vapid-public-key', handleVapidKey);
+app.get(`${BASE}/api/push/vapid-public-key`, handleVapidKey);
 
-app.post(`${BASE}/api/push/subscribe`, { preHandler: requireAuth }, async (req, reply) => {
+async function handlePushSubscribe(req, reply) {
   const wsId = getScopedWorkspaceId(req);
   try {
     savePushSubscription(wsId, req.body);
@@ -561,14 +626,18 @@ app.post(`${BASE}/api/push/subscribe`, { preHandler: requireAuth }, async (req, 
   } catch (e) {
     return reply.code(400).send({ error: e.message });
   }
-});
+}
+app.post('/api/push/subscribe', { preHandler: requireAuth }, handlePushSubscribe);
+app.post(`${BASE}/api/push/subscribe`, { preHandler: requireAuth }, handlePushSubscribe);
 
-app.post(`${BASE}/api/push/unsubscribe`, { preHandler: requireAuth }, async (req, reply) => {
+async function handlePushUnsubscribe(req, reply) {
   const endpoint = req.body?.endpoint;
   if (!endpoint) return reply.code(400).send({ error: 'endpoint required' });
   removePushSubscription(endpoint);
   return { ok: true };
-});
+}
+app.post('/api/push/unsubscribe', { preHandler: requireAuth }, handlePushUnsubscribe);
+app.post(`${BASE}/api/push/unsubscribe`, { preHandler: requireAuth }, handlePushUnsubscribe);
 
 // Custom Domain Routes
 app.get(`${BASE}/api/admin/workspaces/:id/custom-domain`, { preHandler: requireMasterAdmin }, async (req) => {
@@ -822,7 +891,7 @@ app.post(`${BASE}/api/import-menu`, { preHandler: requireAuth }, async (req, rep
   }
 });
 
-app.post(`${BASE}/api/test`, { preHandler: requireAuth }, async req => {
+async function handleTest(req) {
   const ip = req.ip;
   if (!rateLimit(ip, 'test-playground', 30, 60 * 1000)) {
     return req.log.warn('Rate limited test playground') || { reply: 'Slow down — you are sending too many test messages.', model: null, escalated: false };
@@ -852,7 +921,9 @@ app.post(`${BASE}/api/test`, { preHandler: requireAuth }, async req => {
   }).catch(() => {});
 
   return { reply, model, escalated: hit };
-});
+}
+app.post('/api/test', { preHandler: requireAuth }, handleTest);
+app.post(`${BASE}/api/test`, { preHandler: requireAuth }, handleTest);
 
 app.get(`${BASE}/api/conversations`, { preHandler: requireAuth }, async (req) => {
   const wsId = getScopedWorkspaceId(req);
