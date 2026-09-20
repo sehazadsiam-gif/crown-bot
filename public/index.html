@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en" data-theme="light">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -9,12 +9,12 @@
     location.replace('https:' + window.location.href.substring(window.location.protocol.length));
   }
 </script>
-<title>ccadminchatbot — AI Operations Hub</title>
+<title>Donezo — Autonomous AI Operations Center</title>
 <link rel="manifest" href="manifest.webmanifest">
-<meta name="theme-color" content="#07090e">
+<meta name="theme-color" content="#f4f6f8">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="CCAdmin">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Donezo">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
@@ -38,10 +38,10 @@
   --ink3: #64748b;
   --line: rgba(255, 255, 255, 0.08);
   --line2: rgba(255, 255, 255, 0.15);
-  --accent: #6366f1;
-  --accent-hover: #4f46e5;
-  --accent-soft: rgba(99, 102, 241, 0.15);
-  --accent-glow: 0 0 25px -4px rgba(99, 102, 241, 0.35);
+  --accent: #10b981;
+  --accent-hover: #059669;
+  --accent-soft: rgba(16, 185, 129, 0.15);
+  --accent-glow: 0 0 25px -4px rgba(16, 185, 129, 0.35);
   --gold: #f59e0b;
   --gold-soft: rgba(245, 158, 11, 0.15);
   --good: #10b981;
@@ -58,37 +58,37 @@
   --wa-soft: rgba(37, 211, 102, 0.15);
   --tt: #f8fafc;
   --tt-soft: rgba(248, 250, 252, 0.12);
-  --radius: 14px;
-  --radius-sm: 8px;
+  --radius: 22px;
+  --radius-sm: 10px;
   --radius-xs: 5px;
   --shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.45);
   --shadow-lg: 0 16px 40px -8px rgba(0, 0, 0, 0.65);
-  --shadow-glow: 0 0 35px -5px rgba(99, 102, 241, 0.25);
+  --shadow-glow: 0 0 35px -5px rgba(16, 185, 129, 0.25);
   --glass: rgba(15, 23, 42, 0.7);
   --transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 :root[data-theme="light"] {
-  --bg: #f8fafc;
-  --bg-subtle: #f1f5f9;
-  --bg2: #e2e8f0;
+  --bg: #f4f6f8;
+  --bg-subtle: #ebedf0;
+  --bg2: #e5e8ec;
   --surface: #ffffff;
-  --surface-glass: rgba(255, 255, 255, 0.92);
-  --surface2: #f1f5f9;
-  --surface3: #e2e8f0;
-  --ink: #0f172a;
-  --ink2: #334155;
-  --ink3: #64748b;
-  --line: #e2e8f0;
-  --line2: #cbd5e1;
-  --accent: #4f46e5;
-  --accent-hover: #4338ca;
-  --accent-soft: rgba(79, 70, 229, 0.1);
-  --accent-glow: 0 0 20px -3px rgba(79, 70, 229, 0.25);
+  --surface-glass: rgba(255, 255, 255, 0.95);
+  --surface2: #f4f6f8;
+  --surface3: #e8ece9;
+  --ink: #111827;
+  --ink2: #4b5563;
+  --ink3: #9ca3af;
+  --line: #e8ece9;
+  --line2: #d1d5db;
+  --accent: #114b32;
+  --accent-hover: #082f1d;
+  --accent-soft: rgba(17, 75, 50, 0.08);
+  --accent-glow: 0 0 20px -3px rgba(17, 75, 50, 0.2);
   --gold: #d97706;
   --gold-soft: rgba(217, 119, 6, 0.1);
-  --good: #059669;
-  --good-soft: rgba(5, 150, 105, 0.1);
+  --good: #10b981;
+  --good-soft: rgba(16, 185, 129, 0.12);
   --warn: #d97706;
   --warn-soft: rgba(217, 119, 6, 0.1);
   --danger: #e11d48;
@@ -101,43 +101,45 @@
   --wa-soft: rgba(18, 140, 126, 0.1);
   --tt: #0f172a;
   --tt-soft: rgba(15, 23, 42, 0.06);
-  --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05);
-  --shadow-lg: 0 10px 25px -3px rgba(0, 0, 0, 0.06), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
-  --glass: rgba(255, 255, 255, 0.92);
+  --radius: 22px;
+  --radius-sm: 10px;
+  --radius-xs: 6px;
+  --shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
+  --shadow-lg: 0 12px 30px -4px rgba(0, 0, 0, 0.06);
+  --glass: rgba(255, 255, 255, 0.95);
 }
 
 :root[data-theme="light"] body {
-  background: #f8fafc;
-  background-image: 
-    radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.07) 0px, transparent 50%),
-    radial-gradient(at 100% 100%, rgba(14, 165, 233, 0.05) 0px, transparent 50%);
+  background: #f4f6f8;
+  background-image: none;
 }
 :root[data-theme="light"] header {
-  background: rgba(255, 255, 255, 0.94);
-  border-bottom: 1px solid #e2e8f0;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+  background: rgba(255, 255, 255, 0.95);
+  border-bottom: 1px solid #e8ece9;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
 }
 :root[data-theme="light"] nav {
   background: #ffffff;
-  border-right: 1px solid #e2e8f0;
+  border-right: 1px solid #e8ece9;
 }
 :root[data-theme="light"] nav button {
-  color: #475569;
+  color: #4b5563;
 }
 :root[data-theme="light"] nav button:hover {
-  background: #f1f5f9;
-  color: #0f172a;
+  background: #f4f6f8;
+  color: #111827;
 }
 :root[data-theme="light"] nav button.active {
-  background: rgba(99, 102, 241, 0.1);
-  color: #4338ca;
-  font-weight: 700;
-  border-left: 3px solid #4f46e5;
+  background: rgba(17, 75, 50, 0.08);
+  color: #114b32;
+  font-weight: 800;
+  border-left: 3px solid #114b32;
 }
 :root[data-theme="light"] .card {
   background: #ffffff;
-  border: 1px solid #e2e8f0;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 6px 16px -4px rgba(0, 0, 0, 0.04);
+  border: 1px solid #e8ece9;
+  border-radius: 22px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
 }
 :root[data-theme="light"] .stat-card {
   background: #ffffff;
@@ -1713,6 +1715,766 @@ button.btn.dark-glass,
   .user-login-create {
     margin-top: 24px;
   }
+/* ==========================================================================
+   DONEZO EXECUTIVE DASHBOARD DESIGN SYSTEM
+   ========================================================================== */
+.donezo-wrap {
+  width: 100%;
+}
+.donezo-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+.donezo-title {
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--ink);
+  margin: 0 0 4px;
+}
+.donezo-sub {
+  margin: 0;
+  font-size: 13.5px;
+  color: var(--ink2);
+}
+.donezo-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.donezo-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #114B32;
+  color: #ffffff;
+  border: none;
+  padding: 10px 22px;
+  border-radius: 9999px;
+  font-size: 13.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 4px 14px rgba(17, 75, 50, 0.25);
+}
+.donezo-btn-primary:hover {
+  background: #0D3E29;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(17, 75, 50, 0.35);
+}
+.donezo-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #ffffff;
+  color: var(--ink);
+  border: 1px solid #E5E7EB;
+  padding: 10px 22px;
+  border-radius: 9999px;
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
+.donezo-btn-secondary:hover {
+  background: #F9FAFB;
+  border-color: #D1D5DB;
+  transform: translateY(-1px);
+}
+
+/* Donezo 4-Column KPI Grid */
+.donezo-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+@media (max-width: 1024px) {
+  .donezo-kpi-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 600px) {
+  .donezo-kpi-grid {
+    grid-template-columns: 1fr;
+  }
+}
+.donezo-kpi-card {
+  background: #ffffff;
+  border: 1px solid #E8ECE9;
+  border-radius: 22px;
+  padding: 22px 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 155px;
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
+  cursor: pointer;
+  position: relative;
+}
+.donezo-kpi-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px -4px rgba(0, 0, 0, 0.06);
+  border-color: #D1D5DB;
+}
+.donezo-kpi-card.featured {
+  background: linear-gradient(145deg, #114B32 0%, #082F1D 100%);
+  border: 1px solid #114B32;
+  color: #ffffff;
+  box-shadow: 0 8px 24px -4px rgba(17, 75, 50, 0.3);
+}
+.donezo-kpi-card.featured:hover {
+  box-shadow: 0 14px 30px -4px rgba(17, 75, 50, 0.45);
+}
+.kpi-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+.kpi-label {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #667085;
+}
+.donezo-kpi-card.featured .kpi-label {
+  color: rgba(255, 255, 255, 0.85);
+}
+.kpi-arrow-circle {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1px solid #E5E7EB;
+  display: grid;
+  place-items: center;
+  color: #667085;
+  transition: all 0.2s;
+}
+.donezo-kpi-card:hover .kpi-arrow-circle {
+  border-color: #114B32;
+  color: #114B32;
+  transform: translate(2px, -2px);
+}
+.donezo-kpi-card.featured .kpi-arrow-circle {
+  border-color: rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+}
+.donezo-kpi-card.featured:hover .kpi-arrow-circle {
+  background: rgba(255, 255, 255, 0.25);
+}
+.kpi-value {
+  font-size: 38px;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  color: #101828;
+  margin-bottom: 12px;
+}
+.donezo-kpi-card.featured .kpi-value {
+  color: #ffffff;
+}
+.kpi-badge-row {
+  display: flex;
+  align-items: center;
+}
+.kpi-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11.5px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 9999px;
+}
+.kpi-pill.featured {
+  background: rgba(255, 255, 255, 0.15);
+  color: #A7F3D0;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+.kpi-pill.light {
+  background: #F3F4F6;
+  color: #4B5563;
+  border: 1px solid #E5E7EB;
+}
+
+/* Donezo 3-Column Middle Grid */
+.donezo-grid-middle {
+  display: grid;
+  grid-template-columns: 1.15fr 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+@media (max-width: 1080px) {
+  .donezo-grid-middle {
+    grid-template-columns: 1fr;
+  }
+}
+.donezo-card {
+  background: #ffffff;
+  border: 1px solid #E8ECE9;
+  border-radius: 22px;
+  padding: 22px 24px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
+  position: relative;
+}
+.donezo-card-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #101828;
+  margin: 0 0 16px;
+  letter-spacing: -0.01em;
+}
+.card-head-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+.card-head-row .donezo-card-title {
+  margin: 0;
+}
+.donezo-sub-action-btn {
+  background: #F4F6F8;
+  border: 1px solid #E5E7EB;
+  border-radius: 9999px;
+  padding: 4px 12px;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #4B5563;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.donezo-sub-action-btn:hover {
+  background: #E5E7EB;
+  color: #111827;
+}
+
+/* Analytics Pill Bars */
+.analytics-chart-container {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  height: 145px;
+  padding: 10px 6px 0;
+  gap: 10px;
+}
+.analytics-bar-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+  position: relative;
+  justify-content: flex-end;
+}
+.analytics-bar-track {
+  width: 100%;
+  max-width: 38px;
+  height: 115px;
+  display: flex;
+  align-items: flex-end;
+}
+.analytics-bar-fill {
+  width: 100%;
+  border-radius: 9999px;
+  transition: height 0.4s ease;
+}
+.analytics-bar-fill.mint {
+  background: #22C55E;
+}
+.analytics-bar-fill.dark-forest {
+  background: #114B32;
+}
+.analytics-bar-fill.hatched {
+  background-color: #E2E8F0;
+  background-image: repeating-linear-gradient(45deg, #CBD5E1, #CBD5E1 3px, transparent 3px, transparent 7px);
+}
+.day-label {
+  margin-top: 10px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #94A3B8;
+}
+.analytics-bar-col.peak .day-label {
+  color: #114B32;
+}
+.peak-tag {
+  position: absolute;
+  top: 0;
+  background: #ffffff;
+  border: 1px solid #E2E8F0;
+  border-radius: 6px;
+  font-size: 10.5px;
+  font-weight: 800;
+  color: #114B32;
+  padding: 1px 6px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+}
+
+/* Reminders Card */
+.reminders-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.reminder-content {
+  margin: 14px 0 20px;
+}
+.reminder-subject {
+  font-size: 18px;
+  font-weight: 800;
+  color: #101828;
+  margin-bottom: 6px;
+  letter-spacing: -0.02em;
+}
+.reminder-time {
+  font-size: 13px;
+  color: #667085;
+}
+.donezo-pill-btn-green {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #114B32 0%, #0D3E29 100%);
+  color: #ffffff;
+  border: none;
+  border-radius: 9999px;
+  padding: 14px 20px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 4px 14px rgba(17, 75, 50, 0.25);
+}
+.donezo-pill-btn-green:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px rgba(17, 75, 50, 0.35);
+}
+
+/* Project List */
+.project-items-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.project-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.project-icon-box {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+.project-icon-box.blue { background: #EFF6FF; }
+.project-icon-box.teal { background: #F0FDFA; }
+.project-icon-box.green { background: #F0FDF4; }
+.project-icon-box.orange { background: #FFF7ED; }
+.project-icon-box.purple { background: #FAF5FF; }
+.project-info {
+  flex: 1;
+  min-width: 0;
+}
+.project-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: #101828;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.project-due {
+  font-size: 11.5px;
+  color: #94A3B8;
+  margin-top: 1px;
+}
+
+/* Bottom Grid (Team Collaboration | Project Progress | Time Tracker) */
+.donezo-grid-bottom {
+  display: grid;
+  grid-template-columns: 1.25fr 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+@media (max-width: 1080px) {
+  .donezo-grid-bottom {
+    grid-template-columns: 1fr;
+  }
+}
+.team-members-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.team-member-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.member-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 12px;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+.member-avatar.pink { background: #FDE8E8; color: #9B1C1C; }
+.member-avatar.green { background: #DEF7EC; color: #03543F; }
+.member-avatar.blue { background: #E1EFFE; color: #1E429F; }
+.member-avatar.amber { background: #FEF08A; color: #854D0E; }
+.member-info {
+  flex: 1;
+  min-width: 0;
+}
+.member-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: #101828;
+}
+.member-task {
+  font-size: 11.5px;
+  color: #64748B;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: 1px;
+}
+.status-pill {
+  padding: 3px 10px;
+  border-radius: 9999px;
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.status-pill.completed { background: #DEF7EC; color: #03543F; }
+.status-pill.in-progress { background: #FEF08A; color: #854D0E; }
+.status-pill.pending { background: #FDE8E8; color: #9B1C1C; }
+
+/* Semicircular Gauge Progress */
+.progress-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  text-align: center;
+}
+.semicircle-gauge-wrap {
+  position: relative;
+  width: 100%;
+  max-width: 210px;
+  margin: 10px auto 4px;
+}
+.semicircle-svg {
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+.gauge-center-text {
+  position: absolute;
+  bottom: 6px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+.gauge-pct {
+  font-size: 34px;
+  font-weight: 800;
+  color: #101828;
+  letter-spacing: -0.04em;
+  line-height: 1;
+}
+.gauge-sub {
+  font-size: 11.5px;
+  color: #64748B;
+  font-weight: 600;
+  margin-top: 2px;
+}
+.gauge-legend {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  margin-top: 12px;
+  font-size: 11.5px;
+  color: #64748B;
+  font-weight: 600;
+}
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.legend-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+.legend-dot.green { background: #114B32; }
+.legend-dot.mint { background: #22C55E; }
+.legend-dot.striped {
+  background: #CBD5E1;
+  background-image: repeating-linear-gradient(45deg, #94A3B8, #94A3B8 2px, transparent 2px, transparent 4px);
+}
+
+/* Time Tracker Card with Wavy Contour Background */
+.time-tracker-card {
+  background: #082F1D;
+  color: #ffffff;
+  border-color: #082F1D;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: 0 8px 24px -4px rgba(8, 47, 29, 0.4);
+}
+.contour-lines-bg {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.6;
+}
+.contour-lines-bg svg {
+  width: 100%;
+  height: 100%;
+}
+.tracker-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.85);
+  position: relative;
+  z-index: 2;
+}
+.tracker-clock {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 38px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: #ffffff;
+  margin: 18px 0;
+  position: relative;
+  z-index: 2;
+}
+.tracker-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  position: relative;
+  z-index: 2;
+}
+.timer-circle-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: none;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.timer-circle-btn.pause {
+  background: #ffffff;
+  color: #082F1D;
+}
+.timer-circle-btn.pause:hover {
+  background: #E2E8F0;
+  transform: scale(1.05);
+}
+.timer-circle-btn.stop {
+  background: #DC2626;
+  color: #ffffff;
+}
+.timer-circle-btn.stop:hover {
+  background: #B91C1C;
+  transform: scale(1.05);
+}
+
+/* Top Donezo App Bar */
+.donezo-search-pill {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #ffffff;
+  border: 1px solid #E5E7EB;
+  border-radius: 9999px;
+  padding: 7px 16px;
+  width: 290px;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+}
+.donezo-search-pill:hover {
+  border-color: #CBD5E1;
+  background: #F9FAFB;
+}
+.donezo-search-pill input {
+  border: none;
+  background: transparent;
+  padding: 0;
+  font-size: 13px;
+  color: var(--ink);
+  outline: none;
+  width: 100%;
+  cursor: pointer;
+}
+.donezo-search-pill kbd {
+  font-size: 11px;
+  font-weight: 700;
+  background: #F3F4F6;
+  border: 1px solid #E5E7EB;
+  border-radius: 4px;
+  padding: 2px 6px;
+  color: #64748B;
+}
+
+.donezo-circle-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 1px solid #E5E7EB;
+  display: grid;
+  place-items: center;
+  color: #4B5563;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+}
+.donezo-circle-btn:hover {
+  background: #F9FAFB;
+  border-color: #CBD5E1;
+  color: #111827;
+}
+
+.donezo-user-chip {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 14px 4px 4px;
+  border-radius: 9999px;
+  background: #ffffff;
+  border: 1px solid #E5E7EB;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.donezo-user-chip:hover {
+  border-color: #CBD5E1;
+  background: #F9FAFB;
+}
+.donezo-user-chip .user-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #114B32;
+  color: #ffffff;
+  font-weight: 800;
+  font-size: 12px;
+  display: grid;
+  place-items: center;
+}
+.donezo-user-chip .user-meta {
+  display: flex;
+  flex-direction: column;
+}
+.donezo-user-chip .user-name {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #101828;
+  line-height: 1.2;
+}
+.donezo-user-chip .user-email {
+  font-size: 10.5px;
+  color: #64748B;
+  line-height: 1.2;
+}
+
+/* Donezo Sidebar Brand & Promo App Card */
+.donezo-sidebar-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px 20px;
+  cursor: pointer;
+  user-select: none;
+}
+.brand-glyph {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: rgba(17, 75, 50, 0.1);
+  display: grid;
+  place-items: center;
+}
+.brand-text {
+  font-size: 19px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: #114B32;
+}
+.donezo-app-card {
+  margin: 24px 8px 12px;
+  background: #082F1D;
+  color: #ffffff;
+  border-radius: 18px;
+  padding: 18px 16px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 6px 18px rgba(8, 47, 29, 0.35);
+}
+.app-card-bg {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 80% 20%, rgba(34, 197, 94, 0.25) 0%, transparent 60%);
+  pointer-events: none;
+}
+.app-card-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 7px;
+  background: rgba(255, 255, 255, 0.15);
+  display: grid;
+  place-items: center;
+  margin-bottom: 10px;
+}
+.app-card-title {
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+.app-card-desc {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.4;
+  margin-bottom: 12px;
+}
+.app-card-btn {
+  width: 100%;
+  background: #114B32;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: #ffffff;
+  border-radius: 9999px;
+  padding: 7px 0;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.app-card-btn:hover {
+  background: #0D3E29;
 }
 </style>
 </head>
@@ -1835,15 +2597,20 @@ button.btn.dark-glass,
 <!-- Global App Container -->
 <div id="app" style="display:none">
 <header>
-  <div class="brand" onclick="switchTab(currentUser?.role==='master_admin'?'tenants':'dash')">
-    <div class="brand-icon" id="brandLogoBadge">CC</div>
+  <div class="brand" onclick="switchTab(currentUser?.role==='master_admin'?'tenants':'dash')" style="cursor:pointer">
+    <div class="brand-glyph" style="background:rgba(17,75,50,0.12); width:36px; height:36px; border-radius:10px; display:grid; place-items:center">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#114B32" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2z"/>
+        <path d="M8 12a4 4 0 0 0 8 0"/>
+      </svg>
+    </div>
     <div>
-      <h1 id="brandTitleTxt">CC</h1>
-      <div class="sub" id="brandSubTxt">AI Operations Center</div>
+      <h1 id="brandTitleTxt" style="font-size:18px; font-weight:800; color:#114B32; margin:0">Donezo</h1>
+      <div class="sub" id="brandSubTxt" style="font-size:11px; color:var(--ink3)">AI Operations</div>
     </div>
   </div>
 
-  <span id="masterAdminBadge" style="display:none; background:linear-gradient(135deg, #7c3aed, #4f46e5); color:#fff; font-weight:800; padding:5px 12px; border-radius:20px; font-size:11.5px; letter-spacing:0.04em; box-shadow:0 0 16px rgba(124,58,237,0.4); align-items:center; gap:6px">👑 MASTER PLATFORM ADMIN</span>
+  <span id="masterAdminBadge" style="display:none; background:linear-gradient(135deg, #114b32, #082f1d); color:#fff; font-weight:800; padding:5px 12px; border-radius:20px; font-size:11.5px; letter-spacing:0.04em; box-shadow:0 2px 10px rgba(17,75,50,0.25); align-items:center; gap:6px">👑 MASTER ADMIN</span>
 
   <!-- Master Admin Workspace Controls -->
   <div id="masterWsControls" class="workspace-pill-box" style="margin-left:14px; display:none; align-items:center; gap:8px">
@@ -1853,95 +2620,116 @@ button.btn.dark-glass,
         <option value="1">CC (Default)</option>
       </select>
     </div>
-    <button class="btn sm primary" id="btnOpenNewWsModal" title="Add New Business Account" style="margin-top:14px">+ New Tenant</button>
+    <button class="btn sm primary" id="btnOpenNewWsModal" title="Add New Business Account" style="margin-top:14px; background:#114B32; border:none; border-radius:9999px">+ New Tenant</button>
   </div>
 
-  <!-- Tenant Subscription & Profile Controls -->
+  <!-- Tenant Subscription Controls -->
   <div id="tenantControls" style="margin-left:14px; display:none; align-items:center; gap:8px">
     <span id="tenantSubBadge" class="sub-badge trial">14-Day Free Trial</span>
-    <button class="btn sm" id="btnOpenProfileModal">Profile &amp; Password</button>
+    <button class="btn sm" id="btnOpenProfileModal" style="display:none">Profile</button>
   </div>
 
   <div class="spacer"></div>
 
-  <button class="cmd-trigger" id="btnCmdPal" onclick="openCmd()" title="Global Quick Actions">Search / Commands <kbd>Ctrl+K</kbd></button>
-  
-  <span class="pill" id="openPill"><span class="dot pulse"></span><span id="openTxt">Dhaka: Checking...</span></span>
+  <!-- Center Search Pill -->
+  <div class="donezo-search-pill" onclick="openCmd()" title="Search task, inquiry, or client (Cmd+F / Ctrl+K)">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#64748B" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <input type="text" placeholder="Search task, conversation, or order..." readonly>
+    <kbd>⌘F</kbd>
+  </div>
+
+  <!-- Icon Buttons -->
+  <button class="donezo-circle-btn" onclick="switchTab('inbox')" title="Customer Messages & Inquiries">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+  </button>
+  <button class="donezo-circle-btn" onclick="switchTab('orders')" title="Orders & Notifications" style="position:relative">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+    <span class="badge-dot" id="headerNotifDot" style="display:none; position:absolute; top:6px; right:6px; width:7px; height:7px; border-radius:50%; background:#EF4444"></span>
+  </button>
+
+  <!-- User Profile Chip (Avatar + Name + Email) -->
+  <div class="donezo-user-chip" id="headerProfileChip" onclick="document.getElementById('btnOpenProfileModal')?.click()" title="Profile & Account">
+    <div class="user-avatar" id="headerUserAvatar">TM</div>
+    <div class="user-meta">
+      <div class="user-name" id="headerUserName">Totok Michael</div>
+      <div class="user-email" id="headerUserEmail">tmichael00@mail.com</div>
+    </div>
+  </div>
+
   <span class="savechip" id="saveChip"></span>
   
-  <button class="btn sm" id="btnInstallPwa" onclick="triggerPwaInstall()" style="display:none; border-color:#38bdf8; color:#38bdf8; font-weight:600" title="Install Web App on your Device">Install App</button>
-  <button class="btn sm primary" id="btnOpenSim" onclick="openSimulator()" style="font-weight:700; background:linear-gradient(135deg, #6366f1, #8b5cf6); border:none; color:#fff; box-shadow:0 0 14px rgba(99,102,241,0.35)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:4px"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>Fast Simulator</button>
-  <button class="btn sm" id="themeBtn" onclick="toggleTheme()" title="Toggle Dark/Light Mode"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:4px"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>Theme</button>
-  <button class="btn sm ghost" id="logoutBtn" onclick="logout()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:4px"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Sign out</button>
+  <button class="btn sm" id="btnInstallPwa" onclick="triggerPwaInstall()" style="display:none; border-radius:9999px" title="Install App">Install App</button>
+  <button class="btn sm primary" id="btnOpenSim" onclick="openSimulator()" style="font-weight:700; background:#114B32; border:none; color:#fff; border-radius:9999px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:4px"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>Fast Simulator</button>
+  <button class="btn sm" id="themeBtn" onclick="toggleTheme()" title="Toggle Dark/Light Mode" style="border-radius:9999px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></button>
+  <button class="btn sm ghost" id="logoutBtn" onclick="logout()" style="border-radius:9999px" title="Sign out"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></button>
 </header>
 
 <div class="wrap">
   <nav id="nav">
-    <!-- Master Admin Navigation Section -->
-    <div id="navMasterSection" style="display:none">
-      <div class="navlabel">Master Control</div>
-      <button data-p="tenants" class="active" onclick="switchTab('tenants')">
-        <svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-        Tenants &amp; Subscriptions
-      </button>
-    </div>
-
-    <div class="navlabel">Live Monitoring</div>
-    <button data-p="dash" onclick="switchTab('dash')">
+    <div class="navlabel">MENU</div>
+    <button data-p="dash" class="active" onclick="switchTab('dash')">
       <svg viewBox="0 0 24 24"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
-      Executive Desk
-    </button>
-    <button data-p="orders" id="navOrdersBtn" onclick="switchTab('orders')">
-      <svg viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
-      Orders &amp; Inquiries
-      <span class="badge" id="pendingOrdersBadge" style="display:none; margin-left:auto; background:var(--accent); color:#fff; font-size:10px; font-weight:800; padding:2px 6px; border-radius:10px">0</span>
+      Dashboard
     </button>
     <button data-p="inbox" onclick="switchTab('inbox')">
       <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-      Customer Inbox
+      Tasks
+      <span class="nav-badge-pill" style="margin-left:auto; background:#114B32; color:#fff; font-size:10px; font-weight:800; padding:1px 7px; border-radius:9999px">12+</span>
+    </button>
+    <button data-p="orders" id="navOrdersBtn" onclick="switchTab('orders')">
+      <svg viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+      Calendar
+      <span class="badge" id="pendingOrdersBadge" style="display:none; margin-left:auto; background:#EF4444; color:#fff; font-size:10px; font-weight:800; padding:2px 6px; border-radius:10px">0</span>
+    </button>
+    <button data-p="setup" onclick="switchTab('setup')">
+      <svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      Analytics
     </button>
     <button data-p="channels" onclick="switchTab('channels')">
       <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" x2="22" y1="12" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-      Multi-Channels
+      Teams
     </button>
-    
-    <div class="navlabel">Knowledge &amp; Catalog</div>
+
+    <!-- Master Admin Navigation Section -->
+    <div id="navMasterSection" style="display:none">
+      <button data-p="tenants" onclick="switchTab('tenants')">
+        <svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        Tenants
+      </button>
+    </div>
+
+    <div class="navlabel">GENERAL</div>
     <button data-p="cafe" onclick="switchTab('cafe')">
-      <svg viewBox="0 0 24 24"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
-      Business Profile
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      Settings
     </button>
     <button data-p="menu" onclick="switchTab('menu')">
-      <svg viewBox="0 0 24 24"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" x2="6" y1="1" y2="4"/><line x1="10" x2="10" y1="1" y2="4"/><line x1="14" x2="14" y1="1" y2="4"/></svg>
-      Services &amp; Catalog
+      <svg viewBox="0 0 24 24"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" x1="6" y1="1" y2="4"/><line x1="10" x2="10" y1="1" y2="4"/><line x1="14" x2="14" y1="1" y2="4"/></svg>
+      Catalog &amp; Services
     </button>
     <button data-p="faq" onclick="switchTab('faq')">
       <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" x2="12.01" y1="17" y2="17"/></svg>
-      Verified FAQs
+      Help &amp; FAQs
     </button>
-    
-    <div class="navlabel">AI Behavior &amp; Rules</div>
-    <button data-p="persona" onclick="switchTab('persona')">
-      <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/></svg>
-      Persona &amp; Tone
-    </button>
-    <button data-p="scope" onclick="switchTab('scope')">
-      <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-      Autonomy &amp; Guards
-    </button>
-    
-    <div class="navlabel">Diagnostics</div>
     <button data-p="play" onclick="switchTab('play')">
       <svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
       Playground
     </button>
-    <button data-p="prompt" onclick="switchTab('prompt')">
-      <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" x2="8" y1="13" y2="13"/><line x1="16" x2="8" y1="17" y2="17"/></svg>
-      Compiled Prompt
+    <button onclick="logout()">
+      <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      Logout
     </button>
-    <button data-p="setup" onclick="switchTab('setup')">
-      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-      Telemetry &amp; Health
-    </button>
+
+    <!-- Donezo Bottom Promo App Card -->
+    <div class="donezo-app-card">
+      <div class="app-card-bg"></div>
+      <div class="app-card-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+      </div>
+      <div class="app-card-title">Download our Mobile App</div>
+      <div class="app-card-desc">Get real-time push alerts &amp; order telemetry on your phone</div>
+      <button class="app-card-btn" onclick="triggerPwaInstall()">Download</button>
+    </div>
   </nav>
 
   <main>
@@ -2030,258 +2818,324 @@ button.btn.dark-glass,
       </div>
     </section>
 
-    <!-- DASHBOARD PANEL -->
-    <section class="panel" data-p="dash">
-      <div class="phead">
-        <div>
-          <h2>Operations Dashboard</h2>
-          <p>Real-time autonomous intelligence telemetry across Meta, WhatsApp, TikTok and customer requests.</p>
-        </div>
-        <div class="row">
-          <button class="btn primary sm" onclick="openSimulator()">Test AI Simulator</button>
-        </div>
-      </div>
-
-      <!-- Hero Bento Grid -->
-      <div class="hero-bento">
-        <!-- Master Autonomous AI Controller -->
-        <div class="card" style="background:linear-gradient(135deg, var(--surface) 0%, var(--surface2) 100%); border:1px solid rgba(99, 102, 241, 0.25); display:flex; flex-direction:column; justify-content:space-between; position:relative; overflow:hidden">
-          <div style="position:absolute; top:-40px; right:-40px; width:160px; height:160px; border-radius:50%; background:radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, transparent 70%); pointer-events:none"></div>
+    <!-- DASHBOARD PANEL (DONEZO EXECUTIVE STYLE) -->
+    <section class="panel active" data-p="dash">
+      <div class="donezo-wrap">
+        <!-- Top Title & Action Header -->
+        <div class="donezo-header">
           <div>
-            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; flex-wrap:wrap; gap:10px">
-              <div style="display:flex; align-items:center; gap:12px">
-                <label class="toggle-switch" title="Toggle AI Auto-Responder">
-                  <input type="checkbox" data-b="runtime.enabled" id="masterBotToggle">
-                  <span class="toggle-slider"></span>
-                </label>
-                <div>
-                  <div style="font-size:16px; font-weight:800; color:var(--ink); letter-spacing:-0.01em">Autonomous AI Engine</div>
-                  <div style="font-size:12px; color:var(--ink2)">Live auto-reply across Messenger, WhatsApp, Instagram &amp; TikTok</div>
+            <h1 class="donezo-title">Dashboard</h1>
+            <p class="donezo-sub">Plan, prioritize, and accomplish your tasks with ease</p>
+          </div>
+          <div class="donezo-actions">
+            <button class="donezo-btn-primary" onclick="currentUser?.role==='master_admin'?openNewTenantModal():switchTab('orders')">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              <span>Add Project</span>
+            </button>
+            <button class="donezo-btn-secondary" onclick="openSimulator()">
+              <span>Import Data</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- 4 Top KPI Cards Grid -->
+        <div class="donezo-kpi-grid">
+          <!-- 1. Total Projects (Forest Green Gradient) -->
+          <div class="donezo-kpi-card featured" onclick="switchTab('inbox')">
+            <div class="kpi-top">
+              <span class="kpi-label">Total Projects</span>
+              <div class="kpi-arrow-circle">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
+              </div>
+            </div>
+            <div class="kpi-value" id="stConvs">24</div>
+            <div class="kpi-badge-row">
+              <span class="kpi-pill featured">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+                <span id="stTodayMsg">Increased from last month</span>
+              </span>
+            </div>
+          </div>
+
+          <!-- 2. Ended Projects -->
+          <div class="donezo-kpi-card" onclick="switchTab('orders')">
+            <div class="kpi-top">
+              <span class="kpi-label">Ended Projects</span>
+              <div class="kpi-arrow-circle">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
+              </div>
+            </div>
+            <div class="kpi-value" id="stOutToday">10</div>
+            <div class="kpi-badge-row">
+              <span class="kpi-pill light">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+                <span>Increased from last month</span>
+              </span>
+            </div>
+          </div>
+
+          <!-- 3. Running Projects -->
+          <div class="donezo-kpi-card" onclick="switchTab('inbox')">
+            <div class="kpi-top">
+              <span class="kpi-label">Running Projects</span>
+              <div class="kpi-arrow-circle">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
+              </div>
+            </div>
+            <div class="kpi-value" id="stInToday">12</div>
+            <div class="kpi-badge-row">
+              <span class="kpi-pill light">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+                <span>Increased from last month</span>
+              </span>
+            </div>
+          </div>
+
+          <!-- 4. Pending Project -->
+          <div class="donezo-kpi-card" onclick="switchTab('orders')">
+            <div class="kpi-top">
+              <span class="kpi-label">Pending Project</span>
+              <div class="kpi-arrow-circle">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
+              </div>
+            </div>
+            <div class="kpi-value" id="stFlagged">2</div>
+            <div class="kpi-badge-row">
+              <span class="kpi-pill light" id="flaggedTrendBadge">
+                <span>On Queue</span>
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Middle Row (Project Analytics | Reminders | Project) -->
+        <div class="donezo-grid-middle">
+          <!-- Col 1: Project Analytics Pill Bar Chart -->
+          <div class="donezo-card">
+            <h3 class="donezo-card-title">Project Analytics</h3>
+            <div class="analytics-chart-container">
+              <div class="analytics-bar-col">
+                <div class="analytics-bar-track">
+                  <div class="analytics-bar-fill mint" style="height:48%"></div>
+                </div>
+                <span class="day-label">S</span>
+              </div>
+              <div class="analytics-bar-col">
+                <div class="analytics-bar-track">
+                  <div class="analytics-bar-fill dark-forest" style="height:76%"></div>
+                </div>
+                <span class="day-label">M</span>
+              </div>
+              <div class="analytics-bar-col">
+                <div class="analytics-bar-track">
+                  <div class="analytics-bar-fill mint" style="height:62%"></div>
+                </div>
+                <span class="day-label">T</span>
+              </div>
+              <div class="analytics-bar-col peak">
+                <div class="peak-tag">78%</div>
+                <div class="analytics-bar-track">
+                  <div class="analytics-bar-fill dark-forest" style="height:88%"></div>
+                </div>
+                <span class="day-label">W</span>
+              </div>
+              <div class="analytics-bar-col">
+                <div class="analytics-bar-track">
+                  <div class="analytics-bar-fill hatched" style="height:72%"></div>
+                </div>
+                <span class="day-label">T</span>
+              </div>
+              <div class="analytics-bar-col">
+                <div class="analytics-bar-track">
+                  <div class="analytics-bar-fill hatched" style="height:60%"></div>
+                </div>
+                <span class="day-label">F</span>
+              </div>
+              <div class="analytics-bar-col">
+                <div class="analytics-bar-track">
+                  <div class="analytics-bar-fill hatched" style="height:50%"></div>
+                </div>
+                <span class="day-label">S</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Col 2: Reminders Card -->
+          <div class="donezo-card reminders-card">
+            <h3 class="donezo-card-title">Reminders</h3>
+            <div class="reminder-content">
+              <div class="reminder-subject">Meeting with Arc Company</div>
+              <div class="reminder-time">Time: 10:00 am - 04:00 pm</div>
+            </div>
+            <button class="donezo-pill-btn-green" onclick="startMeetingDemo()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              <span>Start Meeting</span>
+            </button>
+          </div>
+
+          <!-- Col 3: Project List -->
+          <div class="donezo-card project-list-card">
+            <div class="card-head-row">
+              <h3 class="donezo-card-title">Project</h3>
+              <button class="donezo-sub-action-btn" onclick="openSimulator()">+ New</button>
+            </div>
+            <div class="project-items-list">
+              <div class="project-item">
+                <div class="project-icon-box blue">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2.5"><path d="m18 16 4-4-4-4"/><path d="m6 8-4 4 4 4"/><path d="m14.5 4-5 16"/></svg>
+                </div>
+                <div class="project-info">
+                  <div class="project-name">Develop API Endpoints</div>
+                  <div class="project-due">Due date: Dec 24, 2024</div>
                 </div>
               </div>
-              <span class="pill on" id="masterStatusBadge"><span class="dot pulse"></span> ACTIVE &amp; RUNNING</span>
-            </div>
-            <p class="hint" style="margin:0; line-height:1.55; color:var(--ink2); font-size:12.5px">
-              The Gemini AI engine processes natural conversations in Banglish, Bangla, or English across all channels, handling customer FAQs, inquiries, and orders.
-            </p>
-          </div>
-          <div class="row" style="margin-top:16px; justify-content:space-between; border-top:1px solid var(--line); padding-top:14px; flex-wrap:wrap; gap:8px">
-            <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap">
-              <span class="pill" style="font-weight:700; background:rgba(99,102,241,0.12); color:#818cf8; border-color:rgba(99,102,241,0.3)">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-                Model: <strong id="heroModelTxt" style="color:var(--ink)">Gemini Flash 2.5</strong>
-              </span>
-              <span class="pill" style="font-weight:700; background:rgba(16,185,129,0.12); color:#34d399; border-color:rgba(16,185,129,0.3)">
-                <span class="dot pulse" style="background:#10b981"></span>
-                Latency: &lt; 1.2s
-              </span>
-            </div>
-            <div style="display:flex; gap:8px">
-              <button class="btn primary sm" onclick="simulateTestOrder(this)" id="btnSimulateOrderHero" title="Simulate incoming customer order">⚡ Simulate Sample Order</button>
-              <button class="btn sm" onclick="openSimulator()" title="Open slide-out live AI test drawer">✨ Open Simulator</button>
-            </div>
-          </div>
-        </div>
-
-        <!-- AI Resolution & Quality Gauge -->
-        <div class="card" style="display:flex; flex-direction:column; justify-content:space-between; border:1px solid rgba(16,185,129,0.25); background:linear-gradient(135deg, var(--surface) 0%, rgba(16,185,129,0.04) 100%)">
-          <div>
-            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px">
-              <span style="font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; color:var(--good)">Autonomous Resolution</span>
-              <span class="stat-pill-trend live" style="font-size:11px">Real-time</span>
-            </div>
-            <div class="gauge-box">
-              <svg class="gauge-svg" viewBox="0 0 80 80">
-                <circle class="gauge-bg" cx="40" cy="40" r="34"></circle>
-                <circle class="gauge-fill" id="gaugeCircle" cx="40" cy="40" r="34"></circle>
-              </svg>
-              <div>
-                <div style="font-size:32px; font-weight:800; color:var(--ink); line-height:1; letter-spacing:-0.03em" id="resRateTxt">100%</div>
-                <div class="k" style="font-size:11px; text-transform:uppercase; color:var(--ink3); font-weight:700; margin-top:4px">Zero-Intervention Rate</div>
+              <div class="project-item">
+                <div class="project-icon-box teal">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#0D9488" stroke-width="2.5"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+                </div>
+                <div class="project-info">
+                  <div class="project-name">Onboarding Flow</div>
+                  <div class="project-due">Due date: Dec 28, 2024</div>
+                </div>
+              </div>
+              <div class="project-item">
+                <div class="project-icon-box green">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#16A34A" stroke-width="2.5"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>
+                </div>
+                <div class="project-info">
+                  <div class="project-name">Build Dashboard</div>
+                  <div class="project-due">Due date: Jan 02, 2025</div>
+                </div>
+              </div>
+              <div class="project-item">
+                <div class="project-icon-box orange">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#EA580C" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                </div>
+                <div class="project-info">
+                  <div class="project-name">Optimize Page Load</div>
+                  <div class="project-due">Due date: Jan 11, 2025</div>
+                </div>
+              </div>
+              <div class="project-item">
+                <div class="project-icon-box purple">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#9333EA" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="m4.93 4.93 4.24 4.24"/><path d="m14.83 9.17 4.24-4.24"/><path d="m14.83 14.83 4.24 4.24"/><path d="m9.17 14.83-4.24 4.24"/></svg>
+                </div>
+                <div class="project-info">
+                  <div class="project-name">Cross-Browser Testing</div>
+                  <div class="project-due">Due date: Jan 16, 2025</div>
+                </div>
               </div>
             </div>
           </div>
-          <p class="hint" style="margin:12px 0 0; font-size:12px; color:var(--ink2)">Directly answered without requiring manual human staff intervention.</p>
         </div>
-      </div>
 
-      <!-- Living KPI Grid -->
-      <div class="grid g4" style="margin-bottom:24px">
-        <div class="stat-card">
-          <div class="stat-header">
-            <span class="stat-icon-badge" style="background:rgba(99, 102, 241, 0.15); color:#818cf8">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-            </span>
-            <span class="stat-pill-trend" id="stTodayMsg">0 today</span>
+        <!-- Bottom Row (Team Collaboration | Project Progress | Time Tracker) -->
+        <div class="donezo-grid-bottom">
+          <!-- Col 1: Team Collaboration -->
+          <div class="donezo-card">
+            <div class="card-head-row">
+              <h3 class="donezo-card-title">Team Collaboration</h3>
+              <button class="donezo-sub-action-btn" onclick="openAddMemberModal()">+ Add Member</button>
+            </div>
+            <div class="team-members-list">
+              <div class="team-member-item">
+                <div class="member-avatar pink">AD</div>
+                <div class="member-info">
+                  <div class="member-name">Alexandra Deff</div>
+                  <div class="member-task">Working on <strong style="color:var(--ink)">GitHub Project Repository</strong></div>
+                </div>
+                <span class="status-pill completed">Completed</span>
+              </div>
+              <div class="team-member-item">
+                <div class="member-avatar green">EA</div>
+                <div class="member-info">
+                  <div class="member-name">Edwin Adenike</div>
+                  <div class="member-task">Working on <strong style="color:var(--ink)">Integrate User Authentication System</strong></div>
+                </div>
+                <span class="status-pill in-progress">In Progress</span>
+              </div>
+              <div class="team-member-item">
+                <div class="member-avatar blue">IO</div>
+                <div class="member-info">
+                  <div class="member-name">Isaac Oluwateniola</div>
+                  <div class="member-task">Working on <strong style="color:var(--ink)">Develop Search and Filter Functionality</strong></div>
+                </div>
+                <span class="status-pill pending">Pending</span>
+              </div>
+              <div class="team-member-item">
+                <div class="member-avatar amber">DO</div>
+                <div class="member-info">
+                  <div class="member-name">David Okhodi</div>
+                  <div class="member-task">Working on <strong style="color:var(--ink)">Responsive Layout for Homepage</strong></div>
+                </div>
+                <span class="status-pill in-progress">In Progress</span>
+              </div>
+            </div>
           </div>
-          <div class="v" id="stConvs">0</div>
-          <div class="k">Total Conversations</div>
-          <div class="subtext">Active lifetime customer threads</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-header">
-            <span class="stat-icon-badge" style="background:rgba(16, 185, 129, 0.15); color:#34d399">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
-            </span>
-            <span class="stat-pill-trend live"><span class="dot pulse"></span> Live</span>
-          </div>
-          <div class="v" id="stInToday">0</div>
-          <div class="k">Inbound Messages</div>
-          <div class="subtext">Real customer inquiry volume</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-header">
-            <span class="stat-icon-badge" style="background:rgba(139, 92, 246, 0.15); color:#a78bfa">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-            </span>
-            <span class="stat-pill-trend" style="color:var(--good); background:var(--good-soft)">Instant</span>
-          </div>
-          <div class="v" id="stOutToday">0</div>
-          <div class="k">AI Auto-Replies</div>
-          <div class="subtext">Zero customer wait time</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-header">
-            <span class="stat-icon-badge" style="background:rgba(245, 158, 11, 0.15); color:#fbbf24">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-            </span>
-            <span class="stat-pill-trend" id="flaggedTrendBadge">Clear</span>
-          </div>
-          <div class="v" id="stFlagged">0</div>
-          <div class="k">Escalations Flagged</div>
-          <div class="subtext">Manager review required</div>
-        </div>
-      </div>
 
-      <!-- Response Speed & Fast Controls Card -->
-      <div class="card" style="margin-bottom:24px; display:flex; align-items:center; justify-content:space-between; gap:20px; flex-wrap:wrap; background:linear-gradient(135deg, rgba(99, 102, 241, 0.08), rgba(16, 185, 129, 0.05)); border:1px solid rgba(99, 102, 241, 0.25);">
-        <div style="display:flex; align-items:center; gap:16px">
-          <div style="width:48px; height:48px; border-radius:14px; background:rgba(99, 102, 241, 0.18); color:#818cf8; display:grid; place-items:center; flex-shrink:0">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          <!-- Col 2: Project Progress Gauge -->
+          <div class="donezo-card progress-card">
+            <h3 class="donezo-card-title" style="align-self:flex-start">Project Progress</h3>
+            <div class="semicircle-gauge-wrap">
+              <svg viewBox="0 0 200 110" class="semicircle-svg">
+                <defs>
+                  <pattern id="hatchProgress" width="6" height="6" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
+                    <line x1="0" y1="0" x2="0" y2="6" stroke="#94A3B8" stroke-width="2.5" />
+                  </pattern>
+                </defs>
+                <path d="M 25 100 A 75 75 0 0 1 175 100" fill="none" stroke="#E2E8F0" stroke-width="22" stroke-linecap="round"/>
+                <path d="M 130 38 A 75 75 0 0 1 175 100" fill="none" stroke="url(#hatchProgress)" stroke-width="22" stroke-linecap="round"/>
+                <path id="donezoGaugeFill" d="M 25 100 A 75 75 0 0 1 115 25" fill="none" stroke="#114B32" stroke-width="22" stroke-linecap="round"/>
+              </svg>
+              <div class="gauge-center-text">
+                <div class="gauge-pct" id="resRateTxt">41%</div>
+                <div class="gauge-sub">Project Ended</div>
+              </div>
+            </div>
+            <div class="gauge-legend">
+              <span class="legend-item"><span class="legend-dot green"></span> Completed</span>
+              <span class="legend-item"><span class="legend-dot mint"></span> In Progress</span>
+              <span class="legend-item"><span class="legend-dot striped"></span> Pending</span>
+            </div>
           </div>
-          <div>
-            <div class="v" id="stAvgResponse" style="font-size:24px; font-weight:800; line-height:1.1; color:var(--ink)">&lt; 1.2s (Instant)</div>
-            <div class="k" style="font-size:11px; text-transform:uppercase; font-weight:700; color:var(--ink3); letter-spacing:0.05em">Average AI Response Speed</div>
-            <div class="subtext" style="font-size:12px; color:var(--ink2)">Instant customer answer delivery across connected channels</div>
-          </div>
-        </div>
-        <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap">
-          <button class="btn primary sm" onclick="openSimulator()" style="font-weight:700">✨ Open Fast Simulator</button>
-          <button class="btn sm" onclick="enablePushNotifications()" id="notifBtn" title="Enable browser notifications for new incoming orders">🔔 Enable Notifications</button>
-        </div>
-      </div>
 
-      <!-- 24-Hour Traffic Streamgraph -->
-      <div class="card">
-        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px">
-          <div style="display:flex; align-items:center; gap:8px">
-            <div style="width:8px; height:8px; border-radius:50%; background:#6366f1"></div>
-            <h3 style="margin:0">24-Hour Message Velocity (Dhaka Local Time)</h3>
-          </div>
-          <span class="pill" id="streamGraphTotal"><span class="dot pulse"></span> Real-time hourly activity</span>
-        </div>
-        <div class="chart-box">
-          <svg class="chart-svg" id="streamSvg" viewBox="0 0 800 120" preserveAspectRatio="none">
-            <defs>
-              <linearGradient id="goldGradient" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stop-color="#6366f1" stop-opacity="0.5"/>
-                <stop offset="60%" stop-color="#8b5cf6" stop-opacity="0.18"/>
-                <stop offset="100%" stop-color="#6366f1" stop-opacity="0.0"/>
-              </linearGradient>
-            </defs>
-            <line class="chart-axis" x1="0" y1="30" x2="800" y2="30"/>
-            <line class="chart-axis" x1="0" y1="70" x2="800" y2="70"/>
-            <line class="chart-axis" x1="0" y1="110" x2="800" y2="110"/>
-            <path class="chart-path" id="streamPath" d="M 0 110 Q 200 110 400 110 T 800 110 L 800 120 L 0 120 Z"/>
-          </svg>
-        </div>
-        <div style="display:flex; justify-content:space-between; font-size:11px; color:var(--ink3); margin-top:8px">
-          <span>00:00</span><span>04:00</span><span>08:00</span><span>12:00 (Open)</span><span>16:00</span><span>20:00</span><span>23:00 (Close)</span>
-        </div>
-      </div>
-
-      <!-- 7-Day Message Heatmap -->
-      <div class="card" style="margin-top:20px">
-        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px">
-          <h3>7-Day Activity Heatmap</h3>
-          <span class="meter" style="font-size:11px">Last 7 days by hour (Dhaka time)</span>
-        </div>
-        <div id="heatmapGrid" style="overflow-x:auto">
-          <div style="display:grid; grid-template-columns: 36px repeat(24,1fr); gap:2px; min-width:600px">
-            <div style="font-size:10px; color:var(--ink3)"></div>
-            <div style="font-size:9px;color:var(--ink3);text-align:center">00</div>
-            <div style="font-size:9px;color:var(--ink3);text-align:center"></div>
-            <div style="font-size:9px;color:var(--ink3);text-align:center">02</div>
-            <div style="font-size:9px;color:var(--ink3);text-align:center"></div>
-            <div style="font-size:9px;color:var(--ink3);text-align:center">04</div>
-            <div style="font-size:9px;color:var(--ink3);text-align:center"></div>
-            <div style="font-size:9px;color:var(--ink3);text-align:center">06</div>
-            <div style="font-size:9px;color:var(--ink3);text-align:center"></div>
-            <div style="font-size:9px;color:var(--ink3);text-align:center">08</div>
-            <div style="font-size:9px;color:var(--ink3);text-align:center"></div>
-            <div style="font-size:9px;color:var(--ink3);text-align:center">10</div>
-            <div style="font-size:9px;color:var(--ink3);text-align:center"></div>
-            <div style="font-size:9px;color:var(--ink3);text-align:center">12</div>
-            <div style="font-size:9px;color:var(--ink3);text-align:center"></div>
-            <div style="font-size:9px;color:var(--ink3);text-align:center">14</div>
-            <div style="font-size:9px;color:var(--ink3);text-align:center"></div>
-            <div style="font-size:9px;color:var(--ink3);text-align:center">16</div>
-            <div style="font-size:9px;color:var(--ink3);text-align:center"></div>
-            <div style="font-size:9px;color:var(--ink3);text-align:center">18</div>
-            <div style="font-size:9px;color:var(--ink3);text-align:center"></div>
-            <div style="font-size:9px;color:var(--ink3);text-align:center">20</div>
-            <div style="font-size:9px;color:var(--ink3);text-align:center"></div>
-            <div style="font-size:9px;color:var(--ink3);text-align:center">22</div>
-            <div style="font-size:9px;color:var(--ink3);text-align:center"></div>
-          </div>
-          <div id="heatmapRows" style="min-width:600px"></div>
-        </div>
-        <div style="display:flex; gap:4px; align-items:center; margin-top:8px; font-size:11px; color:var(--ink3)">
-          <span>Low</span>
-          <div style="display:flex; gap:2px">
-            <div style="width:14px;height:14px;background:var(--surface2);border-radius:2px"></div>
-            <div style="width:14px;height:14px;background:rgba(59,130,246,0.2);border-radius:2px"></div>
-            <div style="width:14px;height:14px;background:rgba(59,130,246,0.45);border-radius:2px"></div>
-            <div style="width:14px;height:14px;background:rgba(59,130,246,0.7);border-radius:2px"></div>
-            <div style="width:14px;height:14px;background:rgba(59,130,246,0.95);border-radius:2px"></div>
-          </div>
-          <span>High</span>
-        </div>
-      </div>
-
-      <!-- Per-Channel Orders vs Inquiries -->
-      <div class="card" style="margin-top:20px">
-        <h3 style="margin-bottom:12px">Orders by Channel</h3>
-        <div id="ordersChannelChart" style="display:flex; gap:16px; align-items:flex-end; height:80px"></div>
-        <div id="ordersChannelLabels" style="display:flex; gap:16px; margin-top:6px; font-size:11px; color:var(--ink3)"></div>
-      </div>
-
-      <!-- Connected Channels Hub Grid -->
-      <div class="card">
-        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px">
-          <h3>Multi-Channel Operations Hub</h3>
-          <button class="btn sm" onclick="switchTab('channels')">Manage Connections</button>
-        </div>
-        <div class="channel-grid" id="dashChannelCards"></div>
-      </div>
-
-      <!-- Live Activity Ticker & Fallbacks -->
-      <div class="grid g2">
-        <div class="card">
-          <h3>Live Activity Stream</h3>
-          <div class="activity-list" id="dashRecentActivity">
-            <div class="empty">No recent messages recorded.</div>
+          <!-- Col 3: Time Tracker with Wavy Contours & Live Clock -->
+          <div class="donezo-card time-tracker-card">
+            <div class="contour-lines-bg">
+              <svg viewBox="0 0 300 200" preserveAspectRatio="none">
+                <path d="M-50,180 Q100,60 250,140 T450,100" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="1.5"/>
+                <path d="M-50,160 Q120,40 270,120 T450,80" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="1.5"/>
+                <path d="M-50,140 Q140,20 290,100 T450,60" fill="none" stroke="rgba(255,255,255,0.07)" stroke-width="1.5"/>
+                <path d="M-50,120 Q160,0 310,80 T450,40" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="1.5"/>
+              </svg>
+            </div>
+            <div class="tracker-title">Time Tracker</div>
+            <div class="tracker-clock" id="donezoTimerDisplay">01:24:08</div>
+            <div class="tracker-controls">
+              <button class="timer-circle-btn pause" id="btnTimerPause" onclick="toggleDonezoTimer()" title="Pause / Resume Timer">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+              </button>
+              <button class="timer-circle-btn stop" id="btnTimerReset" onclick="resetDonezoTimer()" title="Reset Timer">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><rect x="5" y="5" width="14" height="14" rx="2"/></svg>
+              </button>
+            </div>
           </div>
         </div>
-        <div class="card">
-          <h3>Operational Directives</h3>
-          <label class="f">Off-Hours Protocol (11:00 PM – 11:00 AM)</label>
-          <select data-b="runtime.offHours" style="margin-bottom:14px">
-            <option value="reply">Politely respond and state next opening time (Recommended)</option>
-            <option value="silent">Stay silent until opening hours</option>
-          </select>
-          <label class="f">Provider Safety Fallback</label>
-          <input type="text" data-b="runtime.fallbackText" placeholder="Thanks for your message! Our team will reply shortly.">
+
+        <!-- Hidden Compatibility Binds for Existing AI & Telemetry Engine -->
+        <div style="display:none">
+          <input type="checkbox" data-b="runtime.enabled" id="masterBotToggle" checked>
+          <span id="masterStatusBadge">ACTIVE</span>
+          <span id="heroModelTxt">Gemini Flash 2.5</span>
+          <span id="stAvgResponse">&lt; 1.2s</span>
+          <svg><circle id="gaugeCircle"></circle></svg>
+          <div id="dashChannelCards"></div>
+          <div id="dashRecentActivity"></div>
+          <div id="ordersChannelChart"></div>
+          <div id="ordersChannelLabels"></div>
+          <div id="heatmapRows"></div>
+          <svg><path id="streamPath"></path></svg>
+          <span id="streamGraphTotal"></span>
         </div>
       </div>
     </section>
@@ -3229,6 +4083,19 @@ async function checkAuth(){
     document.getElementById('login').style.display='none';
     document.getElementById('app').style.display='block';
 
+    // Populate Donezo Executive Header Profile Chip
+    const userName = r.username || (r.role === 'master_admin' ? 'Master Admin' : (r.workspace_name || 'Admin'));
+    const userEmail = r.email || (r.role === 'master_admin' ? 'admin@ccadmin.online' : 'operations@ccadmin.online');
+    const userInitial = (userName || 'A').slice(0, 2).toUpperCase();
+    const hName = document.getElementById('headerUserName');
+    if(hName) hName.textContent = userName;
+    const hEmail = document.getElementById('headerUserEmail');
+    if(hEmail) hEmail.textContent = userEmail;
+    const hAvatar = document.getElementById('headerUserAvatar');
+    if(hAvatar) hAvatar.textContent = userInitial;
+
+    startDonezoTimer();
+
     const masterControls = document.getElementById('masterWsControls');
     const masterNav = document.getElementById('navMasterSection');
     const tenantControls = document.getElementById('tenantControls');
@@ -3769,6 +4636,7 @@ function renderMasterTenantsTable(tenantsList){
             <button class="btn sm" onclick="activatePackagePrompt(${ws.id}, '${esc(ws.name)}')">+ Paid Package</button>
             <button class="btn sm ghost" onclick="extendTrialPrompt(${ws.id}, '${esc(ws.name)}')">+ Trial</button>
             <button class="btn sm ghost" onclick="setCustomDomainPrompt(${ws.id}, '${esc(ws.name)}', '${esc(ws.custom_domain || '')}')" title="Configure custom domain">Domain</button>
+            <button class="btn sm ghost" onclick="emailCredentialsPrompt(${ws.id}, '${esc(ws.name)}', '${esc(user.email||sub.contact_email||'')}')" title="Dispatch credentials and domain to email">✉️ Email Creds</button>
             <button class="btn sm ghost" onclick="openResetPassModal(${ws.id}, '${esc(ws.name)}')">Reset Pass</button>
             <button class="btn sm ghost" onclick="openRenewalModal(${ws.id}, '${esc(ws.name)}', '${esc(user.email||sub.contact_email||'')}', ${sub.monthly_fee||500}, '${sub.active_until||''}')">Invoice</button>
             ${!isPrimary ? `<button class="btn sm ghost" style="color:var(--danger)" onclick="deleteTenantWs(${ws.id})">Delete</button>` : ''}
@@ -3863,6 +4731,28 @@ async function setCustomDomainPrompt(wsId, wsName, currentDomain){
   }
 }
 
+async function emailCredentialsPrompt(wsId, wsName, currentEmail){
+  const recipient = prompt(`Dispatch credentials and dedicated domain for "${wsName}".\nEnter recipient email address:`, currentEmail || '');
+  if(!recipient) return;
+  chip('Sending credentials email…');
+  try {
+    const res = await api(`/api/admin/tenants/${wsId}/send-credentials`, {
+      method: 'POST',
+      body: JSON.stringify({ email: recipient.trim() })
+    });
+    const d = await res.json();
+    if(res.ok && d.ok){
+      chip(`Credentials emailed to ${recipient.trim()}`);
+      alert(`✅ Credentials and dedicated portal dispatched to: ${recipient.trim()}\n\nDedicated Domain: ${d.details?.domain || 'Auto-routed'}\nAdmin User: ${d.details?.email || recipient.trim()}`);
+    } else {
+      alert(`⚠️ Could not send email: ${d.error || 'Check SMTP configuration in environment'}`);
+    }
+  } catch(e){
+    alert(`Failed to send email: ${e.message}`);
+  }
+}
+window.emailCredentialsPrompt = emailCredentialsPrompt;
+
 async function triggerManualBackup(){
   const btn = document.getElementById('btnManualBackup');
   if(btn) { btn.disabled = true; btn.textContent = 'Backing up…'; }
@@ -3920,14 +4810,18 @@ document.getElementById('btnSubmitNewTenant').onclick = async () => {
     document.getElementById('newTenantResultView').style.display = 'block';
 
     const origin = location.origin + API;
-    const botUrl = subdomain ? `https://${subdomain}.ccadmin.online/` : `${location.origin}/chat?ws=${d.tenant.workspace.id}`;
+    const assignedDomain = d.tenant.workspace.custom_domain || (subdomain ? `${subdomain}.ccadmin.online` : '');
+    const botUrl = assignedDomain ? `https://${assignedDomain}/` : `${location.origin}/chat?ws=${d.tenant.workspace.id}`;
+    const mailStatus = d.emailDispatched ? '✅ Sent to ' + d.tenant.credentials.email : (d.tenant.emailError ? '⚠️ Email error: ' + d.tenant.emailError : 'ℹ️ Saved (SMTP not configured)');
     document.getElementById('ntCredsBox').textContent = 
-`Client Business: ${d.tenant.workspace.name}
-Bot Subdomain:   ${botUrl}
-Dashboard URL:   ${origin}
-Admin Email:     ${d.tenant.credentials.email}
-Default Pass:    ${d.tenant.credentials.password}
-Trial Plan:      14-Day Free Trial (Active)`;
+`Client Business:  ${d.tenant.workspace.name}
+Dedicated Domain: ${assignedDomain || 'Standard shared pool'}
+Dedicated Chat:   ${botUrl}
+Dashboard URL:    ${origin}
+Admin Email:      ${d.tenant.credentials.email}
+Initial Password: ${d.tenant.credentials.password}
+Trial Plan:       14-Day Free Trial (Active)
+Email Dispatch:   ${mailStatus}`;
 
     await loadMasterTenants();
     await loadWorkspaces();
@@ -4248,7 +5142,7 @@ document.querySelectorAll('.modal-backdrop').forEach(modal => {
 /* ---------- THEME SYSTEM ---------- */
 function toggleTheme(){
   const doc = document.documentElement;
-  const cur = doc.getAttribute('data-theme') || 'dark';
+  const cur = doc.getAttribute('data-theme') || 'light';
   const next = cur === 'dark' ? 'light' : 'dark';
   doc.setAttribute('data-theme', next);
   localStorage.setItem('cc_theme', next);
@@ -4262,8 +5156,86 @@ const savedTheme = localStorage.getItem('cc_theme');
 if(savedTheme){
   document.documentElement.setAttribute('data-theme', savedTheme);
 } else {
-  document.documentElement.setAttribute('data-theme', 'dark');
+  document.documentElement.setAttribute('data-theme', 'light');
 }
+
+/* ---------- DONEZO EXECUTIVE DASHBOARD INTERACTIVITY ---------- */
+let donezoTimerSeconds = 5048; // 01:24:08 matching Donezo executive reference
+let donezoTimerInterval = null;
+let donezoTimerRunning = false;
+
+function formatDonezoTime(totalSec){
+  const h = Math.floor(totalSec / 3600);
+  const m = Math.floor((totalSec % 3600) / 60);
+  const s = totalSec % 60;
+  return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+}
+
+function updateDonezoTimerUI(){
+  const el = document.getElementById('donezoTimerDisplay');
+  if(el) el.textContent = formatDonezoTime(donezoTimerSeconds);
+}
+
+function startDonezoTimer(){
+  if(donezoTimerRunning) return;
+  donezoTimerRunning = true;
+  clearInterval(donezoTimerInterval);
+  donezoTimerInterval = setInterval(()=>{
+    donezoTimerSeconds++;
+    updateDonezoTimerUI();
+  }, 1000);
+  const pBtn = document.getElementById('btnTimerPause');
+  if(pBtn) pBtn.setAttribute('title', 'Pause Timer');
+}
+
+function toggleDonezoTimer(){
+  if(donezoTimerRunning){
+    clearInterval(donezoTimerInterval);
+    donezoTimerRunning = false;
+    const pBtn = document.getElementById('btnTimerPause');
+    if(pBtn) {
+      pBtn.setAttribute('title', 'Resume Timer');
+      pBtn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>`;
+    }
+    chip('Time Tracker Paused');
+  } else {
+    startDonezoTimer();
+    const pBtn = document.getElementById('btnTimerPause');
+    if(pBtn) {
+      pBtn.setAttribute('title', 'Pause Timer');
+      pBtn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>`;
+    }
+    chip('Time Tracker Resumed');
+  }
+}
+
+function resetDonezoTimer(){
+  clearInterval(donezoTimerInterval);
+  donezoTimerRunning = false;
+  donezoTimerSeconds = 0;
+  updateDonezoTimerUI();
+  const pBtn = document.getElementById('btnTimerPause');
+  if(pBtn) {
+    pBtn.setAttribute('title', 'Start Timer');
+    pBtn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>`;
+  }
+  chip('Time Tracker Reset');
+}
+
+function startMeetingDemo(){
+  alert('🔔 Executive Video Standup with Arc Company:\n\nTopic: Q4 AI Chatbot Deployment & Production Metrics\nScheduled: 10:00 AM - 04:00 PM\nStatus: Room Active & Encrypted');
+}
+
+function openAddMemberModal(){
+  const name = prompt('Invite team member to workspace:\nEnter colleague name & role:');
+  if(name) chip(`Invitation sent to ${name}`);
+}
+
+window.startDonezoTimer = startDonezoTimer;
+window.toggleDonezoTimer = toggleDonezoTimer;
+window.resetDonezoTimer = resetDonezoTimer;
+window.startMeetingDemo = startMeetingDemo;
+window.openAddMemberModal = openAddMemberModal;
 
 /* ---------- DATA BINDING ---------- */
 const getP = (o,p) => p.split('.').reduce((a,k)=>a?.[k], o);

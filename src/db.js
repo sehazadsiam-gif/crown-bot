@@ -1692,7 +1692,16 @@ export function listWebhookLogs(workspaceId, limit = 50) {
 
 export function findWorkspaceByDomain(domain) {
   if (!domain) return null;
-  return db.prepare('SELECT * FROM workspaces WHERE custom_domain = ?').get(domain.toLowerCase().trim());
+  const d = domain.toLowerCase().trim();
+  const exact = db.prepare('SELECT * FROM workspaces WHERE LOWER(custom_domain) = ?').get(d);
+  if (exact) return exact;
+
+  if (d.endsWith('.ccadmin.online')) {
+    const sub = d.replace('.ccadmin.online', '');
+    const bySub = db.prepare('SELECT * FROM workspaces WHERE LOWER(custom_domain) = ?').get(sub);
+    if (bySub) return bySub;
+  }
+  return null;
 }
 
 export function setWorkspaceCustomDomain(workspaceId, domain) {
@@ -1764,11 +1773,20 @@ export function isPasswordUnique(password, excludeUserId = null) {
 
 export function createWorkspaceWithTenant(name, monthlyFee = 500, contactEmail = '', customPassword = null, businessType = 'General Business', services = '', subdomain = '') {
   const ws = createWorkspace(name);
-  const cleanSub = String(subdomain || '').trim().toLowerCase().replace(/[^a-z0-9-]/g, '');
-  if (cleanSub) {
-    db.prepare('UPDATE workspaces SET custom_domain = ? WHERE id = ?').run(cleanSub, ws.id);
-    ws.custom_domain = cleanSub;
+  let cleanSub = String(subdomain || '').trim().toLowerCase().replace(/[^a-z0-9-]/g, '');
+  if (!cleanSub) {
+    const baseSlug = slugify(name).replace(/[^a-z0-9]/g, '').slice(0, 24) || `tenant${ws.id}`;
+    let cand = baseSlug;
+    let counter = 1;
+    const reserved = ['bot', 'cc', 'admin', 'api', 'app', 'www', 'mail', 'portal', 'status'];
+    while (reserved.includes(cand) || db.prepare('SELECT id FROM workspaces WHERE LOWER(custom_domain) = ? AND id != ?').get(cand, ws.id)) {
+      counter++;
+      cand = `${baseSlug}${counter}`;
+    }
+    cleanSub = cand;
   }
+  db.prepare('UPDATE workspaces SET custom_domain = ? WHERE id = ?').run(cleanSub, ws.id);
+  ws.custom_domain = cleanSub;
   const slug = slugify(name);
   let defaultEmail = contactEmail ? String(contactEmail).trim().toLowerCase() : `admin@${slug}.com`;
   const existingEmail = db.prepare('SELECT id FROM workspace_users WHERE LOWER(email) = LOWER(?)').get(defaultEmail);

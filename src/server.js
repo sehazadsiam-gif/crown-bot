@@ -20,8 +20,9 @@ import {
   savePushSubscription, removePushSubscription, listPushSubscriptions,
   logWebhookEvent, listWebhookLogs,
   findWorkspaceByDomain, setWorkspaceCustomDomain,
-  exportConversationsCSV, exportOrdersCSV
+  exportConversationsCSV, exportOrdersCSV, slugify
 } from './db.js';
+import { sendTenantCredentialsEmail } from './mailer.js';
 import { buildPrompt, openState, escalationHit } from './prompt.js';
 import { generateReply, parseMenuText, suggestFaqsForBusiness, detectOrderOrInquiry, detectLanguage } from './ai.js';
 import { verifySignature, isSelf, sendMessage, fetchProfileName, parseWebhook, testMetaConnection } from './meta.js';
@@ -413,13 +414,32 @@ async function handleSignup(req, reply) {
       maxAge: SESSION_TTL / 1000
     });
 
+    const cDom = res.workspace.custom_domain || '';
+    const dedicatedDomain = cDom ? (cDom.includes('.') ? cDom : `${cDom}.ccadmin.online`) : '';
+    const botUrl = dedicatedDomain ? `https://${dedicatedDomain}/` : `https://bot.ccadmin.online/chat?ws=${res.workspace.id}`;
+    const loginUrl = `https://bot.ccadmin.online${BASE}/`;
+
+    if (email && email.includes('@')) {
+      sendTenantCredentialsEmail({
+        to: email,
+        businessName: res.workspace.name,
+        email: res.credentials.email,
+        password: pwd,
+        loginUrl,
+        botUrl,
+        dedicatedDomain
+      }).catch(err => req.log.warn({ err }, 'Failed to dispatch signup credentials email'));
+    }
+
     return {
       ok: true,
       role: 'tenant_admin',
       workspace_id: res.workspace.id,
       workspace_name: res.workspace.name,
       email: res.credentials.email,
-      token: tok
+      token: tok,
+      dedicatedDomain,
+      botUrl
     };
   } catch (e) {
     req.log.error(e);
@@ -733,11 +753,88 @@ app.post(`${BASE}/api/admin/tenants`, { preHandler: requireMasterAdmin }, async 
       services || '',
       subdomain || custom_domain || ''
     );
-    return { ok: true, tenant: res };
+
+    const cDom = res.workspace.custom_domain || '';
+    const dedicatedDomain = cDom ? (cDom.includes('.') ? cDom : `${cDom}.ccadmin.online`) : '';
+    const botUrl = dedicatedDomain ? `https://${dedicatedDomain}/` : `https://bot.ccadmin.online/chat?ws=${res.workspace.id}`;
+    const loginUrl = `https://bot.ccadmin.online${BASE}/`;
+    const recipient = String(contact_email || res.credentials.email || '').trim().toLowerCase();
+
+    let emailStatus = null;
+    if (recipient && recipient.includes('@')) {
+      try {
+        emailStatus = await sendTenantCredentialsEmail({
+          to: recipient,
+          businessName: res.workspace.name,
+          email: res.credentials.email,
+          password: res.credentials.password,
+          loginUrl,
+          botUrl,
+          dedicatedDomain
+        });
+      } catch (mailErr) {
+        req.log.warn({ mailErr }, 'Failed to dispatch initial credentials email');
+        emailStatus = { sent: false, error: mailErr.message };
+      }
+    }
+
+    return {
+      ok: true,
+      tenant: res,
+      email_dispatched: emailStatus,
+      dedicatedDomain,
+      botUrl
+    };
   } catch (e) {
     return reply.code(400).send({ error: e.message });
   }
 });
+
+const handleSendCredentials = async (req, reply) => {
+  const id = Number(req.params.id);
+  const ws = db.prepare('SELECT * FROM workspaces WHERE id = ?').get(id);
+  if (!ws) return reply.code(404).send({ error: 'Tenant not found.' });
+
+  const sub = getSubscription(id);
+  const user = getTenantUser(id);
+  const targetEmail = String(req.body?.recipient || sub?.contact_email || user?.email || '').trim().toLowerCase();
+
+  if (!targetEmail || !targetEmail.includes('@')) {
+    return reply.code(400).send({ error: 'No valid recipient email address specified.' });
+  }
+
+  const pwd = user?.password_display || (id === 1 ? '1590' : 'Contact admin to reset password');
+  const customDomain = ws.custom_domain || '';
+  const dedicatedDomain = customDomain ? (customDomain.includes('.') ? customDomain : `${customDomain}.ccadmin.online`) : '';
+  const botUrl = dedicatedDomain ? `https://${dedicatedDomain}/` : `https://bot.ccadmin.online/chat?ws=${id}`;
+  const loginUrl = `https://bot.ccadmin.online${BASE}/`;
+
+  try {
+    const result = await sendTenantCredentialsEmail({
+      to: targetEmail,
+      businessName: ws.name,
+      email: user?.email || targetEmail,
+      password: pwd,
+      loginUrl,
+      botUrl,
+      dedicatedDomain
+    });
+
+    req.log.info({ tenantId: id, recipient: targetEmail, result }, 'Credentials email dispatched.');
+    return {
+      ok: true,
+      recipient: targetEmail,
+      status: result,
+      dedicatedDomain,
+      botUrl
+    };
+  } catch (err) {
+    req.log.error({ tenantId: id, err }, 'Failed to send credentials email');
+    return reply.code(500).send({ error: err.message });
+  }
+};
+app.post(`${BASE}/api/admin/tenants/:id/send-credentials`, { preHandler: requireMasterAdmin }, handleSendCredentials);
+app.post('/api/admin/tenants/:id/send-credentials', { preHandler: requireMasterAdmin }, handleSendCredentials);
 
 app.put(`${BASE}/api/admin/tenants/:id/subscription`, { preHandler: requireMasterAdmin }, async (req, reply) => {
   const id = Number(req.params.id);
