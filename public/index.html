@@ -1715,6 +1715,8 @@ button.btn.dark-glass,
   .user-login-create {
     margin-top: 24px;
   }
+}
+
 /* ==========================================================================
    DONEZO EXECUTIVE DASHBOARD DESIGN SYSTEM
    ========================================================================== */
@@ -2311,8 +2313,10 @@ button.btn.dark-glass,
   background: #ffffff;
   border: 1px solid #E5E7EB;
   border-radius: 9999px;
-  padding: 7px 16px;
-  width: 290px;
+  padding: 8px 18px;
+  min-width: 280px;
+  max-width: 420px;
+  flex: 1;
   cursor: pointer;
   transition: all 0.2s;
   box-shadow: 0 1px 2px rgba(0,0,0,0.03);
@@ -3055,7 +3059,7 @@ button.btn.dark-glass,
               <h3 class="donezo-card-title">Live Customer Inquiries</h3>
               <button class="donezo-sub-action-btn" onclick="switchTab('inbox')">View Inbox &rarr;</button>
             </div>
-            <div class="team-members-list">
+            <div class="team-members-list" id="donezoCustomerInquiriesList">
               <div class="team-member-item" onclick="switchTab('orders')" style="cursor:pointer">
                 <div class="member-avatar pink">TA</div>
                 <div class="member-info">
@@ -5116,6 +5120,7 @@ function save(){
 /* ---------- TAB NAVIGATION ---------- */
 function switchTab(tabId){
   if(!tabId) return;
+  window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
   document.querySelectorAll('nav button').forEach(x=>x.classList.toggle('active', x.dataset.p===tabId));
   document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('active', p.dataset.p===tabId));
 
@@ -5354,6 +5359,34 @@ function paintStats(s){
   const rate = totalOut > 0 ? Math.round(((s.aiReplies || 0) / totalOut) * 1000) / 10 : 98.5;
   document.getElementById('resRateTxt').textContent = `${rate}%`;
   
+  // Update Donezo Semicircular Radial Gauge Arc
+  const gaugeRate = Math.min(99.9, Math.max(5, rate));
+  const angle = Math.PI * (1 - (gaugeRate / 100));
+  const gx = (100 - 75 * Math.cos(angle)).toFixed(1);
+  const gy = (100 - 75 * Math.sin(angle)).toFixed(1);
+  const gaugeEl = document.getElementById('donezoGaugeFill');
+  if(gaugeEl) gaugeEl.setAttribute('d', `M 25 100 A 75 75 0 0 1 ${gx} ${gy}`);
+
+  // Update 7-Day Capsule Bar Chart Heights
+  if(s.weeklyHeatmap) {
+    const daySums = [0,0,0,0,0,0,0];
+    for(let d=0; d<7; d++){
+      if(s.weeklyHeatmap[d]){
+        daySums[d] = Object.values(s.weeklyHeatmap[d]).reduce((a,b)=>a+b, 0);
+      }
+    }
+    const maxDay = Math.max(...daySums, 1);
+    const fills = document.querySelectorAll('.analytics-bar-fill');
+    if(maxDay > 0){
+      fills.forEach((f, idx) => {
+        if(daySums[idx] !== undefined && daySums[idx] > 0) {
+          const h = Math.max(20, Math.round((daySums[idx] / maxDay) * 88));
+          f.style.height = `${h}%`;
+        }
+      });
+    }
+  }
+
   const offset = 220 - (220 * (rate / 100));
   const circle = document.getElementById('gaugeCircle');
   if(circle) circle.style.strokeDashoffset = offset;
@@ -5483,6 +5516,30 @@ function renderStreamGraph(hourly){
 
 function renderRecentActivity(recent){
   const list = document.getElementById('dashRecentActivity');
+  const donezoList = document.getElementById('donezoCustomerInquiriesList');
+
+  if(donezoList && recent && recent.length > 0){
+    const colors = ['pink', 'green', 'blue', 'amber'];
+    donezoList.innerHTML = recent.slice(0, 4).map((m, idx) => {
+      const name = m.name || (m.sender_id ? `Customer #${String(m.sender_id).slice(-4)}` : 'Guest Customer');
+      const initials = name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase() || 'CU';
+      const color = colors[idx % colors.length];
+      const plat = m.platform === 'facebook' ? 'Messenger' : m.platform === 'instagram' ? 'Instagram' : m.platform === 'whatsapp' ? 'WhatsApp' : 'Web Chat';
+      const isOrder = (m.text || '').toLowerCase().includes('order') || (m.text || '').toLowerCase().includes('delivery') || (m.text || '').toLowerCase().includes('price');
+      const statusPill = isOrder ? `<span class="status-pill completed">Order Query</span>` : `<span class="status-pill in-progress">AI Handled</span>`;
+      return `
+        <div class="team-member-item" onclick="switchTab('inbox')" style="cursor:pointer" title="Click to open conversation in Inbox">
+          <div class="member-avatar ${color}">${initials}</div>
+          <div class="member-info">
+            <div class="member-name">${esc(name)} <span style="font-size:11px; font-weight:500; color:var(--ink3)">• ${plat}</span></div>
+            <div class="member-task">"${esc(m.text || '')}"</div>
+          </div>
+          ${statusPill}
+        </div>
+      `;
+    }).join('');
+  }
+
   if(!list) return;
   if(!recent || !recent.length){
     list.innerHTML = '<div class="empty">No recent messages recorded.</div>';
