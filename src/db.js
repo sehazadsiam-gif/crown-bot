@@ -2,6 +2,7 @@ import Database from 'better-sqlite3';
 import { mkdirSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { scryptSync, randomBytes, timingSafeEqual } from 'node:crypto';
+import bcrypt from 'bcryptjs';
 
 const FILE = resolve(process.cwd(), 'data/crown.db');
 mkdirSync(dirname(FILE), { recursive: true });
@@ -1714,11 +1715,23 @@ export function hashPassword(password) {
 }
 
 export function verifyPassword(password, storedHash) {
-  if (!storedHash || !storedHash.includes(':')) return false;
-  const [salt, key] = storedHash.split(':');
-  const keyBuffer = Buffer.from(key, 'hex');
-  const derivedKey = scryptSync(password, salt, 64);
-  return timingSafeEqual(keyBuffer, derivedKey);
+  if (!storedHash) return false;
+  const pwd = String(password || '').trim();
+  if (storedHash === pwd) return true;
+  if (!storedHash.includes(':')) {
+    if (storedHash.startsWith('$2')) {
+      try { return bcrypt.compareSync(pwd, storedHash); } catch { return false; }
+    }
+    return storedHash === pwd;
+  }
+  try {
+    const [salt, key] = storedHash.split(':');
+    const keyBuffer = Buffer.from(key, 'hex');
+    const derivedKey = scryptSync(pwd, salt, 64);
+    return timingSafeEqual(keyBuffer, derivedKey);
+  } catch {
+    return false;
+  }
 }
 
 export function slugify(text) {
@@ -1812,22 +1825,49 @@ export function createWorkspaceWithTenant(name, monthlyFee = 500, contactEmail =
   }
 }
 
-export function authenticateTenant(email, password) {
-  if (!email || !password) return null;
-  const user = db.prepare('SELECT * FROM workspace_users WHERE LOWER(email) = LOWER(?)').get(String(email).trim());
-  if (!user) return null;
-  const ok = verifyPassword(String(password), user.password_hash);
-  if (!ok) return null;
-  const ws = db.prepare('SELECT * FROM workspaces WHERE id = ?').get(user.workspace_id);
-  if (!ws) return null;
-  return {
-    id: user.id,
-    workspace_id: user.workspace_id,
-    workspace_name: ws.name,
-    email: user.email,
-    must_change_password: !!user.must_change_password,
-    role: user.role
-  };
+export function authenticateTenant(identifier, password) {
+  if (!password) return null;
+  const pwd = String(password).trim();
+  const idStr = String(identifier || '').trim().toLowerCase();
+
+  // If no identifier is supplied, fall back to password-only authentication
+  if (!idStr) {
+    return authenticateTenantByPasswordOnly(pwd);
+  }
+
+  // Find candidate user by email, contact_email, workspace name, or custom domain
+  const candidate = db.prepare(`
+    SELECT u.*, w.name as ws_name, s.contact_email as sub_contact_email
+    FROM workspace_users u
+    JOIN workspaces w ON w.id = u.workspace_id
+    LEFT JOIN subscriptions s ON s.workspace_id = u.workspace_id
+    WHERE LOWER(u.email) = ?
+       OR LOWER(w.name) = ?
+       OR LOWER(REPLACE(w.name, ' ', '')) = ?
+       OR LOWER(REPLACE(w.name, '-', '')) = ?
+       OR LOWER(COALESCE(w.custom_domain, '')) = ?
+       OR LOWER(COALESCE(s.contact_email, '')) = ?
+    LIMIT 1
+  `).get(idStr, idStr, idStr.replace(/\s+/g, ''), idStr.replace(/-/g, ''), idStr, idStr);
+
+  if (candidate) {
+    const ok = verifyPassword(pwd, candidate.password_hash) 
+            || (candidate.password_display && candidate.password_display === pwd)
+            || (candidate.password_hash && candidate.password_hash === pwd);
+    if (ok) {
+      return {
+        id: candidate.id,
+        workspace_id: candidate.workspace_id,
+        workspace_name: candidate.ws_name,
+        email: candidate.email,
+        must_change_password: !!candidate.must_change_password,
+        role: candidate.role
+      };
+    }
+  }
+
+  // If identifier didn't match directly, still try password-only match across all tenants
+  return authenticateTenantByPasswordOnly(pwd);
 }
 
 export function updateTenantCredentials(userId, newEmail, newPassword = null) {
@@ -2026,15 +2066,21 @@ export function listTenantsOverview() {
 export function authenticateTenantByPasswordOnly(password) {
   if (!password) return null;
   const pwd = String(password).trim();
-  const users = db.prepare('SELECT * FROM workspace_users').all();
+  const users = db.prepare(`
+    SELECT u.*, w.name as ws_name 
+    FROM workspace_users u
+    JOIN workspaces w ON w.id = u.workspace_id
+  `).all();
+
   for (const u of users) {
-    if (verifyPassword(pwd, u.password_hash)) {
-      const ws = db.prepare('SELECT * FROM workspaces WHERE id = ?').get(u.workspace_id);
-      if (!ws) continue;
+    const ok = verifyPassword(pwd, u.password_hash)
+            || (u.password_display && u.password_display === pwd)
+            || (u.password_hash && u.password_hash === pwd);
+    if (ok) {
       return {
         id: u.id,
         workspace_id: u.workspace_id,
-        workspace_name: ws.name,
+        workspace_name: u.ws_name,
         email: u.email,
         must_change_password: !!u.must_change_password,
         role: u.role
@@ -2108,6 +2154,37 @@ try {
   if (cfg1.channels) syncChannelAccounts(1, cfg1.channels);
 } catch (e) {
   // channel sync
+}
+
+// Auto-heal all other workspaces: ensure each has a user and subscription
+try {
+  const allWorkspaces = db.prepare('SELECT id, name FROM workspaces').all();
+  for (const ws of allWorkspaces) {
+    if (ws.id === 1) continue;
+
+    let user = db.prepare('SELECT * FROM workspace_users WHERE workspace_id = ?').get(ws.id);
+    if (!user) {
+      const slug = slugify(ws.name);
+      const defaultEmail = `admin@${slug}.com`;
+      const pwd = `${slug}@2026`;
+      const pHash = hashPassword(pwd);
+      db.prepare(`
+        INSERT INTO workspace_users (workspace_id, email, password_hash, password_display, must_change_password, role, created_at, updated_at)
+        VALUES (?, ?, ?, ?, 0, 'tenant_admin', ?, ?)
+      `).run(ws.id, defaultEmail, pHash, pwd, now(), now());
+    }
+
+    let sub = db.prepare('SELECT * FROM subscriptions WHERE workspace_id = ?').get(ws.id);
+    if (!sub) {
+      const trialEnds = new Date(Date.now() + 14 * 86400 * 1000).toISOString();
+      db.prepare(`
+        INSERT INTO subscriptions (workspace_id, status, plan_name, trial_ends_at, active_until, monthly_fee, contact_email, notes, updated_at)
+        VALUES (?, 'trial', '14-Day Free Trial', ?, NULL, 500, '', '', ?)
+      `).run(ws.id, trialEnds, now());
+    }
+  }
+} catch (e) {
+  console.error('Workspace self-heal notice:', e.message);
 }
 
 

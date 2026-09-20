@@ -1704,7 +1704,8 @@ button.btn.dark-glass,
             </div>
             <div style="font-size:11.5px; color:var(--ink3); margin-top:5px; line-height:1.4">
               Master Admin: <strong style="color:var(--ink)">masteradmin</strong> / <strong style="color:var(--ink)">ccadmin6789</strong><br>
-              Tenant #1: password <strong style="color:var(--ink)">1590</strong>
+              Tenant #1 (CC): password <strong style="color:var(--ink)">1590</strong><br>
+              Other Tenants: Enter business name, email, or unique password
             </div>
           </div>
 
@@ -3229,8 +3230,8 @@ function handleSignupTypeTyped(val){
 document.getElementById('loginForm').onsubmit = async e => {
   e.preventDefault();
   const err = document.getElementById('loginErr'); err.textContent='';
-  const email = document.getElementById('lEmail').value;
-  const password = document.getElementById('lPass').value;
+  const email = (document.getElementById('lEmail').value || '').trim();
+  const password = (document.getElementById('lPass').value || '').trim();
   const btn = e.target.querySelector('button[type="submit"]');
   const oldText = btn.textContent;
   btn.textContent = 'Verifying...';
