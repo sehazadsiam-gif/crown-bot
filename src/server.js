@@ -84,10 +84,6 @@ if (BASE && BASE !== '/' && BASE !== '') {
   });
 }
 
-// Ensure root GET serves index.html or redirects cleanly
-app.get('/', async (req, reply) => {
-  return reply.sendFile('index.html');
-});
 
 // Enforce HTTPS behind reverse proxy for domain names
 app.addHook('onRequest', async (req, reply) => {
