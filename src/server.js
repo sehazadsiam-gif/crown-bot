@@ -99,6 +99,10 @@ app.addHook('onSend', async (req, reply) => {
   reply.header('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload');
   reply.header('X-Content-Type-Options', 'nosniff');
   reply.header('X-Frame-Options', 'SAMEORIGIN');
+  if (req.url.includes('/chatbotadmin') || req.url.endsWith('.html') || req.url === '/' || req.url === '') {
+    reply.header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
+    reply.header('Pragma', 'no-cache');
+  }
 });
 
 /* Capture raw body for webhook HMAC signature verification */
