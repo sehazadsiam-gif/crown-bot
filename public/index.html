@@ -2957,6 +2957,19 @@ let currentWorkspaceId = 1, workspaces = [];
 let currentUser = null, allMasterTenants = [];
 let pendingNewWsId = null;
 
+function chip(t){
+  const e = document.getElementById('saveChip');
+  if(!e) return;
+  e.textContent = t;
+  clearTimeout(chip._t);
+  chip._t = setTimeout(()=>e.textContent='', 2200);
+}
+function showSaveChip(t){
+  chip(t);
+}
+window.chip = chip;
+window.showSaveChip = showSaveChip;
+
 /* ---------- AUTHENTICATION & ROLE ENGINE ---------- */
 async function checkAuth(){
   const r = await api('/api/me').then(r=>r.json()).catch(()=>({authed:false}));
