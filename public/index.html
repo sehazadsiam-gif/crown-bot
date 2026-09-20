@@ -1813,7 +1813,7 @@ button.btn.dark-glass,
     <div style="display:flex; flex-direction:column">
       <span style="font-size:10px; font-weight:700; color:var(--ink3); text-transform:uppercase; letter-spacing:0.06em">Switch Client</span>
       <select id="activeWorkspaceSelect" style="height:32px; padding:0 8px; font-size:12.5px; font-weight:600; border-radius:6px; background:var(--surface2); color:var(--ink); border:1px solid var(--line); outline:none; cursor:pointer">
-        <option value="1">Crown Coffee (Default)</option>
+        <option value="1">CC (Default)</option>
       </select>
     </div>
     <button class="btn sm primary" id="btnOpenNewWsModal" title="Add New Business Account" style="margin-top:14px">+ New Tenant</button>
@@ -2252,6 +2252,38 @@ button.btn.dark-glass,
         <strong>Hybrid Credentials:</strong> You can enter tokens directly below in the Admin Panel or rely on your server .env file. Values entered here take priority immediately.
       </div>
 
+      <!-- Public Web Chat & Dedicated Bot Subdomain -->
+      <div class="card" style="margin-bottom:20px; border:1px solid rgba(59,130,246,0.35); background:linear-gradient(135deg, rgba(59,130,246,0.06), rgba(99,102,241,0.04)); box-shadow:0 4px 20px rgba(0,0,0,0.03)">
+        <div class="channel-header">
+          <div class="channel-title">
+            <div class="channel-badge-icon" style="background:#3b82f6; color:#fff; font-size:14px">🌐</div>
+            Public AI Customer Webchat &amp; Subdomain
+          </div>
+          <span class="badge" style="background:linear-gradient(135deg, #2563eb, #4f46e5); color:#fff; font-weight:700; padding:4px 10px; border-radius:12px; font-size:11px">Live 24/7 Web</span>
+        </div>
+        <p class="hint">Your customers can chat with your AI assistant directly through your dedicated bot subdomain or full-page web portal, and place orders instantly without needing a social media account.</p>
+
+        <div class="grid g2" style="margin-top:14px">
+          <div>
+            <label class="f">Live Customer Webchat URL</label>
+            <div class="input-with-btn">
+              <input type="text" readonly id="tenantWebBotUrl" class="mono" value="https://bot.ccadmin.online/">
+              <button class="btn sm primary" onclick="window.open(document.getElementById('tenantWebBotUrl').value, '_blank')">Open Chat</button>
+              <button class="btn sm" onclick="copyId('tenantWebBotUrl')">Copy</button>
+            </div>
+            <p class="hint" style="margin-top:4px">Share this link on your Instagram bio, Facebook page, Google Maps profile, SMS, or QR code.</p>
+          </div>
+          <div>
+            <label class="f">Embeddable Floating Widget (Any Website)</label>
+            <div class="input-with-btn">
+              <input type="text" readonly id="tenantWidgetCode" class="mono" value="&lt;script src=&quot;https://ccadmin.online/widget.js&quot; data-tenant=&quot;1&quot; defer&gt;&lt;/script&gt;">
+              <button class="btn sm" onclick="copyId('tenantWidgetCode')">Copy Script</button>
+            </div>
+            <p class="hint" style="margin-top:4px">Paste into any WordPress, Shopify, Next.js, or HTML site right before &lt;/body&gt; to add a floating AI chat bubble.</p>
+          </div>
+        </div>
+      </div>
+
       <div class="grid g2">
         <!-- Facebook Messenger -->
         <div class="card">
@@ -2262,7 +2294,7 @@ button.btn.dark-glass,
             </div>
             <label class="chk"><input type="checkbox" data-b="channels.facebook.enabled"> Active</label>
           </div>
-          <p class="hint">Direct 24/7 AI conversation on the Crown Coffee Facebook Page.</p>
+          <p class="hint">Direct 24/7 AI conversation on your Facebook Page.</p>
           
           <label class="f">Page Access Token (Permanent)</label>
           <input type="password" data-b="channels.facebook.pageToken" placeholder="EAAG... (Leave blank to use .env)">
@@ -2807,7 +2839,7 @@ button.btn.dark-glass,
       <label class="f">Business / Brand Name</label>
       <input type="text" id="ntNameIn" placeholder="e.g. Gloria Jean's - Gulshan" style="margin-bottom:14px" required>
       
-      <div class="grid g2" style="margin-bottom:18px">
+      <div class="grid g2" style="margin-bottom:14px">
         <div>
           <label class="f">Monthly Fee (BDT)</label>
           <input type="number" id="ntFeeIn" value="500" placeholder="500">
@@ -2815,6 +2847,20 @@ button.btn.dark-glass,
         <div>
           <label class="f">Contact Email (Optional)</label>
           <input type="email" id="ntEmailIn" placeholder="manager@clientbrand.com">
+        </div>
+      </div>
+
+      <div class="grid g2" style="margin-bottom:18px">
+        <div>
+          <label class="f">Bot Subdomain (Optional)</label>
+          <div style="display:flex; align-items:center; gap:6px">
+            <input type="text" id="ntSubdomainIn" placeholder="e.g. gloriajeans" style="font-family:monospace; font-size:12.5px">
+            <span style="font-size:11.5px; color:var(--ink3); white-space:nowrap">.ccadmin.online</span>
+          </div>
+        </div>
+        <div>
+          <label class="f">Initial Password (Optional)</label>
+          <input type="text" id="ntPassIn" placeholder="Auto-generated if empty">
         </div>
       </div>
 
@@ -3684,6 +3730,8 @@ function openNewTenantModal(){
   document.getElementById('ntNameIn').value = '';
   document.getElementById('ntEmailIn').value = '';
   document.getElementById('ntFeeIn').value = '500';
+  const subIn = document.getElementById('ntSubdomainIn'); if(subIn) subIn.value = '';
+  const passIn = document.getElementById('ntPassIn'); if(passIn) passIn.value = '';
   document.getElementById('newTenantModal').classList.add('open');
   document.getElementById('ntNameIn').focus();
 }
@@ -3698,12 +3746,14 @@ document.getElementById('btnSubmitNewTenant').onclick = async () => {
   const name = document.getElementById('ntNameIn').value.trim();
   const monthly_fee = document.getElementById('ntFeeIn').value;
   const contact_email = document.getElementById('ntEmailIn').value.trim();
+  const subdomain = document.getElementById('ntSubdomainIn')?.value.trim() || '';
+  const custom_password = document.getElementById('ntPassIn')?.value.trim() || '';
 
   if(!name){ alert('Please enter the client business name.'); return; }
 
   const res = await api('/api/admin/tenants', {
     method: 'POST',
-    body: JSON.stringify({ name, monthly_fee, contact_email })
+    body: JSON.stringify({ name, monthly_fee, contact_email, subdomain, custom_password })
   });
   const d = await res.json();
   if(res.ok && d.tenant){
@@ -3712,8 +3762,10 @@ document.getElementById('btnSubmitNewTenant').onclick = async () => {
     document.getElementById('newTenantResultView').style.display = 'block';
 
     const origin = location.origin + API;
+    const botUrl = subdomain ? `https://${subdomain}.ccadmin.online/` : `${location.origin}/chat?ws=${d.tenant.workspace.id}`;
     document.getElementById('ntCredsBox').textContent = 
 `Client Business: ${d.tenant.workspace.name}
+Bot Subdomain:   ${botUrl}
 Dashboard URL:   ${origin}
 Admin Email:     ${d.tenant.credentials.email}
 Default Pass:    ${d.tenant.credentials.password}
@@ -4262,6 +4314,25 @@ function updateChannelUrls(){
   const ig = document.getElementById('igWebhookUrl'); if(ig) ig.value = `${origin}/webhook/meta`;
   const wa = document.getElementById('waWebhookUrl'); if(wa) wa.value = `${origin}/webhook/meta`;
   const tt = document.getElementById('ttWebhookUrl'); if(tt) tt.value = `${origin}/webhook/tiktok`;
+
+  const webBot = document.getElementById('tenantWebBotUrl');
+  const webWidget = document.getElementById('tenantWidgetCode');
+  if (webBot) {
+    if (currentWorkspaceId === 1) {
+      webBot.value = 'https://bot.ccadmin.online/';
+    } else {
+      const curWs = (workspaces || []).find(w => w.id === currentWorkspaceId);
+      if (curWs && curWs.custom_domain) {
+        const d = curWs.custom_domain;
+        webBot.value = d.includes('.') ? `https://${d}/` : `https://${d}.ccadmin.online/`;
+      } else {
+        webBot.value = `${origin}/chat?ws=${currentWorkspaceId}`;
+      }
+    }
+  }
+  if (webWidget) {
+    webWidget.value = `<script src="${origin}/widget.js" data-tenant="${currentWorkspaceId}" defer></script>`;
+  }
 }
 
 /* ---------- CHANNEL TESTING & CLIPBOARD ---------- */

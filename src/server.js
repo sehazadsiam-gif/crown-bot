@@ -177,6 +177,44 @@ function getScopedWorkspaceId(req) {
   return req.session.workspace_id || 1;
 }
 
+function resolveWorkspaceFromRequest(req) {
+  // 1. Explicit query or body override
+  const queryWs = Number(req.query?.workspace_id || req.query?.ws || req.body?.workspace_id || req.body?.ws);
+  if (queryWs && queryWs > 0) return queryWs;
+
+  // 2. Hostname resolution
+  const rawHost = (req.headers.host || req.hostname || '').split(':')[0].toLowerCase();
+  if (rawHost) {
+    // Check custom domain in database
+    const wsByDomain = findWorkspaceByDomain(rawHost);
+    if (wsByDomain) return wsByDomain.id;
+
+    // Check special subdomains for flagship workspace 1 (CC)
+    if (rawHost === 'bot.ccadmin.online' || rawHost === 'cc.ccadmin.online') {
+      return 1;
+    }
+
+    // Check generic subdomain: [subdomain].ccadmin.online
+    const parts = rawHost.split('.');
+    if (parts.length >= 3 && rawHost.endsWith('ccadmin.online')) {
+      const sub = parts[0];
+      if (sub === 'bot' || sub === 'cc') return 1;
+
+      // Try matching by subdomain as custom_domain (e.g. sub.ccadmin.online or sub)
+      const wsBySub = db.prepare(`
+        SELECT id FROM workspaces 
+        WHERE LOWER(custom_domain) = ? 
+           OR LOWER(custom_domain) = ? 
+           OR LOWER(REPLACE(REPLACE(name, ' ', ''), '-', '')) = ?
+        LIMIT 1
+      `).get(rawHost, sub, sub.replace(/[-_]/g, ''));
+      if (wsBySub) return wsBySub.id;
+    }
+  }
+
+  return 1; // Default to workspace 1 (CC)
+}
+
 /* ───────────────────────── rate limiting ───────────────────────── */
 const attempts = new Map();
 const MAX_FAILS = 15;
@@ -608,10 +646,18 @@ app.get(`${BASE}/api/admin/tenants`, { preHandler: requireMasterAdmin }, async (
 });
 
 app.post(`${BASE}/api/admin/tenants`, { preHandler: requireMasterAdmin }, async (req, reply) => {
-  const { name, monthly_fee, contact_email } = req.body || {};
+  const { name, monthly_fee, contact_email, custom_password, password, business_type, services, subdomain, custom_domain } = req.body || {};
   if (!name || !String(name).trim()) return reply.code(400).send({ error: 'Tenant business name is required.' });
   try {
-    const res = createWorkspaceWithTenant(String(name).trim(), monthly_fee, contact_email);
+    const res = createWorkspaceWithTenant(
+      String(name).trim(),
+      monthly_fee,
+      contact_email,
+      custom_password || password || null,
+      business_type || 'General Business',
+      services || '',
+      subdomain || custom_domain || ''
+    );
     return { ok: true, tenant: res };
   } catch (e) {
     return reply.code(400).send({ error: e.message });
@@ -870,6 +916,126 @@ app.post(`${BASE}/api/conversations/:id/reply`, { preHandler: requireAuth }, asy
 
 app.get('/health', async () => ({ ok: true }));
 app.get(`${BASE}/health`, async () => ({ ok: true }));
+
+/* ───────────────────────── Public Customer AI Webchat & Subdomain API ───────────────────────── */
+app.get('/chat', (req, reply) => reply.sendFile('chat.html'));
+app.get(`${BASE}/chat`, (req, reply) => reply.sendFile('chat.html'));
+
+app.get('/widget.js', (req, reply) => {
+  reply.header('Content-Type', 'application/javascript; charset=utf-8');
+  return reply.sendFile('widget.js');
+});
+app.get(`${BASE}/widget.js`, (req, reply) => {
+  reply.header('Content-Type', 'application/javascript; charset=utf-8');
+  return reply.sendFile('widget.js');
+});
+
+async function handleBotInfo(req, reply) {
+  const wsId = resolveWorkspaceFromRequest(req);
+  const cfg = getWorkspaceConfig(wsId);
+  const ws = db.prepare('SELECT id, name, custom_domain FROM workspaces WHERE id = ?').get(wsId);
+  const bizName = wsId === 1 ? 'CC' : (ws?.name || cfg.business?.name || cfg.cafe?.name || 'AI Assistant');
+  const greeting = cfg.cafe?.greeting || cfg.bot?.greeting || `Hello! Welcome to ${bizName}. How can I assist you today?`;
+  const openInfo = openState(cfg);
+
+  return {
+    ok: true,
+    workspace_id: wsId,
+    name: bizName,
+    greeting,
+    open: openInfo,
+    channels: {
+      phone: cfg.cafe?.phone || cfg.business?.phone || '',
+      address: cfg.cafe?.area || cfg.business?.address || '',
+      hours: cfg.cafe?.hours || cfg.business?.hours || ''
+    },
+    menu: cfg.menu?.categories || [],
+    services: cfg.business?.services || [],
+    faqs: (cfg.faqs || []).slice(0, 5).map(f => ({ q: f.q, a: f.a }))
+  };
+}
+
+app.get('/api/public/bot-info', handleBotInfo);
+app.get(`${BASE}/api/public/bot-info`, handleBotInfo);
+
+async function handlePublicChat(req, reply) {
+  const ip = req.ip;
+  if (!rateLimit(ip, 'public-chat', 30, 60 * 1000)) {
+    return reply.code(429).send({ error: 'You are sending messages too fast. Please wait a moment.' });
+  }
+
+  const wsId = resolveWorkspaceFromRequest(req);
+  const cfg = getWorkspaceConfig(wsId);
+  const body = req.body || {};
+  const message = String(body.message || body.text || '').trim();
+  const history = (Array.isArray(body.history) ? body.history : []).slice(-12);
+  const sessionId = String(body.sessionId || crypto.randomUUID()).slice(0, 64);
+  const customerName = String(body.customerName || 'Web Visitor').slice(0, 100);
+
+  if (!message) {
+    return reply.code(400).send({ error: 'Message cannot be empty.' });
+  }
+
+  const lang = detectLanguage(message);
+  const hit = escalationHit(cfg, message);
+  const { text: botReply, model } = await generateReply(cfg, history, message, req.log, lang);
+
+  // Record conversation in database for live customer inbox
+  try {
+    const conv = upsertConversation('web', sessionId, customerName, wsId);
+    if (conv && conv.id) {
+      addMessage(conv.id, 'in', message);
+      addMessage(conv.id, 'out', botReply);
+      if (hit) setFlag(conv.id, true);
+    }
+  } catch (err) {
+    req.log.warn({ err }, 'Failed to record public webchat message');
+  }
+
+  // Background order capture
+  detectOrderOrInquiry(message, history).then(async extracted => {
+    if (extracted && extracted.is_order) {
+      try {
+        const order = createOrder({
+          workspace_id: wsId,
+          platform: 'web',
+          customer_name: extracted.customer_name || customerName,
+          customer_phone: extracted.customer_phone || body.customerPhone || '',
+          customer_address: extracted.customer_address || body.customerAddress || '',
+          details: extracted.details || message,
+          total_price: extracted.total_price || 0,
+          currency: 'BDT'
+        });
+
+        // Send Push Notifications to subscribed tenant admins
+        const subs = listPushSubscriptions(wsId);
+        if (subs && subs.length) {
+          const payload = JSON.stringify({
+            title: `🔔 New Order: ${order.customer_name}`,
+            body: `${order.details} — BDT ${order.total_price}`,
+            url: `${process.env.PUBLIC_URL || ''}${BASE}/`
+          });
+          for (const s of subs) {
+            webpush.sendNotification(JSON.parse(s.subscription_json), payload).catch(() => {});
+          }
+        }
+      } catch (e) {
+        req.log.warn({ err: e }, 'Background order extraction save failed');
+      }
+    }
+  }).catch(() => {});
+
+  return {
+    ok: true,
+    reply: botReply,
+    model,
+    escalated: hit,
+    sessionId
+  };
+}
+
+app.post('/api/public/chat', handlePublicChat);
+app.post(`${BASE}/api/public/chat`, handlePublicChat);
 
 app.get(`${BASE}/api/health`, async (req) => {
   const wsId = Number(req.query?.workspace_id) || 1;
@@ -1156,7 +1322,20 @@ app.get('/icon-maskable-192.png', (req, reply) => reply.sendFile('icon-maskable-
 app.get(`${BASE}/icon-maskable-192.png`, (req, reply) => reply.sendFile('icon-maskable-192.png'));
 app.get('/icon-maskable-512.png', (req, reply) => reply.sendFile('icon-maskable-512.png'));
 app.get(`${BASE}/icon-maskable-512.png`, (req, reply) => reply.sendFile('icon-maskable-512.png'));
-app.get('/', (req, reply) => reply.redirect(`${BASE}/`));
+app.get('/', (req, reply) => {
+  const host = (req.headers.host || req.hostname || '').split(':')[0].toLowerCase();
+  const isBotSubdomain = host && (
+    host.startsWith('bot.') ||
+    host.startsWith('cc.') ||
+    (host.endsWith('ccadmin.online') && host !== 'ccadmin.online') ||
+    (host !== 'ccadmin.online' && host !== 'localhost' && host !== '127.0.0.1' && !/^\d+\.\d+\.\d+\.\d+$/.test(host))
+  );
+
+  if (isBotSubdomain) {
+    return reply.sendFile('chat.html');
+  }
+  return reply.redirect(`${BASE}/`);
+});
 app.get(BASE, (req, reply) => reply.redirect(`${BASE}/`));
 app.setNotFoundHandler((req, reply) => {
   if (req.url.startsWith(BASE)) return reply.sendFile?.('index.html')

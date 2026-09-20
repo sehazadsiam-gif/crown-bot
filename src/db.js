@@ -188,7 +188,7 @@ const now = () => new Date().toISOString();
 /* ───────── config ───────── */
 export const DEFAULT_CONFIG = {
   cafe: {
-    name: 'Crown Coffee',
+    name: 'CC',
     phone: '01806-576024',
     area: 'Sector 13, Uttara, Dhaka',
     address: '6 Shah Makhdum Avenue, Assure Ayan Tower, Sector 13, Uttara, Dhaka',
@@ -1019,7 +1019,7 @@ export const DEFAULT_CONFIG = {
     tone: 'Polite and professional, warm but not chatty',
     length: 'Short — 1 to 3 sentences',
     language: 'Reply in the exact same language and script the customer used. If they write Bangla, reply in Bangla. If they write Banglish (Bangla words in English letters), reply in Banglish the same way — do not convert it to Bangla script. If they write English, reply in English. Never mix scripts in one reply and never correct how the customer writes.',
-    greeting: 'Assalamu Alaikum! Welcome to Crown Coffee.',
+    greeting: 'Assalamu Alaikum! Welcome to CC.',
     emoji: false,
     disclose: false
   },
@@ -1206,6 +1206,9 @@ export function getWorkspaceConfig(workspaceId = 1) {
             parsed.cafe[k] = v;
           }
         }
+      }
+      if (parsed.cafe && parsed.cafe.name === 'Crown Coffee') {
+        parsed.cafe.name = 'CC';
       }
     }
 
@@ -1746,8 +1749,13 @@ export function isPasswordUnique(password, excludeUserId = null) {
   return true;
 }
 
-export function createWorkspaceWithTenant(name, monthlyFee = 500, contactEmail = '', customPassword = null, businessType = 'General Business', services = '') {
+export function createWorkspaceWithTenant(name, monthlyFee = 500, contactEmail = '', customPassword = null, businessType = 'General Business', services = '', subdomain = '') {
   const ws = createWorkspace(name);
+  const cleanSub = String(subdomain || '').trim().toLowerCase().replace(/[^a-z0-9-]/g, '');
+  if (cleanSub) {
+    db.prepare('UPDATE workspaces SET custom_domain = ? WHERE id = ?').run(cleanSub, ws.id);
+    ws.custom_domain = cleanSub;
+  }
   const slug = slugify(name);
   let defaultEmail = contactEmail ? String(contactEmail).trim().toLowerCase() : `admin@${slug}.com`;
   const existingEmail = db.prepare('SELECT id FROM workspace_users WHERE LOWER(email) = LOWER(?)').get(defaultEmail);
@@ -2040,9 +2048,14 @@ export function authenticateTenantByPasswordOnly(password) {
 try {
   const defaultWs = db.prepare('SELECT * FROM workspaces WHERE id = 1').get();
   if (!defaultWs) {
-    db.prepare('INSERT INTO workspaces (id, name, created_at) VALUES (1, ?, ?)').run('CC', now());
-  } else if (defaultWs.name === 'Crown Coffee (Default)' || defaultWs.name === 'Crown Coffee') {
-    db.prepare('UPDATE workspaces SET name = ? WHERE id = 1').run('CC');
+    db.prepare('INSERT INTO workspaces (id, name, created_at, custom_domain) VALUES (1, ?, ?, ?)').run('CC', now(), 'cc.ccadmin.online');
+  } else {
+    if (defaultWs.name === 'Crown Coffee (Default)' || defaultWs.name === 'Crown Coffee') {
+      db.prepare('UPDATE workspaces SET name = ? WHERE id = 1').run('CC');
+    }
+    if (!defaultWs.custom_domain) {
+      db.prepare('UPDATE workspaces SET custom_domain = ? WHERE id = 1').run('cc.ccadmin.online');
+    }
   }
 } catch (e) {
   // table exists
@@ -2057,6 +2070,9 @@ try {
     } else {
       db.prepare('INSERT INTO workspace_configs (workspace_id, json, updated) VALUES (1, ?, ?)').run(JSON.stringify(DEFAULT_CONFIG), now());
     }
+  } else if (ws1.json && ws1.json.includes('"Crown Coffee"')) {
+    const updatedJson = ws1.json.replaceAll('"Crown Coffee"', '"CC"');
+    db.prepare('UPDATE workspace_configs SET json = ? WHERE workspace_id = 1').run(updatedJson);
   }
 } catch (e) {
   // table exists
