@@ -264,12 +264,12 @@ async function handleLogin(req, reply) {
   }
 
   // 1. MASTER PLATFORM ADMIN (Username: masteradmin, Password: ccadmin6789)
-  const isMasterUsername = supplied === 'masteradmin' || supplied === '' || supplied === effectiveAdminEmail || supplied === 'admin';
+  const isMasterUsername = supplied === 'masteradmin' || supplied === 'admin' || (effectiveAdminEmail && supplied === effectiveAdminEmail.toLowerCase());
   const isMasterPassword = (suppliedPass === 'ccadmin6789')
-    || (suppliedPass === effectiveAdminPass)
+    || (effectiveAdminPass !== '1590' && suppliedPass === effectiveAdminPass)
     || await verifyPassword(suppliedPass, effectiveAdminPass, effectiveAdminPassHash);
 
-  if (isMasterPassword && isMasterUsername) {
+  if (isMasterPassword && (isMasterUsername || (supplied === '' && suppliedPass === 'ccadmin6789'))) {
     attempts.delete(ip);
     const adminEmail = supplied || 'masteradmin';
     const tok = makeToken({ role: 'master_admin', email: adminEmail, is_master: true });
@@ -354,7 +354,7 @@ async function handleLogout(req, reply) {
 app.post('/api/logout', handleLogout);
 app.post(`${BASE}/api/logout`, handleLogout);
 
-app.post(`${BASE}/api/signup`, async (req, reply) => {
+async function handleSignup(req, reply) {
   const ip = req.ip;
   if (!rateLimit(ip, 'signup', 5, 10 * 60 * 1000)) {
     return reply.code(429).send({ error: 'Too many signup attempts. Try again in 10 minutes.' });
@@ -406,7 +406,9 @@ app.post(`${BASE}/api/signup`, async (req, reply) => {
     req.log.error(e);
     return reply.code(400).send({ error: e.message });
   }
-});
+}
+app.post('/api/signup', handleSignup);
+app.post(`${BASE}/api/signup`, handleSignup);
 
 app.post(`${BASE}/api/ai/suggest-faqs`, async (req, reply) => {
   const ip = req.ip;
