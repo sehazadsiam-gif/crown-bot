@@ -1690,8 +1690,8 @@ button.btn.dark-glass,
           <p class="auth-subtitle">Welcome back! Please enter your details.</p>
 
           <div class="form-group">
-            <label class="form-label" for="lEmail">Email</label>
-            <input type="text" id="lEmail" autocomplete="username" placeholder="Enter your email" class="form-input">
+            <label class="form-label" for="lEmail">Username or Email</label>
+            <input type="text" id="lEmail" autocomplete="username" placeholder="masteradmin or tenant email" class="form-input">
           </div>
 
           <div class="form-group">
@@ -1701,6 +1701,10 @@ button.btn.dark-glass,
               <button type="button" class="btn-toggle-eye" onclick="togglePassVisibility('lPass', this)" title="Toggle password visibility">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
               </button>
+            </div>
+            <div style="font-size:11.5px; color:var(--ink3); margin-top:5px; line-height:1.4">
+              Master Admin: <strong style="color:var(--ink)">masteradmin</strong> / <strong style="color:var(--ink)">ccadmin6789</strong><br>
+              Tenant #1: password <strong style="color:var(--ink)">1590</strong>
             </div>
           </div>
 
@@ -1797,10 +1801,12 @@ button.btn.dark-glass,
   <div class="brand" onclick="switchTab(currentUser?.role==='master_admin'?'tenants':'dash')">
     <div class="brand-icon" id="brandLogoBadge">CC</div>
     <div>
-      <h1 id="brandTitleTxt">Crown Coffee</h1>
+      <h1 id="brandTitleTxt">CC</h1>
       <div class="sub" id="brandSubTxt">AI Operations Center</div>
     </div>
   </div>
+
+  <span id="masterAdminBadge" style="display:none; background:linear-gradient(135deg, #7c3aed, #4f46e5); color:#fff; font-weight:800; padding:5px 12px; border-radius:20px; font-size:11.5px; letter-spacing:0.04em; box-shadow:0 0 16px rgba(124,58,237,0.4); align-items:center; gap:6px">👑 MASTER PLATFORM ADMIN</span>
 
   <!-- Master Admin Workspace Controls -->
   <div id="masterWsControls" class="workspace-pill-box" style="margin-left:14px; display:none; align-items:center; gap:8px">
@@ -1902,6 +1908,15 @@ button.btn.dark-glass,
   </nav>
 
   <main>
+    <!-- Master Admin: Currently Inspecting Banner -->
+    <div id="masterInspectingBanner" style="display:none; background:linear-gradient(90deg, rgba(124,58,237,0.15), rgba(79,70,229,0.15)); border:1px solid rgba(124,58,237,0.35); border-radius:var(--radius-sm); padding:10px 16px; margin-bottom:18px; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap">
+      <div style="display:flex; align-items:center; gap:8px">
+        <span style="font-size:16px">🔍</span>
+        <span style="font-size:13px; color:var(--ink)">Currently Configuring Client Bot: <strong id="inspectingWsNameTxt" style="color:var(--ink); font-weight:700">CC</strong> (#<span id="inspectingWsIdTxt">1</span>)</span>
+      </div>
+      <button class="btn sm" onclick="switchTab('tenants')" style="background:var(--surface2); font-size:12px; font-weight:600">← Back to Tenants Master Hub</button>
+    </div>
+
     <!-- Tenant Expired Banner -->
     <div id="tenantExpiredBanner" style="display:none; background:var(--danger-soft); border:1px solid var(--danger); border-radius:var(--radius-sm); padding:14px 18px; margin-bottom:18px; color:var(--ink)">
       <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap">
@@ -3044,13 +3059,16 @@ async function checkAuth(){
       if(tenantControls) tenantControls.style.display = 'none';
       if(tenantExpiredBanner) tenantExpiredBanner.style.display = 'none';
       
+      const masterBadge = document.getElementById('masterAdminBadge');
+      if(masterBadge) masterBadge.style.display = 'inline-flex';
+
       document.getElementById('brandTitleTxt').textContent = 'ccadminchatbot';
       document.getElementById('brandSubTxt').textContent = 'Master Control Hub';
-      document.getElementById('brandLogoBadge').textContent = 'CC';
+      document.getElementById('brandLogoBadge').textContent = '👑';
 
       switchTab('tenants');
       await loadMasterTenants();
-      await load(currentWorkspaceId);
+      await loadWorkspaces();
     } else {
       // Tenant Admin
       currentWorkspaceId = r.workspace_id;
@@ -3058,8 +3076,15 @@ async function checkAuth(){
       if(masterNav) masterNav.style.display = 'none';
       if(tenantControls) tenantControls.style.display = 'flex';
       
-      document.getElementById('brandTitleTxt').textContent = r.workspace_name || 'My Business';
+      const masterBadge = document.getElementById('masterAdminBadge');
+      if(masterBadge) masterBadge.style.display = 'none';
+      const inspectingBanner = document.getElementById('masterInspectingBanner');
+      if(inspectingBanner) inspectingBanner.style.display = 'none';
+
+      const bizName = r.workspace_id === 1 ? 'CC' : (r.workspace_name || 'My Business');
+      document.getElementById('brandTitleTxt').textContent = bizName;
       document.getElementById('brandSubTxt').textContent = 'AI Operations Center';
+      document.getElementById('brandLogoBadge').textContent = r.workspace_id === 1 ? 'CC' : (bizName.slice(0,2).toUpperCase());
 
       // Render Subscription Status Badge
       const sub = r.subscription;
@@ -3892,7 +3917,15 @@ async function switchWorkspace(wsId){
   if(sel) sel.value = String(currentWorkspaceId);
   await load(currentWorkspaceId);
   if(document.querySelector('nav button[data-p="inbox"].active')) loadInbox();
-  chip(`Active: Workspace #${currentWorkspaceId}`);
+
+  const activeWs = workspaces.find(w => w.id === currentWorkspaceId);
+  const name = activeWs?.name || (currentWorkspaceId === 1 ? 'CC' : `Workspace #${currentWorkspaceId}`);
+  const nameEl = document.getElementById('inspectingWsNameTxt');
+  const idEl = document.getElementById('inspectingWsIdTxt');
+  if(nameEl) nameEl.textContent = name;
+  if(idEl) idEl.textContent = currentWorkspaceId;
+
+  chip(`Active Client: ${name}`);
 }
 
 document.getElementById('activeWorkspaceSelect').onchange = e => switchWorkspace(+e.target.value);
@@ -3905,7 +3938,7 @@ async function load(wsId = null){
   S = d.config;
 
   if(currentUser?.role !== 'master_admin'){
-    const bizName = S?.business?.name || S?.cafe?.name || 'Crown Coffee';
+    const bizName = (currentWorkspaceId === 1 ? 'CC' : (S?.business?.name || S?.cafe?.name || 'My Business'));
     const badge = bizName.split(' ').filter(Boolean).map(w=>w[0]).join('').slice(0,2).toUpperCase() || 'CC';
     const logoBadge = document.getElementById('brandLogoBadge');
     const titleTxt = document.getElementById('brandTitleTxt');
@@ -3951,6 +3984,23 @@ function switchTab(tabId){
   if(!tabId) return;
   document.querySelectorAll('nav button').forEach(x=>x.classList.toggle('active', x.dataset.p===tabId));
   document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('active', p.dataset.p===tabId));
+
+  // Context banner for Master Admin when inspecting client bots
+  const banner = document.getElementById('masterInspectingBanner');
+  if(banner){
+    if(currentUser?.role === 'master_admin' && tabId !== 'tenants'){
+      const activeWs = workspaces.find(w => w.id === currentWorkspaceId);
+      const name = activeWs?.name || (currentWorkspaceId === 1 ? 'CC' : `Workspace #${currentWorkspaceId}`);
+      const nameEl = document.getElementById('inspectingWsNameTxt');
+      const idEl = document.getElementById('inspectingWsIdTxt');
+      if(nameEl) nameEl.textContent = name;
+      if(idEl) idEl.textContent = currentWorkspaceId;
+      banner.style.display = 'flex';
+    } else {
+      banner.style.display = 'none';
+    }
+  }
+
   if(tabId==='tenants') loadMasterTenants();
   if(tabId==='orders') loadOrders();
   if(tabId==='inbox') loadInbox();

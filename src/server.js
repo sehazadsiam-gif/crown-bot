@@ -226,15 +226,16 @@ app.post(`${BASE}/api/login`, async (req, reply) => {
     return reply.code(400).send({ error: 'Password is required.' });
   }
 
-  // 1. Check Master Admin Credentials (Password: ccadmin6789 or configured admin password) - NEVER locked out
-  const isMasterPass = (suppliedPass === 'ccadmin6789')
+  // 1. MASTER PLATFORM ADMIN (Username: masteradmin, Password: ccadmin6789)
+  const isMasterUsername = supplied === 'masteradmin' || supplied === '' || supplied === effectiveAdminEmail || supplied === 'admin';
+  const isMasterPassword = (suppliedPass === 'ccadmin6789')
     || (suppliedPass === effectiveAdminPass)
     || await verifyPassword(suppliedPass, effectiveAdminPass, effectiveAdminPassHash);
 
-  if (isMasterPass) {
+  if (isMasterPassword && isMasterUsername) {
     attempts.delete(ip);
-    const adminEmail = supplied || effectiveAdminEmail || 'admin@crowncoffee.com';
-    const tok = makeToken({ role: 'master_admin', email: adminEmail });
+    const adminEmail = supplied || 'masteradmin';
+    const tok = makeToken({ role: 'master_admin', email: adminEmail, is_master: true });
     reply.setCookie('cc_session', tok, {
       path: '/',
       httpOnly: true,
@@ -250,7 +251,7 @@ app.post(`${BASE}/api/login`, async (req, reply) => {
     return reply.code(429).send({ error: 'Too many failed attempts. Try again in 5 minutes.' });
   }
 
-  // 2. Check Crown Coffee Tenant 1 (Dedicated Password: 1590)
+  // 3. Check Tenant #1: CC (Dedicated Password: 1590)
   if (suppliedPass === '1590') {
     attempts.delete(ip);
     const tok = makeToken({
@@ -271,14 +272,14 @@ app.post(`${BASE}/api/login`, async (req, reply) => {
       ok: true,
       role: 'tenant_admin',
       workspace_id: 1,
-      workspace_name: 'Crown Coffee',
+      workspace_name: 'CC',
       email: 'tenant@crowncoffee.local',
       must_change_password: 0,
       token: tok
     };
   }
 
-  // 3. Check Other Tenant Credentials (email + password OR password-only)
+  // 4. Check Other Tenant Credentials (email + password OR password-only)
   const tenant = (supplied ? authenticateTenant(supplied, suppliedPass) : null)
     || authenticateTenantByPasswordOnly(suppliedPass);
 
@@ -302,7 +303,7 @@ app.post(`${BASE}/api/login`, async (req, reply) => {
       ok: true,
       role: 'tenant_admin',
       workspace_id: tenant.workspace_id,
-      workspace_name: tenant.workspace_name,
+      workspace_name: tenant.workspace_id === 1 ? 'CC' : tenant.workspace_name,
       email: tenant.email,
       must_change_password: tenant.must_change_password,
       token: tok
@@ -559,7 +560,7 @@ app.get(`${BASE}/api/me`, async req => {
   const s = readToken(getToken(req));
   if (!s) return { authed: false };
   if (s.role === 'master_admin') {
-    return { authed: true, role: 'master_admin', email: s.email };
+    return { authed: true, role: 'master_admin', email: s.email || 'masteradmin', is_master: true };
   }
   const sub = getSubscription(s.workspace_id);
   const tenantUser = getTenantUser(s.workspace_id);
@@ -568,7 +569,7 @@ app.get(`${BASE}/api/me`, async req => {
     authed: true,
     role: 'tenant_admin',
     workspace_id: s.workspace_id,
-    workspace_name: ws?.name || (s.workspace_id === 1 ? 'Crown Coffee' : 'My Workspace'),
+    workspace_name: s.workspace_id === 1 ? 'CC' : (ws?.name || 'My Workspace'),
     email: tenantUser?.email || s.email,
     must_change_password: s.workspace_id === 1 ? false : !!tenantUser?.must_change_password,
     subscription: sub

@@ -2015,30 +2015,6 @@ export function listTenantsOverview() {
   });
 }
 
-/* ───────── Initializer ───────── */
-try {
-  const defaultWs = db.prepare('SELECT * FROM workspaces WHERE id = 1').get();
-  if (!defaultWs) {
-    db.prepare('INSERT INTO workspaces (id, name, created_at) VALUES (1, ?, ?)').run('Crown Coffee (Default)', now());
-  }
-} catch (e) {
-  // table exists
-}
-
-try {
-  const ws1 = db.prepare('SELECT * FROM workspace_configs WHERE workspace_id = 1').get();
-  if (!ws1) {
-    const old = db.prepare('SELECT json, updated FROM config WHERE id = 1').get();
-    if (old) {
-      db.prepare('INSERT INTO workspace_configs (workspace_id, json, updated) VALUES (1, ?, ?)').run(old.json, old.updated);
-    } else {
-      db.prepare('INSERT INTO workspace_configs (workspace_id, json, updated) VALUES (1, ?, ?)').run(JSON.stringify(DEFAULT_CONFIG), now());
-    }
-  }
-} catch (e) {
-  // table exists
-}
-
 export function authenticateTenantByPasswordOnly(password) {
   if (!password) return null;
   const pwd = String(password).trim();
@@ -2060,6 +2036,32 @@ export function authenticateTenantByPasswordOnly(password) {
   return null;
 }
 
+/* ───────── Initializer ───────── */
+try {
+  const defaultWs = db.prepare('SELECT * FROM workspaces WHERE id = 1').get();
+  if (!defaultWs) {
+    db.prepare('INSERT INTO workspaces (id, name, created_at) VALUES (1, ?, ?)').run('CC', now());
+  } else if (defaultWs.name === 'Crown Coffee (Default)' || defaultWs.name === 'Crown Coffee') {
+    db.prepare('UPDATE workspaces SET name = ? WHERE id = 1').run('CC');
+  }
+} catch (e) {
+  // table exists
+}
+
+try {
+  const ws1 = db.prepare('SELECT * FROM workspace_configs WHERE workspace_id = 1').get();
+  if (!ws1) {
+    const old = db.prepare('SELECT json, updated FROM config WHERE id = 1').get();
+    if (old) {
+      db.prepare('INSERT INTO workspace_configs (workspace_id, json, updated) VALUES (1, ?, ?)').run(old.json, old.updated);
+    } else {
+      db.prepare('INSERT INTO workspace_configs (workspace_id, json, updated) VALUES (1, ?, ?)').run(JSON.stringify(DEFAULT_CONFIG), now());
+    }
+  }
+} catch (e) {
+  // table exists
+}
+
 // Seed or Update Workspace #1 Tenant User (Password: 1590)
 try {
   const user1 = db.prepare('SELECT * FROM workspace_users WHERE workspace_id = 1').get();
@@ -2067,11 +2069,11 @@ try {
   if (!user1) {
     db.prepare(`
       INSERT INTO workspace_users (workspace_id, email, password_hash, password_display, must_change_password, role, created_at, updated_at)
-      VALUES (1, 'tenant@crowncoffee.local', ?, '1590', 0, 'tenant_admin', ?, ?)
+      VALUES (1, 'tenant@cc.local', ?, '1590', 0, 'tenant_admin', ?, ?)
     `).run(pHash, now(), now());
   } else {
     db.prepare(`
-      UPDATE workspace_users SET email = 'tenant@crowncoffee.local', password_hash = ?, password_display = '1590', must_change_password = 0, updated_at = ?
+      UPDATE workspace_users SET password_hash = ?, password_display = '1590', must_change_password = 0, updated_at = ?
       WHERE workspace_id = 1
     `).run(pHash, now());
   }
