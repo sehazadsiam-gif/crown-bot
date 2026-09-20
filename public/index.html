@@ -1182,23 +1182,586 @@ table.clean-table tr:hover td {
   line-height: 1.6;
   word-break: break-all;
 }
+/* ThreeUI RectangleButtons - Dark Glass (dark-pill) */
+.btn-dark-glass,
+button.btn.dark-glass,
+.btn-threeui {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 22px;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+  font-size: 13.5px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: #e6edf3;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+  background: linear-gradient(180deg, rgba(32, 38, 46, 0.9) 0%, rgba(16, 20, 26, 0.98) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 9999px; /* dark-pill variant */
+  box-shadow: 
+    0 1px 0 0 rgba(255, 255, 255, 0.15) inset,
+    0 -1px 0 0 rgba(0, 0, 0, 0.5) inset,
+    0 4px 18px 0 rgba(0, 0, 0, 0.55),
+    0 0 0 1px rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  cursor: pointer;
+  overflow: hidden;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  text-decoration: none;
+  user-select: none;
+}
+
+.btn-dark-glass::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.32) 0%,
+    rgba(255, 255, 255, 0.06) 40%,
+    rgba(56, 189, 248, 0.4) 75%,
+    rgba(255, 255, 255, 0.18) 100%
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+.btn-dark-glass::after {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(56, 189, 248, 0.16) 0%, transparent 60%);
+  opacity: 0;
+  transform: rotate(0deg);
+  transition: opacity 0.4s ease, transform 0.8s ease;
+  pointer-events: none;
+}
+
+.btn-dark-glass:hover {
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.28);
+  background: linear-gradient(180deg, rgba(40, 48, 58, 0.95) 0%, rgba(22, 28, 36, 1) 100%);
+  box-shadow: 
+    0 1px 0 0 rgba(255, 255, 255, 0.25) inset,
+    0 6px 22px 0 rgba(0, 0, 0, 0.7),
+    0 0 16px 2px rgba(56, 189, 248, 0.3);
+  transform: translateY(-1px);
+}
+
+.btn-dark-glass:hover::after {
+  opacity: 1;
+  transform: rotate(180deg);
+}
+
+.btn-dark-glass:active {
+  transform: translateY(1px);
+  box-shadow: 
+    0 1px 0 0 rgba(0, 0, 0, 0.4) inset,
+    0 2px 8px 0 rgba(0, 0, 0, 0.6);
+}
+
+.btn-dark-glass.primary {
+  background: linear-gradient(180deg, rgba(14, 52, 68, 0.92) 0%, rgba(8, 28, 38, 0.98) 100%);
+  border-color: rgba(56, 189, 248, 0.4);
+  color: #38bdf8;
+  box-shadow: 
+    0 1px 0 0 rgba(56, 189, 248, 0.35) inset,
+    0 4px 20px 0 rgba(8, 47, 73, 0.6);
+}
+.btn-dark-glass.primary:hover {
+  color: #7dd3fc;
+  border-color: rgba(56, 189, 248, 0.7);
+  box-shadow: 
+    0 1px 0 0 rgba(56, 189, 248, 0.55) inset,
+    0 0 24px 5px rgba(56, 189, 248, 0.35);
+}
+
+/* Split-Screen Portal */
+#login {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  background: #090d12;
+  overflow: auto;
+}
+
+.portal-container {
+  display: flex;
+  width: 100%;
+  min-height: 100vh;
+}
+
+.portal-showcase {
+  flex: 1.2;
+  background: radial-gradient(circle at 20% 20%, #112638 0%, #08121a 45%, #03060a 100%);
+  padding: 56px 48px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+  overflow: hidden;
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.portal-showcase::before {
+  content: "";
+  position: absolute;
+  top: -10%;
+  left: -10%;
+  width: 70%;
+  height: 70%;
+  background: radial-gradient(circle, rgba(56, 189, 248, 0.12) 0%, transparent 70%);
+  pointer-events: none;
+  filter: blur(80px);
+}
+
+.portal-brand-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  z-index: 2;
+}
+
+.portal-brand-badge {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #1e3a5f 0%, #0f1f33 100%);
+  border: 1px solid rgba(56, 189, 248, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 18px;
+  color: #38bdf8;
+  box-shadow: 0 0 16px rgba(56, 189, 248, 0.25);
+}
+
+.portal-hero-content {
+  z-index: 2;
+  max-width: 600px;
+  margin: 40px 0;
+}
+
+.portal-hero-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  border-radius: 9999px;
+  background: rgba(56, 189, 248, 0.1);
+  border: 1px solid rgba(56, 189, 248, 0.25);
+  color: #38bdf8;
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-bottom: 20px;
+}
+
+.portal-hero-content h2 {
+  font-size: 38px;
+  font-weight: 800;
+  line-height: 1.18;
+  letter-spacing: -0.03em;
+  color: #f0f6fc;
+  margin: 0 0 18px;
+}
+
+.portal-hero-content p {
+  font-size: 15px;
+  line-height: 1.6;
+  color: #94a3b8;
+  margin: 0 0 28px;
+}
+
+.portal-industries-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 32px;
+}
+
+.industry-chip {
+  padding: 6px 12px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  font-size: 12px;
+  color: #cbd5e1;
+  font-weight: 500;
+}
+
+.portal-features-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.portal-feature-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 13.5px;
+  color: #cbd5e1;
+}
+
+.portal-feature-bullet {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #38bdf8;
+  margin-top: 7px;
+  flex-shrink: 0;
+  box-shadow: 0 0 8px #38bdf8;
+}
+
+.portal-channels-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  z-index: 2;
+  flex-wrap: wrap;
+  padding-top: 24px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.portal-auth {
+  flex: 1;
+  max-width: 540px;
+  background: #0b0f14;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 48px;
+  position: relative;
+}
+
+.portal-auth-tabs {
+  display: flex;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.04);
+  padding: 4px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  margin-bottom: 24px;
+}
+
+.portal-tab-btn {
+  flex: 1;
+  padding: 10px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  color: #94a3b8;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: center;
+}
+
+.portal-tab-btn.active {
+  background: rgba(255, 255, 255, 0.09);
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+.chip-btn {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--ink2);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.chip-btn:hover, .chip-btn.selected {
+  background: rgba(56, 189, 248, 0.15);
+  border-color: rgba(56, 189, 248, 0.5);
+  color: #38bdf8;
+}
+
+/* Orders Status Pills */
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 9px;
+  border-radius: 9999px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.status-pill.pending {
+  background: rgba(245, 158, 11, 0.15);
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  color: #fbbf24;
+}
+.status-pill.confirmed {
+  background: rgba(16, 185, 129, 0.15);
+  border: 1px solid rgba(16, 185, 129, 0.4);
+  color: #34d399;
+}
+.status-pill.rejected {
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  color: #f87171;
+}
+
+/* ───────────────────────── Responsive Media Queries ───────────────────────── */
+/* Mobile Devices (<= 640px) */
+@media (max-width: 640px) {
+  .portal-container {
+    flex-direction: column;
+  }
+  .portal-showcase {
+    display: none;
+  }
+  .portal-auth {
+    max-width: 100%;
+    padding: 24px 18px;
+    min-height: 100vh;
+  }
+  header {
+    padding: 10px 14px;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .wrap {
+    flex-direction: column;
+  }
+  nav#nav {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    overflow-x: auto;
+    padding: 8px 12px;
+    gap: 6px;
+    white-space: nowrap;
+    border-right: none;
+    border-bottom: 1px solid var(--line);
+  }
+  nav#nav .navlabel {
+    display: none;
+  }
+  nav#nav button {
+    padding: 8px 12px;
+    font-size: 12px;
+  }
+  main {
+    padding: 16px 12px;
+  }
+  .grid2, .grid3, .grid4, .grid.g2, .grid.g4, .hero-bento {
+    grid-template-columns: 1fr !important;
+  }
+  .table-wrap {
+    overflow-x: auto;
+  }
+}
+
+/* Tablet Devices (641px - 1024px) */
+@media (min-width: 641px) and (max-width: 1024px) {
+  .portal-container {
+    flex-direction: column;
+  }
+  .portal-showcase {
+    padding: 36px 32px;
+    min-height: 280px;
+  }
+  .portal-auth {
+    max-width: 100%;
+    padding: 36px 32px;
+  }
+  nav#nav {
+    width: 210px;
+  }
+  .grid.g4 {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+/* Laptop & Desktop (1025px - 1920px) */
+@media (min-width: 1025px) and (max-width: 1920px) {
+  .portal-showcase {
+    padding: 56px 48px;
+  }
+  .portal-auth {
+    max-width: 520px;
+    padding: 48px;
+  }
+}
+
+/* Large TV & 4K Displays (>= 1921px) */
+@media (min-width: 1921px) {
+  body {
+    font-size: 16px;
+  }
+  .portal-auth {
+    max-width: 680px;
+    padding: 72px 64px;
+  }
+  .portal-showcase {
+    padding: 72px 64px;
+  }
+  .portal-hero-content h2 {
+    font-size: 48px;
+  }
+  .wrap {
+    max-width: 2400px;
+    margin: 0 auto;
+  }
+  nav#nav {
+    width: 300px;
+  }
+  nav#nav button {
+    font-size: 15px;
+    padding: 14px 20px;
+  }
+  .btn-dark-glass {
+    font-size: 15px;
+    padding: 12px 28px;
+  }
+}
 </style>
 </head>
 <body>
 
-<!-- Login Modal -->
+<!-- Split-Screen Login & Registration Portal -->
 <div id="login">
-  <form class="box" id="loginForm">
-    <div class="logo-badge">CC</div>
-    <h1>ccadminchatbot</h1>
-    <div class="s">Operations Hub</div>
-    <label class="f">Email Address (Optional)</label>
-    <input type="text" id="lEmail" autocomplete="username" placeholder="Optional (leave empty for password-only)">
-    <label class="f">Password</label>
-    <input type="password" id="lPass" autocomplete="current-password" placeholder="Enter password" required autofocus>
-    <div id="loginErr"></div>
-    <button class="btn primary" style="width:100%; justify-content:center; margin-top:8px">Access ccadminchatbot</button>
-  </form>
+  <div class="portal-container">
+    <!-- Left Hero Showcase -->
+    <div class="portal-showcase">
+      <div class="portal-brand-row">
+        <div class="portal-brand-badge">CC</div>
+        <div>
+          <strong style="color:#ffffff; font-size:16px; letter-spacing:0.01em">ccadminchatbot</strong>
+          <div style="color:#94a3b8; font-size:12px">AI Operations Platform</div>
+        </div>
+      </div>
+
+      <div class="portal-hero-content">
+        <div class="portal-hero-tag">Universal Multi-Channel Intelligence</div>
+        <h2>Automated messaging, inquiries, and orders for every industry.</h2>
+        <p>Built for clinics, retail shops, salons, professional agencies, cafes, and e-commerce. AI resolves customer questions 24/7 across your social channels while forwarding orders for human confirmation.</p>
+        
+        <div class="portal-industries-grid">
+          <span class="industry-chip">Retail &amp; E-commerce</span>
+          <span class="industry-chip">Healthcare &amp; Dental</span>
+          <span class="industry-chip">Beauty Salons &amp; Spa</span>
+          <span class="industry-chip">Digital &amp; IT Agencies</span>
+          <span class="industry-chip">Consulting &amp; Law</span>
+          <span class="industry-chip">Restaurants &amp; Cafes</span>
+          <span class="industry-chip">Real Estate</span>
+        </div>
+
+        <div class="portal-features-list">
+          <div class="portal-feature-item">
+            <span class="portal-feature-bullet"></span>
+            <span><strong>Zero-Risk Order Intake:</strong> AI extracts items and customer details, confirms receipt, and holds orders in a review bucket for your staff.</span>
+          </div>
+          <div class="portal-feature-item">
+            <span class="portal-feature-bullet"></span>
+            <span><strong>Instant AI FAQ Setup:</strong> Enter your business type and services; our AI assumes and writes your verified knowledge base in seconds.</span>
+          </div>
+          <div class="portal-feature-item">
+            <span class="portal-feature-bullet"></span>
+            <span><strong>Multi-Device Control:</strong> Full responsiveness across mobile phones, tablets, laptops, and executive TV displays.</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="portal-channels-row">
+        <span style="font-size:12px; color:#64748b; font-weight:600">CONNECTED CHANNELS:</span>
+        <span class="pill" style="background:rgba(24,119,242,0.15); border-color:rgba(24,119,242,0.4); color:#60a5fa">Facebook Messenger</span>
+        <span class="pill" style="background:rgba(225,48,108,0.15); border-color:rgba(225,48,108,0.4); color:#f472b6">Instagram DM</span>
+        <span class="pill" style="background:rgba(37,211,102,0.15); border-color:rgba(37,211,102,0.4); color:#4ade80">WhatsApp Cloud</span>
+        <span class="pill" style="background:rgba(255,255,255,0.08); border-color:rgba(255,255,255,0.2); color:#f8fafc">TikTok Chat</span>
+      </div>
+    </div>
+
+    <!-- Right Authentication Card -->
+    <div class="portal-auth">
+      <!-- Portal Switcher Tabs -->
+      <div class="portal-auth-tabs">
+        <button type="button" class="portal-tab-btn active" id="tabBtnSignIn" onclick="switchPortalTab('signin')">Sign In</button>
+        <button type="button" class="portal-tab-btn" id="tabBtnRegister" onclick="switchPortalTab('register')">Register Business</button>
+      </div>
+
+      <!-- Sign In Form -->
+      <form id="loginForm" class="portal-form-block">
+        <div style="margin-bottom:20px">
+          <h2 style="margin:0 0 6px; font-size:24px; color:#f8fafc">Access Operations Hub</h2>
+          <p style="margin:0; font-size:13px; color:#94a3b8">Enter your master admin or business tenant password to open your workspace.</p>
+        </div>
+
+        <label class="f" style="color:#cbd5e1">Email Address (Optional)</label>
+        <input type="text" id="lEmail" autocomplete="username" placeholder="Optional (leave empty for password-only login)" style="margin-bottom:14px; background:#121820; border-color:rgba(255,255,255,0.14); color:#f8fafc">
+
+        <label class="f" style="color:#cbd5e1">Password</label>
+        <input type="password" id="lPass" autocomplete="current-password" placeholder="Enter your access password" required autofocus style="margin-bottom:8px; background:#121820; border-color:rgba(255,255,255,0.14); color:#f8fafc">
+        
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px">
+          <span style="font-size:11.5px; color:#64748b">Password-only login supported</span>
+        </div>
+
+        <div id="loginErr" style="color:#f87171; font-size:12.5px; margin-bottom:12px; min-height:16px"></div>
+
+        <button type="submit" class="btn-dark-glass primary" style="width:100%; padding:12px 24px">
+          Access Operations Hub
+        </button>
+      </form>
+
+      <!-- Register Business Form -->
+      <form id="signupForm" class="portal-form-block" style="display:none">
+        <div style="margin-bottom:18px">
+          <h2 style="margin:0 0 6px; font-size:24px; color:#f8fafc">Register New Business</h2>
+          <p style="margin:0; font-size:13px; color:#94a3b8">Launch your AI chatbot across Facebook, Instagram, WhatsApp, and TikTok with a 14-day free trial.</p>
+        </div>
+
+        <label class="f" style="color:#cbd5e1">Business / Brand Name</label>
+        <input type="text" id="suName" placeholder="e.g. Uttara Dental Care" required style="margin-bottom:12px; background:#121820; border-color:rgba(255,255,255,0.14); color:#f8fafc">
+
+        <label class="f" style="color:#cbd5e1">Business Type / Industry</label>
+        <div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:8px">
+          <button type="button" class="btn sm chip-btn" onclick="quickSelectSignupType('Dental & Healthcare Clinic')">Clinic</button>
+          <button type="button" class="btn sm chip-btn" onclick="quickSelectSignupType('Retail & Fashion Boutique')">Retail</button>
+          <button type="button" class="btn sm chip-btn" onclick="quickSelectSignupType('Beauty & Hair Salon')">Salon</button>
+          <button type="button" class="btn sm chip-btn" onclick="quickSelectSignupType('Digital & IT Agency')">Agency</button>
+          <button type="button" class="btn sm chip-btn" onclick="quickSelectSignupType('Specialty Cafe & Restaurant')">Restaurant</button>
+        </div>
+        <input type="text" id="suType" placeholder="e.g. Dental Clinic, Clothing Boutique, IT Agency..." required oninput="handleSignupTypeTyped(this.value)" style="margin-bottom:12px; background:#121820; border-color:rgba(255,255,255,0.14); color:#f8fafc">
+
+        <div id="suServicesBox" style="display:block">
+          <label class="f" style="color:#cbd5e1">What services or products do you provide?</label>
+          <textarea id="suServices" rows="2" placeholder="e.g. Teeth whitening, braces, dental cleaning, root canal treatments..." style="margin-bottom:12px; background:#121820; border-color:rgba(255,255,255,0.14); color:#f8fafc"></textarea>
+        </div>
+
+        <label class="f" style="color:#cbd5e1">Contact Email (Optional)</label>
+        <input type="email" id="suEmail" placeholder="manager@yourbusiness.com" style="margin-bottom:12px; background:#121820; border-color:rgba(255,255,255,0.14); color:#f8fafc">
+
+        <label class="f" style="color:#cbd5e1">Create Unique Password</label>
+        <input type="password" id="suPass" placeholder="Choose unique password (min 4 chars)" required style="margin-bottom:16px; background:#121820; border-color:rgba(255,255,255,0.14); color:#f8fafc">
+
+        <div id="signupErr" style="color:#f87171; font-size:12.5px; margin-bottom:12px; min-height:16px"></div>
+
+        <button type="submit" class="btn-dark-glass primary" style="width:100%; padding:12px 24px">
+          Create Business &amp; Train AI
+        </button>
+      </form>
+    </div>
+  </div>
 </div>
 
 <!-- Global App Container -->
@@ -1257,6 +1820,11 @@ table.clean-table tr:hover td {
       <svg viewBox="0 0 24 24"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
       Executive Desk
     </button>
+    <button data-p="orders" id="navOrdersBtn">
+      <svg viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+      Orders &amp; Inquiries
+      <span class="badge" id="pendingOrdersBadge" style="display:none; margin-left:auto; background:var(--accent); color:#000; font-size:10px; font-weight:800; padding:2px 6px; border-radius:10px">0</span>
+    </button>
     <button data-p="inbox">
       <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
       Customer Inbox
@@ -1266,14 +1834,14 @@ table.clean-table tr:hover td {
       Multi-Channels
     </button>
     
-    <div class="navlabel">Knowledge Base</div>
+    <div class="navlabel">Knowledge &amp; Catalog</div>
     <button data-p="cafe">
       <svg viewBox="0 0 24 24"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
-      Business Info
+      Business Profile
     </button>
     <button data-p="menu">
       <svg viewBox="0 0 24 24"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" x2="6" y1="1" y2="4"/><line x1="10" x2="10" y1="1" y2="4"/><line x1="14" x2="14" y1="1" y2="4"/></svg>
-      Menu &amp; Catalog
+      Services &amp; Catalog
     </button>
     <button data-p="faq">
       <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" x2="12.01" y1="17" y2="17"/></svg>
@@ -1504,6 +2072,78 @@ table.clean-table tr:hover td {
           </select>
           <label class="f">Provider Safety Fallback</label>
           <input type="text" data-b="runtime.fallbackText" placeholder="Thanks for your message! Our team will reply shortly.">
+        </div>
+      </div>
+    </section>
+
+    <!-- ORDERS & INQUIRIES PANEL -->
+    <section class="panel" data-p="orders">
+      <div class="phead">
+        <div>
+          <h2>Orders &amp; Inquiries Bucket</h2>
+          <p>Incoming customer orders, service requests, and bookings captured across social messaging channels. AI records requests and collects customer details; human staff reviews and confirms.</p>
+        </div>
+        <div class="row" style="gap:8px">
+          <button class="btn sm" onclick="loadOrders()">Refresh Orders</button>
+          <button class="btn sm primary" onclick="simulateTestOrder()">Simulate Sample Order</button>
+        </div>
+      </div>
+
+      <!-- Orders KPI Summary -->
+      <div class="grid g4" style="margin-bottom:20px">
+        <div class="stat-card">
+          <div class="v" id="ordKpiTotal">0</div>
+          <div class="k">Total Orders</div>
+          <div class="subtext">All channels combined</div>
+        </div>
+        <div class="stat-card">
+          <div class="v" id="ordKpiPending" style="color:var(--warn)">0</div>
+          <div class="k">Pending Review</div>
+          <div class="subtext">Awaiting your confirmation</div>
+        </div>
+        <div class="stat-card">
+          <div class="v" id="ordKpiConfirmed" style="color:var(--good)">0</div>
+          <div class="k">Confirmed</div>
+          <div class="subtext">Approved and processed</div>
+        </div>
+        <div class="stat-card">
+          <div class="v" id="ordKpiRejected" style="color:var(--danger)">0</div>
+          <div class="k">Rejected / Voided</div>
+          <div class="subtext">Declined requests</div>
+        </div>
+      </div>
+
+      <!-- Orders Table & Filter -->
+      <div class="card" style="padding:0; overflow:hidden">
+        <div style="padding:14px 18px; border-bottom:1px solid var(--line); display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px">
+          <div style="display:flex; align-items:center; gap:8px">
+            <h3 style="margin:0">Incoming Inquiries Bucket</h3>
+            <span class="pill" id="ordersFilterBadge">All</span>
+          </div>
+          <div style="display:flex; gap:6px">
+            <button class="btn sm filter-btn active" data-filter="all" onclick="filterOrders('all', this)">All</button>
+            <button class="btn sm filter-btn" data-filter="pending" onclick="filterOrders('pending', this)">Pending</button>
+            <button class="btn sm filter-btn" data-filter="confirmed" onclick="filterOrders('confirmed', this)">Confirmed</button>
+            <button class="btn sm filter-btn" data-filter="rejected" onclick="filterOrders('rejected', this)">Rejected</button>
+          </div>
+        </div>
+        <div class="table-wrap" style="border:none; border-radius:0">
+          <table class="clean-table">
+            <thead>
+              <tr>
+                <th>Date / Time</th>
+                <th>Channel</th>
+                <th>Customer Name</th>
+                <th>Phone / Contact</th>
+                <th>Items &amp; Service Details</th>
+                <th>Status</th>
+                <th style="text-align:right">Action</th>
+              </tr>
+            </thead>
+            <tbody id="ordersTbody">
+              <tr><td colspan="7" style="text-align:center; padding:24px; color:var(--ink3)">Loading orders…</td></tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </section>
@@ -1801,9 +2441,10 @@ table.clean-table tr:hover td {
         <div>
           <h2>Verified FAQs (11 Core Answers)</h2>
           <p>Standardized answers for location, parking, Wi-Fi, Halal food, smoking zone, and private events.</p>
+        <div style="display:flex; gap:8px">
+          <button class="btn sm" onclick="openOnboardingModal({ businessName: S?.business?.name || S?.cafe?.name || '', businessType: S?.business?.type || '', services: (S?.business?.services || []).join(', ') })">AI FAQ Wizard</button>
+          <button class="btn primary sm" id="addFaq">+ Add FAQ</button>
         </div>
-        <button class="btn primary sm" id="addFaq">+ Add FAQ</button>
-      </div>
       <div class="card"><div id="faqList"></div></div>
     </section>
 
@@ -2183,6 +2824,72 @@ table.clean-table tr:hover td {
   </div>
 </div>
 
+<!-- Tenant: Onboarding & AI FAQ Generator Modal -->
+<div id="onboardingModal" class="modal-backdrop">
+  <div class="modal-card" style="max-width:680px">
+    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px">
+      <h2 style="margin:0; font-size:20px">Train Your AI Chatbot</h2>
+      <button class="btn sm ghost" onclick="closeOnboardingModal()">Skip</button>
+    </div>
+    <p style="margin:0 0 16px; font-size:13px; color:var(--ink2)">
+      Specify your business type and services. The AI will instantly generate realistic FAQs to train your chatbot.
+    </p>
+
+    <!-- Industry Suggestions -->
+    <label class="f">Industry / Business Type</label>
+    <div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:10px">
+      <button type="button" class="btn sm chip-btn" onclick="selectBusinessType('Retail &amp; E-commerce Store')">Retail Store</button>
+      <button type="button" class="btn sm chip-btn" onclick="selectBusinessType('Healthcare &amp; Dental Clinic')">Clinic / Healthcare</button>
+      <button type="button" class="btn sm chip-btn" onclick="selectBusinessType('Beauty Salon &amp; Spa')">Beauty Salon</button>
+      <button type="button" class="btn sm chip-btn" onclick="selectBusinessType('Digital Agency &amp; Software')">Agency / IT</button>
+      <button type="button" class="btn sm chip-btn" onclick="selectBusinessType('Specialty Cafe &amp; Restaurant')">Restaurant / Cafe</button>
+      <button type="button" class="btn sm chip-btn" onclick="selectBusinessType('Real Estate Agency')">Real Estate</button>
+      <button type="button" class="btn sm chip-btn" onclick="selectBusinessType('Fitness Gym &amp; Studio')">Fitness Gym</button>
+      <button type="button" class="btn sm chip-btn" onclick="selectBusinessType('Consulting &amp; Law Firm')">Consulting / Law</button>
+    </div>
+    <input type="text" id="obBusinessType" placeholder="e.g. Dental Clinic, Clothing Boutique, IT Agency..." style="margin-bottom:14px" oninput="handleBusinessTypeInput(this.value)">
+
+    <div id="obServicesBlock">
+      <label class="f">What specific services or products do you provide?</label>
+      <textarea id="obServices" rows="3" placeholder="e.g. Teeth whitening, root canals, braces, emergency dental care, dental cleaning..." style="margin-bottom:14px"></textarea>
+    </div>
+
+    <div class="grid g2" style="margin-bottom:14px">
+      <div>
+        <label class="f">Target Location / Address</label>
+        <input type="text" id="obLocation" placeholder="e.g. Sector 13, Uttara, Dhaka">
+      </div>
+      <div>
+        <label class="f">Operating Hours</label>
+        <div style="display:flex; gap:6px">
+          <input type="time" id="obOpen" value="10:00" style="flex:1">
+          <input type="time" id="obClose" value="20:00" style="flex:1">
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-bottom:18px; text-align:center">
+      <button type="button" class="btn-dark-glass primary" id="btnGenerateFaqs" onclick="triggerAiFaqGeneration()" style="width:100%; padding:12px 24px">
+        Auto-Generate FAQs with AI
+      </button>
+      <div id="obFaqLoading" style="display:none; font-size:12.5px; color:var(--accent); margin-top:8px">
+        Consulting AI engine to generate verified business knowledge...
+      </div>
+    </div>
+
+    <!-- Generated FAQs Container -->
+    <div id="obFaqsContainer" style="display:none; margin-bottom:18px">
+      <label class="f">AI Generated FAQs (Review &amp; Edit Before Saving)</label>
+      <div id="obFaqsList" style="max-height:260px; overflow-y:auto; display:flex; flex-direction:column; gap:8px"></div>
+    </div>
+
+    <div style="display:flex; gap:10px; justify-content:flex-end">
+      <button class="btn sm ghost" onclick="closeOnboardingModal()">Dismiss</button>
+      <button class="btn sm primary" id="btnSaveOnboarding" onclick="saveOnboardingData()">Save &amp; Train Chatbot</button>
+    </div>
+  </div>
+</div>
+
 <script>
 const API = location.pathname.replace(/\/+$/,'') || '/chatbotadmin';
 const api = (p, opts={}) => fetch(API + p, {credentials:'same-origin', headers:{'Content-Type':'application/json'}, ...opts});
@@ -2261,11 +2968,48 @@ async function checkAuth(){
 
       switchTab('dash');
       await load(currentWorkspaceId);
+      await loadOrders();
     }
   } else {
-    document.getElementById('login').style.display='grid';
+    document.getElementById('login').style.display='flex';
     document.getElementById('app').style.display='none';
   }
+}
+
+function copyToClipboard(text){
+  if(!text) return;
+  navigator.clipboard.writeText(text).then(()=>{
+    showSaveChip('Copied to clipboard');
+  }).catch(()=>{
+    prompt('Copy value:', text);
+  });
+}
+
+function switchPortalTab(tab){
+  const btnIn = document.getElementById('tabBtnSignIn');
+  const btnReg = document.getElementById('tabBtnRegister');
+  const fIn = document.getElementById('loginForm');
+  const fReg = document.getElementById('signupForm');
+  if(tab === 'signin'){
+    btnIn.classList.add('active');
+    btnReg.classList.remove('active');
+    fIn.style.display = 'block';
+    fReg.style.display = 'none';
+  } else {
+    btnReg.classList.add('active');
+    btnIn.classList.remove('active');
+    fIn.style.display = 'none';
+    fReg.style.display = 'block';
+  }
+}
+
+function quickSelectSignupType(type){
+  document.getElementById('suType').value = type;
+  document.getElementById('suServices').focus();
+}
+
+function handleSignupTypeTyped(val){
+  // dynamic assistance if needed
 }
 
 document.getElementById('loginForm').onsubmit = async e => {
@@ -2273,15 +3017,299 @@ document.getElementById('loginForm').onsubmit = async e => {
   const err = document.getElementById('loginErr'); err.textContent='';
   const email = document.getElementById('lEmail').value;
   const password = document.getElementById('lPass').value;
-  const res = await api('/api/login', {method:'POST', body:JSON.stringify({email, password})});
-  if(res.ok) checkAuth();
-  else err.textContent = (await res.json()).error || 'Sign in failed.';
+  const btn = e.target.querySelector('button[type="submit"]');
+  const oldText = btn.textContent;
+  btn.textContent = 'Verifying...';
+  btn.disabled = true;
+
+  try {
+    const res = await api('/api/login', {method:'POST', body:JSON.stringify({email, password})});
+    const data = await res.json();
+    if(res.ok) {
+      await checkAuth();
+    } else {
+      err.textContent = data.error || 'Sign in failed.';
+    }
+  } catch(e) {
+    err.textContent = 'Network or server error.';
+  } finally {
+    btn.textContent = oldText;
+    btn.disabled = false;
+  }
+};
+
+document.getElementById('signupForm').onsubmit = async e => {
+  e.preventDefault();
+  const err = document.getElementById('signupErr'); err.textContent='';
+  const businessName = document.getElementById('suName').value.trim();
+  const businessType = document.getElementById('suType').value.trim();
+  const services = document.getElementById('suServices').value.trim();
+  const contactEmail = document.getElementById('suEmail').value.trim();
+  const password = document.getElementById('suPass').value.trim();
+  const btn = e.target.querySelector('button[type="submit"]');
+  const oldText = btn.textContent;
+  btn.textContent = 'Registering & Initializing...';
+  btn.disabled = true;
+
+  try {
+    const res = await api('/api/signup', {
+      method:'POST',
+      body: JSON.stringify({ businessName, businessType, services, contactEmail, password })
+    });
+    const data = await res.json();
+    if(res.ok){
+      await checkAuth();
+      openOnboardingModal({ businessName, businessType, services });
+    } else {
+      err.textContent = data.error || 'Registration failed.';
+    }
+  } catch(e) {
+    err.textContent = 'Registration error.';
+  } finally {
+    btn.textContent = oldText;
+    btn.disabled = false;
+  }
 };
 
 document.getElementById('logoutBtn').onclick = async () => {
   await api('/api/logout', {method:'POST'});
   location.reload();
 };
+
+/* ---------- ONBOARDING & AI FAQ WIZARD ---------- */
+let generatedFaqsList = [];
+
+function openOnboardingModal(initial = {}){
+  const modal = document.getElementById('onboardingModal');
+  if(!modal) return;
+  if(initial.businessType) document.getElementById('obBusinessType').value = initial.businessType;
+  if(initial.services) document.getElementById('obServices').value = initial.services;
+  if(S?.cafe?.area) document.getElementById('obLocation').value = S.cafe.area;
+  modal.classList.add('open');
+  if(initial.businessType && initial.services){
+    triggerAiFaqGeneration();
+  }
+}
+
+function closeOnboardingModal(){
+  const modal = document.getElementById('onboardingModal');
+  if(modal) modal.classList.remove('open');
+}
+
+function selectBusinessType(type){
+  document.getElementById('obBusinessType').value = type;
+  document.querySelectorAll('.chip-btn').forEach(b => {
+    b.classList.toggle('selected', b.textContent.trim() === type);
+  });
+  document.getElementById('obServices').focus();
+}
+
+function handleBusinessTypeInput(val){
+  // dynamic prompt handler
+}
+
+async function triggerAiFaqGeneration(){
+  const businessType = document.getElementById('obBusinessType').value.trim() || S?.business?.type || S?.cafe?.type || 'General Business';
+  const services = document.getElementById('obServices').value.trim() || S?.business?.services || S?.cafe?.services || '';
+  const businessName = S?.business?.name || S?.cafe?.name || document.getElementById('brandTitleTxt').textContent;
+  const location = document.getElementById('obLocation').value.trim() || S?.cafe?.area || 'Dhaka, Bangladesh';
+
+  const btn = document.getElementById('btnGenerateFaqs');
+  const loading = document.getElementById('obFaqLoading');
+  const container = document.getElementById('obFaqsContainer');
+
+  btn.disabled = true;
+  loading.style.display = 'block';
+
+  try {
+    const res = await api('/api/ai/suggest-faqs', {
+      method: 'POST',
+      body: JSON.stringify({ businessType, businessName, services, location })
+    });
+    const data = await res.json();
+    if(res.ok && Array.isArray(data.faqs) && data.faqs.length){
+      generatedFaqsList = data.faqs;
+      renderGeneratedFaqs(data.faqs);
+      container.style.display = 'block';
+      showSaveChip('AI FAQs generated successfully');
+    } else {
+      alert('Could not generate FAQs. Please refine your business services description.');
+    }
+  } catch(e) {
+    alert('AI connection error: ' + e.message);
+  } finally {
+    btn.disabled = false;
+    loading.style.display = 'none';
+  }
+}
+
+function renderGeneratedFaqs(faqs){
+  const list = document.getElementById('obFaqsList');
+  if(!list) return;
+  list.innerHTML = faqs.map((f, i) => `
+    <div style="background:var(--surface2); border:1px solid var(--line); border-radius:var(--radius-sm); padding:10px 12px; display:flex; flex-direction:column; gap:6px">
+      <input type="text" class="faq-q-in" value="${esc(f.q)}" placeholder="Question" style="font-weight:600; font-size:12.5px; border-color:var(--line)">
+      <textarea class="faq-a-in" rows="2" placeholder="Answer" style="font-size:12px; border-color:var(--line)">${esc(f.a)}</textarea>
+    </div>
+  `).join('');
+}
+
+async function saveOnboardingData(){
+  const businessType = document.getElementById('obBusinessType').value.trim();
+  const services = document.getElementById('obServices').value.trim();
+  const address = document.getElementById('obLocation').value.trim();
+  const open = document.getElementById('obOpen').value.trim();
+  const close = document.getElementById('obClose').value.trim();
+
+  const qInputs = document.querySelectorAll('#obFaqsList .faq-q-in');
+  const aInputs = document.querySelectorAll('#obFaqsList .faq-a-in');
+  const faqs = [];
+  for(let i=0; i<qInputs.length; i++){
+    const q = qInputs[i].value.trim();
+    const a = aInputs[i].value.trim();
+    if(q && a) faqs.push({ q, a });
+  }
+
+  const btn = document.getElementById('btnSaveOnboarding');
+  btn.disabled = true;
+
+  try {
+    const res = await api('/api/tenant/onboarding', {
+      method: 'POST',
+      body: JSON.stringify({ businessType, services, address, open, close, faqs })
+    });
+    if(res.ok){
+      showSaveChip('Chatbot trained with new business knowledge');
+      closeOnboardingModal();
+      await load(currentWorkspaceId);
+    } else {
+      const err = await res.json();
+      alert(err.error || 'Failed to save onboarding configuration.');
+    }
+  } catch(e) {
+    alert('Failed to save: ' + e.message);
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+/* ---------- ORDERS BUCKET CONTROLLER ---------- */
+let allOrdersList = [];
+let currentOrderFilter = 'all';
+
+async function loadOrders(status = null){
+  if(status) currentOrderFilter = status;
+  const res = await api(`/api/orders?status=${currentOrderFilter}`).then(r=>r.json()).catch(()=>({orders:[], stats:{}}));
+  allOrdersList = res.orders || [];
+  const stats = res.stats || {};
+
+  const elTot = document.getElementById('ordKpiTotal');
+  const elPend = document.getElementById('ordKpiPending');
+  const elConf = document.getElementById('ordKpiConfirmed');
+  const elRej = document.getElementById('ordKpiRejected');
+  const badge = document.getElementById('pendingOrdersBadge');
+
+  if(elTot) elTot.textContent = stats.total || 0;
+  if(elPend) elPend.textContent = stats.pending || 0;
+  if(elConf) elConf.textContent = stats.confirmed || 0;
+  if(elRej) elRej.textContent = stats.rejected || 0;
+
+  if(badge){
+    const pendingCount = stats.pending || 0;
+    badge.textContent = pendingCount;
+    badge.style.display = pendingCount > 0 ? 'inline-block' : 'none';
+  }
+
+  renderOrdersTable(allOrdersList);
+}
+
+function filterOrders(status, btn){
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  document.getElementById('ordersFilterBadge').textContent = status.toUpperCase();
+  loadOrders(status);
+}
+
+function renderOrdersTable(orders){
+  const tbody = document.getElementById('ordersTbody');
+  if(!tbody) return;
+
+  if(!orders.length){
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:32px; color:var(--ink3)">No orders found in this view.</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = orders.map(o => {
+    let statusClass = 'pending';
+    if(o.status === 'confirmed') statusClass = 'confirmed';
+    if(o.status === 'rejected') statusClass = 'rejected';
+
+    const platformBadge = `<span class="pill" style="font-size:10.5px; padding:2px 7px; text-transform:uppercase">${esc(o.platform || 'web')}</span>`;
+
+    return `
+      <tr>
+        <td style="white-space:nowrap; font-size:12px; color:var(--ink2)">
+          ${new Date(o.created_at).toLocaleString([], {month:'short', day:'numeric', hour:'2-digit', minute:'2-digit'})}
+        </td>
+        <td>${platformBadge}</td>
+        <td>
+          <strong>${esc(o.customer_name || 'Customer')}</strong>
+        </td>
+        <td>
+          <span class="mono" style="font-size:12px">${esc(o.customer_phone || 'Not provided')}</span>
+          ${o.customer_address ? `<div style="font-size:11px; color:var(--ink3)">${esc(o.customer_address)}</div>` : ''}
+        </td>
+        <td style="max-width:320px">
+          <div style="font-size:13px; line-height:1.4; color:var(--ink)">${esc(o.details)}</div>
+          ${o.estimated_total ? `<div style="font-size:11px; font-weight:700; color:var(--accent); margin-top:2px">${esc(o.estimated_total)}</div>` : ''}
+        </td>
+        <td>
+          <span class="status-pill ${statusClass}">${esc(o.status)}</span>
+        </td>
+        <td style="text-align:right">
+          <div style="display:inline-flex; gap:6px; justify-content:flex-end">
+            ${o.status === 'pending' ? `
+              <button class="btn sm primary" onclick="confirmOrder(${o.id})">Confirm</button>
+              <button class="btn sm ghost" style="color:var(--danger)" onclick="rejectOrder(${o.id})">Reject</button>
+            ` : `
+              <span style="font-size:11.5px; color:var(--ink3)">${o.confirmed_at ? new Date(o.confirmed_at).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) : 'Processed'}</span>
+            `}
+          </div>
+        </td>
+      </tr>
+    `;
+  }).join('');
+}
+
+async function confirmOrder(id){
+  const res = await api(`/api/orders/${id}/confirm`, {method:'POST'});
+  if(res.ok){
+    showSaveChip('Order confirmed');
+    await loadOrders();
+  } else {
+    alert('Could not confirm order.');
+  }
+}
+
+async function rejectOrder(id){
+  const res = await api(`/api/orders/${id}/reject`, {method:'POST'});
+  if(res.ok){
+    showSaveChip('Order rejected');
+    await loadOrders();
+  } else {
+    alert('Could not reject order.');
+  }
+}
+
+async function simulateTestOrder(){
+  const sample = "Hi, I would like to order 2 Traditional Breakfast platters and 1 Cappuccino. My name is Tanvir Ahmed, phone 01711223344, deliver to House 12, Road 4, Sector 3, Uttara.";
+  await api('/api/test', {
+    method: 'POST',
+    body: JSON.stringify({ text: sample, history: [] })
+  });
+  showSaveChip('Sample order received & processed by AI');
+  await loadOrders();
+}
 
 /* ---------- MASTER TENANTS & SUBSCRIPTION HUB ---------- */
 async function loadMasterTenants(){
@@ -2337,8 +3365,13 @@ function renderMasterTenantsTable(tenantsList){
           </div>
         </td>
         <td>
-          <div style="display:flex; align-items:center; gap:6px">
+          <div style="display:flex; flex-direction:column; gap:4px">
             <span class="mono" style="font-size:12px">${esc(user.email || 'N/A')}</span>
+            <div style="display:inline-flex; align-items:center; gap:4px">
+              <span style="font-size:10px; color:var(--ink3); font-weight:700">PASS:</span>
+              <span class="mono" style="font-size:11px; background:var(--bg); border:1px solid var(--line); padding:1px 6px; border-radius:4px; color:var(--accent)">${esc(user.password_display || (isPrimary ? '1590' : '---'))}</span>
+              <button class="btn sm ghost" style="padding:1px 5px; font-size:10px" onclick="copyToClipboard('${esc(user.password_display || (isPrimary ? '1590' : ''))}')" title="Copy Password">Copy</button>
+            </div>
           </div>
         </td>
         <td>${statusPill}</td>
@@ -2347,8 +3380,8 @@ function renderMasterTenantsTable(tenantsList){
           <div style="font-size:11px; color:var(--ink3)">/ month</div>
         </td>
         <td>
-          <strong>${t.stats?.conversations || 0}</strong>
-          <span style="font-size:11px; color:var(--ink3)">convs</span>
+          <div><strong>${t.stats?.conversations || 0}</strong> <span style="font-size:11px; color:var(--ink3)">convs</span></div>
+          <div style="font-size:11px; color:var(--warn)"><strong>${t.orderStats?.pending || 0}</strong> pending orders</div>
         </td>
         <td style="text-align:right">
           <div style="display:inline-flex; gap:6px; flex-wrap:wrap; justify-content:flex-end">
@@ -2687,18 +3720,19 @@ async function load(wsId = null){
   S = d.config;
 
   if(currentUser?.role !== 'master_admin'){
-    const cafeName = S?.cafe?.name || 'Crown Coffee';
-    const badge = cafeName.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase() || 'CC';
+    const bizName = S?.business?.name || S?.cafe?.name || 'Crown Coffee';
+    const badge = bizName.split(' ').filter(Boolean).map(w=>w[0]).join('').slice(0,2).toUpperCase() || 'CC';
     const logoBadge = document.getElementById('brandLogoBadge');
     const titleTxt = document.getElementById('brandTitleTxt');
     if(logoBadge) logoBadge.textContent = badge;
-    if(titleTxt) titleTxt.textContent = cafeName;
+    if(titleTxt) titleTxt.textContent = bizName;
   }
 
   render();
   paintPrompt(d.prompt);
   paintOpen(d.open);
   paintStats(d.stats);
+  loadOrders();
 }
 
 function chip(t){
@@ -2733,6 +3767,7 @@ function switchTab(tabId){
   document.querySelectorAll('nav button').forEach(x=>x.classList.toggle('active', x.dataset.p===tabId));
   document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('active', p.dataset.p===tabId));
   if(tabId==='tenants') loadMasterTenants();
+  if(tabId==='orders') loadOrders();
   if(tabId==='inbox') loadInbox();
   if(tabId==='setup') loadHealth();
   if(tabId==='channels') updateChannelUrls();

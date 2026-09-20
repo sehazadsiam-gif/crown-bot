@@ -11,90 +11,107 @@ export function dhakaNow() {
 
 export function openState(cfg) {
   const n = dhakaNow();
-  const C = cfg.cafe;
-  if (C.offDay && n.day === C.offDay) return { open: false, n, why: 'closed all day (weekly off)' };
+  const B = cfg.business || cfg.cafe || {};
+  if (B.offDay && n.day === B.offDay) return { open: false, n, why: 'closed all day (weekly off)' };
   const toMin = t => { const [a, b] = (t || '0:0').split(':').map(Number); return a * 60 + b; };
-  const o = toMin(C.open), cl = toMin(C.close), cur = n.hh * 60 + n.mm;
+  const o = toMin(B.open || '09:00'), cl = toMin(B.close || '21:00'), cur = n.hh * 60 + n.mm;
   const open = cl > o ? (cur >= o && cur < cl) : (cur >= o || cur < cl);
-  return { open, n, why: open ? `open until ${C.close}` : `closed, opens ${C.open}` };
+  return { open, n, why: open ? `open until ${B.close || '21:00'}` : `closed, opens ${B.open || '09:00'}` };
 }
 
 export function buildPrompt(cfg) {
-  const st = openState(cfg), C = cfg.cafe, P = cfg.persona, L = [];
+  const st = openState(cfg);
+  const B = cfg.business || cfg.cafe || {};
+  const P = cfg.persona || {};
+  const L = [];
 
-  L.push(`You are the messaging assistant for ${C.name}, a coffee shop in ${C.area}.`);
-  L.push('You are replying to a customer on Facebook Messenger or Instagram DM.');
-  L.push('', '## Tone');
-  L.push(`- ${P.tone}.`);
-  L.push(`- ${P.length}.`);
-  L.push(`- ${P.emoji ? 'Emoji are allowed, sparingly.' : 'Do not use emoji.'}`);
-  if (P.greeting) L.push(`- Open a first reply with: "${P.greeting}"`);
+  const bName = B.name || 'Our Business';
+  const bType = B.type || 'business';
+  const bArea = B.area || '';
+  const bServices = B.services || '';
+
+  L.push(`You are the intelligent messaging assistant for ${bName}, a premier ${bType}${bArea ? ` located in ${bArea}` : ''}.`);
+  if (bServices) {
+    L.push(`Specialties & Services provided: ${bServices}`);
+  }
+  L.push('You are communicating with a customer across social and messaging channels (Facebook Messenger, Instagram DM, WhatsApp, TikTok, or Web Chat).');
+
+  L.push('', '## Tone and Communication Style');
+  L.push(`- Tone: ${P.tone || 'professional, helpful, welcoming, and clear'}.`);
+  L.push(`- Length: ${P.length || '1 to 3 concise sentences, directly answering the customer inquiry'}.`);
+  L.push('- Do NOT use emojis under any circumstance. Keep all messaging strictly clean and professional.');
+  if (P.greeting) L.push(`- Initial greeting: "${P.greeting}"`);
   L.push(P.disclose
-    ? '- If asked, say you are an automated assistant for the cafe.'
-    : '- Reply as the cafe. Do not describe yourself as an AI unless directly asked.');
+    ? `- If asked, state that you are the automated messaging assistant for ${bName}.`
+    : `- Reply naturally as the team at ${bName}. Do not identify yourself as an AI unless explicitly asked.`);
 
-  L.push('', '## Language', P.language);
+  L.push('', '## Language', P.language || 'Respond in Banglish, English, or Bengali matching the customer language.');
 
-  L.push('', '## Right now');
-  L.push(`- It is ${st.n.day}, ${st.n.time} in Dhaka.`);
-  L.push(`- The cafe is currently ${st.open ? 'OPEN' : 'CLOSED'} — ${st.why}.`);
-  if (!st.open) L.push('- Do not invite the customer to come now. Mention when you next open.');
+  L.push('', '## Current Business Availability');
+  L.push(`- Current local time: ${st.n.day}, ${st.n.time} (Dhaka time).`);
+  L.push(`- Operational status: ${st.open ? 'OPEN' : 'CLOSED'} (${st.why}).`);
+  if (!st.open) L.push('- When closed, politely inform the customer when operations next resume.');
 
-  L.push('', '## Cafe details');
-  L.push(`- Address: ${C.address}`);
-  L.push(`- Phone: ${C.phone}`);
-  L.push(`- Hours: ${C.open} to ${C.close} daily${C.offDay ? `, closed ${C.offDay}` : ''}.`);
-  if (C.holidayNote) L.push(`- Note: ${C.holidayNote}`);
-  for (const [k, v] of [['Wifi', C.wifi], ['Parking', C.parking], ['Seating', C.seating],
-                        ['Payment', C.payments], ['Service', C.service], ['Delivery apps', C.apps]]) {
-    if (v) L.push(`- ${k}: ${v}`);
-  }
-  if (C.notes) L.push(`- ${C.notes}`);
+  L.push('', '## Business Profile & Facilities');
+  if (B.address) L.push(`- Address: ${B.address}`);
+  if (B.phone) L.push(`- Contact Phone: ${B.phone}`);
+  L.push(`- Operating Hours: ${B.open || '09:00'} to ${B.close || '21:00'}${B.offDay ? `, Closed on ${B.offDay}` : ''}.`);
+  if (B.holidayNote) L.push(`- Operating Note: ${B.holidayNote}`);
+  if (B.parking) L.push(`- Parking: ${B.parking}`);
+  if (B.wifi) L.push(`- Wi-Fi: ${B.wifi}`);
+  if (B.seating) L.push(`- Seating / Premises: ${B.seating}`);
+  if (B.payments) L.push(`- Accepted Payment Methods: ${B.payments}`);
+  if (B.service) L.push(`- Service Offering: ${B.service}`);
+  if (B.apps) L.push(`- Online Platforms / Delivery: ${B.apps}`);
+  if (B.notes) L.push(`- Additional Notes: ${B.notes}`);
 
-  L.push('', '## Menu');
-  const hasMenu = (cfg.menu || []).some(c => c.items?.length);
-  if (!hasMenu) {
-    L.push('(No menu has been entered yet. Do NOT state any item or price. Say you will check and a team member will confirm.)');
-  }
-  for (const cat of cfg.menu || []) {
-    if (!cat.items?.length) continue;
-    L.push(`### ${cat.name}`);
-    for (const it of cat.items) {
-      if (!it.name) continue;
-      const p = it.price != null ? `Tk ${it.price}` : 'price on request';
-      L.push(`- ${it.name} — ${p}${it.desc ? ` (${it.desc})` : ''}${it.available ? '' : '  [SOLD OUT TODAY — do not offer]'}`);
+  L.push('', '## Products, Services & Catalog');
+  const catalog = cfg.catalog || cfg.menu || [];
+  const hasItems = catalog.some(c => c.items?.length);
+  if (!hasItems) {
+    L.push('(No catalog items have been entered yet. Do not quote unlisted prices. Inform the customer you will check with the team to provide accurate options and pricing.)');
+  } else {
+    for (const cat of catalog) {
+      if (!cat.items?.length) continue;
+      L.push(`### ${cat.name}`);
+      for (const it of cat.items) {
+        if (!it.name) continue;
+        const p = it.price != null ? `Tk ${it.price}` : 'price on request';
+        L.push(`- ${it.name} — ${p}${it.desc ? ` (${it.desc})` : ''}${it.available ? '' : ' [UNAVAILABLE / SOLD OUT TODAY]'}`);
+      }
     }
   }
 
   const fq = (cfg.faqs || []).filter(f => f.q && f.a);
   if (fq.length) {
-    L.push('', '## Known answers');
+    L.push('', '## Business Knowledge & FAQs');
     for (const f of fq) L.push(`Q: ${f.q}\nA: ${f.a}`);
   }
 
-  L.push('', '## What you may handle');
-  L.push(cfg.scope.answer
-    ? '- Questions about the menu, prices, hours, location and facilities: answer directly.'
-    : '- Do not answer questions directly; pass everything to a human.');
+  L.push('', '## Inquiries, Orders and Service Requests');
+  L.push(cfg.scope?.answer !== false
+    ? '- Questions about services, products, pricing, hours, location, and facilities: answer directly using the details above.'
+    : '- Do not answer questions directly; route everything to human staff.');
 
-  const tier = (v, label, collect) =>
-    v === 'off'  ? `- ${label}: do not handle. Say a team member will assist shortly.`
-  : v === 'auto' ? `- ${label}: you may confirm directly.`
-  : `- ${label}: collect ${collect}, then say it has been REQUESTED and the cafe will confirm shortly. Never say it is confirmed.`;
+  L.push('', '## Strict Order and Booking Policy');
+  L.push('- When a customer expresses intent to order products, book an appointment, or request a service:');
+  L.push('  1. Politely collect all necessary details: specific items/services, quantity or package, customer full name, contact phone number, and delivery address or preferred appointment date/time.');
+  L.push('  2. Once the customer provides details, acknowledge that their request has been logged and forwarded to the management team for review.');
+  L.push('  3. CRITICAL MANDATE: NEVER tell the customer that their order, booking, or reservation is confirmed. Always state that our team will review and confirm it with them shortly.');
 
-  L.push(tier(cfg.scope.reserve, 'Table reservations', 'name, number of people, date and time'));
-  L.push(tier(cfg.scope.order, 'Orders', 'items, quantities, name, phone, and pickup or delivery'));
-  L.push(cfg.scope.complaint === 'ack'
-    ? '- Complaints, refunds, allergies: reply ONCE, briefly and sincerely, saying you are sorry and passing it to the manager now. Then stop. Never promise a refund, never give allergy or medical advice.'
-    : '- Complaints, refunds, allergies: do not reply. A human will handle it.');
-
-  L.push('', '## Hard rules');
-  for (const g of cfg.guards || []) L.push(`- ${g}`);
-  if (cfg.esc?.length) {
-    L.push(`- If the message mentions any of: ${cfg.esc.join(', ')} — do not attempt to resolve it. Acknowledge and hand over to a human.`);
+  if (cfg.scope?.complaint === 'ack') {
+    L.push('- Complaints, disputes, refunds, and critical issues: reply once, with sincere apologies, stating that you have escalated the matter directly to management for immediate resolution. Never promise a refund or provide medical/legal advice.');
+  } else {
+    L.push('- Complaints, disputes, refunds: do not attempt to answer; leave for human management.');
   }
 
-  L.push('', 'Reply with the clean message text only in natural, conversational sentences. Do not include markdown headers, bullet asterisks, reasoning thoughts, quotation marks, subject lines, or signatures.');
+  L.push('', '## Core Safeguards');
+  for (const g of cfg.guards || []) L.push(`- ${g}`);
+  if (cfg.esc?.length) {
+    L.push(`- If the message mentions any sensitive terms (${cfg.esc.join(', ')}): acknowledge politely and notify that management will assist directly.`);
+  }
+
+  L.push('', 'Format requirement: Output clean, conversational text only. Do not output markdown asterisks, bullet points, headers, bracketed reasoning, quotation marks around the entire message, or emojis.');
   return L.join('\n');
 }
 

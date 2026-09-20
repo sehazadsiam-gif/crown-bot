@@ -101,6 +101,23 @@ CREATE TABLE IF NOT EXISTS drafts (
   created_at   TEXT NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS orders (
+  id               INTEGER PRIMARY KEY AUTOINCREMENT,
+  workspace_id     INTEGER NOT NULL REFERENCES workspaces(id) ON DELETE CASCADE,
+  conv_id          INTEGER REFERENCES conversations(id) ON DELETE SET NULL,
+  platform         TEXT DEFAULT 'web',
+  customer_name    TEXT,
+  customer_phone   TEXT,
+  customer_address TEXT,
+  details          TEXT NOT NULL,
+  estimated_total  TEXT,
+  status           TEXT NOT NULL DEFAULT 'pending', -- 'pending' | 'confirmed' | 'rejected'
+  notes            TEXT,
+  created_at       TEXT NOT NULL,
+  confirmed_at     TEXT
+);
+CREATE INDEX IF NOT EXISTS idx_orders_ws ON orders(workspace_id, status);
+
 CREATE TABLE IF NOT EXISTS seen (
   mid   TEXT PRIMARY KEY,
   at    INTEGER NOT NULL
@@ -124,6 +141,15 @@ try {
   }
 } catch (e) {
   console.error('Migration warning (drafts.workspace_id):', e.message);
+}
+
+try {
+  const userCols = db.pragma('table_info(workspace_users)');
+  if (!userCols.some(c => c.name === 'password_display')) {
+    db.exec('ALTER TABLE workspace_users ADD COLUMN password_display TEXT');
+  }
+} catch (e) {
+  console.error('Migration warning (workspace_users.password_display):', e.message);
 }
 
 const now = () => new Date().toISOString();
@@ -1008,22 +1034,43 @@ export const DEFAULT_CONFIG = {
   runtime: { enabled: true, offHours: 'reply', fallbackText: 'Thanks for your message! Our team will reply shortly.' }
 };
 
-export function makeCleanTemplate(businessName = 'New Business') {
+export function makeCleanTemplate(businessName = 'New Business', businessType = 'General Business', services = '') {
   return {
-    cafe: {
+    business: {
       name: businessName,
+      type: businessType || 'General Business',
+      services: services || '',
       phone: '',
       area: '',
       address: '',
       open: '09:00',
       close: '21:00',
       offDay: '',
-      holidayNote: 'Open all regular business hours. Last order 30 minutes before closing.',
+      holidayNote: 'Open during regular business hours.',
       wifi: 'Available',
       parking: 'Available',
-      seating: 'Dine-in and takeaway',
-      payments: 'Cash, Card, Mobile Banking',
-      service: 'Customer service, inquiries, orders',
+      seating: 'Available',
+      payments: 'Cash, Card, Mobile Banking (bKash/Nagad)',
+      service: services || 'Customer service, inquiries, orders, bookings',
+      apps: '',
+      notes: ''
+    },
+    cafe: {
+      name: businessName,
+      type: businessType || 'General Business',
+      services: services || '',
+      phone: '',
+      area: '',
+      address: '',
+      open: '09:00',
+      close: '21:00',
+      offDay: '',
+      holidayNote: 'Open during regular business hours.',
+      wifi: 'Available',
+      parking: 'Available',
+      seating: 'Available',
+      payments: 'Cash, Card, Mobile Banking (bKash/Nagad)',
+      service: services || 'Customer service, inquiries, orders, bookings',
       apps: '',
       notes: ''
     },
@@ -1045,14 +1092,14 @@ export function makeCleanTemplate(businessName = 'New Business') {
     },
     scope: { answer: true, reserve: 'draft', order: 'draft', complaint: 'ack' },
     guards: [
-      'Never state a price that is not in the menu/catalogue. If an item is not listed, say you will check and a team member will confirm.',
-      'Never invent items, ingredients, or false information.',
-      'Never confirm an order or reservation as final without human confirmation.',
-      'Never give medical or legal advice.',
+      'Never state a price that is not in the official catalog. If an item/service is not listed, say you will check and a team member will confirm.',
+      'Never invent items, services, false specifications, or medical advice.',
+      'Never confirm an order, appointment, or reservation as final without human review.',
+      'Never promise an unverified delivery timeline or discount.',
       'If you do not know something, say so plainly and offer to have a team member follow up.'
     ],
     esc: ['refund', 'complaint', 'manager', 'urgent', 'lawyer', 'press', 'ফেরত', 'অভিযোগ', 'ম্যানেজার'],
-    runtime: { enabled: true, offHours: 'reply', fallbackText: 'Thanks for your message. Our team will reply shortly.' }
+    runtime: { enabled: true, offHours: 'reply', fallbackText: 'Thanks for reaching out! Our team will review your request and get back to you shortly.' }
   };
 }
 
@@ -1312,6 +1359,69 @@ export function listDrafts(workspaceId = null) {
     WHERE d.status = 'pending' ORDER BY d.id DESC`).all();
 }
 
+export function createOrder(data = {}) {
+  const wsId = Number(data.workspace_id || data.workspaceId) || 1;
+  let convId = Number(data.conv_id || data.convId);
+  if (!convId || isNaN(convId)) {
+    convId = null;
+  } else {
+    try {
+      const exists = db.prepare('SELECT id FROM conversations WHERE id = ?').get(convId);
+      if (!exists) convId = null;
+    } catch {
+      convId = null;
+    }
+  }
+  const platform = data.platform || 'web';
+  const customerName = data.customer_name || data.customerName || '';
+  const customerPhone = data.customer_phone || data.customerPhone || '';
+  const customerAddress = data.customer_address || data.customerAddress || '';
+  const details = data.details || '';
+  const estimatedTotal = String(data.estimated_total || data.estimatedTotal || '');
+  const notes = data.notes || '';
+
+  const info = db.prepare(`
+    INSERT INTO orders (workspace_id, conv_id, platform, customer_name, customer_phone, customer_address, details, estimated_total, status, notes, created_at)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'pending', ?, ?)
+  `).run(wsId, convId, platform, customerName, customerPhone, customerAddress, details, estimatedTotal, notes, now());
+  return db.prepare('SELECT * FROM orders WHERE id = ?').get(info.lastInsertRowid);
+}
+
+export function listOrders(workspaceId, status = 'all') {
+  const wsId = Number(workspaceId) || 1;
+  if (status && status !== 'all') {
+    return db.prepare('SELECT * FROM orders WHERE workspace_id = ? AND status = ? ORDER BY id DESC').all(wsId, status);
+  }
+  return db.prepare('SELECT * FROM orders WHERE workspace_id = ? ORDER BY id DESC').all(wsId);
+}
+
+export function updateOrderStatus(orderId, workspaceId, status, notes = null) {
+  const wsId = Number(workspaceId);
+  const id = Number(orderId);
+  const confirmedAt = (status === 'confirmed' || status === 'rejected') ? now() : null;
+  if (notes !== null) {
+    db.prepare(`
+      UPDATE orders SET status = ?, confirmed_at = ?, notes = ?
+      WHERE id = ? AND workspace_id = ?
+    `).run(status, confirmedAt, notes, id, wsId);
+  } else {
+    db.prepare(`
+      UPDATE orders SET status = ?, confirmed_at = ?
+      WHERE id = ? AND workspace_id = ?
+    `).run(status, confirmedAt, id, wsId);
+  }
+  return db.prepare('SELECT * FROM orders WHERE id = ?').get(id);
+}
+
+export function getOrderStats(workspaceId) {
+  const wsId = Number(workspaceId) || 1;
+  const pending = (db.prepare("SELECT COUNT(*) as n FROM orders WHERE workspace_id = ? AND status = 'pending'").get(wsId) || {}).n || 0;
+  const confirmed = (db.prepare("SELECT COUNT(*) as n FROM orders WHERE workspace_id = ? AND status = 'confirmed'").get(wsId) || {}).n || 0;
+  const rejected = (db.prepare("SELECT COUNT(*) as n FROM orders WHERE workspace_id = ? AND status = 'rejected'").get(wsId) || {}).n || 0;
+  const total = pending + confirmed + rejected;
+  return { pending, confirmed, rejected, total };
+}
+
 export function stats(workspaceId = null) {
   const wsId = workspaceId ? Number(workspaceId) : null;
   const q = (s, ...args) => {
@@ -1422,32 +1532,84 @@ export function slugify(text) {
     .replace(/[^a-z0-9]/g, '') || 'client';
 }
 
-export function createWorkspaceWithTenant(name, monthlyFee = 500, contactEmail = '') {
+export function isPasswordUnique(password, excludeUserId = null) {
+  const pwd = String(password || '').trim();
+  if (!pwd) return false;
+  // Master Admin reserved
+  if (pwd === 'ccadmin6789') return false;
+  // Crown Coffee (Workspace #1) reserved unless updating tenant #1
+  if (pwd === '1590') {
+    if (excludeUserId === null) return false;
+    const user1 = db.prepare('SELECT id FROM workspace_users WHERE workspace_id = 1').get();
+    if (!user1 || Number(excludeUserId) !== user1.id) return false;
+  }
+
+  const users = db.prepare('SELECT id, password_hash FROM workspace_users').all();
+  for (const u of users) {
+    if (excludeUserId && u.id === Number(excludeUserId)) continue;
+    if (verifyPassword(pwd, u.password_hash)) {
+      return false;
+    }
+  }
+  return true;
+}
+
+export function createWorkspaceWithTenant(name, monthlyFee = 500, contactEmail = '', customPassword = null, businessType = 'General Business', services = '') {
   const ws = createWorkspace(name);
   const slug = slugify(name);
-  const defaultEmail = contactEmail ? String(contactEmail).trim().toLowerCase() : `admin@${slug}.com`;
-  const defaultPassword = `${slug}@12345`;
-  const pHash = hashPassword(defaultPassword);
+  let defaultEmail = contactEmail ? String(contactEmail).trim().toLowerCase() : `admin@${slug}.com`;
+  const existingEmail = db.prepare('SELECT id FROM workspace_users WHERE LOWER(email) = LOWER(?)').get(defaultEmail);
+  if (existingEmail) {
+    defaultEmail = `admin@${slug}-${ws.id}.com`;
+  }
+  
+  let chosenPassword = customPassword ? String(customPassword).trim() : null;
+  if (chosenPassword) {
+    if (!isPasswordUnique(chosenPassword)) {
+      db.prepare('DELETE FROM workspaces WHERE id = ?').run(ws.id);
+      throw new Error('This password is already in use by another account or reserved. Please choose a unique password.');
+    }
+  } else {
+    let candidate = '';
+    let attempts = 0;
+    do {
+      attempts++;
+      const rand = Math.floor(1000 + Math.random() * 9000);
+      candidate = `${slug}@${rand}`;
+    } while (!isPasswordUnique(candidate) && attempts < 50);
+    chosenPassword = candidate;
+  }
 
-  db.prepare(`
-    INSERT INTO workspace_users (workspace_id, email, password_hash, must_change_password, role, created_at, updated_at)
-    VALUES (?, ?, ?, 1, 'tenant_admin', ?, ?)
-  `).run(ws.id, defaultEmail, pHash, now(), now());
+  const pHash = hashPassword(chosenPassword);
 
-  const trialEnds = new Date(Date.now() + 14 * 86400 * 1000).toISOString();
-  db.prepare(`
-    INSERT INTO subscriptions (workspace_id, status, plan_name, trial_ends_at, active_until, monthly_fee, contact_email, notes, updated_at)
-    VALUES (?, 'trial', '14-Day Free Trial', ?, NULL, ?, ?, '', ?)
-  `).run(ws.id, trialEnds, Number(monthlyFee) || 500, defaultEmail, now());
+  try {
+    db.prepare(`
+      INSERT INTO workspace_users (workspace_id, email, password_hash, password_display, must_change_password, role, created_at, updated_at)
+      VALUES (?, ?, ?, ?, 0, 'tenant_admin', ?, ?)
+    `).run(ws.id, defaultEmail, pHash, chosenPassword, now(), now());
 
-  return {
-    workspace: ws,
-    credentials: {
-      email: defaultEmail,
-      password: defaultPassword
-    },
-    subscription: getSubscription(ws.id)
-  };
+    const trialEnds = new Date(Date.now() + 14 * 86400 * 1000).toISOString();
+    db.prepare(`
+      INSERT INTO subscriptions (workspace_id, status, plan_name, trial_ends_at, active_until, monthly_fee, contact_email, notes, updated_at)
+      VALUES (?, 'trial', '14-Day Free Trial', ?, NULL, ?, ?, '', ?)
+    `).run(ws.id, trialEnds, Number(monthlyFee) || 500, defaultEmail, now());
+
+    // Save customized clean template with businessType and services
+    const tpl = makeCleanTemplate(name, businessType, services);
+    saveWorkspaceConfig(ws.id, tpl);
+
+    return {
+      workspace: ws,
+      credentials: {
+        email: defaultEmail,
+        password: chosenPassword
+      },
+      subscription: getSubscription(ws.id)
+    };
+  } catch (err) {
+    db.prepare('DELETE FROM workspaces WHERE id = ?').run(ws.id);
+    throw err;
+  }
 }
 
 export function authenticateTenant(email, password) {
@@ -1480,10 +1642,14 @@ export function updateTenantCredentials(userId, newEmail, newPassword = null) {
     if (existing) throw new Error('Email is already in use by another tenant.');
   }
 
-  if (newPassword && String(newPassword).trim().length >= 6) {
-    const pHash = hashPassword(String(newPassword).trim());
-    db.prepare('UPDATE workspace_users SET email = ?, password_hash = ?, must_change_password = 0, updated_at = ? WHERE id = ?')
-      .run(emailVal, pHash, now(), userId);
+  if (newPassword && String(newPassword).trim().length >= 4) {
+    const pwd = String(newPassword).trim();
+    if (!isPasswordUnique(pwd, userId)) {
+      throw new Error('This password is already in use by another account or reserved. Please choose a unique password.');
+    }
+    const pHash = hashPassword(pwd);
+    db.prepare('UPDATE workspace_users SET email = ?, password_hash = ?, password_display = ?, must_change_password = 0, updated_at = ? WHERE id = ?')
+      .run(emailVal, pHash, pwd, now(), userId);
   } else {
     db.prepare('UPDATE workspace_users SET email = ?, updated_at = ? WHERE id = ?')
       .run(emailVal, now(), userId);
@@ -1500,25 +1666,41 @@ export function resetTenantPassword(workspaceId, newPassword = null) {
   if (!ws) throw new Error('Workspace not found.');
   const user = db.prepare('SELECT * FROM workspace_users WHERE workspace_id = ?').get(workspaceId);
   const slug = slugify(ws.name);
-  const pwd = newPassword ? String(newPassword).trim() : `${slug}@12345`;
+
+  let pwd = newPassword ? String(newPassword).trim() : null;
+  if (pwd) {
+    if (!isPasswordUnique(pwd, user ? user.id : null)) {
+      throw new Error('This password is already in use by another account or reserved. Please choose a unique password.');
+    }
+  } else {
+    let candidate = '';
+    let attempts = 0;
+    do {
+      attempts++;
+      const rand = Math.floor(1000 + Math.random() * 9000);
+      candidate = `${slug}@${rand}`;
+    } while (!isPasswordUnique(candidate) && attempts < 50);
+    pwd = candidate;
+  }
+
   const pHash = hashPassword(pwd);
 
   if (user) {
-    db.prepare('UPDATE workspace_users SET password_hash = ?, must_change_password = 1, updated_at = ? WHERE id = ?')
-      .run(pHash, now(), user.id);
+    db.prepare('UPDATE workspace_users SET password_hash = ?, password_display = ?, must_change_password = 0, updated_at = ? WHERE id = ?')
+      .run(pHash, pwd, now(), user.id);
   } else {
     const defaultEmail = `admin@${slug}.com`;
     db.prepare(`
-      INSERT INTO workspace_users (workspace_id, email, password_hash, must_change_password, role, created_at, updated_at)
-      VALUES (?, ?, ?, 1, 'tenant_admin', ?, ?)
-    `).run(workspaceId, defaultEmail, pHash, now(), now());
+      INSERT INTO workspace_users (workspace_id, email, password_hash, password_display, must_change_password, role, created_at, updated_at)
+      VALUES (?, ?, ?, ?, 0, 'tenant_admin', ?, ?)
+    `).run(workspaceId, defaultEmail, pHash, pwd, now(), now());
   }
 
   return { ok: true, password: pwd };
 }
 
 export function getTenantUser(workspaceId) {
-  return db.prepare('SELECT id, workspace_id, email, must_change_password, role, created_at, updated_at FROM workspace_users WHERE workspace_id = ?')
+  return db.prepare('SELECT id, workspace_id, email, password_display, must_change_password, role, created_at, updated_at FROM workspace_users WHERE workspace_id = ?')
     .get(workspaceId);
 }
 
@@ -1625,12 +1807,14 @@ export function listTenantsOverview() {
   return workspaces.map(ws => {
     const user = getTenantUser(ws.id);
     const sub = getSubscription(ws.id);
+    const orderStats = getOrderStats(ws.id);
     const convCount = (db.prepare('SELECT COUNT(*) as n FROM conversations WHERE workspace_id = ?').get(ws.id) || {}).n || 0;
     const msgCount = (db.prepare('SELECT COUNT(*) as n FROM messages m JOIN conversations c ON c.id = m.conv_id WHERE c.workspace_id = ?').get(ws.id) || {}).n || 0;
     return {
       workspace: ws,
-      user: user || { email: `admin@${slugify(ws.name)}.com`, must_change_password: 1 },
+      user: user || { email: `admin@${slugify(ws.name)}.com`, must_change_password: 0, password_display: '---' },
       subscription: sub,
+      orderStats,
       stats: {
         conversations: convCount,
         messages: msgCount
@@ -1684,18 +1868,18 @@ export function authenticateTenantByPasswordOnly(password) {
   return null;
 }
 
-// Seed or Update Workspace #1 Tenant User (Password: ccadmin6789)
+// Seed or Update Workspace #1 Tenant User (Password: 1590)
 try {
   const user1 = db.prepare('SELECT * FROM workspace_users WHERE workspace_id = 1').get();
-  const pHash = hashPassword('ccadmin6789');
+  const pHash = hashPassword('1590');
   if (!user1) {
     db.prepare(`
-      INSERT INTO workspace_users (workspace_id, email, password_hash, must_change_password, role, created_at, updated_at)
-      VALUES (1, 'tenant@crowncoffee.local', ?, 0, 'tenant_admin', ?, ?)
+      INSERT INTO workspace_users (workspace_id, email, password_hash, password_display, must_change_password, role, created_at, updated_at)
+      VALUES (1, 'tenant@crowncoffee.local', ?, '1590', 0, 'tenant_admin', ?, ?)
     `).run(pHash, now(), now());
   } else {
     db.prepare(`
-      UPDATE workspace_users SET email = 'tenant@crowncoffee.local', password_hash = ?, must_change_password = 0, updated_at = ?
+      UPDATE workspace_users SET email = 'tenant@crowncoffee.local', password_hash = ?, password_display = '1590', must_change_password = 0, updated_at = ?
       WHERE workspace_id = 1
     `).run(pHash, now());
   }

@@ -15,10 +15,11 @@ import {
   listDrafts, stats, db,
   authenticateTenant, authenticateTenantByPasswordOnly, updateTenantCredentials, resetTenantPassword,
   getTenantUser, getSubscription, isSubscriptionActive, updateSubscription,
-  listTenantsOverview, createWorkspaceWithTenant
+  listTenantsOverview, createWorkspaceWithTenant,
+  createOrder, listOrders, updateOrderStatus, getOrderStats, isPasswordUnique
 } from './db.js';
 import { buildPrompt, openState, escalationHit } from './prompt.js';
-import { generateReply, parseMenuText } from './ai.js';
+import { generateReply, parseMenuText, suggestFaqsForBusiness, detectOrderOrInquiry } from './ai.js';
 import { verifySignature, isSelf, sendMessage, fetchProfileName, parseWebhook, testMetaConnection } from './meta.js';
 import { sendTikTokMessage, parseTikTokWebhook, testTikTokConnection, verifyTikTokSignature } from './tiktok.js';
 
@@ -68,79 +69,106 @@ await app.register(fstatic, { root: join(__dirname, '..', 'public'), prefix: `${
 /* Capture raw body for webhook HMAC signature verification */
 app.addContentTypeParser('application/json', { parseAs: 'buffer' }, (req, body, done) => {
   req.rawBody = body;
-  try { done(null, JSON.parse(body.toString('utf8') || '{}')); }
-  catch (e) { e.statusCode = 400; done(e); }
+  try {
+    const str = body.toString('utf8');
+    done(null, str ? JSON.parse(str) : {});
+  } catch (err) {
+    err.statusCode = 400;
+    done(err, undefined);
+  }
 });
 
-/* ───────────────────────── auth & session ───────────────────────── */
-const SESSION_TTL = 7 * 864e5;
+/* ───────────────────────── auth helpers ───────────────────────── */
+const SESSION_TTL = 7 * 86400 * 1000;
 
 function makeToken(payload) {
-  const data = JSON.stringify({ ...payload, exp: Date.now() + SESSION_TTL });
-  const b = Buffer.from(data).toString('base64url');
-  const sig = crypto.createHmac('sha256', SESSION_SECRET).update(b).digest('base64url');
-  return `${b}.${sig}`;
+  const exp = Date.now() + SESSION_TTL;
+  const data = Buffer.from(JSON.stringify({ ...payload, exp })).toString('base64url');
+  const sig = crypto.createHmac('sha256', SESSION_SECRET).update(data).digest('base64url');
+  return `${data}.${sig}`;
 }
 
 function readToken(tok) {
-  if (!tok || !tok.includes('.')) return null;
-  const [b, sig] = tok.split('.');
-  const good = crypto.createHmac('sha256', SESSION_SECRET).update(b).digest('base64url');
-  if (sig.length !== good.length || !crypto.timingSafeEqual(Buffer.from(sig), Buffer.from(good))) return null;
+  if (!tok || typeof tok !== 'string') return null;
+  const [data, sig] = tok.split('.');
+  if (!data || !sig) return null;
+  const expected = crypto.createHmac('sha256', SESSION_SECRET).update(data).digest('base64url');
+  if (sig.length !== expected.length) return null;
+  if (!crypto.timingSafeEqual(Buffer.from(sig), Buffer.from(expected))) return null;
   try {
-    const p = JSON.parse(Buffer.from(b, 'base64url').toString());
-    return p.exp > Date.now() ? p : null;
+    const payload = JSON.parse(Buffer.from(data, 'base64url').toString('utf8'));
+    if (!payload.exp || Date.now() > payload.exp) return null;
+    return payload;
   } catch { return null; }
 }
 
-const requireAuth = async (req, reply) => {
-  const s = readToken(req.cookies.cc_session);
+function getToken(req) {
+  if (req.cookies && req.cookies.cc_session) return req.cookies.cc_session;
+  const authHeader = req.headers?.authorization;
+  if (authHeader && authHeader.startsWith('Bearer ')) {
+    return authHeader.slice(7).trim();
+  }
+  return null;
+}
+
+async function requireAuth(req, reply) {
+  const s = readToken(getToken(req));
   if (!s) return reply.code(401).send({ error: 'unauthorized' });
   req.session = s;
-};
+}
 
-const requireMasterAdmin = async (req, reply) => {
-  const s = readToken(req.cookies.cc_session);
-  if (!s || s.role !== 'master_admin') return reply.code(403).send({ error: 'Master Admin privileges required.' });
+async function requireMasterAdmin(req, reply) {
+  const s = readToken(getToken(req));
+  if (!s || s.role !== 'master_admin') {
+    return reply.code(403).send({ error: 'forbidden: requires master admin privileges' });
+  }
   req.session = s;
-};
+}
 
 function getScopedWorkspaceId(req) {
-  if (req.session?.role === 'tenant_admin') {
-    return req.session.workspace_id;
+  if (req.session.role === 'master_admin') {
+    const qWs = Number(req.query?.ws);
+    return qWs && qWs > 0 ? qWs : 1;
   }
-  return Number(req.query?.workspace_id || req.body?.workspace_id) || 1;
+  return req.session.workspace_id || 1;
 }
 
-/* In-memory login throttle */
+/* ───────────────────────── auth routes ───────────────────────── */
 const attempts = new Map();
-function throttled(ip) {
-  const a = attempts.get(ip);
-  if (!a) return false;
-  if (Date.now() - a.at > 15 * 60_000) { attempts.delete(ip); return false; }
-  return a.n >= 8;
+const MAX_FAILS = 15;
+const LOCKOUT = 5 * 60 * 1000;
+
+function checkRate(ip) {
+  const rec = attempts.get(ip);
+  if (!rec) return true;
+  if (Date.now() - rec.first > LOCKOUT) { attempts.delete(ip); return true; }
+  return rec.count < MAX_FAILS;
 }
+
 function noteFail(ip) {
-  const a = attempts.get(ip) || { n: 0, at: Date.now() };
-  a.n++; a.at = Date.now(); attempts.set(ip, a);
+  const now = Date.now();
+  const rec = attempts.get(ip) || { count: 0, first: now };
+  rec.count++;
+  attempts.set(ip, rec);
 }
 
 app.post(`${BASE}/api/login`, async (req, reply) => {
   const ip = req.ip;
-  if (throttled(ip)) return reply.code(429).send({ error: 'Too many attempts. Wait 15 minutes.' });
+  if (!checkRate(ip)) {
+    return reply.code(429).send({ error: 'Too many failed attempts. Try again in 5 minutes.' });
+  }
 
   const { email, password } = req.body || {};
-  const supplied = typeof email === 'string' ? email.trim().toLowerCase() : '';
-  const suppliedPass = String(password || '').trim();
+  const supplied = (email || '').trim().toLowerCase();
+  const suppliedPass = (password || '').trim();
 
   if (!suppliedPass) {
     noteFail(ip);
     return reply.code(400).send({ error: 'Password is required.' });
   }
 
-  // 1. Check Master Admin Credentials (.env: ADMIN_PASSWORD / ADMIN_PASSWORD_HASH)
-  // Master Admin can log in with password 1590 (with or without email)
-  const isMasterPass = await verifyPassword(suppliedPass, ADMIN_PASSWORD, ADMIN_PASSWORD_HASH);
+  // 1. Check Master Admin Credentials (Password: ccadmin6789)
+  const isMasterPass = (suppliedPass === 'ccadmin6789') || await verifyPassword(suppliedPass, ADMIN_PASSWORD, ADMIN_PASSWORD_HASH);
   const expectedAdmin = (ADMIN_EMAIL || '').trim().toLowerCase();
   const isMasterEmail = !supplied || supplied === expectedAdmin;
 
@@ -154,11 +182,11 @@ app.post(`${BASE}/api/login`, async (req, reply) => {
       secure: false,
       maxAge: SESSION_TTL / 1000
     });
-    return { ok: true, role: 'master_admin', email: ADMIN_EMAIL || 'admin@crowncoffee.com' };
+    return { ok: true, role: 'master_admin', email: ADMIN_EMAIL || 'admin@crowncoffee.com', token: tok };
   }
 
-  // 2. Check Crown Coffee Tenant 1 (Dedicated Password: ccadmin6789)
-  if (suppliedPass === 'ccadmin6789') {
+  // 2. Check Crown Coffee Tenant 1 (Dedicated Password: 1590)
+  if (suppliedPass === '1590') {
     attempts.delete(ip);
     const tok = makeToken({
       role: 'tenant_admin',
@@ -180,7 +208,8 @@ app.post(`${BASE}/api/login`, async (req, reply) => {
       workspace_id: 1,
       workspace_name: 'Crown Coffee',
       email: 'tenant@crowncoffee.local',
-      must_change_password: 0
+      must_change_password: 0,
+      token: tok
     };
   }
 
@@ -210,7 +239,8 @@ app.post(`${BASE}/api/login`, async (req, reply) => {
       workspace_id: tenant.workspace_id,
       workspace_name: tenant.workspace_name,
       email: tenant.email,
-      must_change_password: tenant.must_change_password
+      must_change_password: tenant.must_change_password,
+      token: tok
     };
   }
 
@@ -223,8 +253,162 @@ app.post(`${BASE}/api/logout`, async (req, reply) => {
   return { ok: true };
 });
 
+app.post(`${BASE}/api/signup`, async (req, reply) => {
+  const { businessName, businessType, services, contactEmail, password } = req.body || {};
+  const name = String(businessName || '').trim();
+  const pwd = String(password || '').trim();
+  const bType = String(businessType || 'General Business').trim();
+  const bServices = String(services || '').trim();
+  const email = String(contactEmail || '').trim().toLowerCase();
+
+  if (!name || name.length < 2) {
+    return reply.code(400).send({ error: 'Business name must be at least 2 characters.' });
+  }
+  if (!pwd || pwd.length < 4) {
+    return reply.code(400).send({ error: 'Password must be at least 4 characters.' });
+  }
+
+  if (!isPasswordUnique(pwd)) {
+    return reply.code(400).send({ error: 'This password is already reserved or in use by another tenant. Please choose a unique password.' });
+  }
+
+  try {
+    const res = createWorkspaceWithTenant(name, 500, email, pwd, bType, bServices);
+    const tok = makeToken({
+      role: 'tenant_admin',
+      workspace_id: res.workspace.id,
+      user_id: res.workspace.id,
+      email: res.credentials.email,
+      must_change_password: 0
+    });
+    reply.setCookie('cc_session', tok, {
+      path: '/',
+      httpOnly: true,
+      sameSite: 'lax',
+      secure: false,
+      maxAge: SESSION_TTL / 1000
+    });
+
+    return {
+      ok: true,
+      role: 'tenant_admin',
+      workspace_id: res.workspace.id,
+      workspace_name: res.workspace.name,
+      email: res.credentials.email,
+      token: tok
+    };
+  } catch (e) {
+    req.log.error(e);
+    return reply.code(400).send({ error: e.message });
+  }
+});
+
+app.post(`${BASE}/api/ai/suggest-faqs`, async (req, reply) => {
+  const { businessType, businessName, services, location } = req.body || {};
+  try {
+    const faqs = await suggestFaqsForBusiness({ businessType, businessName, services, location });
+    return { ok: true, faqs };
+  } catch (e) {
+    req.log.warn(e);
+    return reply.code(500).send({ ok: false, error: 'Could not generate FAQs.' });
+  }
+});
+
+app.post(`${BASE}/api/tenant/onboarding`, { preHandler: requireAuth }, async (req, reply) => {
+  const wsId = getScopedWorkspaceId(req);
+  const { businessName, businessType, services, faqs, open, close, phone, address, parking, payments } = req.body || {};
+  try {
+    const cfg = getWorkspaceConfig(wsId);
+    if (businessName) {
+      db.prepare('UPDATE workspaces SET name = ? WHERE id = ?').run(String(businessName).trim(), wsId);
+    }
+    const b = cfg.business || cfg.cafe || {};
+    if (businessName) b.name = String(businessName).trim();
+    if (businessType) b.type = String(businessType).trim();
+    if (services) b.services = String(services).trim();
+    if (open) b.open = String(open).trim();
+    if (close) b.close = String(close).trim();
+    if (phone) b.phone = String(phone).trim();
+    if (address) b.address = String(address).trim();
+    if (parking) b.parking = String(parking).trim();
+    if (payments) b.payments = String(payments).trim();
+
+    cfg.business = { ...b };
+    cfg.cafe = { ...b }; // backward compatibility
+
+    if (Array.isArray(faqs) && faqs.length) {
+      cfg.faqs = faqs.map(f => ({
+        q: String(f.q || '').trim(),
+        a: String(f.a || '').trim()
+      })).filter(f => f.q && f.a);
+    }
+
+    saveWorkspaceConfig(wsId, cfg);
+    return { ok: true, config: cfg };
+  } catch (e) {
+    req.log.error(e);
+    return reply.code(400).send({ error: e.message });
+  }
+});
+
+/* ───────────────────────── Orders Bucket API ───────────────────────── */
+app.get(`${BASE}/api/orders`, { preHandler: requireAuth }, async req => {
+  const wsId = getScopedWorkspaceId(req);
+  const status = String(req.query?.status || 'all').trim();
+  const orders = listOrders(wsId, status);
+  const orderStats = getOrderStats(wsId);
+  return { ok: true, orders, stats: orderStats };
+});
+
+app.post(`${BASE}/api/orders`, { preHandler: requireAuth }, async (req, reply) => {
+  const wsId = getScopedWorkspaceId(req);
+  const { details, customer_name, customer_phone, customer_address, estimated_total, platform, notes } = req.body || {};
+  if (!details || !String(details).trim()) {
+    return reply.code(400).send({ error: 'Order details or service request is required.' });
+  }
+  try {
+    const order = createOrder({
+      workspace_id: wsId,
+      platform: platform || 'manual',
+      customer_name,
+      customer_phone,
+      customer_address,
+      details,
+      estimated_total,
+      notes
+    });
+    return { ok: true, order };
+  } catch (e) {
+    return reply.code(400).send({ error: e.message });
+  }
+});
+
+app.post(`${BASE}/api/orders/:id/confirm`, { preHandler: requireAuth }, async (req, reply) => {
+  const wsId = getScopedWorkspaceId(req);
+  const orderId = Number(req.params.id);
+  const notes = req.body?.notes || null;
+  try {
+    const updated = updateOrderStatus(orderId, wsId, 'confirmed', notes);
+    return { ok: true, order: updated };
+  } catch (e) {
+    return reply.code(400).send({ error: e.message });
+  }
+});
+
+app.post(`${BASE}/api/orders/:id/reject`, { preHandler: requireAuth }, async (req, reply) => {
+  const wsId = getScopedWorkspaceId(req);
+  const orderId = Number(req.params.id);
+  const notes = req.body?.notes || null;
+  try {
+    const updated = updateOrderStatus(orderId, wsId, 'rejected', notes);
+    return { ok: true, order: updated };
+  } catch (e) {
+    return reply.code(400).send({ error: e.message });
+  }
+});
+
 app.get(`${BASE}/api/me`, async req => {
-  const s = readToken(req.cookies.cc_session);
+  const s = readToken(getToken(req));
   if (!s) return { authed: false };
   if (s.role === 'master_admin') {
     return { authed: true, role: 'master_admin', email: s.email };
@@ -440,6 +624,23 @@ app.post(`${BASE}/api/test`, { preHandler: requireAuth }, async req => {
   const text = String(req.body?.text || '');
   const hit = escalationHit(cfg, text);
   const { text: reply, model } = await generateReply(cfg, history, text, req.log);
+
+  // Background order capture
+  detectOrderOrInquiry(text, history).then(extracted => {
+    if (extracted && extracted.is_order) {
+      createOrder({
+        workspace_id: wsId,
+        platform: 'web-test',
+        customer_name: extracted.customer_name || 'Test User',
+        customer_phone: extracted.customer_phone || '',
+        customer_address: extracted.customer_address || '',
+        details: extracted.details,
+        estimated_total: extracted.estimated_total || '',
+        notes: 'Captured order from test playground'
+      });
+    }
+  }).catch(() => {});
+
   return { reply, model, escalated: hit };
 });
 
@@ -650,6 +851,24 @@ async function handleEvent(ev, log) {
   const history = getMessages(conv.id, 12).slice(0, -1);
   const { text: replyText, model } = await generateReply(cfg, history, text, log);
 
+  // Background order capture
+  detectOrderOrInquiry(text, history).then(extracted => {
+    if (extracted && extracted.is_order) {
+      createOrder({
+        workspace_id: workspaceId,
+        conv_id: conv.id,
+        platform,
+        customer_name: extracted.customer_name || name || '',
+        customer_phone: extracted.customer_phone || '',
+        customer_address: extracted.customer_address || '',
+        details: extracted.details,
+        estimated_total: extracted.estimated_total || '',
+        notes: `Automated order capture from ${platform}`
+      });
+      log.info(`[orders] Captured incoming ${extracted.kind} for workspace #${workspaceId}`);
+    }
+  }).catch(e => log.warn(`[orders] Capture failed: ${e.message}`));
+
   try {
     if (platform === 'tiktok') {
       await sendTikTokMessage(senderId, replyText, channelAcc, workspaceId);
@@ -679,5 +898,7 @@ app.setNotFoundHandler((req, reply) => {
 app.listen({ port: +PORT, host: HOST })
   .then(() => app.log.info(`admin  → ${process.env.PUBLIC_URL || ''}${BASE}/`))
   .catch(e => { app.log.error(e); process.exit(1); });
+
+export { app };
 
 process.on('SIGTERM', () => { db.close(); app.close(() => process.exit(0)); });

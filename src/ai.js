@@ -221,3 +221,197 @@ export async function parseMenuText(raw) {
     price: (item.price != null && !isNaN(+item.price)) ? +item.price : null
   })).filter(item => item.name.length > 0);
 }
+
+/**
+ * AI FAQ Generator:
+ * Given a business type, name, services, and location, automatically generates
+ * high-value, realistic FAQs for instant bot training.
+ */
+export async function suggestFaqsForBusiness({ businessType, businessName, services, location }) {
+  const bType = businessType || 'General Business';
+  const bName = businessName || 'Our Business';
+  const bServices = services || 'General products and services';
+  const bLoc = location || 'Dhaka, Bangladesh';
+
+  const prompt = `You are an expert business operations consultant. A client has registered a new business on our multi-channel AI hub.
+Business Name: ${bName}
+Industry / Business Type: ${bType}
+Services / Products Provided: ${bServices}
+Location / Target Area: ${bLoc}
+
+Generate 6 realistic, highly useful, and professional Frequently Asked Questions (FAQs) and high-quality answers tailored specifically to this business.
+Cover:
+1. Services/Products offered and scope of work
+2. How to book an appointment, place an order, or get a quotation
+3. Pricing, estimates, and payment methods
+4. Operating hours, location, and service availability
+5. Turnaround time, delivery, or cancellation/rescheduling policy
+6. Emergency, custom requests, or consultation process
+
+Output ONLY a valid JSON array of objects with the exact keys "q" (question string) and "a" (answer string).
+DO NOT use emojis anywhere in the questions or answers.
+Keep answers concise, authoritative, and helpful.`;
+
+  let out = null;
+  const { geminiKey, geminiModel, groqKey } = getEnv();
+
+  if (geminiKey) {
+    const modelsToTry = Array.from(new Set([geminiModel, 'gemini-3.5-flash', 'gemini-3.6-flash', 'gemini-3.5-flash-lite']));
+    for (const model of modelsToTry) {
+      try {
+        const res = await post(
+          `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`,
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'x-goog-api-key': geminiKey },
+            body: JSON.stringify({
+              contents: [{ role: 'user', parts: [{ text: prompt }] }],
+              generationConfig: {
+                temperature: 0.2,
+                maxOutputTokens: 2048,
+                responseMimeType: 'application/json'
+              }
+            })
+          }
+        );
+        if (res.ok) {
+          const data = await res.json();
+          out = data?.candidates?.[0]?.content?.parts?.map(p => p.text).filter(Boolean).join('').trim();
+          if (out) break;
+        }
+      } catch {}
+    }
+  }
+
+  if (!out && groqKey) {
+    try {
+      out = await callGroq('You output only valid JSON.', [], prompt);
+    } catch {}
+  }
+
+  if (!out) {
+    return [
+      { q: `What services does ${bName} offer?`, a: `We specialize in ${bServices}. Contact us anytime to learn more about our packages.` },
+      { q: `How can I place an order or book an appointment?`, a: `You can send us a message here with your requested items/services, name, and contact details. Our team will review and confirm with you shortly.` },
+      { q: `What are your accepted payment methods?`, a: `We accept Cash, Cards (Visa, Mastercard), bKash, and Nagad.` },
+      { q: `Where are you located and what are your hours?`, a: `We are located in ${bLoc}. We operate during standard business hours. Feel free to message us anytime.` },
+      { q: `Can I get a custom quote for specific requirements?`, a: `Yes, please share your specific requirements and contact number, and our team will get in touch with a customized quote.` },
+      { q: `What is your cancellation or rescheduling policy?`, a: `Please inform us at least 2 to 4 hours in advance so we can accommodate your schedule smoothly.` }
+    ];
+  }
+
+  let cleaned = out.trim()
+    .replace(/^```json\s*/i, '')
+    .replace(/^```\s*/i, '')
+    .replace(/\s*```$/i, '')
+    .trim();
+
+  try {
+    const parsed = JSON.parse(cleaned);
+    const arr = Array.isArray(parsed) ? parsed : (parsed.faqs || parsed.questions || Object.values(parsed).find(v => Array.isArray(v)));
+    if (Array.isArray(arr) && arr.length) {
+      return arr.map(item => ({
+        q: String(item.q || item.question || '').trim(),
+        a: String(item.a || item.answer || '').trim()
+      })).filter(item => item.q && item.a);
+    }
+  } catch {}
+
+  return [
+    { q: `What services does ${bName} offer?`, a: `We specialize in ${bServices}. Contact us to learn more.` },
+    { q: `How can I place an order or book an appointment?`, a: `Send us a message with your request, name, and contact info, and our team will confirm shortly.` },
+    { q: `What payment methods do you accept?`, a: `We accept Cash, Cards, bKash, and Nagad.` },
+    { q: `What are your operating hours?`, a: `We operate during regular business hours throughout the week.` }
+  ];
+}
+
+/**
+ * Detects if a customer message is an order, service booking, or reservation inquiry.
+ */
+export async function detectOrderOrInquiry(text, history = []) {
+  if (!text || text.trim().length < 3) return null;
+  const userText = String(text).trim();
+  const lower = userText.toLowerCase();
+
+  const orderKeywords = [
+    'order', 'buy', 'purchase', 'want', 'need', 'book', 'booking', 'appointment', 'reserve', 'reservation',
+    'takeaway', 'parcel', 'deliver', 'delivery', 'send me', 'please send', 'how much for', 'price for',
+    'অর্ডার', 'বুকিং', 'কিনতে চাই', 'নিতে চাই', 'পাঠান'
+  ];
+  const hasKeyword = orderKeywords.some(k => lower.includes(k));
+  if (!hasKeyword) return null;
+
+  const prompt = `Analyze this customer message in a business messaging channel.
+Customer message: "${userText}"
+Recent history: ${JSON.stringify(history.slice(-4))}
+
+Determine if the customer is requesting to place an order, book an appointment/reservation, or initiate a serious service request.
+If YES, extract:
+- is_order: true
+- kind: "order" (for purchasing goods/food), "booking" (for services/appointments/reservations), or "inquiry" (detailed request for quotation)
+- details: Clear summary of items or services requested, including quantities or specifics if mentioned.
+- customer_name: Full name if provided, or empty string.
+- customer_phone: Phone number if provided, or empty string.
+- customer_address: Address or delivery location if provided, or empty string.
+- estimated_total: Price or total estimate if obvious, or empty string.
+
+If NO (it is just a general question, casual greeting, or simple FAQ inquiry):
+- is_order: false
+
+Output ONLY a valid JSON object. No emojis, no markdown wrappers.`;
+
+  try {
+    const { geminiKey, geminiModel } = getEnv();
+    if (!geminiKey) {
+      if (hasKeyword && (lower.includes('order') || lower.includes('book') || lower.includes('want'))) {
+        return {
+          is_order: true,
+          kind: lower.includes('book') ? 'booking' : 'order',
+          details: userText,
+          customer_name: '',
+          customer_phone: '',
+          customer_address: '',
+          estimated_total: ''
+        };
+      }
+      return null;
+    }
+
+    const res = await post(
+      `https://generativelanguage.googleapis.com/v1beta/models/${geminiModel || 'gemini-3.5-flash'}:generateContent`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-goog-api-key': geminiKey },
+        body: JSON.stringify({
+          contents: [{ role: 'user', parts: [{ text: prompt }] }],
+          generationConfig: {
+            temperature: 0.1,
+            maxOutputTokens: 512,
+            responseMimeType: 'application/json'
+          }
+        })
+      }
+    );
+
+    if (res.ok) {
+      const data = await res.json();
+      const rawText = data?.candidates?.[0]?.content?.parts?.map(p => p.text).filter(Boolean).join('').trim();
+      if (rawText) {
+        const parsed = JSON.parse(rawText);
+        if (parsed.is_order) {
+          return {
+            is_order: true,
+            kind: parsed.kind || 'order',
+            details: parsed.details || userText,
+            customer_name: parsed.customer_name || '',
+            customer_phone: parsed.customer_phone || '',
+            customer_address: parsed.customer_address || '',
+            estimated_total: parsed.estimated_total || ''
+          };
+        }
+      }
+    }
+  } catch {}
+
+  return null;
+}
