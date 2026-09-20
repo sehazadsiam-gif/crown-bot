@@ -1,9 +1,10 @@
-const CACHE_NAME = 'ccadmin-pwa-v2.0.0';
+const CACHE_NAME = 'ccadmin-pwa-v2.1.0';
 const BASE_PATH = '/chatbotadmin';
 
 const PRECACHE_ASSETS = [
   `${BASE_PATH}/`,
   `${BASE_PATH}/index.html`,
+  `${BASE_PATH}/login-bg.jpg`,
   `${BASE_PATH}/manifest.webmanifest`,
   `${BASE_PATH}/manifest.json`,
   `${BASE_PATH}/favicon.svg`,

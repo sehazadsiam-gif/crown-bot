@@ -1312,388 +1312,481 @@ button.btn.dark-glass,
     0 0 24px 5px rgba(99, 102, 241, 0.45);
 }
 
-/* Split-Screen Portal */
+/* ───────────────────────── Login & Registration Modal (Screenshot UI) ───────────────────────── */
 #login {
   position: fixed;
   inset: 0;
   z-index: 9999;
   display: flex;
-  background: #07090e;
-  overflow: auto;
+  align-items: center;
+  justify-content: center;
+  background: #060e14 url('login-bg.jpg') center/cover no-repeat;
+  overflow-y: auto;
+  padding: 30px 20px;
 }
-.portal-container {
-  display: flex;
+#login::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(circle at center, rgba(6, 14, 20, 0.45) 0%, rgba(2, 6, 10, 0.88) 100%);
+  pointer-events: none;
+}
+
+.login-outer-frame {
+  position: relative;
+  z-index: 2;
   width: 100%;
-  min-height: 100vh;
+  max-width: 1040px;
+  margin: auto;
 }
-.portal-showcase {
-  flex: 1.2;
-  background: radial-gradient(circle at 20% 20%, #1e1b4b 0%, #0d1224 45%, #05070d 100%);
-  padding: 56px 48px;
+
+.login-card {
+  background: #ffffff;
+  border-radius: 32px;
+  box-shadow: 0 35px 80px -15px rgba(0, 0, 0, 0.85), 0 0 0 1px rgba(255, 255, 255, 0.12);
+  display: flex;
+  padding: 16px;
+  min-height: 590px;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Left Showcase Panel */
+.login-showcase {
+  flex: 1.08;
+  background: #0b1e28 url('login-bg.jpg') center/cover no-repeat;
+  border-radius: 24px;
+  padding: 38px 36px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   position: relative;
   overflow: hidden;
-  border-right: 1px solid rgba(255, 255, 255, 0.08);
+  color: #ffffff;
 }
-.portal-showcase::before {
+.login-showcase::after {
   content: "";
   position: absolute;
-  top: -10%;
-  left: -10%;
-  width: 70%;
-  height: 70%;
-  background: radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, transparent 70%);
+  inset: 0;
+  background: linear-gradient(180deg, rgba(8, 26, 36, 0.3) 0%, rgba(4, 15, 22, 0.6) 45%, rgba(2, 8, 12, 0.94) 100%);
   pointer-events: none;
-  filter: blur(80px);
+  z-index: 1;
 }
-.portal-brand-row {
-  display: flex;
-  align-items: center;
-  gap: 12px;
+
+.login-showcase-top,
+.login-showcase-bottom {
+  position: relative;
   z-index: 2;
 }
-.portal-brand-badge {
-  width: 44px;
-  height: 44px;
-  border-radius: 12px;
-  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
-  border: 1px solid rgba(99, 102, 241, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+
+.showcase-logo {
+  font-size: 15px;
   font-weight: 800;
-  font-size: 18px;
+  letter-spacing: 0.1em;
   color: #ffffff;
-  box-shadow: 0 0 20px rgba(99, 102, 241, 0.4);
+  text-transform: uppercase;
 }
-.portal-hero-content {
-  z-index: 2;
-  max-width: 600px;
-  margin: 40px 0;
+
+.showcase-title {
+  font-size: 32px;
+  font-weight: 800;
+  line-height: 1.14;
+  letter-spacing: -0.01em;
+  color: #ffffff;
+  margin: 0 0 14px;
+  text-transform: uppercase;
 }
-.portal-hero-tag {
+
+.showcase-desc {
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.82);
+  margin: 0 0 14px;
+  max-width: 420px;
+}
+
+.showcase-tagline {
+  font-size: 13px;
+  font-weight: 600;
+  color: #ffffff;
+  letter-spacing: 0.01em;
+}
+
+/* Right Form Panel */
+.login-form-pane {
+  flex: 1;
+  background: #ffffff;
+  padding: 40px 48px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  color: #0f172a;
+}
+
+.auth-form {
+  width: 100%;
+}
+
+.auth-title {
+  font-size: 25px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: #0f172a;
+  margin: 0 0 6px;
+  text-transform: uppercase;
+}
+
+.auth-subtitle {
+  font-size: 13.5px;
+  color: #64748b;
+  margin: 0 0 24px;
+  font-weight: 500;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-label {
+  display: block;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #334155;
+  margin-bottom: 6px;
+}
+
+.form-input {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #0f172a;
+  font-size: 13.5px;
+  font-family: inherit;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+}
+.form-input:focus {
+  outline: none;
+  border-color: #0d3844;
+  box-shadow: 0 0 0 3px rgba(13, 56, 68, 0.15);
+}
+
+.input-password-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.input-password-wrap input {
+  padding-right: 42px;
+}
+.btn-toggle-eye {
+  position: absolute;
+  right: 10px;
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  cursor: pointer;
+  padding: 4px;
+  display: grid;
+  place-items: center;
+  border-radius: 4px;
+  transition: color 0.15s;
+}
+.btn-toggle-eye:hover {
+  color: #0f172a;
+}
+
+.auth-options-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 12px 0 18px;
+  font-size: 13px;
+}
+
+.chk-remember {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 6px 14px;
-  border-radius: 9999px;
-  background: rgba(99, 102, 241, 0.12);
-  border: 1px solid rgba(99, 102, 241, 0.3);
-  color: #818cf8;
-  font-size: 11.5px;
+  color: #475569;
+  cursor: pointer;
+  font-weight: 500;
+  user-select: none;
+}
+.chk-remember input {
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  border: 1px solid #cbd5e1;
+  accent-color: #0d3844;
+  cursor: pointer;
+}
+
+.forgot-link {
+  color: #0d3844;
   font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  margin-bottom: 20px;
+  text-decoration: none;
+  font-size: 13px;
+  transition: color 0.15s;
 }
-.portal-hero-content h2 {
-  font-size: 38px;
-  font-weight: 800;
-  line-height: 1.18;
-  letter-spacing: -0.03em;
-  color: #f8fafc;
-  margin: 0 0 18px;
+.forgot-link:hover {
+  color: #061d24;
+  text-decoration: underline;
 }
-.portal-hero-content p {
-  font-size: 15px;
-  line-height: 1.6;
-  color: #94a3b8;
-  margin: 0 0 28px;
-}
-.portal-industries-grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-bottom: 32px;
-}
-.industry-chip {
-  padding: 6px 12px;
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  font-size: 12px;
-  color: #cbd5e1;
+
+.auth-error {
+  color: #ef4444;
+  font-size: 12.5px;
   font-weight: 600;
+  min-height: 18px;
+  margin-bottom: 8px;
 }
-.portal-features-list {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-.portal-feature-item {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  font-size: 13.5px;
-  color: #cbd5e1;
-}
-.portal-feature-bullet {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: #818cf8;
-  margin-top: 7px;
-  flex-shrink: 0;
-  box-shadow: 0 0 8px #818cf8;
-}
-.portal-channels-row {
+
+/* Primary Dark Teal Button */
+.btn-ocean-signin {
+  width: 100%;
+  padding: 12px 20px;
+  border-radius: 8px;
+  background: #0d3844;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 4px 14px rgba(13, 56, 68, 0.35);
   display: flex;
   align-items: center;
-  gap: 10px;
-  z-index: 2;
-  flex-wrap: wrap;
-  padding-top: 24px;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
-}
-.portal-auth {
-  flex: 1;
-  max-width: 540px;
-  background: #0b0f17;
-  display: flex;
-  flex-direction: column;
   justify-content: center;
-  padding: 48px;
-  position: relative;
+  gap: 8px;
 }
-.portal-auth-tabs {
-  display: flex;
-  gap: 6px;
-  background: rgba(255, 255, 255, 0.04);
-  padding: 4px;
-  border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  margin-bottom: 24px;
+.btn-ocean-signin:hover {
+  background: #08252d;
+  box-shadow: 0 6px 20px rgba(13, 56, 68, 0.5);
+  transform: translateY(-1px);
 }
-.portal-tab-btn {
-  flex: 1;
-  padding: 10px;
+.btn-ocean-signin:active {
+  transform: translateY(1px);
+}
+
+/* Google Sign-in Button */
+.btn-google-signin {
+  width: 100%;
+  padding: 10px 16px;
   border-radius: 8px;
-  border: none;
-  background: transparent;
-  color: #94a3b8;
-  font-size: 13px;
-  font-weight: 700;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  color: #334155;
+  font-size: 13.5px;
+  font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
-  text-align: center;
-}
-.portal-tab-btn.active {
-  background: rgba(255, 255, 255, 0.09);
-  color: #ffffff;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
-}
-.chip-btn {
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: var(--ink2);
-  cursor: pointer;
-  transition: all 0.15s ease;
-}
-.chip-btn:hover, .chip-btn.selected {
-  background: rgba(99, 102, 241, 0.15);
-  border-color: rgba(99, 102, 241, 0.5);
-  color: #818cf8;
-}
-
-/* Orders Status Pills */
-.status-pill {
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  gap: 5px;
-  padding: 3px 9px;
-  border-radius: 9999px;
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 10px;
 }
-.status-pill.pending {
-  background: rgba(245, 158, 11, 0.15);
-  border: 1px solid rgba(245, 158, 11, 0.4);
-  color: #fbbf24;
+.btn-google-signin:hover {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
-.status-pill.confirmed {
-  background: rgba(16, 185, 129, 0.15);
-  border: 1px solid rgba(16, 185, 129, 0.4);
-  color: #34d399;
-}
-.status-pill.rejected {
-  background: rgba(239, 68, 68, 0.15);
-  border: 1px solid rgba(239, 68, 68, 0.4);
-  color: #f87171;
+.google-svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
 }
 
-/* Responsive Layout */
-@media (max-width: 640px) {
-  .portal-container { flex-direction: column; }
-  .portal-showcase { display: none; }
-  .portal-auth { max-width: 100%; padding: 24px 18px; min-height: 100vh; }
-  header { padding: 10px 14px; flex-wrap: wrap; gap: 8px; }
-  .wrap { flex-direction: column; }
-  nav#nav {
-    width: 100%;
-    display: flex;
-    flex-direction: row;
-    overflow-x: auto;
-    padding: 8px 12px;
-    gap: 6px;
-    white-space: nowrap;
-    border-right: none;
-    border-bottom: 1px solid var(--line);
-    min-height: auto;
-    position: static;
+.auth-footer-prompt {
+  text-align: center;
+  font-size: 13px;
+  color: #64748b;
+  margin-top: 22px;
+  font-weight: 500;
+}
+.auth-footer-prompt a {
+  color: #0d3844;
+  font-weight: 700;
+  text-decoration: none;
+  margin-left: 4px;
+}
+.auth-footer-prompt a:hover {
+  text-decoration: underline;
+}
+
+.industry-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+.chip-pill {
+  padding: 4px 10px;
+  border-radius: 9999px;
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
+  color: #475569;
+  font-size: 11.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.chip-pill:hover {
+  background: #0d3844;
+  color: #ffffff;
+  border-color: #0d3844;
+}
+
+@media (max-width: 860px) {
+  .login-card {
+    flex-direction: column;
+    padding: 12px;
+    border-radius: 24px;
   }
-  nav#nav .navlabel { display: none; }
-  nav#nav button { padding: 8px 12px; font-size: 12px; }
-  main { padding: 16px 14px 60px; }
-  .grid2, .grid3, .grid4, .grid.g2, .grid.g4, .hero-bento {
-    grid-template-columns: 1fr !important;
+  .login-showcase {
+    min-height: 260px;
+    padding: 26px 22px;
+    border-radius: 18px;
   }
-}
-@media (min-width: 641px) and (max-width: 1024px) {
-  .portal-container { flex-direction: column; }
-  .portal-showcase { padding: 36px 32px; min-height: 280px; }
-  .portal-auth { max-width: 100%; padding: 36px 32px; }
-  nav#nav { width: 210px; }
-  .grid.g4 { grid-template-columns: repeat(2, 1fr) !important; }
-}
-@media (min-width: 1025px) and (max-width: 1920px) {
-  .portal-showcase { padding: 56px 48px; }
-  .portal-auth { max-width: 520px; padding: 48px; }
-}
-@media (min-width: 1921px) {
-  body { font-size: 15px; }
-  .wrap { max-width: 2200px; }
+  .showcase-title {
+    font-size: 24px;
+  }
+  .login-form-pane {
+    padding: 26px 18px;
+  }
 }
 </style>
 </head>
 <body>
 
-<!-- Split-Screen Login & Registration Portal -->
+<!-- Split-Screen Login & Registration Portal (Exact Screenshot Layout) -->
 <div id="login">
-  <div class="portal-container">
-    <!-- Left Hero Showcase -->
-    <div class="portal-showcase">
-      <div class="portal-brand-row">
-        <div class="portal-brand-badge">CC</div>
-        <div>
-          <strong style="color:#ffffff; font-size:16px; letter-spacing:0.01em">ccadminchatbot</strong>
-          <div style="color:#94a3b8; font-size:12px">AI Operations Platform</div>
+  <div class="login-outer-frame">
+    <!-- Rounded White Card Container -->
+    <div class="login-card">
+      
+      <!-- Left Hero Column with Ocean Backdrop -->
+      <div class="login-showcase">
+        <div class="login-showcase-top">
+          <div class="showcase-logo">LOGO</div>
+        </div>
+        <div class="login-showcase-bottom">
+          <h2 class="showcase-title">YOUR<br>NEXT ADVENTURE<br>AWAITS!</h2>
+          <p class="showcase-desc">
+            Log in to unlock exclusive deals, plan your dream escapes, and pick up where you left off. Whether it's mountains, beaches, or city lights
+          </p>
+          <div class="showcase-tagline">Your journey starts here.</div>
         </div>
       </div>
 
-      <div class="portal-hero-content">
-        <div class="portal-hero-tag">Universal Multi-Channel Intelligence</div>
-        <h2>Automated messaging, inquiries, and orders for every industry.</h2>
-        <p>Built for clinics, retail shops, salons, professional agencies, cafes, and e-commerce. AI resolves customer questions 24/7 across your social channels while forwarding orders for human confirmation.</p>
-        
-        <div class="portal-industries-grid">
-          <span class="industry-chip">Retail &amp; E-commerce</span>
-          <span class="industry-chip">Healthcare &amp; Dental</span>
-          <span class="industry-chip">Beauty Salons &amp; Spa</span>
-          <span class="industry-chip">Digital &amp; IT Agencies</span>
-          <span class="industry-chip">Consulting &amp; Law</span>
-          <span class="industry-chip">Restaurants &amp; Cafes</span>
-          <span class="industry-chip">Real Estate</span>
-        </div>
+      <!-- Right Form Column -->
+      <div class="login-form-pane">
+        <!-- Sign In View -->
+        <form id="loginForm" class="auth-form">
+          <h1 class="auth-title">WELCOME BACK</h1>
+          <p class="auth-subtitle">Welcome back! Please enter your details.</p>
 
-        <div class="portal-features-list">
-          <div class="portal-feature-item">
-            <span class="portal-feature-bullet"></span>
-            <span><strong>Zero-Risk Order Intake:</strong> AI extracts items and customer details, confirms receipt, and holds orders in a review bucket for your staff.</span>
+          <div class="form-group">
+            <label class="form-label" for="lEmail">Email</label>
+            <input type="text" id="lEmail" autocomplete="username" placeholder="Enter your email" class="form-input">
           </div>
-          <div class="portal-feature-item">
-            <span class="portal-feature-bullet"></span>
-            <span><strong>Instant AI FAQ Setup:</strong> Enter your business type and services; our AI assumes and writes your verified knowledge base in seconds.</span>
+
+          <div class="form-group">
+            <label class="form-label" for="lPass">Password</label>
+            <div class="input-password-wrap">
+              <input type="password" id="lPass" autocomplete="current-password" placeholder="••••••••" required class="form-input">
+              <button type="button" class="btn-toggle-eye" onclick="togglePassVisibility('lPass', this)" title="Toggle password visibility">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+              </button>
+            </div>
           </div>
-          <div class="portal-feature-item">
-            <span class="portal-feature-bullet"></span>
-            <span><strong>Multi-Device Control:</strong> Full responsiveness across mobile phones, tablets, laptops, and executive TV displays.</span>
+
+          <div class="auth-options-row">
+            <label class="chk-remember">
+              <input type="checkbox" id="rememberMe" checked>
+              <span>Remember me</span>
+            </label>
+            <a href="#" class="forgot-link" onclick="handleForgotPass(event)">Forgot password</a>
           </div>
-        </div>
+
+          <div id="loginErr" class="auth-error"></div>
+
+          <button type="submit" class="btn-ocean-signin">
+            Sign in
+          </button>
+
+          <button type="button" class="btn-google-signin" onclick="handleGoogleSim(event)">
+            <svg class="google-svg" viewBox="0 0 24 24">
+              <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.17z"/>
+              <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.26 21.36 7.33 24 12 24z"/>
+              <path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.25C.45 8.18 0 9.99 0 12s.45 3.82 1.25 5.42l4.03-3.15z"/>
+              <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/>
+            </svg>
+            <span>Sign in with Google</span>
+          </button>
+
+          <div class="auth-footer-prompt">
+            Don't have an account? <a href="#" onclick="switchPortalTab('register'); return false;">Sign up</a>
+          </div>
+        </form>
+
+        <!-- Sign Up View -->
+        <form id="signupForm" class="auth-form" style="display:none">
+          <h1 class="auth-title">CREATE ACCOUNT</h1>
+          <p class="auth-subtitle">Launch your AI chatbot with a 14-day free trial.</p>
+
+          <div class="form-group">
+            <label class="form-label" for="suName">Business / Brand Name</label>
+            <input type="text" id="suName" placeholder="e.g. Uttara Dental Care" required class="form-input">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="suType">Business Type / Industry</label>
+            <div class="industry-chip-row">
+              <button type="button" class="chip-pill" onclick="quickSelectSignupType('Dental & Healthcare Clinic')">Clinic</button>
+              <button type="button" class="chip-pill" onclick="quickSelectSignupType('Retail & Fashion Boutique')">Retail</button>
+              <button type="button" class="chip-pill" onclick="quickSelectSignupType('Beauty & Hair Salon')">Salon</button>
+              <button type="button" class="chip-pill" onclick="quickSelectSignupType('Digital & IT Agency')">Agency</button>
+              <button type="button" class="chip-pill" onclick="quickSelectSignupType('Specialty Cafe & Restaurant')">Cafe</button>
+            </div>
+            <input type="text" id="suType" placeholder="e.g. Dental Clinic, Boutique, IT Agency..." required class="form-input">
+          </div>
+
+          <div class="form-group" id="suServicesBox">
+            <label class="form-label" for="suServices">Services / Products</label>
+            <textarea id="suServices" rows="2" placeholder="e.g. Teeth whitening, braces, dental cleaning..." class="form-input" style="min-height:60px"></textarea>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="suEmail">Email Address (Optional)</label>
+            <input type="email" id="suEmail" placeholder="manager@yourbusiness.com" class="form-input">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="suPass">Create Password</label>
+            <div class="input-password-wrap">
+              <input type="password" id="suPass" placeholder="Choose password (min 4 chars)" required class="form-input">
+              <button type="button" class="btn-toggle-eye" onclick="togglePassVisibility('suPass', this)">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+              </button>
+            </div>
+          </div>
+
+          <div id="signupErr" class="auth-error"></div>
+
+          <button type="submit" class="btn-ocean-signin">
+            Create Business Account
+          </button>
+
+          <div class="auth-footer-prompt">
+            Already have an account? <a href="#" onclick="switchPortalTab('signin'); return false;">Sign in</a>
+          </div>
+        </form>
       </div>
 
-      <div class="portal-channels-row">
-        <span style="font-size:12px; color:#64748b; font-weight:600">CONNECTED CHANNELS:</span>
-        <span class="pill" style="background:rgba(24,119,242,0.15); border-color:rgba(24,119,242,0.4); color:#60a5fa">Facebook Messenger</span>
-        <span class="pill" style="background:rgba(225,48,108,0.15); border-color:rgba(225,48,108,0.4); color:#f472b6">Instagram DM</span>
-        <span class="pill" style="background:rgba(37,211,102,0.15); border-color:rgba(37,211,102,0.4); color:#4ade80">WhatsApp Cloud</span>
-        <span class="pill" style="background:rgba(255,255,255,0.08); border-color:rgba(255,255,255,0.2); color:#f8fafc">TikTok Chat</span>
-      </div>
-    </div>
-
-    <!-- Right Authentication Card -->
-    <div class="portal-auth">
-      <!-- Portal Switcher Tabs -->
-      <div class="portal-auth-tabs">
-        <button type="button" class="portal-tab-btn active" id="tabBtnSignIn" onclick="switchPortalTab('signin')">Sign In</button>
-        <button type="button" class="portal-tab-btn" id="tabBtnRegister" onclick="switchPortalTab('register')">Register Business</button>
-        <button type="button" class="btn sm ghost" id="portalInstallPwa" style="display:none; font-size:12px; margin-left:auto; border-color:#38bdf8; color:#38bdf8">Install App</button>
-      </div>
-
-      <!-- Sign In Form -->
-      <form id="loginForm" class="portal-form-block">
-        <div style="margin-bottom:20px">
-          <h2 style="margin:0 0 6px; font-size:24px; color:#f8fafc">Access Operations Hub</h2>
-          <p style="margin:0; font-size:13px; color:#94a3b8">Enter your master admin or business tenant password to open your workspace.</p>
-        </div>
-
-        <label class="f" style="color:#cbd5e1">Email Address (Optional)</label>
-        <input type="text" id="lEmail" autocomplete="username" placeholder="Optional (leave empty for password-only login)" style="margin-bottom:14px; background:#121820; border-color:rgba(255,255,255,0.14); color:#f8fafc">
-
-        <label class="f" style="color:#cbd5e1">Password</label>
-        <input type="password" id="lPass" autocomplete="current-password" placeholder="Enter your access password" required autofocus style="margin-bottom:8px; background:#121820; border-color:rgba(255,255,255,0.14); color:#f8fafc">
-        
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px">
-          <span style="font-size:11.5px; color:#64748b">Password-only login supported</span>
-        </div>
-
-        <div id="loginErr" style="color:#f87171; font-size:12.5px; margin-bottom:12px; min-height:16px"></div>
-
-        <button type="submit" class="btn-dark-glass primary" style="width:100%; padding:12px 24px">
-          Access Operations Hub
-        </button>
-      </form>
-
-      <!-- Register Business Form -->
-      <form id="signupForm" class="portal-form-block" style="display:none">
-        <div style="margin-bottom:18px">
-          <h2 style="margin:0 0 6px; font-size:24px; color:#f8fafc">Register New Business</h2>
-          <p style="margin:0; font-size:13px; color:#94a3b8">Launch your AI chatbot across Facebook, Instagram, WhatsApp, and TikTok with a 14-day free trial.</p>
-        </div>
-
-        <label class="f" style="color:#cbd5e1">Business / Brand Name</label>
-        <input type="text" id="suName" placeholder="e.g. Uttara Dental Care" required style="margin-bottom:12px; background:#121820; border-color:rgba(255,255,255,0.14); color:#f8fafc">
-
-        <label class="f" style="color:#cbd5e1">Business Type / Industry</label>
-        <div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:8px">
-          <button type="button" class="btn sm chip-btn" onclick="quickSelectSignupType('Dental & Healthcare Clinic')">Clinic</button>
-          <button type="button" class="btn sm chip-btn" onclick="quickSelectSignupType('Retail & Fashion Boutique')">Retail</button>
-          <button type="button" class="btn sm chip-btn" onclick="quickSelectSignupType('Beauty & Hair Salon')">Salon</button>
-          <button type="button" class="btn sm chip-btn" onclick="quickSelectSignupType('Digital & IT Agency')">Agency</button>
-          <button type="button" class="btn sm chip-btn" onclick="quickSelectSignupType('Specialty Cafe & Restaurant')">Restaurant</button>
-        </div>
-        <input type="text" id="suType" placeholder="e.g. Dental Clinic, Clothing Boutique, IT Agency..." required oninput="handleSignupTypeTyped(this.value)" style="margin-bottom:12px; background:#121820; border-color:rgba(255,255,255,0.14); color:#f8fafc">
-
-        <div id="suServicesBox" style="display:block">
-          <label class="f" style="color:#cbd5e1">What services or products do you provide?</label>
-          <textarea id="suServices" rows="2" placeholder="e.g. Teeth whitening, braces, dental cleaning, root canal treatments..." style="margin-bottom:12px; background:#121820; border-color:rgba(255,255,255,0.14); color:#f8fafc"></textarea>
-        </div>
-
-        <label class="f" style="color:#cbd5e1">Contact Email (Optional)</label>
-        <input type="email" id="suEmail" placeholder="manager@yourbusiness.com" style="margin-bottom:12px; background:#121820; border-color:rgba(255,255,255,0.14); color:#f8fafc">
-
-        <label class="f" style="color:#cbd5e1">Create Unique Password</label>
-        <input type="password" id="suPass" placeholder="Choose unique password (min 4 chars)" required style="margin-bottom:16px; background:#121820; border-color:rgba(255,255,255,0.14); color:#f8fafc">
-
-        <div id="signupErr" style="color:#f87171; font-size:12.5px; margin-bottom:12px; min-height:16px"></div>
-
-        <button type="submit" class="btn-dark-glass primary" style="width:100%; padding:12px 24px">
-          Create Business &amp; Train AI
-        </button>
-      </form>
     </div>
   </div>
 </div>
@@ -3011,21 +3104,38 @@ function copyToClipboard(text){
 }
 
 function switchPortalTab(tab){
-  const btnIn = document.getElementById('tabBtnSignIn');
-  const btnReg = document.getElementById('tabBtnRegister');
   const fIn = document.getElementById('loginForm');
   const fReg = document.getElementById('signupForm');
+  if(!fIn || !fReg) return;
   if(tab === 'signin'){
-    btnIn.classList.add('active');
-    btnReg.classList.remove('active');
     fIn.style.display = 'block';
     fReg.style.display = 'none';
   } else {
-    btnReg.classList.add('active');
-    btnIn.classList.remove('active');
     fIn.style.display = 'none';
     fReg.style.display = 'block';
   }
+}
+
+function togglePassVisibility(inputId, btnEl){
+  const inp = document.getElementById(inputId);
+  if(!inp) return;
+  if(inp.type === 'password'){
+    inp.type = 'text';
+    btnEl.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>`;
+  } else {
+    inp.type = 'password';
+    btnEl.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>`;
+  }
+}
+
+function handleForgotPass(e){
+  e.preventDefault();
+  alert('Please contact your Master Platform Administrator to reset your tenant password.');
+}
+
+function handleGoogleSim(e){
+  e.preventDefault();
+  alert('Google Workspace Single Sign-On is available for enterprise custom domains.');
 }
 
 function quickSelectSignupType(type){
@@ -3034,7 +3144,7 @@ function quickSelectSignupType(type){
 }
 
 function handleSignupTypeTyped(val){
-  // dynamic assistance if needed
+  // dynamic assistance
 }
 
 document.getElementById('loginForm').onsubmit = async e => {
