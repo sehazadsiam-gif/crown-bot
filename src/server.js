@@ -208,10 +208,6 @@ function noteFail(ip) {
 
 app.post(`${BASE}/api/login`, async (req, reply) => {
   const ip = req.ip;
-  if (!checkRate(ip)) {
-    return reply.code(429).send({ error: 'Too many failed attempts. Try again in 5 minutes.' });
-  }
-
   const { email, password } = req.body || {};
   const supplied = (email || '').trim().toLowerCase();
   const suppliedPass = (password || '').trim();
@@ -221,7 +217,7 @@ app.post(`${BASE}/api/login`, async (req, reply) => {
     return reply.code(400).send({ error: 'Password is required.' });
   }
 
-  // 1. Check Master Admin Credentials (Password: ccadmin6789 or configured admin password)
+  // 1. Check Master Admin Credentials (Password: ccadmin6789 or configured admin password) - NEVER locked out
   const isMasterPass = (suppliedPass === 'ccadmin6789')
     || (suppliedPass === effectiveAdminPass)
     || await verifyPassword(suppliedPass, effectiveAdminPass, effectiveAdminPassHash);
@@ -238,6 +234,11 @@ app.post(`${BASE}/api/login`, async (req, reply) => {
       maxAge: SESSION_TTL / 1000
     });
     return { ok: true, role: 'master_admin', email: adminEmail, token: tok };
+  }
+
+  // 2. Rate limit check for regular tenant logins
+  if (!checkRate(ip)) {
+    return reply.code(429).send({ error: 'Too many failed attempts. Try again in 5 minutes.' });
   }
 
   // 2. Check Crown Coffee Tenant 1 (Dedicated Password: 1590)

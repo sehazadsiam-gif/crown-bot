@@ -3010,7 +3010,15 @@ button.btn.dark-glass,
 
 <script>
 const API = location.pathname.replace(/\/+$/,'') || '/chatbotadmin';
-const api = (p, opts={}) => fetch(API + p, {credentials:'same-origin', headers:{'Content-Type':'application/json'}, ...opts});
+const api = (p, opts={}) => {
+  const token = localStorage.getItem('cc_token');
+  const headers = {
+    'Content-Type': 'application/json',
+    ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+    ...(opts.headers || {})
+  };
+  return fetch(API + p, { credentials: 'same-origin', ...opts, headers });
+};
 
 let S = null, saveT = null, selConv = null;
 let currentWorkspaceId = 1, workspaces = [];
@@ -3160,7 +3168,8 @@ document.getElementById('loginForm').onsubmit = async e => {
   try {
     const res = await api('/api/login', {method:'POST', body:JSON.stringify({email, password})});
     const data = await res.json();
-    if(res.ok) {
+    if(res.ok && data.ok) {
+      if(data.token) localStorage.setItem('cc_token', data.token);
       await checkAuth();
     } else {
       err.textContent = data.error || 'Sign in failed.';
@@ -3192,7 +3201,8 @@ document.getElementById('signupForm').onsubmit = async e => {
       body: JSON.stringify({ businessName, businessType, services, contactEmail, password })
     });
     const data = await res.json();
-    if(res.ok){
+    if(res.ok && data.token){
+      localStorage.setItem('cc_token', data.token);
       await checkAuth();
       openOnboardingModal({ businessName, businessType, services });
     } else {
@@ -3207,6 +3217,7 @@ document.getElementById('signupForm').onsubmit = async e => {
 };
 
 document.getElementById('logoutBtn').onclick = async () => {
+  localStorage.removeItem('cc_token');
   await api('/api/logout', {method:'POST'});
   location.reload();
 };
