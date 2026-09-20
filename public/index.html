@@ -2156,10 +2156,13 @@ table.clean-table tr:hover td {
 <!-- Tenant: Mandatory First-Time Login Password Change Modal -->
 <div id="firstLoginModal" class="modal-backdrop">
   <div class="modal-card">
-    <div style="margin-bottom:14px">
-      <div class="logo-badge" style="width:34px; height:34px; font-size:13px; margin-bottom:10px">CC</div>
-      <h3 style="margin:0 0 4px">Welcome to Your Operations Hub</h3>
-      <p class="hint" style="margin:0">Please set your personal email address and choose a secure password before continuing.</p>
+    <div style="display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:14px">
+      <div>
+        <div class="logo-badge" style="width:34px; height:34px; font-size:13px; margin-bottom:10px">CC</div>
+        <h3 style="margin:0 0 4px">Welcome to Your Operations Hub</h3>
+        <p class="hint" style="margin:0">Please set your personal email address and choose a secure password before continuing.</p>
+      </div>
+      <button class="btn sm ghost" onclick="document.getElementById('firstLoginModal').classList.remove('open')">Close</button>
     </div>
 
     <label class="f">Your Email Address</label>
@@ -2173,7 +2176,10 @@ table.clean-table tr:hover td {
 
     <div id="flErr" style="color:var(--danger); font-size:12.5px; margin-bottom:10px"></div>
 
-    <button class="btn primary" id="btnSubmitFirstLogin" style="width:100%; justify-content:center">Save &amp; Enter Dashboard</button>
+    <div style="display:flex; gap:8px">
+      <button class="btn sm ghost" onclick="document.getElementById('firstLoginModal').classList.remove('open')">Dismiss</button>
+      <button class="btn primary sm" id="btnSubmitFirstLogin" style="flex:1; justify-content:center">Save &amp; Enter Dashboard</button>
+    </div>
   </div>
 </div>
 
@@ -2242,13 +2248,15 @@ async function checkAuth(){
       }
 
       if(tenantExpiredBanner){
-        tenantExpiredBanner.style.display = (sub?.isExpired || sub?.status === 'suspended') ? 'block' : 'none';
+        tenantExpiredBanner.style.display = (r.workspace_id !== 1 && (sub?.isExpired || sub?.status === 'suspended')) ? 'block' : 'none';
       }
 
-      // Mandatory First-Time Password Setup
-      if(r.must_change_password){
+      // Mandatory First-Time Password Setup (Never for Workspace 1)
+      if(r.must_change_password && r.workspace_id !== 1){
         document.getElementById('flEmailIn').value = r.email || '';
         document.getElementById('firstLoginModal').classList.add('open');
+      } else {
+        document.getElementById('firstLoginModal').classList.remove('open');
       }
 
       switchTab('dash');
@@ -2721,6 +2729,7 @@ function save(){
 
 /* ---------- TAB NAVIGATION ---------- */
 function switchTab(tabId){
+  if(!tabId) return;
   document.querySelectorAll('nav button').forEach(x=>x.classList.toggle('active', x.dataset.p===tabId));
   document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('active', p.dataset.p===tabId));
   if(tabId==='tenants') loadMasterTenants();
@@ -2729,10 +2738,24 @@ function switchTab(tabId){
   if(tabId==='channels') updateChannelUrls();
 }
 
+document.querySelectorAll('nav button[data-p]').forEach(b => {
+  b.addEventListener('click', (e) => {
+    e.stopPropagation();
+    switchTab(b.dataset.p);
+  });
+});
+
 document.getElementById('nav').onclick = e => {
   const b = e.target.closest('button[data-p]');
   if(b) switchTab(b.dataset.p);
 };
+
+// Global click-outside dismissal for all modal backdrops
+document.querySelectorAll('.modal-backdrop').forEach(modal => {
+  modal.addEventListener('click', e => {
+    if(e.target === modal) modal.classList.remove('open');
+  });
+});
 
 /* ---------- THEME SYSTEM ---------- */
 document.getElementById('themeBtn').onclick = () => {

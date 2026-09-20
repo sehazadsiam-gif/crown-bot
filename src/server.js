@@ -236,9 +236,9 @@ app.get(`${BASE}/api/me`, async req => {
     authed: true,
     role: 'tenant_admin',
     workspace_id: s.workspace_id,
-    workspace_name: ws?.name || 'My Workspace',
+    workspace_name: ws?.name || (s.workspace_id === 1 ? 'Crown Coffee' : 'My Workspace'),
     email: tenantUser?.email || s.email,
-    must_change_password: !!tenantUser?.must_change_password,
+    must_change_password: s.workspace_id === 1 ? false : !!tenantUser?.must_change_password,
     subscription: sub
   };
 });
