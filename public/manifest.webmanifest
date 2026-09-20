@@ -1,0 +1,51 @@
+{
+  "name": "CCAdmin Business Portal",
+  "short_name": "CCAdmin",
+  "description": "Universal AI Business Automation & Social Commerce Platform",
+  "start_url": "/chatbotadmin/",
+  "scope": "/chatbotadmin/",
+  "id": "/chatbotadmin/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#0c0d10",
+  "theme_color": "#111318",
+  "categories": ["business", "productivity", "utilities"],
+  "icons": [
+    {
+      "src": "/chatbotadmin/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/chatbotadmin/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/chatbotadmin/icon-maskable-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/chatbotadmin/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/chatbotadmin/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/chatbotadmin/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

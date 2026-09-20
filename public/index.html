@@ -2,8 +2,23 @@
 <html lang="en" data-theme="dark">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+<script>
+  if (location.protocol === 'http:' && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') {
+    location.replace('https:' + window.location.href.substring(window.location.protocol.length));
+  }
+</script>
 <title>ccadminchatbot — AI Operations Hub</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#111318">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="CCAdmin">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="shortcut icon" type="image/svg+xml" href="favicon.svg">
 <style>
@@ -1697,6 +1712,7 @@ button.btn.dark-glass,
       <div class="portal-auth-tabs">
         <button type="button" class="portal-tab-btn active" id="tabBtnSignIn" onclick="switchPortalTab('signin')">Sign In</button>
         <button type="button" class="portal-tab-btn" id="tabBtnRegister" onclick="switchPortalTab('register')">Register Business</button>
+        <button type="button" class="btn sm ghost" id="portalInstallPwa" style="display:none; font-size:12px; margin-left:auto; border-color:#38bdf8; color:#38bdf8">Install App</button>
       </div>
 
       <!-- Sign In Form -->
@@ -1799,6 +1815,7 @@ button.btn.dark-glass,
   <span class="pill" id="openPill"><span class="dot pulse"></span><span id="openTxt">Dhaka: Checking...</span></span>
   <span class="savechip" id="saveChip"></span>
   
+  <button class="btn sm" id="btnInstallPwa" style="display:none; border-color:#38bdf8; color:#38bdf8; font-weight:600" title="Install Web App on your Device">Install App</button>
   <button class="btn sm" id="btnOpenSim" title="Open AI Test Console">Fast Simulator</button>
   <button class="btn sm" id="themeBtn" title="Toggle Theme">Theme</button>
   <button class="btn sm ghost" id="logoutBtn">Sign out</button>
@@ -4489,6 +4506,56 @@ function render(){
 setInterval(() => {
   if(S) api(`/api/config?workspace_id=${currentWorkspaceId}`).then(r=>r.json()).then(d => { paintOpen(d.open); paintStats(d.stats); });
 }, 30000);
+
+/* ---------- PWA SERVICE WORKER & INSTALL SYSTEM ---------- */
+let deferredInstallPrompt = null;
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    const swPath = window.location.pathname.startsWith('/chatbotadmin') ? '/chatbotadmin/sw.js' : 'sw.js';
+    navigator.serviceWorker.register(swPath, { scope: '/chatbotadmin/' })
+      .then(reg => console.log('ServiceWorker registered with scope:', reg.scope))
+      .catch(err => console.warn('ServiceWorker registration error:', err));
+  });
+}
+
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredInstallPrompt = e;
+  const btn = document.getElementById('btnInstallPwa');
+  const portalBtn = document.getElementById('portalInstallPwa');
+  if(btn) btn.style.display = 'inline-flex';
+  if(portalBtn) portalBtn.style.display = 'inline-flex';
+});
+
+async function triggerPwaInstall() {
+  if(!deferredInstallPrompt) return;
+  deferredInstallPrompt.prompt();
+  const choice = await deferredInstallPrompt.userChoice;
+  if(choice.outcome === 'accepted') {
+    chip('App installed successfully');
+  }
+  deferredInstallPrompt = null;
+  const btn = document.getElementById('btnInstallPwa');
+  const portalBtn = document.getElementById('portalInstallPwa');
+  if(btn) btn.style.display = 'none';
+  if(portalBtn) portalBtn.style.display = 'none';
+}
+
+const btnInstall = document.getElementById('btnInstallPwa');
+if(btnInstall) btnInstall.addEventListener('click', triggerPwaInstall);
+
+const portalBtnInstall = document.getElementById('portalInstallPwa');
+if(portalBtnInstall) portalBtnInstall.addEventListener('click', triggerPwaInstall);
+
+window.addEventListener('appinstalled', () => {
+  chip('CCAdmin PWA Installed');
+  const btn = document.getElementById('btnInstallPwa');
+  const portalBtn = document.getElementById('portalInstallPwa');
+  if(btn) btn.style.display = 'none';
+  if(portalBtn) portalBtn.style.display = 'none';
+  deferredInstallPrompt = null;
+});
 
 checkAuth();
 </script>

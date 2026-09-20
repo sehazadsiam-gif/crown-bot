@@ -66,6 +66,22 @@ const app = Fastify({
 await app.register(cookie, { secret: SESSION_SECRET });
 await app.register(fstatic, { root: join(__dirname, '..', 'public'), prefix: `${BASE}/` });
 
+// Enforce HTTPS behind reverse proxy (resolves "Not Secure" warning)
+app.addHook('onRequest', async (req, reply) => {
+  const proto = req.headers['x-forwarded-proto'];
+  if (proto && proto === 'http' && req.hostname !== 'localhost' && !req.hostname.startsWith('127.0.0.1')) {
+    const host = req.headers.host || req.hostname;
+    return reply.redirect(`https://${host}${req.url}`, 301);
+  }
+});
+
+// Security & PWA headers
+app.addHook('onSend', async (req, reply) => {
+  reply.header('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload');
+  reply.header('X-Content-Type-Options', 'nosniff');
+  reply.header('X-Frame-Options', 'SAMEORIGIN');
+});
+
 /* Capture raw body for webhook HMAC signature verification */
 app.addContentTypeParser('application/json', { parseAs: 'buffer' }, (req, body, done) => {
   req.rawBody = body;
@@ -887,6 +903,49 @@ async function handleEvent(ev, log) {
 app.get('/favicon.ico', (req, reply) => reply.sendFile('favicon.svg'));
 app.get('/favicon.svg', (req, reply) => reply.sendFile('favicon.svg'));
 app.get(`${BASE}/favicon.ico`, (req, reply) => reply.sendFile('favicon.svg'));
+app.get(`${BASE}/favicon.svg`, (req, reply) => reply.sendFile('favicon.svg'));
+
+// Service Worker with unrestricted scope header
+app.get('/sw.js', (req, reply) => {
+  reply.header('Service-Worker-Allowed', '/');
+  reply.header('Content-Type', 'application/javascript; charset=utf-8');
+  return reply.sendFile('sw.js');
+});
+app.get(`${BASE}/sw.js`, (req, reply) => {
+  reply.header('Service-Worker-Allowed', '/');
+  reply.header('Content-Type', 'application/javascript; charset=utf-8');
+  return reply.sendFile('sw.js');
+});
+
+// PWA Manifests
+app.get('/manifest.webmanifest', (req, reply) => {
+  reply.header('Content-Type', 'application/manifest+json; charset=utf-8');
+  return reply.sendFile('manifest.webmanifest');
+});
+app.get('/manifest.json', (req, reply) => {
+  reply.header('Content-Type', 'application/manifest+json; charset=utf-8');
+  return reply.sendFile('manifest.webmanifest');
+});
+app.get(`${BASE}/manifest.webmanifest`, (req, reply) => {
+  reply.header('Content-Type', 'application/manifest+json; charset=utf-8');
+  return reply.sendFile('manifest.webmanifest');
+});
+app.get(`${BASE}/manifest.json`, (req, reply) => {
+  reply.header('Content-Type', 'application/manifest+json; charset=utf-8');
+  return reply.sendFile('manifest.webmanifest');
+});
+
+// PWA & Touch Icons
+app.get('/apple-touch-icon.png', (req, reply) => reply.sendFile('apple-touch-icon.png'));
+app.get(`${BASE}/apple-touch-icon.png`, (req, reply) => reply.sendFile('apple-touch-icon.png'));
+app.get('/icon-192.png', (req, reply) => reply.sendFile('icon-192.png'));
+app.get(`${BASE}/icon-192.png`, (req, reply) => reply.sendFile('icon-192.png'));
+app.get('/icon-512.png', (req, reply) => reply.sendFile('icon-512.png'));
+app.get(`${BASE}/icon-512.png`, (req, reply) => reply.sendFile('icon-512.png'));
+app.get('/icon-maskable-192.png', (req, reply) => reply.sendFile('icon-maskable-192.png'));
+app.get(`${BASE}/icon-maskable-192.png`, (req, reply) => reply.sendFile('icon-maskable-192.png'));
+app.get('/icon-maskable-512.png', (req, reply) => reply.sendFile('icon-maskable-512.png'));
+app.get(`${BASE}/icon-maskable-512.png`, (req, reply) => reply.sendFile('icon-maskable-512.png'));
 app.get('/', (req, reply) => reply.redirect(`${BASE}/`));
 app.get(BASE, (req, reply) => reply.redirect(`${BASE}/`));
 app.setNotFoundHandler((req, reply) => {
