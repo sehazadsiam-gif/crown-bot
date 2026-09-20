@@ -9,12 +9,12 @@
     location.replace('https:' + window.location.href.substring(window.location.protocol.length));
   }
 </script>
-<title>Donezo — Autonomous AI Operations Center</title>
+<title>CC Chatbot — Autonomous AI Operations Center</title>
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#f4f6f8">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="Donezo">
+<meta name="apple-mobile-web-app-title" content="CC Chatbot">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
@@ -2609,7 +2609,7 @@ button.btn.dark-glass,
       </svg>
     </div>
     <div>
-      <h1 id="brandTitleTxt" style="font-size:18px; font-weight:800; color:#114B32; margin:0">Donezo</h1>
+      <h1 id="brandTitleTxt" style="font-size:18px; font-weight:800; color:#114B32; margin:0">CC Chatbot</h1>
       <div class="sub" id="brandSubTxt" style="font-size:11px; color:var(--ink3)">AI Operations</div>
     </div>
   </div>
@@ -4138,8 +4138,9 @@ async function checkAuth(){
       const masterBadge = document.getElementById('masterAdminBadge');
       if(masterBadge) masterBadge.style.display = 'inline-flex';
 
-      document.getElementById('brandTitleTxt').textContent = 'ccadminchatbot';
+      document.getElementById('brandTitleTxt').textContent = 'CC Chatbot';
       document.getElementById('brandSubTxt').textContent = 'Master Control Hub';
+      document.title = 'CC Chatbot — Master Admin';
       document.getElementById('brandLogoBadge').textContent = '👑';
 
       switchTab('tenants');
@@ -4158,8 +4159,9 @@ async function checkAuth(){
       if(inspectingBanner) inspectingBanner.style.display = 'none';
 
       const bizName = r.workspace_id === 1 ? 'CC' : (r.workspace_name || 'My Business');
-      document.getElementById('brandTitleTxt').textContent = bizName;
+      document.getElementById('brandTitleTxt').textContent = bizName + ' Chatbot';
       document.getElementById('brandSubTxt').textContent = 'AI Operations Center';
+      document.title = `${bizName} — CC Chatbot AI Operations`;
       document.getElementById('brandLogoBadge').textContent = r.workspace_id === 1 ? 'CC' : (bizName.slice(0,2).toUpperCase());
 
       // Render Subscription Status Badge
@@ -6070,26 +6072,48 @@ async function loadInbox(){
   if(platform) params.set('platform', platform);
   if(from) params.set('from', from);
   if(to) params.set('to', to);
-  const d = await api(`/api/conversations?${params.toString()}`).then(r=>r.json()).catch(()=>({conversations:[]}));
+  if(currentWorkspaceId) params.set('workspace_id', currentWorkspaceId);
   const w = document.getElementById('convList');
   if(!w) return;
+  w.innerHTML = '<div class="empty" style="padding:24px;text-align:center"><span style="opacity:0.5">⏳ Loading conversations…</span></div>';
+  const d = await api(`/api/conversations?${params.toString()}`).then(r=>r.json()).catch(()=>({conversations:[]}));
   if(!d.conversations?.length){
-    w.innerHTML = '<div class="empty">No conversations found.</div>';
+    w.innerHTML = '<div class="empty" style="padding:24px;text-align:center;color:var(--ink3)">No conversations found.</div>';
     return;
   }
 
   w.innerHTML = d.conversations.map(cv => {
     const platCls = cv.platform==='facebook'?'fb':cv.platform==='instagram'?'ig':cv.platform==='whatsapp'?'wa':'tt';
+    const isSelected = selConv === cv.id;
+    const timeAgo = cv.last_message_at ? relativeTime(cv.last_message_at) : '';
     return `
-      <div class="conv ${selConv===cv.id?'sel':''}" data-cid="${cv.id}">
+      <div class="conv ${isSelected?'sel':''}" data-cid="${cv.id}" title="Click to open this conversation" style="user-select:none">
         <div class="n">
           <span>${esc(cv.name || 'Customer')}</span>
           <span class="badge plat ${platCls}">${cv.platform}</span>
         </div>
-        <div class="p">${esc(cv.preview || 'No messages')}</div>
-        ${cv.flagged ? '<div style="margin-top:6px"><span class="badge">FLAGGED: '+esc(cv.flag_reason||'Needs attention')+'</span></div>' : ''}
+        <div class="p">${esc(cv.preview || 'No messages yet…')}</div>
+        ${timeAgo ? `<div style="font-size:10px;color:var(--ink3);margin-top:3px">${timeAgo}</div>` : ''}
+        ${cv.flagged ? `<div style="margin-top:6px"><span class="badge" style="background:rgba(239,68,68,0.12);color:#dc2626">⚑ FLAGGED: ${esc(cv.flag_reason||'Needs attention')}</span></div>` : ''}
       </div>`;
   }).join('');
+
+  // Auto-scroll selected conversation into view
+  if(selConv) {
+    const sel = w.querySelector('.conv.sel');
+    if(sel) sel.scrollIntoView({ block:'nearest', behavior:'smooth' });
+  }
+}
+
+function relativeTime(isoOrMs){
+  try {
+    const diff = Date.now() - new Date(isoOrMs).getTime();
+    if(isNaN(diff)) return '';
+    if(diff < 60000) return 'just now';
+    if(diff < 3600000) return Math.floor(diff/60000) + 'm ago';
+    if(diff < 86400000) return Math.floor(diff/3600000) + 'h ago';
+    return Math.floor(diff/86400000) + 'd ago';
+  } catch { return ''; }
 }
 
 let _inboxSearchTimer = null;
@@ -6240,22 +6264,54 @@ function showSubscriptionExpiredBanner() {
 }
 
 document.getElementById('convList').addEventListener('click', async e => {
-  const el = e.target.closest('[data-cid]'); if(!el) return;
-  selConv = +el.dataset.cid;
-  loadInbox();
+  const el = e.target.closest('[data-cid]');
+  if(!el) return;
+  const newId = +el.dataset.cid;
+  if(selConv === newId) return; // already selected
+  selConv = newId;
 
-  const d = await api('/api/conversations/' + selConv).then(r=>r.json());
+  // Immediately highlight selected item and refresh list
+  document.querySelectorAll('#convList .conv').forEach(c => c.classList.toggle('sel', +c.dataset.cid === selConv));
+
+  // Show loading state in thread view
   const log = document.getElementById('threadLog');
-  log.innerHTML = '';
-  d.messages.forEach(m => bubble(m.direction==='in'?'b':'u', m.text, 'threadLog'));
-  if(d.conversation?.flagged) bubble('sys', (d.conversation.flag_reason || 'Flagged thread'), 'threadLog');
+  log.innerHTML = '<div class="empty" style="text-align:center;padding:32px;opacity:0.5">Loading conversation…</div>';
 
-  document.getElementById('threadIn').disabled = false;
-  document.getElementById('threadSend').disabled = false;
+  const threadIn = document.getElementById('threadIn');
+  const threadSend = document.getElementById('threadSend');
   const cb = document.getElementById('convBot');
-  cb.disabled = false;
-  cb.checked = !!d.conversation?.bot_enabled;
-  document.getElementById('convChannelBadge').textContent = `Channel: ${d.conversation?.platform || 'Unknown'}`;
+  const badge = document.getElementById('convChannelBadge');
+  threadIn.disabled = true;
+  threadSend.disabled = true;
+  cb.disabled = true;
+
+  try {
+    const params = currentWorkspaceId ? `?workspace_id=${currentWorkspaceId}` : '';
+    const d = await api(`/api/conversations/${selConv}${params}`).then(r=>r.json());
+    log.innerHTML = '';
+    if(!d.messages?.length) {
+      log.innerHTML = '<div class="empty">No messages in this conversation yet.</div>';
+    } else {
+      d.messages.forEach(m => bubble(m.direction==='in'?'b':'u', m.text, 'threadLog'));
+    }
+    if(d.conversation?.flagged) bubble('sys', '⚑ ' + (d.conversation.flag_reason || 'Flagged thread'), 'threadLog');
+    // Scroll to latest message
+    log.scrollTop = log.scrollHeight;
+
+    threadIn.disabled = false;
+    threadSend.disabled = false;
+    cb.disabled = false;
+    cb.checked = !!d.conversation?.bot_enabled;
+    const platName = d.conversation?.platform || 'Unknown';
+    const platIcon = platName==='facebook'?'📘':platName==='instagram'?'📷':platName==='whatsapp'?'📱':'💬';
+    badge.textContent = `${platIcon} ${platName.charAt(0).toUpperCase()+platName.slice(1)}`;
+  } catch(err) {
+    log.innerHTML = `<div class="empty" style="color:var(--danger)">Failed to load conversation. Please try again.</div>`;
+    selConv = null;
+  }
+
+  // Refresh the list to show updated selection state
+  loadInbox();
 });
 
 document.getElementById('convBot').onchange = async e => {
