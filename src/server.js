@@ -76,11 +76,24 @@ const app = Fastify({
 await app.register(cookie, { secret: effectiveSessionSecret });
 await app.register(fstatic, { root: join(__dirname, '..', 'public'), prefix: `${BASE}/` });
 
-// Enforce HTTPS behind reverse proxy (resolves "Not Secure" warning)
+if (BASE && BASE !== '/' && BASE !== '') {
+  await app.register(fstatic, {
+    root: join(__dirname, '..', 'public'),
+    prefix: '/',
+    decorateReply: false
+  });
+}
+
+// Ensure root GET serves index.html or redirects cleanly
+app.get('/', async (req, reply) => {
+  return reply.sendFile('index.html');
+});
+
+// Enforce HTTPS behind reverse proxy for domain names
 app.addHook('onRequest', async (req, reply) => {
   const proto = req.headers['x-forwarded-proto'];
-  if (proto && proto === 'http' && req.hostname !== 'localhost' && !req.hostname.startsWith('127.0.0.1')) {
-    const host = req.headers.host || req.hostname;
+  const host = req.headers.host || req.hostname;
+  if (proto && proto === 'http' && host && !/^\d+\.\d+\.\d+\.\d+/.test(host) && !host.startsWith('localhost') && !host.startsWith('127.0.0.1')) {
     return reply.redirect(`https://${host}${req.url}`, 301);
   }
 });
