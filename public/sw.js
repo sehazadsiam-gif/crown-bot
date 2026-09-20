@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ccadmin-pwa-v1.0.1';
+const CACHE_NAME = 'ccadmin-pwa-v1.1.0';
 const BASE_PATH = '/chatbotadmin';
 
 const PRECACHE_ASSETS = [
@@ -87,6 +87,43 @@ self.addEventListener('fetch', event => {
         }
         return networkRes;
       });
+    })
+  );
+});
+
+// Push Notification Handler
+self.addEventListener('push', event => {
+  let data = {};
+  if (event.data) {
+    try { data = event.data.json(); } catch { data = { title: 'New Notification', body: event.data.text() }; }
+  }
+
+  const title = data.title || 'ccadminchatbot';
+  const options = {
+    body: data.body || 'You have a new notification.',
+    icon: `${BASE_PATH}/icon-192.png`,
+    badge: `${BASE_PATH}/icon-maskable-192.png`,
+    tag: data.tag || 'ccadmin-push',
+    data: { url: data.url || BASE_PATH + '/' },
+    requireInteraction: false,
+    silent: false
+  };
+
+  event.waitUntil(self.registration.showNotification(title, options));
+});
+
+// Notification Click Handler - opens or focuses the admin panel
+self.addEventListener('notificationclick', event => {
+  event.notification.close();
+  const targetUrl = event.notification.data?.url || (BASE_PATH + '/');
+  event.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then(windowClients => {
+      for (const client of windowClients) {
+        if (client.url.includes(BASE_PATH) && 'focus' in client) {
+          return client.focus();
+        }
+      }
+      if (clients.openWindow) return clients.openWindow(targetUrl);
     })
   );
 });

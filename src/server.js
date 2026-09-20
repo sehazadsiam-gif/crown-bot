@@ -16,12 +16,28 @@ import {
   authenticateTenant, authenticateTenantByPasswordOnly, updateTenantCredentials, resetTenantPassword,
   getTenantUser, getSubscription, isSubscriptionActive, updateSubscription,
   listTenantsOverview, createWorkspaceWithTenant,
-  createOrder, listOrders, updateOrderStatus, getOrderStats, isPasswordUnique
+  createOrder, listOrders, updateOrderStatus, getOrderStats, isPasswordUnique,
+  savePushSubscription, removePushSubscription, listPushSubscriptions,
+  logWebhookEvent, listWebhookLogs,
+  findWorkspaceByDomain, setWorkspaceCustomDomain,
+  exportConversationsCSV, exportOrdersCSV
 } from './db.js';
 import { buildPrompt, openState, escalationHit } from './prompt.js';
-import { generateReply, parseMenuText, suggestFaqsForBusiness, detectOrderOrInquiry } from './ai.js';
+import { generateReply, parseMenuText, suggestFaqsForBusiness, detectOrderOrInquiry, detectLanguage } from './ai.js';
 import { verifySignature, isSelf, sendMessage, fetchProfileName, parseWebhook, testMetaConnection } from './meta.js';
 import { sendTikTokMessage, parseTikTokWebhook, testTikTokConnection, verifyTikTokSignature } from './tiktok.js';
+import webpush from 'web-push';
+import { createReadStream } from 'node:fs';
+import { copyFile, mkdir, readdir, rm, stat } from 'node:fs/promises';
+
+// Configure VAPID for web push
+if (process.env.VAPID_PUBLIC_KEY && process.env.VAPID_PRIVATE_KEY) {
+  webpush.setVapidDetails(
+    process.env.VAPID_EMAIL || 'mailto:admin@ccadmin.online',
+    process.env.VAPID_PUBLIC_KEY,
+    process.env.VAPID_PRIVATE_KEY
+  );
+}
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const BASE = (process.env.BASE_PATH || '/chatbotadmin').replace(/\/$/, '');
@@ -130,6 +146,15 @@ function getToken(req) {
 async function requireAuth(req, reply) {
   const s = readToken(getToken(req));
   if (!s) return reply.code(401).send({ error: 'unauthorized' });
+  // Enforce subscription expiry for tenant admins (workspace #1 is always exempt)
+  if (s.role === 'tenant_admin' && s.workspace_id && s.workspace_id !== 1) {
+    if (!isSubscriptionActive(s.workspace_id)) {
+      return reply.code(402).send({
+        error: 'subscription_expired',
+        message: 'Your subscription has expired. Please contact admin@ccadmin.online to renew.'
+      });
+    }
+  }
   req.session = s;
 }
 
@@ -149,10 +174,29 @@ function getScopedWorkspaceId(req) {
   return req.session.workspace_id || 1;
 }
 
-/* ───────────────────────── auth routes ───────────────────────── */
+/* ───────────────────────── rate limiting ───────────────────────── */
 const attempts = new Map();
 const MAX_FAILS = 15;
 const LOCKOUT = 5 * 60 * 1000;
+
+// General-purpose per-IP rate limiter: { key -> { count, resetAt } }
+const rateBuckets = new Map();
+function rateLimit(ip, key, maxCalls, windowMs) {
+  const k = `${ip}:${key}`;
+  const now2 = Date.now();
+  let rec = rateBuckets.get(k);
+  if (!rec || now2 > rec.resetAt) {
+    rec = { count: 0, resetAt: now2 + windowMs };
+    rateBuckets.set(k, rec);
+  }
+  rec.count++;
+  return rec.count <= maxCalls;
+}
+// Clean up stale buckets every 10 minutes
+setInterval(() => {
+  const now2 = Date.now();
+  for (const [k, r] of rateBuckets) if (now2 > r.resetAt) rateBuckets.delete(k);
+}, 10 * 60 * 1000);
 
 function checkRate(ip) {
   const rec = attempts.get(ip);
@@ -270,6 +314,10 @@ app.post(`${BASE}/api/logout`, async (req, reply) => {
 });
 
 app.post(`${BASE}/api/signup`, async (req, reply) => {
+  const ip = req.ip;
+  if (!rateLimit(ip, 'signup', 5, 10 * 60 * 1000)) {
+    return reply.code(429).send({ error: 'Too many signup attempts. Try again in 10 minutes.' });
+  }
   const { businessName, businessType, services, contactEmail, password } = req.body || {};
   const name = String(businessName || '').trim();
   const pwd = String(password || '').trim();
@@ -320,6 +368,10 @@ app.post(`${BASE}/api/signup`, async (req, reply) => {
 });
 
 app.post(`${BASE}/api/ai/suggest-faqs`, async (req, reply) => {
+  const ip = req.ip;
+  if (!rateLimit(ip, 'suggest-faqs', 10, 60 * 1000)) {
+    return reply.code(429).send({ error: 'Rate limit: max 10 FAQ suggestions per minute.' });
+  }
   const { businessType, businessName, services, location } = req.body || {};
   try {
     const faqs = await suggestFaqsForBusiness({ businessType, businessName, services, location });
@@ -420,6 +472,81 @@ app.post(`${BASE}/api/orders/:id/reject`, { preHandler: requireAuth }, async (re
     return { ok: true, order: updated };
   } catch (e) {
     return reply.code(400).send({ error: e.message });
+  }
+});
+
+// CSV Export: Conversations
+app.get(`${BASE}/api/conversations/export.csv`, { preHandler: requireAuth }, async (req, reply) => {
+  const wsId = getScopedWorkspaceId(req);
+  const filters = { q: req.query?.q || '', platform: req.query?.platform || '', from: req.query?.from || '', to: req.query?.to || '' };
+  const csv = exportConversationsCSV(wsId, filters);
+  reply.header('Content-Type', 'text/csv; charset=utf-8');
+  reply.header('Content-Disposition', 'attachment; filename="conversations.csv"');
+  return reply.send(csv);
+});
+
+// CSV Export: Orders
+app.get(`${BASE}/api/orders/export.csv`, { preHandler: requireAuth }, async (req, reply) => {
+  const wsId = getScopedWorkspaceId(req);
+  const csv = exportOrdersCSV(wsId);
+  reply.header('Content-Type', 'text/csv; charset=utf-8');
+  reply.header('Content-Disposition', 'attachment; filename="orders.csv"');
+  return reply.send(csv);
+});
+
+// Webhook Logs
+app.get(`${BASE}/api/webhook-logs`, { preHandler: requireAuth }, async (req) => {
+  const wsId = getScopedWorkspaceId(req);
+  const limit = Math.min(Number(req.query?.limit || 50), 200);
+  return { logs: listWebhookLogs(wsId, limit) };
+});
+
+// Push Notification Routes
+app.get(`${BASE}/api/push/vapid-public-key`, async () => ({
+  key: process.env.VAPID_PUBLIC_KEY || ''
+}));
+
+app.post(`${BASE}/api/push/subscribe`, { preHandler: requireAuth }, async (req, reply) => {
+  const wsId = getScopedWorkspaceId(req);
+  try {
+    savePushSubscription(wsId, req.body);
+    return { ok: true };
+  } catch (e) {
+    return reply.code(400).send({ error: e.message });
+  }
+});
+
+app.post(`${BASE}/api/push/unsubscribe`, { preHandler: requireAuth }, async (req, reply) => {
+  const endpoint = req.body?.endpoint;
+  if (!endpoint) return reply.code(400).send({ error: 'endpoint required' });
+  removePushSubscription(endpoint);
+  return { ok: true };
+});
+
+// Custom Domain Routes
+app.get(`${BASE}/api/admin/workspaces/:id/custom-domain`, { preHandler: requireMasterAdmin }, async (req) => {
+  const id = Number(req.params.id);
+  const ws = db.prepare('SELECT id, name, custom_domain FROM workspaces WHERE id = ?').get(id);
+  return { workspace_id: id, custom_domain: ws?.custom_domain || null };
+});
+
+app.put(`${BASE}/api/admin/workspaces/:id/custom-domain`, { preHandler: requireMasterAdmin }, async (req, reply) => {
+  const id = Number(req.params.id);
+  const domain = req.body?.domain || null;
+  try {
+    return setWorkspaceCustomDomain(id, domain);
+  } catch (e) {
+    return reply.code(400).send({ error: e.message });
+  }
+});
+
+// On-demand DB Backup
+app.post(`${BASE}/api/admin/backup`, { preHandler: requireMasterAdmin }, async (req, reply) => {
+  try {
+    const result = await performBackup();
+    return { ok: true, ...result };
+  } catch (e) {
+    return reply.code(500).send({ error: e.message });
   }
 });
 
@@ -607,6 +734,10 @@ app.get(`${BASE}/api/stats`, { preHandler: requireAuth }, async (req) => {
 });
 
 app.post(`${BASE}/api/channels/test`, { preHandler: requireAuth }, async (req, reply) => {
+  const ip = req.ip;
+  if (!rateLimit(ip, 'channels-test', 10, 60 * 1000)) {
+    return reply.code(429).send({ error: 'Rate limit: max 10 connection tests per minute.' });
+  }
   const { platform, config } = req.body || {};
   if (!platform) return reply.code(400).send({ error: 'Platform is required.' });
 
@@ -634,12 +765,17 @@ app.post(`${BASE}/api/import-menu`, { preHandler: requireAuth }, async (req, rep
 });
 
 app.post(`${BASE}/api/test`, { preHandler: requireAuth }, async req => {
+  const ip = req.ip;
+  if (!rateLimit(ip, 'test-playground', 30, 60 * 1000)) {
+    return req.log.warn('Rate limited test playground') || { reply: 'Slow down — you are sending too many test messages.', model: null, escalated: false };
+  }
   const wsId = getScopedWorkspaceId(req);
   const cfg = getWorkspaceConfig(wsId);
   const history = (req.body?.history || []).slice(-12);
   const text = String(req.body?.text || '');
+  const lang = detectLanguage(text);
   const hit = escalationHit(cfg, text);
-  const { text: reply, model } = await generateReply(cfg, history, text, req.log);
+  const { text: reply, model } = await generateReply(cfg, history, text, req.log, lang);
 
   // Background order capture
   detectOrderOrInquiry(text, history).then(extracted => {
@@ -662,7 +798,15 @@ app.post(`${BASE}/api/test`, { preHandler: requireAuth }, async req => {
 
 app.get(`${BASE}/api/conversations`, { preHandler: requireAuth }, async (req) => {
   const wsId = getScopedWorkspaceId(req);
-  return { conversations: listConversations(wsId), drafts: listDrafts(wsId) };
+  const filters = {
+    q: req.query?.q || '',
+    platform: req.query?.platform || '',
+    from: req.query?.from || '',
+    to: req.query?.to || '',
+    page: req.query?.page || 1,
+    limit: req.query?.limit || 200
+  };
+  return { conversations: listConversations(wsId, filters), drafts: listDrafts(wsId) };
 });
 
 app.get(`${BASE}/api/conversations/:id`, { preHandler: requireAuth }, async (req, reply) => {
@@ -786,13 +930,21 @@ app.post('/webhook/meta', async (req, reply) => {
   reply.code(200).send('EVENT_RECEIVED');
 
   const events = parseWebhook(req.body);
-  for (const ev of events) enqueue(ev, req.log);
+  for (const ev of events) {
+    const preview = JSON.stringify({ platform: ev.platform, text: (ev.text || '').slice(0, 120) });
+    logWebhookEvent(1, ev.platform || 'meta', 'message', preview, 'ok');
+    enqueue(ev, req.log);
+  }
 });
 
 app.post('/webhook/whatsapp', async (req, reply) => {
   reply.code(200).send('EVENT_RECEIVED');
   const events = parseWebhook(req.body);
-  for (const ev of events) enqueue(ev, req.log);
+  for (const ev of events) {
+    const preview = JSON.stringify({ platform: ev.platform, text: (ev.text || '').slice(0, 120) });
+    logWebhookEvent(1, 'whatsapp', 'message', preview, 'ok');
+    enqueue(ev, req.log);
+  }
 });
 
 /* ───────────────────────── TikTok Webhook ───────────────────────── */
@@ -809,8 +961,32 @@ app.post('/webhook/tiktok', async (req, reply) => {
   }
   reply.code(200).send({ status: 'ok' });
   const events = parseTikTokWebhook(req.body);
-  for (const ev of events) enqueue(ev, req.log);
+  for (const ev of events) {
+    const preview = JSON.stringify({ platform: 'tiktok', text: (ev.text || '').slice(0, 120) });
+    logWebhookEvent(1, 'tiktok', 'message', preview, 'ok');
+    enqueue(ev, req.log);
+  }
 });
+
+/* ───────────────────────── Push Broadcast ───────────────────────── */
+async function broadcastPush(workspaceId, payload) {
+  if (!process.env.VAPID_PUBLIC_KEY) return;
+  const subs = listPushSubscriptions(workspaceId);
+  const pushPayload = JSON.stringify(payload);
+  for (const sub of subs) {
+    try {
+      await webpush.sendNotification(
+        { endpoint: sub.endpoint, keys: { p256dh: sub.p256dh, auth: sub.auth } },
+        pushPayload
+      );
+    } catch (e) {
+      // Remove expired/invalid subscriptions
+      if (e.statusCode === 404 || e.statusCode === 410) {
+        removePushSubscription(sub.endpoint);
+      }
+    }
+  }
+}
 
 /* ───────────────────────── Queue & Message Pipeline ───────────────────────── */
 const chains = new Map();
@@ -865,12 +1041,13 @@ async function handleEvent(ev, log) {
   }
 
   const history = getMessages(conv.id, 12).slice(0, -1);
-  const { text: replyText, model } = await generateReply(cfg, history, text, log);
+  const lang = detectLanguage(text);
+  const { text: replyText, model } = await generateReply(cfg, history, text, log, lang);
 
   // Background order capture
   detectOrderOrInquiry(text, history).then(extracted => {
     if (extracted && extracted.is_order) {
-      createOrder({
+      const order = createOrder({
         workspace_id: workspaceId,
         conv_id: conv.id,
         platform,
@@ -882,6 +1059,13 @@ async function handleEvent(ev, log) {
         notes: `Automated order capture from ${platform}`
       });
       log.info(`[orders] Captured incoming ${extracted.kind} for workspace #${workspaceId}`);
+      // Broadcast push notification for new order
+      broadcastPush(workspaceId, {
+        title: 'New Order Received',
+        body: `From ${name || platform}: ${String(extracted.details || '').slice(0, 80)}`,
+        tag: `order-${order.id}`,
+        url: `${process.env.PUBLIC_URL || ''}${BASE}/`
+      }).catch(() => {});
     }
   }).catch(e => log.warn(`[orders] Capture failed: ${e.message}`));
 
@@ -897,6 +1081,26 @@ async function handleEvent(ev, log) {
     log.error(`send failed (${platform}): ${e.message}`);
     setFlag(conv.id, true, 'send failed');
   }
+}
+
+/* ───────────────────────── Backup Utility ───────────────────────── */
+async function performBackup() {
+  const { resolve: res } = await import('node:path');
+  const dbPath = res(process.cwd(), 'data/crown.db');
+  const backupDir = res(process.cwd(), 'data/backups');
+  await mkdir(backupDir, { recursive: true });
+  const date = new Date().toISOString().slice(0, 10);
+  const dest = res(backupDir, `crown-${date}.db`);
+  await copyFile(dbPath, dest);
+  // Prune backups older than 7 days
+  const files = await readdir(backupDir);
+  for (const f of files) {
+    if (!f.startsWith('crown-') || !f.endsWith('.db')) continue;
+    const fp = res(backupDir, f);
+    const s = await stat(fp).catch(() => null);
+    if (s && Date.now() - s.mtimeMs > 7 * 86400 * 1000) await rm(fp).catch(() => {});
+  }
+  return { file: dest, timestamp: new Date().toISOString() };
 }
 
 /* ───────────────────────── pages & assets ───────────────────────── */
@@ -955,7 +1159,14 @@ app.setNotFoundHandler((req, reply) => {
 });
 
 app.listen({ port: +PORT, host: HOST })
-  .then(() => app.log.info(`admin  → ${process.env.PUBLIC_URL || ''}${BASE}/`))
+  .then(() => {
+    app.log.info(`admin  -> ${process.env.PUBLIC_URL || ''}${BASE}/`);
+    // Schedule daily DB backup at startup and every 24 hours
+    performBackup().catch(e => app.log.warn(`[backup] Initial backup failed: ${e.message}`));
+    setInterval(() => {
+      performBackup().catch(e => app.log.warn(`[backup] Scheduled backup failed: ${e.message}`));
+    }, 24 * 60 * 60 * 1000);
+  })
   .catch(e => { app.log.error(e); process.exit(1); });
 
 export { app };

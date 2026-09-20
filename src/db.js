@@ -122,6 +122,28 @@ CREATE TABLE IF NOT EXISTS seen (
   mid   TEXT PRIMARY KEY,
   at    INTEGER NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS push_subscriptions (
+  id           INTEGER PRIMARY KEY AUTOINCREMENT,
+  workspace_id INTEGER NOT NULL REFERENCES workspaces(id) ON DELETE CASCADE,
+  endpoint     TEXT NOT NULL UNIQUE,
+  p256dh       TEXT NOT NULL,
+  auth         TEXT NOT NULL,
+  created_at   TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_push_ws ON push_subscriptions(workspace_id);
+
+CREATE TABLE IF NOT EXISTS webhook_logs (
+  id              INTEGER PRIMARY KEY AUTOINCREMENT,
+  workspace_id    INTEGER NOT NULL DEFAULT 1,
+  platform        TEXT NOT NULL,
+  event_type      TEXT NOT NULL DEFAULT 'message',
+  payload_preview TEXT,
+  status          TEXT NOT NULL DEFAULT 'ok',
+  error           TEXT,
+  received_at     TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_whl_ws ON webhook_logs(workspace_id, received_at);
 `);
 
 // Dynamic column migrations for existing databases
@@ -150,6 +172,15 @@ try {
   }
 } catch (e) {
   console.error('Migration warning (workspace_users.password_display):', e.message);
+}
+
+try {
+  const wsCols = db.pragma('table_info(workspaces)');
+  if (!wsCols.some(c => c.name === 'custom_domain')) {
+    db.exec('ALTER TABLE workspaces ADD COLUMN custom_domain TEXT');
+  }
+} catch (e) {
+  console.error('Migration warning (workspaces.custom_domain):', e.message);
 }
 
 const now = () => new Date().toISOString();
@@ -1311,18 +1342,58 @@ export function upsertConversation(platform, psid, name, workspaceId = 1) {
   return db.prepare('SELECT * FROM conversations WHERE platform = ? AND psid = ?').get(platform, psid);
 }
 
-export function listConversations(workspaceId = null) {
-  if (workspaceId) {
-    return db.prepare(`
-      SELECT c.*, (SELECT text FROM messages m WHERE m.conv_id = c.id ORDER BY m.id DESC LIMIT 1) AS preview
-      FROM conversations c
-      WHERE c.workspace_id = ?
-      ORDER BY c.flagged DESC, c.last_msg_at DESC LIMIT 200`).all(Number(workspaceId));
-  }
+export function listConversations(workspaceId = null, filters = {}) {
+  const wsId = workspaceId ? Number(workspaceId) : null;
+  const { q = '', platform = '', from = '', to = '', page = 1, limit = 200 } = filters;
+  const offset = (Math.max(1, Number(page)) - 1) * Number(limit);
+
+  const conditions = [];
+  const params = [];
+
+  if (wsId) { conditions.push('c.workspace_id = ?'); params.push(wsId); }
+  if (platform) { conditions.push('c.platform = ?'); params.push(platform); }
+  if (q) { conditions.push('(c.name LIKE ? OR c.psid LIKE ?)'); params.push(`%${q}%`, `%${q}%`); }
+  if (from) { conditions.push("c.last_msg_at >= ?"); params.push(from); }
+  if (to) { conditions.push("c.last_msg_at <= ?"); params.push(to + 'T23:59:59Z'); }
+
+  const where = conditions.length ? 'WHERE ' + conditions.join(' AND ') : '';
+  params.push(Number(limit), offset);
+
   return db.prepare(`
     SELECT c.*, (SELECT text FROM messages m WHERE m.conv_id = c.id ORDER BY m.id DESC LIMIT 1) AS preview
     FROM conversations c
-    ORDER BY c.flagged DESC, c.last_msg_at DESC LIMIT 200`).all();
+    ${where}
+    ORDER BY c.flagged DESC, c.last_msg_at DESC
+    LIMIT ? OFFSET ?`).all(...params);
+}
+
+export function exportConversationsCSV(workspaceId = null, filters = {}) {
+  const rows = listConversations(workspaceId, { ...filters, limit: 5000 });
+  const header = 'id,platform,name,psid,last_msg_at,created_at,bot_enabled,flagged,flag_reason,preview';
+  const escape = v => {
+    if (v === null || v === undefined) return '';
+    const s = String(v).replace(/"/g, '""');
+    return s.includes(',') || s.includes('"') || s.includes('\n') ? `"${s}"` : s;
+  };
+  const lines = rows.map(r =>
+    [r.id, r.platform, r.name, r.psid, r.last_msg_at, r.created_at, r.bot_enabled, r.flagged, r.flag_reason, r.preview]
+      .map(escape).join(','));
+  return [header, ...lines].join('\n');
+}
+
+export function exportOrdersCSV(workspaceId) {
+  const wsId = Number(workspaceId) || 1;
+  const rows = db.prepare('SELECT * FROM orders WHERE workspace_id = ? ORDER BY id DESC').all(wsId);
+  const header = 'id,platform,customer_name,customer_phone,customer_address,details,estimated_total,status,notes,created_at,confirmed_at';
+  const escape = v => {
+    if (v === null || v === undefined) return '';
+    const s = String(v).replace(/"/g, '""');
+    return s.includes(',') || s.includes('"') || s.includes('\n') ? `"${s}"` : s;
+  };
+  const lines = rows.map(r =>
+    [r.id, r.platform, r.customer_name, r.customer_phone, r.customer_address, r.details, r.estimated_total, r.status, r.notes, r.created_at, r.confirmed_at]
+      .map(escape).join(','));
+  return [header, ...lines].join('\n');
 }
 
 export const getConversation = id =>
@@ -1494,6 +1565,63 @@ export function stats(workspaceId = null) {
     recent = wsId ? db.prepare(recentSql).all(wsId) : db.prepare(recentSql).all();
   } catch {}
 
+  // Average bot response time (ms) — time between 'in' and next 'out' in same conversation
+  let avgResponseTimeMs = 0;
+  try {
+    const rtSql = wsId
+      ? `SELECT AVG((julianday(o.created_at) - julianday(i.created_at)) * 86400000) as avg_ms
+         FROM messages i JOIN messages o ON o.conv_id = i.conv_id AND o.id = (
+           SELECT id FROM messages WHERE conv_id = i.conv_id AND id > i.id AND direction = 'out' LIMIT 1
+         )
+         WHERE i.direction = 'in' AND i.conv_id IN (SELECT id FROM conversations WHERE workspace_id = ?)`
+      : `SELECT AVG((julianday(o.created_at) - julianday(i.created_at)) * 86400000) as avg_ms
+         FROM messages i JOIN messages o ON o.conv_id = i.conv_id AND o.id = (
+           SELECT id FROM messages WHERE conv_id = i.conv_id AND id > i.id AND direction = 'out' LIMIT 1
+         )
+         WHERE i.direction = 'in'`;
+    const rtRow = wsId ? db.prepare(rtSql).get(wsId) : db.prepare(rtSql).get();
+    avgResponseTimeMs = Math.round(rtRow?.avg_ms || 0);
+  } catch {}
+
+  // 7-day heatmap: day(0=Mon..6=Sun) x hour matrix
+  let weeklyHeatmap = {};
+  try {
+    for (let d = 0; d < 7; d++) {
+      weeklyHeatmap[d] = {};
+      for (let h = 0; h < 24; h++) weeklyHeatmap[d][String(h).padStart(2,'0')] = 0;
+    }
+    const heatSql = wsId
+      ? `SELECT strftime('%w', datetime(created_at, '+6 hours')) as dow,
+               strftime('%H', datetime(created_at, '+6 hours')) as hr,
+               COUNT(*) as cnt
+         FROM messages
+         WHERE conv_id IN (SELECT id FROM conversations WHERE workspace_id = ?)
+           AND created_at >= datetime('now', '-7 days')
+         GROUP BY dow, hr`
+      : `SELECT strftime('%w', datetime(created_at, '+6 hours')) as dow,
+               strftime('%H', datetime(created_at, '+6 hours')) as hr,
+               COUNT(*) as cnt
+         FROM messages
+         WHERE created_at >= datetime('now', '-7 days')
+         GROUP BY dow, hr`;
+    const heatRows = wsId ? db.prepare(heatSql).all(wsId) : db.prepare(heatSql).all();
+    // SQLite %w: 0=Sun, 1=Mon ... convert to 0=Mon..6=Sun
+    for (const r of heatRows) {
+      const day = ((Number(r.dow) + 6) % 7);
+      if (weeklyHeatmap[day]) weeklyHeatmap[day][r.hr] = r.cnt;
+    }
+  } catch {}
+
+  // Orders by platform
+  let ordersByPlatform = {};
+  try {
+    const obpSql = wsId
+      ? `SELECT platform, COUNT(*) as cnt FROM orders WHERE workspace_id = ? GROUP BY platform`
+      : `SELECT platform, COUNT(*) as cnt FROM orders GROUP BY platform`;
+    const obpRows = wsId ? db.prepare(obpSql).all(wsId) : db.prepare(obpSql).all();
+    for (const r of obpRows) ordersByPlatform[r.platform] = r.cnt;
+  } catch {}
+
   return {
     conversations: wsId ? q('SELECT COUNT(*) n FROM conversations WHERE workspace_id = ?', wsId) : q('SELECT COUNT(*) n FROM conversations'),
     messagesIn:    wsId ? q("SELECT COUNT(*) n FROM messages WHERE direction = 'in' AND conv_id IN (SELECT id FROM conversations WHERE workspace_id = ?)", wsId) : q("SELECT COUNT(*) n FROM messages WHERE direction = 'in'"),
@@ -1506,8 +1634,72 @@ export function stats(workspaceId = null) {
     humanReplies,
     byPlatform: platformCounts,
     hourly: hourlyMap,
-    recent
+    recent,
+    avgResponseTimeMs,
+    weeklyHeatmap,
+    ordersByPlatform
   };
+}
+
+/* ───────── Push Notification Helpers ───────── */
+
+export function savePushSubscription(workspaceId, subscription) {
+  const wsId = Number(workspaceId) || 1;
+  const { endpoint, keys } = subscription;
+  if (!endpoint || !keys?.p256dh || !keys?.auth) throw new Error('Invalid push subscription.');
+  db.prepare(`
+    INSERT INTO push_subscriptions (workspace_id, endpoint, p256dh, auth, created_at)
+    VALUES (?, ?, ?, ?, ?)
+    ON CONFLICT(endpoint) DO UPDATE SET workspace_id = excluded.workspace_id, p256dh = excluded.p256dh, auth = excluded.auth
+  `).run(wsId, endpoint, keys.p256dh, keys.auth, now());
+  return { ok: true };
+}
+
+export function removePushSubscription(endpoint) {
+  db.prepare('DELETE FROM push_subscriptions WHERE endpoint = ?').run(endpoint);
+  return { ok: true };
+}
+
+export function listPushSubscriptions(workspaceId) {
+  const wsId = Number(workspaceId) || 1;
+  return db.prepare('SELECT * FROM push_subscriptions WHERE workspace_id = ?').all(wsId);
+}
+
+/* ───────── Webhook Log Helpers ───────── */
+
+export function logWebhookEvent(workspaceId, platform, eventType, payloadPreview, status = 'ok', error = null) {
+  const wsId = Number(workspaceId) || 1;
+  try {
+    db.prepare(`
+      INSERT INTO webhook_logs (workspace_id, platform, event_type, payload_preview, status, error, received_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?)
+    `).run(wsId, platform, eventType, String(payloadPreview || '').slice(0, 500), status, error, now());
+    // Prune logs older than 30 days
+    db.prepare("DELETE FROM webhook_logs WHERE received_at < datetime('now', '-30 days')").run();
+  } catch {}
+}
+
+export function listWebhookLogs(workspaceId, limit = 50) {
+  const wsId = Number(workspaceId) || 1;
+  return db.prepare('SELECT * FROM webhook_logs WHERE workspace_id = ? ORDER BY id DESC LIMIT ?').all(wsId, limit);
+}
+
+/* ───────── Custom Domain Helpers ───────── */
+
+export function findWorkspaceByDomain(domain) {
+  if (!domain) return null;
+  return db.prepare('SELECT * FROM workspaces WHERE custom_domain = ?').get(domain.toLowerCase().trim());
+}
+
+export function setWorkspaceCustomDomain(workspaceId, domain) {
+  const wsId = Number(workspaceId);
+  const d = domain ? domain.toLowerCase().trim() : null;
+  if (d) {
+    const existing = db.prepare('SELECT id FROM workspaces WHERE custom_domain = ? AND id != ?').get(d, wsId);
+    if (existing) throw new Error('This domain is already assigned to another workspace.');
+  }
+  db.prepare('UPDATE workspaces SET custom_domain = ? WHERE id = ?').run(d, wsId);
+  return { ok: true, custom_domain: d };
 }
 
 /* ───────── Tenant Auth & Subscription Helpers ───────── */

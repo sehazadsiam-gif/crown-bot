@@ -19,7 +19,7 @@ export function openState(cfg) {
   return { open, n, why: open ? `open until ${B.close || '21:00'}` : `closed, opens ${B.open || '09:00'}` };
 }
 
-export function buildPrompt(cfg) {
+export function buildPrompt(cfg, lang = 'en') {
   const st = openState(cfg);
   const B = cfg.business || cfg.cafe || {};
   const P = cfg.persona || {};
@@ -45,7 +45,15 @@ export function buildPrompt(cfg) {
     ? `- If asked, state that you are the automated messaging assistant for ${bName}.`
     : `- Reply naturally as the team at ${bName}. Do not identify yourself as an AI unless explicitly asked.`);
 
-  L.push('', '## Language', P.language || 'Respond in Banglish, English, or Bengali matching the customer language.');
+  // Language-aware instruction
+  L.push('', '## Language');
+  if (lang === 'bn') {
+    L.push('The customer is writing in Bengali (Bangla script). You MUST reply entirely in Bengali script (Unicode Bangla). Do not switch to English or Banglish.');
+  } else if (lang === 'banglish') {
+    L.push('The customer is writing in Banglish (romanized Bengali). You MUST reply in Banglish — using Bengali words written in English letters. Do not switch to English or Bengali script.');
+  } else {
+    L.push(P.language || 'Detect the customer language and respond in the same language (English, Banglish, or Bengali). Default to English if unclear.');
+  }
 
   L.push('', '## Current Business Availability');
   L.push(`- Current local time: ${st.n.day}, ${st.n.time} (Dhaka time).`);

@@ -108,8 +108,26 @@ async function callGroq(system, history, userText) {
  * Try Gemini, fall back to Groq, then to the canned line.
  * Returns { text, model }.
  */
-export async function generateReply(cfg, history, userText, log = console) {
-  const system = buildPrompt(cfg);
+/**
+ * Detect the primary language of a customer message.
+ * Returns: 'bn' (Bengali script), 'banglish' (romanized Bengali), or 'en' (English/default)
+ */
+export function detectLanguage(text) {
+  if (!text || typeof text !== 'string') return 'en';
+  // Bengali Unicode range U+0980-U+09FF
+  const bengaliChars = (text.match(/[\u0980-\u09FF]/g) || []).length;
+  const totalChars = text.replace(/\s/g, '').length || 1;
+  if (bengaliChars / totalChars > 0.15) return 'bn';
+
+  // Common Banglish words and patterns
+  const banglishWords = /\b(ami|tumi|apni|amar|tomar|apnar|ache|nei|hoye|koro|korte|kibhabe|ki|kemon|bolo|bolun|diyeche|lagbe|hobe|nibo|deben|jacchi|jachchi|jabe|ashbo|asho|asha|bhalo|kharap|sundor|dhanybad|shukriya|jee|haa|na|nai|thako|thakun|kothay|koi|achho|achhen|onek|ektu|ekta|koto|kotota|beshi|kom|shundor|mishti|gororm|thanda|khabo|khaibo|order|dicho|dao|pls|plz|plss)\b/i;
+  if (banglishWords.test(text)) return 'banglish';
+
+  return 'en';
+}
+
+export async function generateReply(cfg, history, userText, log = console, lang = 'en') {
+  const system = buildPrompt(cfg, lang);
 
   for (const [name, fn] of [['gemini', callGemini], ['groq', callGroq]]) {
     try {
