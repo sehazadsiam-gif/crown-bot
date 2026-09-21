@@ -5333,12 +5333,18 @@
         const d = await res.json();
         if (res.ok && d.ok) {
           showSaveChip(`${d.industry} Presets Applied`);
-          const cfgRes = await api(`/api/config?workspace_id=${currentWorkspaceId}`).then(r => r.json());
-          S = cfgRes.config;
-          render();
-          paintPrompt(cfgRes.prompt);
-          paintOpen(cfgRes.open);
-          if (cfgRes.stats) paintStats(cfgRes.stats);
+          try {
+            const cfgRes = await api(`/api/config?workspace_id=${currentWorkspaceId}`).then(r => r.json());
+            if (cfgRes?.config) {
+              S = cfgRes.config;
+              render();
+              if (cfgRes.prompt) paintPrompt(cfgRes.prompt);
+              if (cfgRes.open) paintOpen(cfgRes.open);
+              if (cfgRes.stats) paintStats(cfgRes.stats);
+            }
+          } catch (refreshErr) {
+            console.warn('Config reload after seed warning:', refreshErr);
+          }
           alert(`Successfully applied verified presets for ${d.industry}!\n\n• ${d.itemsCount} catalog items & procedures loaded\n• ${d.faqsCount} versatile FAQs initialized`);
         } else {
           alert('Failed to apply presets: ' + (d.error || 'Unknown error'));
@@ -6255,9 +6261,10 @@ Crown Operations Support`;
 
     function chip(t) {
       const e = document.getElementById('saveChip');
+      if (!e) return;
       e.textContent = t;
       clearTimeout(chip._t);
-      chip._t = setTimeout(() => e.textContent = '', 2200);
+      chip._t = setTimeout(() => { if (e) e.textContent = ''; }, 2200);
     }
 
     function save() {
@@ -6490,25 +6497,29 @@ Crown Operations Support`;
     function paintOpen(o) {
       if (!o) return;
       const p = document.getElementById('openPill');
-      p.className = 'pill ' + (o.open ? 'on' : 'off');
-      document.getElementById('openTxt').textContent = `Dhaka: ${o.n.day} ${o.n.time} · ${o.open ? 'OPEN' : 'CLOSED'}`;
+      if (p) p.className = 'pill ' + (o.open ? 'on' : 'off');
+      const ot = document.getElementById('openTxt');
+      if (ot) ot.textContent = `Dhaka: ${o.n?.day || ''} ${o.n?.time || ''} · ${o.open ? 'OPEN' : 'CLOSED'}`;
     }
 
     function paintPrompt(t) {
       if (!t) return;
-      document.getElementById('promptOut').textContent = t;
-      document.getElementById('promptMeter').textContent =
+      const po = document.getElementById('promptOut');
+      if (po) po.textContent = t;
+      const pm = document.getElementById('promptMeter');
+      if (pm) pm.textContent =
         `${t.length.toLocaleString()} characters · approx. ${Math.round(t.length / 4).toLocaleString()} tokens`;
-      document.getElementById('jsonOut').textContent = JSON.stringify(S, null, 2);
+      const jo = document.getElementById('jsonOut');
+      if (jo) jo.textContent = JSON.stringify(S, null, 2);
     }
 
     function paintStats(s) {
       if (!s) return;
-      document.getElementById('stConvs').textContent = s.conversations || 0;
-      document.getElementById('stTodayMsg').textContent = `${s.today || 0} messages today`;
-      document.getElementById('stInToday').textContent = s.todayIn || 0;
-      document.getElementById('stOutToday').textContent = s.todayOut || 0;
-      document.getElementById('stFlagged').textContent = s.flagged || 0;
+      const stC = document.getElementById('stConvs'); if (stC) stC.textContent = s.conversations || 0;
+      const stM = document.getElementById('stTodayMsg'); if (stM) stM.textContent = `${s.today || 0} messages today`;
+      const stIn = document.getElementById('stInToday'); if (stIn) stIn.textContent = s.todayIn || 0;
+      const stOut = document.getElementById('stOutToday'); if (stOut) stOut.textContent = s.todayOut || 0;
+      const stF = document.getElementById('stFlagged'); if (stF) stF.textContent = s.flagged || 0;
 
       // Avg Response Time
       const rt = document.getElementById('stAvgResponse');
@@ -7509,7 +7520,15 @@ Crown Operations Support`;
     }
 
     setInterval(() => {
-      if (S) api(`/api/config?workspace_id=${currentWorkspaceId}`).then(r => r.json()).then(d => { paintOpen(d.open); paintStats(d.stats); });
+      if (S && currentWorkspaceId) {
+        api(`/api/config?workspace_id=${currentWorkspaceId}`)
+          .then(r => r.json())
+          .then(d => {
+            if (d?.open) paintOpen(d.open);
+            if (d?.stats) paintStats(d.stats);
+          })
+          .catch(err => console.warn('Polling error:', err));
+      }
     }, 30000);
 
     /* ---------- PWA SERVICE WORKER & INSTALL SYSTEM ---------- */
