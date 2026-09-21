@@ -467,8 +467,8 @@ body.embedded-mode .chat-app {
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
       </button>
     </form>
-    <div class="branding-footer">
-      Powered by <a href="/chatbotadmin/" target="_blank" id="footerBrandLink">ccadminchatbot</a>
+    <div class="branding-footer" id="brandingFooter">
+      ⚡ Powered by <a href="https://bot.ccadmin.online?ref=chat-widget" target="_blank" id="footerBrandLink">CCBot</a> &bull; <a href="https://bot.ccadmin.online/chatbotadmin/" target="_blank">Get your AI bot</a>
     </div>
   </footer>
 </div>
@@ -504,6 +504,12 @@ async function initBot() {
         document.getElementById('botStatusTxt').textContent = botData.open.isOpen 
           ? `Open now · ${botData.open.note || 'Typically replies instantly'}`
           : `Currently Closed · ${botData.open.note || 'Leave a message'}`;
+      }
+
+      // White-label check (Pro / Enterprise plan removes branding)
+      const bFooter = document.getElementById('brandingFooter');
+      if (bFooter) {
+        bFooter.style.display = botData.whiteLabel ? 'none' : 'block';
       }
 
       // Initial Greeting

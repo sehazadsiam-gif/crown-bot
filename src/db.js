@@ -3,6 +3,7 @@ import { mkdirSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { scryptSync, randomBytes, timingSafeEqual } from 'node:crypto';
 import bcrypt from 'bcryptjs';
+import { sendOwnerAlertEmail } from './mailer.js';
 
 const FILE = resolve(process.cwd(), 'data/crown.db');
 mkdirSync(dirname(FILE), { recursive: true });
@@ -182,6 +183,32 @@ try {
   }
 } catch (e) {
   console.error('Migration warning (workspaces.custom_domain):', e.message);
+}
+
+db.exec(`
+CREATE TABLE IF NOT EXISTS subscription_requests (
+  id              INTEGER PRIMARY KEY AUTOINCREMENT,
+  workspace_id    INTEGER NOT NULL REFERENCES workspaces(id) ON DELETE CASCADE,
+  plan_name       TEXT NOT NULL,
+  monthly_fee     INTEGER NOT NULL,
+  payment_method  TEXT NOT NULL,
+  sender_number   TEXT NOT NULL,
+  trx_id          TEXT NOT NULL,
+  status          TEXT NOT NULL DEFAULT 'pending',
+  notes           TEXT,
+  created_at      TEXT NOT NULL,
+  updated_at      TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_subreq_ws ON subscription_requests(workspace_id);
+`);
+
+try {
+  const convCols = db.pragma('table_info(conversations)');
+  if (!convCols.some(c => c.name === 'ai_paused_until')) {
+    db.exec('ALTER TABLE conversations ADD COLUMN ai_paused_until TEXT');
+  }
+} catch (e) {
+  console.error('Migration warning (conversations.ai_paused_until):', e.message);
 }
 
 const now = () => new Date().toISOString();
@@ -1063,6 +1090,15 @@ export const DEFAULT_CONFIG = {
   ],
   esc: ['refund', 'complaint', 'manager', 'allergy', 'allergic', 'sick', 'lawyer', 'press',
         'ফেরত', 'অভিযোগ', 'ম্যানেজার'],
+  alerts: {
+    enabled: true,
+    phone: '',
+    telegramBotToken: '',
+    telegramChatId: '',
+    email: '',
+    notifyOnBooking: true,
+    notifyOnPhone: true
+  },
   runtime: { enabled: true, offHours: 'reply', fallbackText: 'Thanks for your message! Our team will reply shortly.' }
 };
 
@@ -1692,6 +1728,15 @@ export function makeCleanTemplate(businessName = 'New Business', businessType = 
       'If you do not know something, say so plainly and offer to have a team member follow up.'
     ],
     esc: ['refund', 'complaint', 'manager', 'urgent', 'lawyer', 'press', 'ফেরত', 'অভিযোগ', 'ম্যানেজার'],
+    alerts: {
+      enabled: true,
+      phone: '',
+      telegramBotToken: '',
+      telegramChatId: '',
+      email: '',
+      notifyOnBooking: true,
+      notifyOnPhone: true
+    },
     runtime: { enabled: true, offHours: 'reply', fallbackText: 'Thanks for reaching out! Our team will review your request and get back to you shortly.' }
   };
 }
@@ -2007,7 +2052,35 @@ export function addMessage(convId, direction, text, model = null, mid = null) {
 }
 
 export const setBotEnabled = (id, on) =>
-  db.prepare('UPDATE conversations SET bot_enabled = ? WHERE id = ?').run(on ? 1 : 0, id);
+  db.prepare('UPDATE conversations SET bot_enabled = ?, ai_paused_until = NULL WHERE id = ?').run(on ? 1 : 0, id);
+
+export function pauseConversationBot(id, minutes = 60) {
+  const mins = Math.max(1, Number(minutes) || 60);
+  const pausedUntil = new Date(Date.now() + mins * 60 * 1000).toISOString();
+  db.prepare('UPDATE conversations SET bot_enabled = 0, ai_paused_until = ? WHERE id = ?').run(pausedUntil, id);
+  return getConversation(id);
+}
+
+export function resumeConversationBot(id) {
+  db.prepare('UPDATE conversations SET bot_enabled = 1, ai_paused_until = NULL WHERE id = ?').run(id);
+  return getConversation(id);
+}
+
+export function isConversationBotActive(conv) {
+  if (!conv) return false;
+  if (!conv.bot_enabled) {
+    if (conv.ai_paused_until) {
+      if (new Date(conv.ai_paused_until) <= new Date()) {
+        try {
+          db.prepare('UPDATE conversations SET bot_enabled = 1, ai_paused_until = NULL WHERE id = ?').run(conv.id);
+        } catch {}
+        return true;
+      }
+    }
+    return false;
+  }
+  return true;
+}
 
 export const setFlag = (id, on, reason = null) =>
   db.prepare('UPDATE conversations SET flagged = ?, flag_reason = ? WHERE id = ?').run(on ? 1 : 0, reason, id);
@@ -2052,7 +2125,14 @@ export function createOrder(data = {}) {
     INSERT INTO orders (workspace_id, conv_id, platform, customer_name, customer_phone, customer_address, details, estimated_total, status, notes, created_at)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'pending', ?, ?)
   `).run(wsId, convId, platform, customerName, customerPhone, customerAddress, details, estimatedTotal, notes, now());
-  return db.prepare('SELECT * FROM orders WHERE id = ?').get(info.lastInsertRowid);
+  const created = db.prepare('SELECT * FROM orders WHERE id = ?').get(info.lastInsertRowid);
+
+  // Dispatch real-time owner alert
+  try {
+    dispatchOwnerAlert(wsId, created).catch(() => {});
+  } catch {}
+
+  return created;
 }
 
 export function listOrders(workspaceId, status = 'all') {
@@ -2088,6 +2168,174 @@ export function getOrderStats(workspaceId) {
   const rejected = (db.prepare("SELECT COUNT(*) as n FROM orders WHERE workspace_id = ? AND status = 'rejected'").get(wsId) || {}).n || 0;
   const total = pending + confirmed + rejected;
   return { pending, confirmed, rejected, total };
+}
+
+export async function dispatchOwnerAlert(workspaceId, orderData) {
+  try {
+    const wsId = Number(workspaceId) || 1;
+    const ws = db.prepare('SELECT * FROM workspaces WHERE id = ?').get(wsId);
+    const cfg = getWorkspaceConfig(wsId);
+    const alertsCfg = cfg?.alerts || {};
+    if (alertsCfg.enabled === false) return { skipped: true };
+
+    const bName = ws?.name || cfg?.business?.name || cfg?.cafe?.name || 'Your Business';
+    const plat = (orderData.platform || 'web').toUpperCase();
+    const cName = orderData.customer_name || 'Guest Customer';
+    const cPhone = orderData.customer_phone || 'Not provided';
+    const cDetails = orderData.details || 'Appointment / service booking request';
+    const estTotal = orderData.estimated_total ? `BDT ${orderData.estimated_total}` : 'To be confirmed';
+
+    const alertText = 
+`🔔 *New Customer Booking / Lead!*
+🏢 *${bName}*
+📱 *Platform:* ${plat}
+👤 *Customer / Patient:* ${cName}
+📞 *Phone:* ${cPhone}
+📝 *Details:* ${cDetails}
+💰 *Est. Total:* ${estTotal}
+⏰ *Time:* ${new Date().toLocaleTimeString('en-US', { timeZone: 'Asia/Dhaka', hour: '2-digit', minute: '2-digit' })}
+
+👉 View & reply in dashboard: https://bot.ccadmin.online/chatbotadmin/`;
+
+    // 1. Telegram Push Notification (100% Free, instant phone alert)
+    const tgToken = alertsCfg.telegramBotToken || process.env.TELEGRAM_ALERT_BOT_TOKEN;
+    const tgChatId = alertsCfg.telegramChatId || process.env.TELEGRAM_ALERT_CHAT_ID;
+    if (tgToken && tgChatId) {
+      try {
+        fetch(`https://api.telegram.org/bot${tgToken}/sendMessage`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            chat_id: tgChatId,
+            text: alertText,
+            parse_mode: 'Markdown'
+          })
+        }).catch(tgErr => console.warn('Telegram alert dispatch error:', tgErr.message));
+      } catch (tgErr) {
+        console.warn('Telegram alert fetch error:', tgErr.message);
+      }
+    }
+
+    // 2. Email alert
+    const targetEmail = alertsCfg.email || alertsCfg.contact_email || cfg?.business?.email || (getTenantUser(wsId)?.email);
+    if (targetEmail && targetEmail.includes('@')) {
+      sendOwnerAlertEmail({
+        to: targetEmail,
+        businessName: bName,
+        customerName: cName,
+        customerPhone: cPhone,
+        details: cDetails,
+        platform: plat,
+        estimatedTotal: orderData.estimated_total
+      }).catch(mailErr => console.warn('Email alert dispatch error:', mailErr.message));
+    }
+
+    return { ok: true };
+  } catch (err) {
+    console.warn('dispatchOwnerAlert error:', err.message);
+    return { ok: false, error: err.message };
+  }
+}
+
+export function recordUpgradeRequest(opts = {}) {
+  const wsId = Number(opts.workspaceId ?? opts.workspace_id) || 1;
+  const plan = String(opts.planName ?? opts.plan_name ?? opts.plan ?? 'pro').toLowerCase();
+  const fee = Number(opts.monthlyFee ?? opts.monthly_fee ?? opts.amount) || 0;
+  const method = String(opts.paymentMethod ?? opts.payment_method ?? 'bkash').trim();
+  const phone = String(opts.senderNumber ?? opts.sender_number ?? opts.sender_phone ?? '').trim();
+  const trx = String(opts.trxId ?? opts.trx_id ?? '').trim().toUpperCase();
+  const note = String(opts.notes || '').trim();
+
+  const info = db.prepare(`
+    INSERT INTO subscription_requests (workspace_id, plan_name, monthly_fee, payment_method, sender_number, trx_id, status, notes, created_at, updated_at)
+    VALUES (?, ?, ?, ?, ?, ?, 'pending', ?, ?, ?)
+  `).run(wsId, plan, fee, method, phone, trx, note, now(), now());
+
+  // Record note in subscriptions
+  try {
+    db.prepare(`
+      UPDATE subscriptions SET notes = ?, updated_at = ? WHERE workspace_id = ?
+    `).run(`Upgrade requested: ${planName} via ${method.toUpperCase()} (TrxID: ${trx}, Phone: ${phone})`, now(), wsId);
+  } catch {}
+
+  return db.prepare('SELECT * FROM subscription_requests WHERE id = ?').get(info.lastInsertRowid);
+}
+
+export function listUpgradeRequests(opts = null) {
+  const wsId = typeof opts === 'object' && opts !== null ? (opts.workspaceId ?? opts.workspace_id) : opts;
+  if (wsId) {
+    return db.prepare('SELECT * FROM subscription_requests WHERE workspace_id = ? ORDER BY id DESC').all(Number(wsId));
+  }
+  return db.prepare(`
+    SELECT sr.*, w.name as workspace_name
+    FROM subscription_requests sr
+    JOIN workspaces w ON w.id = sr.workspace_id
+    ORDER BY sr.id DESC
+  `).all();
+}
+
+export function getWeeklyDigest(workspaceId) {
+  const wsId = Number(workspaceId) || 1;
+  const ws = db.prepare('SELECT * FROM workspaces WHERE id = ?').get(wsId);
+  const cfg = getWorkspaceConfig(wsId);
+  const bName = ws?.name || cfg?.business?.name || cfg?.cafe?.name || 'Your Business';
+
+  const sevenDaysAgo = new Date(Date.now() - 7 * 86400 * 1000).toISOString();
+
+  // Inquiries count
+  const convRow = db.prepare(`
+    SELECT COUNT(*) as total_convs 
+    FROM conversations 
+    WHERE workspace_id = ? AND (last_msg_at >= ? OR created_at >= ?)
+  `).get(wsId, sevenDaysAgo, sevenDaysAgo);
+  const totalConvs = convRow?.total_convs || 0;
+
+  // Messages count
+  const msgRow = db.prepare(`
+    SELECT 
+      SUM(CASE WHEN direction = 'in' THEN 1 ELSE 0 END) as in_msgs,
+      SUM(CASE WHEN direction = 'out' THEN 1 ELSE 0 END) as out_msgs
+    FROM messages m
+    JOIN conversations c ON c.id = m.conv_id
+    WHERE c.workspace_id = ? AND m.created_at >= ?
+  `).get(wsId, sevenDaysAgo);
+  const inMsgs = msgRow?.in_msgs || 0;
+  const outMsgs = msgRow?.out_msgs || 0;
+
+  // Orders / Bookings count
+  const orderRow = db.prepare(`
+    SELECT COUNT(*) as total_orders
+    FROM orders
+    WHERE workspace_id = ? AND created_at >= ?
+  `).get(wsId, sevenDaysAgo);
+  const totalOrders = orderRow?.total_orders || 0;
+
+  const totalResolved = Math.max(totalConvs, inMsgs);
+  const resolutionRate = inMsgs > 0 ? Math.min(100, Math.round((outMsgs / inMsgs) * 100)) : 100;
+  const hoursSaved = Math.max(1, Math.round((totalResolved * 5) / 60));
+
+  const whatsappText = 
+`📊 *${bName} Chatbot Weekly Summary*
+• *Inquiries resolved autonomously:* ${totalResolved}
+• *Appointments / Bookings captured:* ${totalOrders}
+• *AI resolution rate:* ${resolutionRate}%
+• *Estimated receptionist hours saved:* ${hoursSaved} hrs
+
+Keep your autonomous AI receptionist active 24/7 with Crown Bot!
+👉 https://bot.ccadmin.online/chatbotadmin/`;
+
+  return {
+    workspaceId: wsId,
+    businessName: bName,
+    conversations: totalResolved,
+    orders: totalOrders,
+    inMsgs,
+    outMsgs,
+    resolutionRate,
+    hoursSaved,
+    whatsappText,
+    generatedAt: new Date().toISOString()
+  };
 }
 
 export function stats(workspaceId = null) {

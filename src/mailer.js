@@ -189,6 +189,164 @@ The CC AI Team
   }
 }
 
+export async function sendOwnerAlertEmail({
+  to,
+  businessName,
+  customerName = 'Guest',
+  customerPhone = 'Not provided',
+  details = 'General inquiry',
+  platform = 'Web',
+  estimatedTotal = null
+}) {
+  if (!to || !to.includes('@')) {
+    return { sent: false, error: 'No valid recipient email address provided.' };
+  }
+
+  const bName = businessName || 'Your Business';
+  const from = process.env.SMTP_FROM || process.env.SMTP_USER || 'no-reply@ccadmin.online';
+  const transporter = getMailTransporter();
+  const subject = `🔔 New Customer Booking / Lead: ${customerName} (${platform.toUpperCase()})`;
+
+  const textContent = `New Booking / Lead for ${bName}
+Platform: ${platform.toUpperCase()}
+Customer: ${customerName}
+Phone: ${customerPhone}
+Details: ${details}
+${estimatedTotal ? `Estimated Total: BDT ${estimatedTotal}` : ''}
+
+Manage in Dashboard: https://bot.ccadmin.online/chatbotadmin/`;
+
+  const htmlContent = `
+  <!DOCTYPE html>
+  <html>
+  <head><meta charset="utf-8"></head>
+  <body style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;background:#f1f5f9;margin:0;padding:24px 12px;color:#1e293b;">
+    <div style="max-width:540px;margin:0 auto;background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 4px 6px -1px rgba(0,0,0,0.1);border:1px solid #e2e8f0;">
+      <div style="background:#114B32;padding:24px;text-align:center;color:#ffffff;">
+        <h2 style="margin:0 0 6px;font-size:20px;letter-spacing:-0.5px">🔔 New Customer Booking / Lead</h2>
+        <p style="margin:0;font-size:13px;opacity:0.85">${escapeHtml(bName)} Operations Alert</p>
+      </div>
+      <div style="padding:24px;">
+        <div style="background:#f8fafc;border-left:4px solid #114B32;padding:16px;border-radius:0 8px 8px 0;margin-bottom:20px;">
+          <p style="margin:0 0 8px;font-size:14px"><strong>Channel:</strong> <span style="display:inline-block;padding:2px 8px;background:#e2e8f0;border-radius:4px;font-weight:600">${escapeHtml(platform.toUpperCase())}</span></p>
+          <p style="margin:0 0 8px;font-size:14px"><strong>Customer:</strong> ${escapeHtml(customerName)}</p>
+          <p style="margin:0 0 8px;font-size:14px"><strong>Phone Number:</strong> <a href="tel:${escapeHtml(customerPhone)}" style="color:#114B32;font-weight:700;text-decoration:none">${escapeHtml(customerPhone)}</a></p>
+          ${estimatedTotal ? `<p style="margin:0 0 8px;font-size:14px"><strong>Estimated Total:</strong> BDT ${escapeHtml(estimatedTotal)}</p>` : ''}
+          <p style="margin:0;font-size:14px"><strong>Request / Details:</strong><br><span style="color:#475569;display:block;margin-top:4px">${escapeHtml(details)}</span></p>
+        </div>
+        <div style="text-align:center;margin:28px 0 12px;">
+          <a href="https://bot.ccadmin.online/chatbotadmin/" style="background:#114B32;color:#ffffff;text-decoration:none;padding:12px 24px;border-radius:8px;font-weight:600;font-size:14px;display:inline-block;">Open Dashboard & Reply</a>
+        </div>
+      </div>
+      <div style="background:#f8fafc;border-top:1px solid #e2e8f0;padding:12px 20px;text-align:center;font-size:11px;color:#94a3b8;">
+        Crown Bot Autonomous Operations &bull; Real-Time Lead Dispatch
+      </div>
+    </div>
+  </body>
+  </html>`;
+
+  if (!transporter) {
+    console.log(`[SMTP NOTICE (Alert)] To: ${to}, Subject: ${subject}`);
+    return { sent: false, simulated: true, recipient: to };
+  }
+
+  try {
+    const info = await transporter.sendMail({
+      from: `"Crown Bot Operations" <${from}>`,
+      to,
+      subject,
+      text: textContent,
+      html: htmlContent
+    });
+    return { sent: true, recipient: to, messageId: info.messageId };
+  } catch (err) {
+    console.error(`[SMTP ERROR] Failed to send owner alert to ${to}:`, err.message);
+    return { sent: false, error: err.message };
+  }
+}
+
+export async function sendWeeklyDigestEmail({
+  to,
+  businessName,
+  digestData
+}) {
+  if (!to || !to.includes('@')) {
+    return { sent: false, error: 'No valid recipient email address provided.' };
+  }
+
+  const bName = businessName || 'Your Business';
+  const from = process.env.SMTP_FROM || process.env.SMTP_USER || 'no-reply@ccadmin.online';
+  const transporter = getMailTransporter();
+  const subject = `📊 Weekly Performance Digest: ${bName} (${digestData.resolutionRate || 100}% AI Resolution)`;
+
+  const textContent = `Weekly Performance Summary for ${bName}
+• Inquiries Resolved Autonomously: ${digestData.conversations || 0}
+• Appointments & Leads Captured: ${digestData.orders || 0}
+• AI Resolution Rate: ${digestData.resolutionRate || 100}%
+• Estimated Receptionist Hours Saved: ${digestData.hoursSaved || 0} hrs
+
+Access Full Dashboard: https://bot.ccadmin.online/chatbotadmin/`;
+
+  const htmlContent = `
+  <!DOCTYPE html>
+  <html>
+  <head><meta charset="utf-8"></head>
+  <body style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;background:#f1f5f9;margin:0;padding:24px 12px;color:#1e293b;">
+    <div style="max-width:540px;margin:0 auto;background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 4px 6px -1px rgba(0,0,0,0.1);border:1px solid #e2e8f0;">
+      <div style="background:#114B32;padding:24px;text-align:center;color:#ffffff;">
+        <h2 style="margin:0 0 6px;font-size:20px;letter-spacing:-0.5px">📊 Weekly Performance Digest</h2>
+        <p style="margin:0;font-size:13px;opacity:0.85">${escapeHtml(bName)} &bull; 7-Day Autonomous Report</p>
+      </div>
+      <div style="padding:24px;">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;">
+          <div style="background:#f8fafc;padding:16px;border-radius:8px;text-align:center;border:1px solid #e2e8f0;">
+            <div style="font-size:24px;font-weight:800;color:#114B32">${digestData.conversations || 0}</div>
+            <div style="font-size:12px;color:#64748b;margin-top:4px">Inquiries Resolved</div>
+          </div>
+          <div style="background:#f8fafc;padding:16px;border-radius:8px;text-align:center;border:1px solid #e2e8f0;">
+            <div style="font-size:24px;font-weight:800;color:#114B32">${digestData.orders || 0}</div>
+            <div style="font-size:12px;color:#64748b;margin-top:4px">Bookings &amp; Leads</div>
+          </div>
+          <div style="background:#f8fafc;padding:16px;border-radius:8px;text-align:center;border:1px solid #e2e8f0;">
+            <div style="font-size:24px;font-weight:800;color:#114B32">${digestData.resolutionRate || 100}%</div>
+            <div style="font-size:12px;color:#64748b;margin-top:4px">AI Resolution Rate</div>
+          </div>
+          <div style="background:#f8fafc;padding:16px;border-radius:8px;text-align:center;border:1px solid #e2e8f0;">
+            <div style="font-size:24px;font-weight:800;color:#114B32">${digestData.hoursSaved || 0} hrs</div>
+            <div style="font-size:12px;color:#64748b;margin-top:4px">Reception Hours Saved</div>
+          </div>
+        </div>
+        <div style="text-align:center;margin:28px 0 12px;">
+          <a href="https://bot.ccadmin.online/chatbotadmin/" style="background:#114B32;color:#ffffff;text-decoration:none;padding:12px 24px;border-radius:8px;font-weight:600;font-size:14px;display:inline-block;">Open Operations Center</a>
+        </div>
+      </div>
+      <div style="background:#f8fafc;border-top:1px solid #e2e8f0;padding:12px 20px;text-align:center;font-size:11px;color:#94a3b8;">
+        Crown Bot Autonomous AI Platform &bull; Weekly Value Report
+      </div>
+    </div>
+  </body>
+  </html>`;
+
+  if (!transporter) {
+    console.log(`[SMTP NOTICE (Digest)] To: ${to}, Subject: ${subject}`);
+    return { sent: false, simulated: true, recipient: to };
+  }
+
+  try {
+    const info = await transporter.sendMail({
+      from: `"Crown Bot Operations" <${from}>`,
+      to,
+      subject,
+      text: textContent,
+      html: htmlContent
+    });
+    return { sent: true, recipient: to, messageId: info.messageId };
+  } catch (err) {
+    console.error(`[SMTP ERROR] Failed to send weekly digest to ${to}:`, err.message);
+    return { sent: false, error: err.message };
+  }
+}
+
 function escapeHtml(str) {
   return String(str || '')
     .replace(/&/g, '&amp;')

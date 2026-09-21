@@ -12,6 +12,8 @@ import {
   getWorkspaceConfig, saveWorkspaceConfig, findAccountByPlatformAndId, listWorkspaceChannels,
   getConfig, saveConfig, alreadySeen, upsertConversation, listConversations,
   getConversation, getMessages, addMessage, setBotEnabled, setFlag,
+  pauseConversationBot, resumeConversationBot, isConversationBotActive,
+  recordUpgradeRequest, listUpgradeRequests, dispatchOwnerAlert, getWeeklyDigest,
   listDrafts, stats, db,
   authenticateTenant, authenticateTenantByPasswordOnly, updateTenantCredentials, resetTenantPassword,
   getTenantUser, getSubscription, isSubscriptionActive, updateSubscription,
@@ -22,7 +24,7 @@ import {
   findWorkspaceByDomain, setWorkspaceCustomDomain,
   exportConversationsCSV, exportOrdersCSV, slugify
 } from './db.js';
-import { sendTenantCredentialsEmail } from './mailer.js';
+import { sendTenantCredentialsEmail, sendWeeklyDigestEmail } from './mailer.js';
 import { buildPrompt, openState, escalationHit } from './prompt.js';
 import { generateReply, parseMenuText, suggestFaqsForBusiness, detectOrderOrInquiry, detectLanguage } from './ai.js';
 import { verifySignature, isSelf, sendMessage, fetchProfileName, parseWebhook, testMetaConnection } from './meta.js';
@@ -1107,6 +1109,96 @@ app.post(`${BASE}/api/conversations/:id/reply`, { preHandler: requireAuth }, asy
   }
 });
 
+const handleConvPause = async (req, reply) => {
+  const conv = getConversation(req.params.id);
+  if (!conv) return reply.code(404).send({ error: 'Conversation not found' });
+  if (req.session.role === 'tenant_admin' && conv.workspace_id !== req.session.workspace_id) {
+    return reply.code(403).send({ error: 'Forbidden' });
+  }
+  const mins = Math.max(1, Number(req.body?.minutes) || 60);
+  const updated = pauseConversationBot(req.params.id, mins);
+  return { ok: true, conversation: updated, paused_until: updated.ai_paused_until };
+};
+app.post(`${BASE}/api/conversations/:id/pause`, { preHandler: requireAuth }, handleConvPause);
+app.post('/api/conversations/:id/pause', { preHandler: requireAuth }, handleConvPause);
+
+const handleConvResume = async (req, reply) => {
+  const conv = getConversation(req.params.id);
+  if (!conv) return reply.code(404).send({ error: 'Conversation not found' });
+  if (req.session.role === 'tenant_admin' && conv.workspace_id !== req.session.workspace_id) {
+    return reply.code(403).send({ error: 'Forbidden' });
+  }
+  const updated = resumeConversationBot(req.params.id);
+  return { ok: true, conversation: updated };
+};
+app.post(`${BASE}/api/conversations/:id/resume`, { preHandler: requireAuth }, handleConvResume);
+app.post('/api/conversations/:id/resume', { preHandler: requireAuth }, handleConvResume);
+
+const handleUpgradeRequest = async (req, reply) => {
+  const wsId = req.session.role === 'master_admin' ? Number(req.body?.workspace_id || req.session.workspace_id) : req.session.workspace_id;
+  const { plan_name, plan, monthly_fee, amount, payment_method, sender_number, sender_phone, trx_id, notes } = req.body || {};
+  const chosenPlan = plan_name || plan;
+  const chosenSender = sender_number || sender_phone;
+  const chosenAmount = monthly_fee ?? amount;
+  if (!chosenPlan || !trx_id || !chosenSender) {
+    return reply.code(400).send({ error: 'Please provide plan name, sender phone number, and TrxID.' });
+  }
+  const rec = recordUpgradeRequest({
+    workspaceId: wsId,
+    planName: chosenPlan,
+    monthlyFee: chosenAmount,
+    paymentMethod: payment_method || 'bkash',
+    senderNumber: chosenSender,
+    trxId: trx_id,
+    notes
+  });
+  return { ok: true, request: rec };
+};
+app.post(`${BASE}/api/tenant/subscription/request-upgrade`, { preHandler: requireAuth }, handleUpgradeRequest);
+app.post('/api/tenant/subscription/request-upgrade', { preHandler: requireAuth }, handleUpgradeRequest);
+
+const handleTestOwnerAlert = async (req, reply) => {
+  const wsId = req.session.role === 'master_admin' ? Number(req.body?.workspace_id || req.session.workspace_id) : req.session.workspace_id;
+  const result = await dispatchOwnerAlert(wsId, {
+    platform: 'test',
+    customer_name: 'Test Patient (Verification)',
+    customer_phone: '+880 1700-000000',
+    details: 'Test appointment booking verification alert.',
+    estimated_total: '1,500'
+  });
+  return { ok: true, result };
+};
+app.post(`${BASE}/api/tenant/test-owner-alert`, { preHandler: requireAuth }, handleTestOwnerAlert);
+app.post('/api/tenant/test-owner-alert', { preHandler: requireAuth }, handleTestOwnerAlert);
+
+const handleWeeklyDigest = async (req, reply) => {
+  const wsId = req.session.role === 'master_admin' ? Number(req.query?.workspace_id || req.session.workspace_id) : req.session.workspace_id;
+  const digest = getWeeklyDigest(wsId);
+  return { ok: true, digest };
+};
+app.get(`${BASE}/api/tenant/weekly-digest`, { preHandler: requireAuth }, handleWeeklyDigest);
+app.get('/api/tenant/weekly-digest', { preHandler: requireAuth }, handleWeeklyDigest);
+
+const handleWeeklyDigestEmail = async (req, reply) => {
+  const wsId = req.session.role === 'master_admin' ? Number(req.body?.workspace_id || req.session.workspace_id) : req.session.workspace_id;
+  const ws = db.prepare('SELECT * FROM workspaces WHERE id = ?').get(wsId);
+  const cfg = getWorkspaceConfig(wsId);
+  const digest = getWeeklyDigest(wsId);
+  const user = getTenantUser(wsId);
+  const targetEmail = req.body?.email || cfg?.alerts?.email || ws?.contact_email || user?.email;
+  if (!targetEmail || !targetEmail.includes('@')) {
+    return reply.code(400).send({ error: 'No valid recipient email address configured.' });
+  }
+  const res = await sendWeeklyDigestEmail({
+    to: targetEmail,
+    businessName: ws?.name || cfg?.business?.name || 'Your Business',
+    digestData: digest
+  });
+  return { ok: true, sent: res.sent, error: res.error, simulated: res.simulated };
+};
+app.post(`${BASE}/api/tenant/weekly-digest/email`, { preHandler: requireAuth }, handleWeeklyDigestEmail);
+app.post('/api/tenant/weekly-digest/email', { preHandler: requireAuth }, handleWeeklyDigestEmail);
+
 app.get('/health', async () => ({ ok: true }));
 app.get(`${BASE}/health`, async () => ({ ok: true }));
 
@@ -1131,12 +1223,17 @@ async function handleBotInfo(req, reply) {
   const greeting = cfg.cafe?.greeting || cfg.bot?.greeting || `Hello! Welcome to ${bizName}. How can I assist you today?`;
   const openInfo = openState(cfg);
 
+  const sub = getSubscription(wsId);
+  const planName = (sub?.plan_name || '').toLowerCase();
+  const whiteLabel = planName.includes('pro') || planName.includes('enterprise') || !!cfg?.whiteLabel;
+
   return {
     ok: true,
     workspace_id: wsId,
     name: bizName,
     greeting,
     open: openInfo,
+    whiteLabel,
     channels: {
       phone: cfg.cafe?.phone || cfg.business?.phone || '',
       address: cfg.cafe?.area || cfg.business?.address || '',
@@ -1392,7 +1489,7 @@ async function handleEvent(ev, log) {
 
   if (!isSubscriptionActive(workspaceId)) return log.info(`Subscription inactive/expired for workspace #${workspaceId}. Bot auto-reply paused.`);
   if (!cfg.runtime?.enabled) return log.info(`Bot globally disabled for workspace #${workspaceId}`);
-  if (!conv.bot_enabled) return log.info(`Bot off for conversation ${conv.id}`);
+  if (!isConversationBotActive(conv)) return log.info(`Bot off or paused (human handover active) for conversation ${conv.id}`);
 
   const hit = escalationHit(cfg, text);
   if (hit) {

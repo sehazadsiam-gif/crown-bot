@@ -3071,6 +3071,578 @@
       color: #114B32;
     }
 
+    /* ===== COMMERCIAL & ONBOARDING UX STYLES ===== */
+    /* Launch Checklist Stepper */
+    .launch-checklist-card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 18px 22px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+      position: relative;
+    }
+    .checklist-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .checklist-title-area {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .checklist-icon-badge {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: rgba(17, 75, 50, 0.08);
+      display: grid;
+      place-items: center;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+    .checklist-title {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 800;
+      letter-spacing: -0.01em;
+      color: var(--ink);
+    }
+    .checklist-sub {
+      margin: 2px 0 0;
+      font-size: 12.5px;
+      color: var(--ink3);
+    }
+    .checklist-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .checklist-progress-bar-wrap {
+      width: 120px;
+      height: 8px;
+      background: var(--surface2);
+      border-radius: 9999px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+    }
+    .checklist-progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #10B981, #059669);
+      border-radius: 9999px;
+      transition: width 0.35s ease;
+    }
+    .checklist-pct-txt {
+      font-size: 13px;
+      font-weight: 800;
+      color: #10B981;
+      min-width: 38px;
+    }
+    .checklist-toggle-btn {
+      background: var(--surface2);
+      border: 1px solid var(--line);
+      color: var(--ink2);
+      font-size: 11.5px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .checklist-steps-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-top: 16px;
+    }
+    @media (max-width: 900px) {
+      .checklist-steps-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 560px) {
+      .checklist-steps-grid { grid-template-columns: 1fr; }
+    }
+    .checklist-step {
+      background: var(--surface2);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 12px 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: all 0.2s ease;
+    }
+    .checklist-step:hover {
+      border-color: #10B981;
+      transform: translateY(-1px);
+    }
+    .step-check {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      font-size: 12px;
+      font-weight: 800;
+      flex-shrink: 0;
+    }
+    .step-check.done {
+      background: #10B981;
+      color: #fff;
+    }
+    .step-check.todo {
+      background: var(--surface);
+      color: var(--ink3);
+      border: 1.5px solid var(--line);
+    }
+    .step-info {
+      flex: 1;
+      min-width: 0;
+    }
+    .step-label {
+      font-size: 12.5px;
+      font-weight: 700;
+      color: var(--ink);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .step-desc {
+      font-size: 11px;
+      color: var(--ink3);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-top: 2px;
+    }
+    .step-arrow {
+      font-size: 14px;
+      color: var(--ink3);
+    }
+
+    /* Floating Test Bot Button */
+    .floating-test-bot-btn {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 9990;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 11px 20px;
+      background: linear-gradient(135deg, #114B32, #185E3E);
+      color: #ffffff;
+      border: none;
+      border-radius: 9999px;
+      font-weight: 700;
+      font-size: 13.5px;
+      box-shadow: 0 10px 25px -4px rgba(17, 75, 50, 0.45);
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .floating-test-bot-btn:hover {
+      transform: translateY(-2px) scale(1.02);
+      box-shadow: 0 14px 30px -4px rgba(17, 75, 50, 0.55);
+    }
+    .sim-pulse-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #34D399;
+      box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.7);
+      animation: simPulse 2s infinite;
+    }
+    @keyframes simPulse {
+      0% { box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.7); }
+      70% { box-shadow: 0 0 0 7px rgba(52, 211, 153, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(52, 211, 153, 0); }
+    }
+
+    /* Bot Simulator Drawer */
+    .bot-sim-drawer {
+      position: fixed;
+      top: 0;
+      right: -440px;
+      width: 400px;
+      max-width: 96vw;
+      height: 100vh;
+      background: var(--surface);
+      z-index: 9999;
+      box-shadow: -10px 0 35px rgba(0, 0, 0, 0.18);
+      display: flex;
+      flex-direction: column;
+      transition: right 0.32s cubic-bezier(0.16, 1, 0.3, 1);
+      border-left: 1px solid var(--line);
+    }
+    .bot-sim-drawer.open {
+      right: 0;
+    }
+    .sim-header {
+      padding: 16px 18px;
+      background: #114B32;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .sim-bot-meta {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .sim-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.2);
+      color: #fff;
+      font-weight: 800;
+      font-size: 13px;
+      display: grid;
+      place-items: center;
+    }
+    .sim-name {
+      font-size: 14px;
+      font-weight: 700;
+      color: #fff;
+    }
+    .sim-status {
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.85);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      margin-top: 1px;
+    }
+    .sim-status-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #34D399;
+    }
+    .sim-actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .sim-icon-btn {
+      background: rgba(255, 255, 255, 0.15);
+      border: none;
+      color: #fff;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      font-size: 16px;
+      transition: background 0.15s;
+    }
+    .sim-icon-btn:hover {
+      background: rgba(255, 255, 255, 0.28);
+    }
+    .sim-quick-chips {
+      padding: 10px 14px;
+      background: var(--surface2);
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      white-space: nowrap;
+      scrollbar-width: none;
+    }
+    .sim-quick-chips::-webkit-scrollbar { display: none; }
+    .sim-chip {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      color: var(--ink2);
+      font-size: 11px;
+      font-weight: 600;
+      padding: 5px 10px;
+      border-radius: 9999px;
+      cursor: pointer;
+      transition: all 0.15s;
+      flex-shrink: 0;
+    }
+    .sim-chip:hover {
+      background: #114B32;
+      color: #fff;
+      border-color: #114B32;
+    }
+    .sim-messages-wrap {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      background: var(--surface);
+    }
+    .sim-bubble {
+      max-width: 82%;
+      padding: 9px 13px;
+      border-radius: 12px;
+      font-size: 13px;
+      line-height: 1.45;
+      word-break: break-word;
+    }
+    .sim-bubble.bot {
+      background: var(--surface2);
+      color: var(--ink);
+      align-self: flex-start;
+      border-bottom-left-radius: 3px;
+      border: 1px solid var(--line);
+    }
+    .sim-bubble.user {
+      background: #114B32;
+      color: #ffffff;
+      align-self: flex-end;
+      border-bottom-right-radius: 3px;
+    }
+    .sim-typing-bubble {
+      display: none;
+      align-self: flex-start;
+      background: var(--surface2);
+      border: 1px solid var(--line);
+      padding: 8px 12px;
+      border-radius: 12px;
+      border-bottom-left-radius: 3px;
+      gap: 4px;
+      margin: 0 14px 6px;
+    }
+    .sim-typing-bubble.active {
+      display: inline-flex;
+    }
+    .sim-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--ink3);
+      animation: simBlink 1.4s infinite;
+    }
+    .sim-dot:nth-child(2) { animation-delay: 0.2s; }
+    .sim-dot:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes simBlink {
+      0%, 80%, 100% { opacity: 0.3; transform: translateY(0); }
+      40% { opacity: 1; transform: translateY(-2px); }
+    }
+    .sim-input-row {
+      padding: 12px 14px;
+      background: var(--surface2);
+      border-top: 1px solid var(--line);
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    .sim-input-row input {
+      flex: 1;
+      padding: 9px 14px;
+      border-radius: 9999px;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      font-size: 13px;
+      color: var(--ink);
+    }
+    .sim-input-row button {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: #114B32;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+      transition: background 0.15s;
+    }
+    .sim-input-row button:hover { background: #0c3624; }
+
+    /* Commercial Upgrade Modal */
+    .upgrade-modal-card {
+      width: 860px;
+      max-width: 95vw;
+      max-height: 92vh;
+      overflow-y: auto;
+      border-radius: 20px;
+      padding: 28px;
+    }
+    .pricing-plans-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin: 22px 0;
+    }
+    @media (max-width: 760px) {
+      .pricing-plans-grid { grid-template-columns: 1fr; }
+    }
+    .plan-card {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 20px 18px;
+      cursor: pointer;
+      position: relative;
+      transition: all 0.2s ease;
+      background: var(--surface2);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .plan-card:hover {
+      border-color: #10B981;
+      transform: translateY(-2px);
+    }
+    .plan-card.active {
+      border: 2px solid #10B981;
+      background: var(--surface);
+      box-shadow: 0 10px 28px rgba(16, 185, 129, 0.15);
+    }
+    .plan-badge {
+      position: absolute;
+      top: -11px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #10B981;
+      color: #fff;
+      font-size: 9.5px;
+      font-weight: 800;
+      padding: 3px 12px;
+      border-radius: 9999px;
+      letter-spacing: 0.6px;
+      white-space: nowrap;
+    }
+    .plan-head {
+      margin-bottom: 14px;
+    }
+    .plan-name {
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--ink);
+    }
+    .plan-price {
+      font-size: 26px;
+      font-weight: 900;
+      color: #114B32;
+      margin-top: 6px;
+    }
+    .plan-price span {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--ink3);
+    }
+    .plan-features {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 18px 0;
+      font-size: 12.5px;
+      color: var(--ink2);
+      line-height: 1.7;
+    }
+    .plan-features li {
+      margin-bottom: 5px;
+    }
+    .plan-select-btn {
+      width: 100%;
+      font-weight: 700;
+      border-radius: 8px;
+    }
+
+    .upgrade-payment-section {
+      background: var(--surface2);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 20px;
+      margin-top: 10px;
+    }
+    .payment-method-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+    }
+    .pay-method-btn {
+      padding: 8px 16px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--surface);
+      font-weight: 600;
+      font-size: 12.5px;
+      cursor: pointer;
+      color: var(--ink2);
+      transition: all 0.15s;
+    }
+    .pay-method-btn.active {
+      background: #114B32;
+      color: #fff;
+      border-color: #114B32;
+    }
+    .payment-instructions-box {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 14px 16px;
+      color: var(--ink2);
+    }
+
+    /* Weekly Digest Card */
+    .weekly-digest-card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 18px 22px;
+      margin-top: 22px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+    }
+    .digest-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .digest-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+    @media (max-width: 768px) {
+      .digest-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    .digest-metric {
+      background: var(--surface2);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 14px 12px;
+      text-align: center;
+    }
+    .d-val {
+      font-size: 22px;
+      font-weight: 800;
+      color: #114B32;
+    }
+    .d-lbl {
+      font-size: 11.5px;
+      color: var(--ink3);
+      margin-top: 4px;
+      font-weight: 600;
+    }
+
+    /* Handover Control Bar */
+    .handover-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #10B981;
+      display: inline-block;
+    }
+    .handover-dot.paused {
+      background: #F59E0B;
+    }
+
   </style>
 </head>
 
@@ -3334,6 +3906,13 @@
         </div>
       </div>
 
+      <!-- Upgrade Plan Button -->
+      <button class="btn sm" id="btnHeaderUpgrade" onclick="openUpgradeModal()"
+        style="background:linear-gradient(135deg, #10B981, #059669); color:#fff; font-weight:700; border-radius:9999px; border:none; display:none; align-items:center; gap:6px; box-shadow:0 4px 12px rgba(16,185,129,0.3); padding:7px 14px; cursor:pointer"
+        title="Upgrade to Pro Plan">
+        <span>⚡ Upgrade Plan</span>
+      </button>
+
       <span class="savechip" id="saveChip"></span>
 
       <button class="btn sm" id="btnInstallPwa" onclick="triggerPwaInstall()" style="display:none; border-radius:9999px"
@@ -3591,6 +4170,64 @@
                   </svg>
                   <span>Simulate Order</span>
                 </button>
+              </div>
+            </div>
+
+            <!-- INTERACTIVE LAUNCH CHECKLIST STEPPER -->
+            <div class="launch-checklist-card" id="launchChecklistCard">
+              <div class="checklist-header">
+                <div class="checklist-title-area">
+                  <div class="checklist-icon-badge">🚀</div>
+                  <div>
+                    <h3 class="checklist-title" id="checklistTitle">Your AI Assistant is 75% Ready to Launch!</h3>
+                    <p class="checklist-sub">Follow these 4 quick milestones to get your bot operating 24/7 across all channels.</p>
+                  </div>
+                </div>
+                <div class="checklist-right">
+                  <div class="checklist-progress-bar-wrap">
+                    <div class="checklist-progress-fill" id="checklistProgressFill" style="width: 75%"></div>
+                  </div>
+                  <span class="checklist-pct-txt" id="checklistPctTxt">75%</span>
+                  <button class="checklist-toggle-btn" onclick="toggleLaunchChecklist()" id="btnToggleChecklist" title="Minimize/Maximize">Hide</button>
+                </div>
+              </div>
+              <div class="checklist-steps-grid" id="checklistStepsGrid">
+                <!-- Step 1 -->
+                <div class="checklist-step" id="stepMenuFaqs" onclick="switchTab('menu')">
+                  <div class="step-check done" id="stepCheck1">✓</div>
+                  <div class="step-info">
+                    <div class="step-label">1. Catalog &amp; FAQs</div>
+                    <div class="step-desc" id="stepDesc1">Loaded with industry presets</div>
+                  </div>
+                  <span class="step-arrow">&rarr;</span>
+                </div>
+                <!-- Step 2 -->
+                <div class="checklist-step" id="stepHoursPhone" onclick="switchTab('cafe')">
+                  <div class="step-check done" id="stepCheck2">✓</div>
+                  <div class="step-info">
+                    <div class="step-label">2. Hours &amp; Contact</div>
+                    <div class="step-desc" id="stepDesc2">Phone and schedule set</div>
+                  </div>
+                  <span class="step-arrow">&rarr;</span>
+                </div>
+                <!-- Step 3 -->
+                <div class="checklist-step" id="stepTestBot" onclick="openBotSimulator()">
+                  <div class="step-check todo" id="stepCheck3">&rarr;</div>
+                  <div class="step-info">
+                    <div class="step-label">3. Test Live Sandbox</div>
+                    <div class="step-desc" id="stepDesc3">Ask bot questions in browser</div>
+                  </div>
+                  <span class="step-arrow">&rarr;</span>
+                </div>
+                <!-- Step 4 -->
+                <div class="checklist-step" id="stepChannels" onclick="switchTab('channels')">
+                  <div class="step-check todo" id="stepCheck4">4</div>
+                  <div class="step-info">
+                    <div class="step-label">4. Connect Channels</div>
+                    <div class="step-desc" id="stepDesc4">Facebook, Instagram, WhatsApp</div>
+                  </div>
+                  <span class="step-arrow">&rarr;</span>
+                </div>
               </div>
             </div>
 
@@ -3938,6 +4575,41 @@
                     title="Refresh Telemetry">
                     🔄 Refresh
                   </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- WEEKLY PERFORMANCE DIGEST & VALUE REPORT -->
+            <div class="weekly-digest-card" id="weeklyDigestCard">
+              <div class="digest-header">
+                <div style="display:flex; align-items:center; gap:10px">
+                  <span style="font-size:22px">📊</span>
+                  <div>
+                    <h4 style="margin:0; font-size:15px; font-weight:800; color:var(--ink)">Weekly Performance Digest</h4>
+                    <p style="margin:2px 0 0; font-size:12px; color:var(--ink3)">7-Day Autonomous Operations &amp; Value Delivery Report</p>
+                  </div>
+                </div>
+                <div style="display:flex; gap:8px; flex-wrap:wrap">
+                  <button class="btn sm ghost" onclick="copyWeeklyDigestForWhatsApp()" title="Copy formatted WhatsApp summary with emojis">📋 Copy for WhatsApp</button>
+                  <button class="btn sm" onclick="emailWeeklyDigestToOwner()" title="Send digest to owner email">✉️ Email to Owner</button>
+                </div>
+              </div>
+              <div class="digest-grid">
+                <div class="digest-metric">
+                  <div class="d-val" id="digConvs">0</div>
+                  <div class="d-lbl">Inquiries Resolved</div>
+                </div>
+                <div class="digest-metric">
+                  <div class="d-val" id="digOrders">0</div>
+                  <div class="d-lbl">Bookings &amp; Leads</div>
+                </div>
+                <div class="digest-metric">
+                  <div class="d-val" id="digRate">100%</div>
+                  <div class="d-lbl">Autonomous Rate</div>
+                </div>
+                <div class="digest-metric">
+                  <div class="d-val" id="digHours">0 hrs</div>
+                  <div class="d-lbl">Reception Hours Saved</div>
                 </div>
               </div>
             </div>
@@ -4346,6 +5018,18 @@
           <div class="inbox">
             <div class="convlist" id="convList"></div>
             <div>
+              <!-- Handover Control Bar -->
+              <div class="handover-control-bar" id="handoverControlBar" style="display:flex; align-items:center; justify-content:space-between; padding:9px 14px; background:var(--surface2); border:1px solid var(--line); border-radius:10px; margin-bottom:10px">
+                <div style="display:flex; align-items:center; gap:8px">
+                  <span class="handover-dot" id="handoverDot"></span>
+                  <span id="handoverStatusTxt" style="font-size:12px; font-weight:700; color:var(--ink)">🤖 AI Autonomous Bot Active</span>
+                </div>
+                <div style="display:flex; gap:8px">
+                  <button class="btn sm" id="btnPauseBot" onclick="toggleHandoverPause(60)" disabled style="font-size:11.5px; padding:4px 10px" title="Pause AI for 1 hour so receptionist can reply manually">⏸ Pause AI (1 hr)</button>
+                  <button class="btn sm ghost" id="btnResumeBot" onclick="resumeHandoverBot()" style="display:none; font-size:11.5px; padding:4px 10px" title="Resume autonomous AI replies">▶ Resume AI</button>
+                </div>
+              </div>
+
               <div class="chat">
                 <div class="log" id="threadLog">
                   <div class="empty">Select a customer thread to view dialogue.</div>
@@ -4415,6 +5099,45 @@
               <label class="f">Special Notes &amp; Policies</label>
               <textarea data-b="cafe.notes"></textarea>
             </div>
+          </div>
+
+          <!-- OWNER INSTANT ALERTS CARD -->
+          <div class="card" style="border-left: 3px solid var(--accent); margin-top: 18px;">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px; flex-wrap:wrap; gap:10px;">
+              <div>
+                <h3 style="display:flex; align-items:center; gap:8px; margin:0 0 4px 0;">
+                  <span>🔔</span> Instant Owner Booking &amp; Lead Alerts
+                </h3>
+                <p class="hint" style="margin:0;">Get notified immediately on WhatsApp, Telegram, or Email whenever a patient/customer requests an appointment or asks for pricing.</p>
+              </div>
+              <button class="btn sm" type="button" onclick="testOwnerAlert()" id="btnTestOwnerAlert" style="align-self:center;">
+                📨 Send Test Alert
+              </button>
+            </div>
+
+            <div class="grid g2" style="margin-top:10px;">
+              <div>
+                <label class="f">Notification Phone / WhatsApp</label>
+                <input type="text" data-b="alerts.phone" placeholder="e.g. 01712345678 or +8801712345678">
+                <p class="hint" style="margin-top:4px; font-size:11px;">Target phone for WhatsApp notifications &amp; quick message forwarding.</p>
+              </div>
+              <div>
+                <label class="f">Alert Email Address</label>
+                <input type="email" data-b="alerts.email" placeholder="e.g. doctor@clinic.com or owner@company.com">
+                <p class="hint" style="margin-top:4px; font-size:11px;">Receives detailed booking confirmations and customer summary emails.</p>
+              </div>
+              <div>
+                <label class="f">Telegram Bot Token (Optional)</label>
+                <input type="text" data-b="alerts.telegramBotToken" placeholder="e.g. 7123456789:ABCdefGhIJKlmNoPQRstuVWXyz">
+                <p class="hint" style="margin-top:4px; font-size:11px;">Token from @BotFather for free, unlimited 0-second instant push notifications.</p>
+              </div>
+              <div>
+                <label class="f">Telegram Chat ID (Optional)</label>
+                <input type="text" data-b="alerts.telegramChatId" placeholder="e.g. 987654321 or -100123456789">
+                <p class="hint" style="margin-top:4px; font-size:11px;">Personal chat ID or group chat ID for team alerts (get via @userinfobot).</p>
+              </div>
+            </div>
+            <div id="testAlertResultMsg" style="margin-top:10px; font-size:12px; display:none;"></div>
           </div>
         </section>
 
@@ -4960,6 +5683,193 @@
     </div>
   </div>
 
+  <!-- Commercial Upgrade Modal (bKash / Nagad / Card) -->
+  <div id="upgradeModal" class="modal-backdrop" style="display:none;">
+    <div class="modal-card upgrade-modal-card">
+      <div style="display:flex; align-items:flex-start; justify-content:space-between; border-bottom:1px solid var(--line); padding-bottom:14px;">
+        <div>
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span style="font-size:24px;">🚀</span>
+            <h2 style="margin:0; font-size:22px; font-weight:800; color:var(--ink);">Upgrade Your CCBot Plan</h2>
+          </div>
+          <p style="margin:4px 0 0; font-size:13px; color:var(--ink2);">
+            Unlock multi-channel Meta AI, remove "Powered by CCBot" branding, and enable instant booking notifications.
+          </p>
+        </div>
+        <button class="btn sm ghost" onclick="closeUpgradeModal()" style="border-radius:9999px; padding:4px 12px; font-weight:700;">✕ Close</button>
+      </div>
+
+      <!-- Pricing Plans Grid -->
+      <div class="pricing-plans-grid">
+        <!-- Starter Plan -->
+        <div class="plan-card" id="cardPlanStarter" onclick="selectUpgradePlan('starter', 499)">
+          <div class="plan-head">
+            <div class="plan-name">Starter</div>
+            <div class="plan-price">৳499 <span>/ month</span></div>
+            <p style="font-size:11.5px; color:var(--ink3); margin:4px 0 0;">Ideal for single-page clinics &amp; boutique businesses</p>
+          </div>
+          <ul class="plan-features">
+            <li>✅ 1 Facebook Page Connected</li>
+            <li>✅ 500 AI Conversations / month</li>
+            <li>✅ Standard Appointment &amp; Lead Capture</li>
+            <li>✅ Knowledge Base &amp; FAQ Wizard</li>
+            <li>ℹ️ "Powered by CCBot" badge shown</li>
+          </ul>
+          <button type="button" class="btn sm plan-select-btn" id="btnSelectStarter">Select Starter</button>
+        </div>
+
+        <!-- Pro Plan (Most Popular) -->
+        <div class="plan-card active" id="cardPlanPro" onclick="selectUpgradePlan('pro', 1999)">
+          <div class="plan-badge">MOST POPULAR</div>
+          <div class="plan-head">
+            <div class="plan-name">Pro</div>
+            <div class="plan-price">৳1,999 <span>/ month</span></div>
+            <p style="font-size:11.5px; color:var(--ink3); margin:4px 0 0;">For high-volume doctors, salons &amp; growing practices</p>
+          </div>
+          <ul class="plan-features">
+            <li>✅ <strong>FB + Instagram + WhatsApp + Web Widget</strong></li>
+            <li>✅ <strong>3,000 AI Conversations / month</strong></li>
+            <li>✅ <strong>White-Label</strong> (Removes CCBot branding)</li>
+            <li>✅ Instant Telegram &amp; WhatsApp Owner Alerts</li>
+            <li>✅ 1-Click WhatsApp Weekly Performance Digest</li>
+            <li>✅ Human Handover Pause in Live Inbox</li>
+          </ul>
+          <button type="button" class="btn sm primary plan-select-btn" id="btnSelectPro">Selected (Recommended)</button>
+        </div>
+
+        <!-- Enterprise Plan -->
+        <div class="plan-card" id="cardPlanEnterprise" onclick="selectUpgradePlan('enterprise', 2999)">
+          <div class="plan-head">
+            <div class="plan-name">Enterprise</div>
+            <div class="plan-price">৳2,999 <span>/ month</span></div>
+            <p style="font-size:11.5px; color:var(--ink3); margin:4px 0 0;">Dedicated support &amp; custom persona fine-tuning</p>
+          </div>
+          <ul class="plan-features">
+            <li>✅ <strong>Unlimited AI Conversations</strong></li>
+            <li>✅ Multi-Location &amp; Multi-Staff Routing</li>
+            <li>✅ Custom Bengali / Banglish Persona Fine-Tuning</li>
+            <li>✅ 100% White-Label &amp; Custom Domain Widget</li>
+            <li>✅ Priority 24/7 Phone &amp; WhatsApp Support</li>
+          </ul>
+          <button type="button" class="btn sm plan-select-btn" id="btnSelectEnterprise">Select Enterprise</button>
+        </div>
+      </div>
+
+      <!-- Payment & Checkout Section -->
+      <div class="upgrade-payment-section">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:8px;">
+          <h4 style="margin:0; font-size:14px; font-weight:700; color:var(--ink);">
+            Step 2: Complete Payment via Mobile Financial Services
+          </h4>
+          <span style="font-size:12px; font-weight:700; color:#114B32;" id="selectedPlanSummaryTxt">
+            Selected: Pro (৳1,999 / month)
+          </span>
+        </div>
+
+        <!-- Payment Method Tabs -->
+        <div class="payment-method-tabs">
+          <button type="button" class="pay-method-btn active" id="payMethodBkash" onclick="selectPayMethod('bKash')">
+            🌸 bKash (Send Money / Merchant)
+          </button>
+          <button type="button" class="pay-method-btn" id="payMethodNagad" onclick="selectPayMethod('Nagad')">
+            🔥 Nagad (Personal / Send Money)
+          </button>
+          <button type="button" class="pay-method-btn" id="payMethodRocket" onclick="selectPayMethod('Rocket')">
+            🚀 Rocket
+          </button>
+          <button type="button" class="pay-method-btn" id="payMethodCard" onclick="selectPayMethod('Bank')">
+            🏦 Bank / Card Transfer
+          </button>
+        </div>
+
+        <!-- Payment Instructions Box -->
+        <div style="background:var(--surface); border:1px solid var(--line); border-radius:10px; padding:14px; margin-bottom:16px;">
+          <div id="paymentInstructionsContent" style="font-size:13px; line-height:1.6; color:var(--ink);">
+            <p style="margin:0 0 6px 0;"><strong>How to Pay with bKash:</strong></p>
+            <ol style="margin:0; padding-left:20px; font-size:12.5px; color:var(--ink2);">
+              <li>Open your bKash app or dial *247# and choose <strong>Send Money</strong>.</li>
+              <li>Enter CCBot Account Number: <strong style="color:var(--accent); font-family:var(--font-mono); font-size:14px;">01711223344</strong> (Personal / Merchant)</li>
+              <li>Enter the exact amount: <strong id="instructionAmountTxt">৳1,999</strong></li>
+              <li>Enter Reference: <strong id="instructionRefTxt">ClinicBot</strong></li>
+              <li>Confirm with PIN, then copy the <strong>TrxID (Transaction ID)</strong> from your SMS receipt.</li>
+            </ol>
+          </div>
+        </div>
+
+        <!-- Submission Form -->
+        <form onsubmit="submitUpgradeRequest(event)" style="display:grid; grid-template-columns:1fr 1fr auto; gap:12px; align-items:flex-end;">
+          <div>
+            <label class="f" style="font-size:12px;">Your Sender Mobile Number</label>
+            <input type="text" id="upgradeSenderPhone" placeholder="017XXXXXXXX" required style="font-size:13px;">
+          </div>
+          <div>
+            <label class="f" style="font-size:12px;">Transaction ID (TrxID)</label>
+            <input type="text" id="upgradeTrxId" placeholder="e.g. 9J29X0KA7" required style="font-size:13px; font-family:var(--font-mono); text-transform:uppercase;">
+          </div>
+          <div>
+            <button type="submit" class="btn primary" id="btnSubmitUpgrade" style="height:38px; padding:0 20px; font-weight:700;">
+              Confirm Upgrade
+            </button>
+          </div>
+        </form>
+        <div id="upgradeStatusMsg" style="margin-top:10px; font-size:12.5px; display:none;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Floating Sticky Button: Test My Bot Live -->
+  <button id="floatingTestBotBtn" class="floating-test-bot-btn" type="button" onclick="toggleBotSimulator()" title="Test Your Bot Live">
+    <span class="sim-pulse-dot"></span>
+    <span>💬 Test Bot Live</span>
+  </button>
+
+  <!-- Bot Live Simulator Drawer -->
+  <div id="botSimulatorDrawer" class="bot-sim-drawer">
+    <div class="sim-header">
+      <div class="sim-bot-meta">
+        <div class="sim-avatar" id="simAvatarInitial">AI</div>
+        <div>
+          <div class="sim-name" id="simBotName">Clinic AI Assistant</div>
+          <div class="sim-status">
+            <span class="sim-status-dot"></span>
+            <span>Live Sandbox • Active Catalog</span>
+          </div>
+        </div>
+      </div>
+      <div class="sim-actions">
+        <button class="sim-icon-btn" type="button" onclick="resetBotSimulator()" title="Restart Simulation">↺</button>
+        <button class="sim-icon-btn" type="button" onclick="closeBotSimulator()" title="Close Drawer">✕</button>
+      </div>
+    </div>
+
+    <!-- Quick Prompt Testing Chips -->
+    <div class="sim-quick-chips">
+      <button type="button" class="sim-chip" onclick="simSendChip('Treatment Pricing &amp; Packages')">💰 Pricing</button>
+      <button type="button" class="sim-chip" onclick="simSendChip('Can I book an appointment for tomorrow?')">📅 Book Visit</button>
+      <button type="button" class="sim-chip" onclick="simSendChip('What are your opening hours and off days?')">⏰ Hours</button>
+      <button type="button" class="sim-chip" onclick="simSendChip('Where is your clinic located?')">📍 Location</button>
+      <button type="button" class="sim-chip" onclick="simSendChip('Root canal er cost koto?')">🇧🇩 Banglish Ask</button>
+    </div>
+
+    <!-- Chat Messages Container -->
+    <div class="sim-messages-wrap" id="simChatMessages">
+      <!-- Injected by JS -->
+    </div>
+
+    <!-- Typing Indicator -->
+    <div class="sim-typing-bubble" id="simTypingIndicator">
+      <span class="sim-dot"></span>
+      <span class="sim-dot"></span>
+      <span class="sim-dot"></span>
+    </div>
+
+    <!-- Input Box & Send Button -->
+    <form class="sim-input-row" onsubmit="simSubmitMessage(event)">
+      <input type="text" id="simUserInput" placeholder="Ask anything in English, Bengali, or Banglish…" autocomplete="off">
+      <button type="submit" title="Send message">➤</button>
+    </form>
+  </div>
+
   <script>
     const API = window.location.pathname.startsWith('/chatbotadmin') ? '/chatbotadmin' : '';
     const api = (p, opts = {}) => {
@@ -5026,6 +5936,8 @@
 
           const masterBadge = document.getElementById('masterAdminBadge');
           if (masterBadge) masterBadge.style.display = 'inline-flex';
+          const btnHeaderUpgrade = document.getElementById('btnHeaderUpgrade');
+          if (btnHeaderUpgrade) btnHeaderUpgrade.style.display = 'none';
 
           document.getElementById('brandTitleTxt').textContent = 'CC Chatbot';
           document.getElementById('brandSubTxt').textContent = 'Master Control Hub';
@@ -5046,6 +5958,8 @@
           if (masterBadge) masterBadge.style.display = 'none';
           const inspectingBanner = document.getElementById('masterInspectingBanner');
           if (inspectingBanner) inspectingBanner.style.display = 'none';
+          const btnHeaderUpgrade = document.getElementById('btnHeaderUpgrade');
+          if (btnHeaderUpgrade) btnHeaderUpgrade.style.display = 'inline-flex';
 
           const bizName = r.workspace_id === 1 ? 'CC' : (r.workspace_name || 'My Business');
           document.getElementById('brandTitleTxt').textContent = bizName + ' Chatbot';
@@ -7384,9 +8298,11 @@ Crown Operations Support`;
         const platName = d.conversation?.platform || 'Unknown';
         const platIcon = platName === 'facebook' ? '📘' : platName === 'instagram' ? '📷' : platName === 'whatsapp' ? '📱' : '💬';
         badge.textContent = `${platIcon} ${platName.charAt(0).toUpperCase() + platName.slice(1)}`;
+        updateHandoverUi(d.conversation);
       } catch (err) {
         log.innerHTML = `<div class="empty" style="color:var(--danger)">Failed to load conversation. Please try again.</div>`;
         selConv = null;
+        updateHandoverUi(null);
       }
 
       // Refresh the list to show updated selection state
@@ -7395,8 +8311,13 @@ Crown Operations Support`;
 
     document.getElementById('convBot').onchange = async e => {
       if (!selConv) return;
-      await api(`/api/conversations/${selConv}/bot`, { method: 'POST', body: JSON.stringify({ enabled: e.target.checked }) });
+      const res = await api(`/api/conversations/${selConv}/bot`, { method: 'POST', body: JSON.stringify({ enabled: e.target.checked }) }).then(r => r.json()).catch(() => ({}));
       chip('AI bot setting updated');
+      if (res && res.conversation) {
+        updateHandoverUi(res.conversation);
+      } else {
+        updateHandoverUi({ id: selConv, bot_enabled: e.target.checked ? 1 : 0 });
+      }
     };
 
     document.getElementById('threadSend').onclick = async () => {
@@ -7413,6 +8334,545 @@ Crown Operations Support`;
       }
     };
     document.getElementById('refreshInbox').onclick = loadInbox;
+
+    /* ---------- HUMAN HANDOVER CONTROLS ---------- */
+    function updateHandoverUi(conv) {
+      const dot = document.getElementById('handoverDot');
+      const txt = document.getElementById('handoverStatusTxt');
+      const btnPause = document.getElementById('btnPauseBot');
+      const btnResume = document.getElementById('btnResumeBot');
+      if (!txt) return;
+
+      if (!conv) {
+        if (btnPause) { btnPause.style.display = 'inline-flex'; btnPause.disabled = true; }
+        if (btnResume) btnResume.style.display = 'none';
+        if (dot) dot.className = 'handover-dot';
+        txt.textContent = '🤖 Select a customer thread to manage AI Handover';
+        return;
+      }
+
+      const isPaused = conv.ai_paused_until && (new Date(conv.ai_paused_until).getTime() > Date.now());
+
+      if (!conv.bot_enabled) {
+        if (btnPause) { btnPause.style.display = 'inline-flex'; btnPause.disabled = true; }
+        if (btnResume) btnResume.style.display = 'none';
+        if (dot) dot.className = 'handover-dot paused';
+        txt.textContent = '⏸ AI Bot is switched off for this customer';
+      } else if (isPaused) {
+        const diffMs = new Date(conv.ai_paused_until).getTime() - Date.now();
+        const mins = Math.max(1, Math.round(diffMs / 60000));
+        if (btnPause) btnPause.style.display = 'none';
+        if (btnResume) btnResume.style.display = 'inline-flex';
+        if (dot) dot.className = 'handover-dot paused';
+        txt.textContent = `⏸ Human Handover Active (AI paused for ~${mins}m)`;
+      } else {
+        if (btnPause) { btnPause.style.display = 'inline-flex'; btnPause.disabled = false; }
+        if (btnResume) btnResume.style.display = 'none';
+        if (dot) dot.className = 'handover-dot';
+        txt.textContent = '🤖 AI Autonomous Bot Active (Replies immediately)';
+      }
+    }
+
+    async function toggleHandoverPause(minutes = 60) {
+      if (!selConv) return;
+      try {
+        const params = currentWorkspaceId ? `?workspace_id=${currentWorkspaceId}` : '';
+        const res = await api(`/api/conversations/${selConv}/pause${params}`, {
+          method: 'POST',
+          body: JSON.stringify({ minutes })
+        }).then(r => r.json());
+        if (res.ok) {
+          chip(`AI paused for ${minutes} mins for manual staff reply`);
+          updateHandoverUi(res.conversation);
+        } else {
+          alert(res.error || 'Could not pause AI bot');
+        }
+      } catch (err) {
+        console.error(err);
+        alert('Failed to pause AI bot');
+      }
+    }
+
+    async function resumeHandoverBot() {
+      if (!selConv) return;
+      try {
+        const params = currentWorkspaceId ? `?workspace_id=${currentWorkspaceId}` : '';
+        const res = await api(`/api/conversations/${selConv}/resume${params}`, {
+          method: 'POST'
+        }).then(r => r.json());
+        if (res.ok) {
+          chip('Autonomous AI bot resumed');
+          updateHandoverUi(res.conversation);
+        } else {
+          alert(res.error || 'Could not resume AI bot');
+        }
+      } catch (err) {
+        console.error(err);
+        alert('Failed to resume AI bot');
+      }
+    }
+
+    /* ---------- INTERACTIVE LAUNCH CHECKLIST ---------- */
+    let _launchChecklistHidden = false;
+
+    function toggleLaunchChecklist() {
+      const grid = document.getElementById('checklistStepsGrid');
+      const btn = document.getElementById('btnToggleChecklist');
+      if (!grid) return;
+      _launchChecklistHidden = !_launchChecklistHidden;
+      grid.style.display = _launchChecklistHidden ? 'none' : 'grid';
+      if (btn) btn.textContent = _launchChecklistHidden ? 'Show' : 'Hide';
+    }
+
+    function updateLaunchChecklist() {
+      const card = document.getElementById('launchChecklistCard');
+      if (!card || !S) return;
+
+      const hasMenu = (S.menu?.categories?.length || 0) > 0;
+      const hasFaqs = (S.faqs?.length || 0) > 0;
+      const s1Done = hasMenu || hasFaqs;
+
+      const hasPhone = !!(S.cafe?.phone && S.cafe.phone.trim());
+      const hasHours = !!(S.cafe?.open || S.cafe?.address);
+      const s2Done = hasPhone && hasHours;
+
+      const s3Done = localStorage.getItem('cc_bot_tested') === '1';
+
+      const s4Done = !!(
+        S.channels?.facebook?.enabled ||
+        S.channels?.instagram?.enabled ||
+        S.channels?.whatsapp?.enabled ||
+        S.channels?.tiktok?.enabled
+      );
+
+      const doneCount = [s1Done, s2Done, s3Done, s4Done].filter(Boolean).length;
+      const pct = Math.round((doneCount / 4) * 100);
+
+      const progressFill = document.getElementById('checklistProgressFill');
+      const pctTxt = document.getElementById('checklistPctTxt');
+      const title = document.getElementById('checklistTitle');
+
+      if (progressFill) progressFill.style.width = pct + '%';
+      if (pctTxt) pctTxt.textContent = pct + '%';
+      if (title) {
+        if (pct === 100) {
+          title.textContent = '🎉 100% Ready! Your Bot is Live & Operational!';
+        } else {
+          title.textContent = `🚀 Your Bot is ${pct}% Ready to Launch!`;
+        }
+      }
+
+      const c1 = document.getElementById('stepCheck1');
+      const d1 = document.getElementById('stepDesc1');
+      if (c1) {
+        c1.className = 'step-check ' + (s1Done ? 'done' : 'todo');
+        c1.textContent = s1Done ? '✓' : '1';
+      }
+      if (d1) d1.textContent = s1Done ? `${S.menu?.categories?.length || 0} Categories, ${S.faqs?.length || 0} FAQs loaded` : 'Add treatments, services & FAQs';
+
+      const c2 = document.getElementById('stepCheck2');
+      const d2 = document.getElementById('stepDesc2');
+      if (c2) {
+        c2.className = 'step-check ' + (s2Done ? 'done' : 'todo');
+        c2.textContent = s2Done ? '✓' : '2';
+      }
+      if (d2) d2.textContent = s2Done ? `Hotline: ${S.cafe?.phone || 'Configured'}` : 'Set phone number & opening hours';
+
+      const c3 = document.getElementById('stepCheck3');
+      const d3 = document.getElementById('stepDesc3');
+      if (c3) {
+        c3.className = 'step-check ' + (s3Done ? 'done' : 'todo');
+        c3.textContent = s3Done ? '✓' : '→';
+      }
+      if (d3) d3.textContent = s3Done ? 'Tested live in browser sandbox' : 'Click to test bot responses live';
+
+      const c4 = document.getElementById('stepCheck4');
+      const d4 = document.getElementById('stepDesc4');
+      if (c4) {
+        c4.className = 'step-check ' + (s4Done ? 'done' : 'todo');
+        c4.textContent = s4Done ? '✓' : '4';
+      }
+      if (d4) d4.textContent = s4Done ? 'Social channels connected & active' : 'Connect Facebook, Instagram, or WhatsApp';
+    }
+
+    /* ---------- COMMERCIAL UPGRADE & MONETIZATION (bKash / Nagad) ---------- */
+    let _selectedPlan = 'pro';
+    let _selectedAmount = 1999;
+    let _selectedMethod = 'bKash';
+
+    function openUpgradeModal(preselectPlan = 'pro') {
+      const modal = document.getElementById('upgradeModal');
+      if (modal) {
+        modal.style.display = 'flex';
+        if (preselectPlan) {
+          const amt = preselectPlan === 'starter' ? 499 : (preselectPlan === 'enterprise' ? 2999 : 1999);
+          selectUpgradePlan(preselectPlan, amt);
+        }
+      }
+    }
+
+    function closeUpgradeModal() {
+      const modal = document.getElementById('upgradeModal');
+      if (modal) modal.style.display = 'none';
+      const msg = document.getElementById('upgradeStatusMsg');
+      if (msg) msg.style.display = 'none';
+    }
+
+    function selectUpgradePlan(plan, amount) {
+      _selectedPlan = plan;
+      _selectedAmount = amount;
+
+      ['starter', 'pro', 'enterprise'].forEach(p => {
+        const card = document.getElementById('cardPlan' + p.charAt(0).toUpperCase() + p.slice(1));
+        const btn = document.getElementById('btnSelect' + p.charAt(0).toUpperCase() + p.slice(1));
+        if (card) card.classList.toggle('active', p === plan);
+        if (btn) {
+          btn.className = 'btn sm plan-select-btn' + (p === plan ? ' primary' : '');
+          btn.textContent = p === plan ? 'Selected' : ('Select ' + p.charAt(0).toUpperCase() + p.slice(1));
+        }
+      });
+
+      const sumTxt = document.getElementById('selectedPlanSummaryTxt');
+      if (sumTxt) sumTxt.textContent = `Selected: ${plan.toUpperCase()} (৳${amount.toLocaleString()} / month)`;
+
+      const instAmt = document.getElementById('instructionAmountTxt');
+      if (instAmt) instAmt.textContent = `৳${amount.toLocaleString()}`;
+
+      const instRef = document.getElementById('instructionRefTxt');
+      if (instRef) instRef.textContent = (S?.cafe?.name || 'ClinicBot').replace(/[^a-zA-Z0-9]/g, '').slice(0, 10);
+    }
+
+    function selectPayMethod(method) {
+      _selectedMethod = method;
+      ['Bkash', 'Nagad', 'Rocket', 'Card'].forEach(m => {
+        const btn = document.getElementById('payMethod' + m);
+        if (btn) btn.classList.toggle('active', m.toLowerCase() === method.toLowerCase());
+      });
+
+      const container = document.getElementById('paymentInstructionsContent');
+      if (!container) return;
+
+      const phone = '01711223344';
+      const amt = `৳${_selectedAmount.toLocaleString()}`;
+      const ref = (S?.cafe?.name || 'ClinicBot').replace(/[^a-zA-Z0-9]/g, '').slice(0, 10);
+
+      if (method === 'bKash') {
+        container.innerHTML = `
+          <p style="margin:0 0 6px 0;"><strong>How to Pay with bKash:</strong></p>
+          <ol style="margin:0; padding-left:20px; font-size:12.5px; color:var(--ink2);">
+            <li>Open your bKash app or dial *247# and choose <strong>Send Money</strong>.</li>
+            <li>Enter CCBot Account Number: <strong style="color:var(--accent); font-family:var(--font-mono); font-size:14px;">${phone}</strong> (Personal)</li>
+            <li>Enter the exact amount: <strong style="color:var(--ink)">${amt}</strong></li>
+            <li>Enter Reference: <strong>${ref}</strong></li>
+            <li>Confirm with PIN, then enter your mobile number and the <strong>TrxID</strong> below.</li>
+          </ol>`;
+      } else if (method === 'Nagad') {
+        container.innerHTML = `
+          <p style="margin:0 0 6px 0;"><strong>How to Pay with Nagad:</strong></p>
+          <ol style="margin:0; padding-left:20px; font-size:12.5px; color:var(--ink2);">
+            <li>Open your Nagad app or dial *167# and select <strong>Send Money</strong>.</li>
+            <li>Enter CCBot Nagad Number: <strong style="color:var(--accent); font-family:var(--font-mono); font-size:14px;">${phone}</strong> (Personal)</li>
+            <li>Enter the exact amount: <strong style="color:var(--ink)">${amt}</strong></li>
+            <li>Enter Reference: <strong>${ref}</strong></li>
+            <li>Confirm with PIN, then enter your mobile number and the <strong>TrxID</strong> below.</li>
+          </ol>`;
+      } else if (method === 'Rocket') {
+        container.innerHTML = `
+          <p style="margin:0 0 6px 0;"><strong>How to Pay with DBBL Rocket:</strong></p>
+          <ol style="margin:0; padding-left:20px; font-size:12.5px; color:var(--ink2);">
+            <li>Dial *322# or open the Rocket App.</li>
+            <li>Choose <strong>Send Money</strong> to Rocket Number: <strong style="color:var(--accent); font-family:var(--font-mono); font-size:14px;">${phone}8</strong></li>
+            <li>Enter Amount: <strong>${amt}</strong> and Reference: <strong>${ref}</strong></li>
+            <li>Submit and enter the TxnID below.</li>
+          </ol>`;
+      } else {
+        container.innerHTML = `
+          <p style="margin:0 0 6px 0;"><strong>Bank / Card Transfer Instructions:</strong></p>
+          <p style="margin:0 0 4px 0; font-size:12.5px; color:var(--ink2);">
+            Bank: <strong>City Bank PLC</strong> | A/C Name: <strong>CCBot Technologies Ltd</strong><br>
+            A/C No: <strong>1102983746001</strong> | Branch: <strong>Gulshan 2, Dhaka</strong><br>
+            Routing: <strong>225261347</strong> | Amount: <strong>${amt}</strong>
+          </p>
+          <p style="margin:0; font-size:12px; color:var(--ink3);">After transfer, enter your transaction or reference number below.</p>`;
+      }
+    }
+
+    async function submitUpgradeRequest(e) {
+      if (e) e.preventDefault();
+      const phoneInput = document.getElementById('upgradeSenderPhone');
+      const trxInput = document.getElementById('upgradeTrxId');
+      const msg = document.getElementById('upgradeStatusMsg');
+      const btn = document.getElementById('btnSubmitUpgrade');
+
+      const senderPhone = phoneInput?.value.trim();
+      const trxId = trxInput?.value.trim().toUpperCase();
+
+      if (!senderPhone || !trxId) {
+        alert('Please enter both your sender mobile number and transaction ID (TrxID).');
+        return;
+      }
+
+      if (btn) { btn.disabled = true; btn.textContent = 'Verifying…'; }
+      if (msg) {
+        msg.style.display = 'block';
+        msg.style.color = 'var(--ink2)';
+        msg.textContent = 'Submitting subscription verification request…';
+      }
+
+      try {
+        const params = currentWorkspaceId ? `?workspace_id=${currentWorkspaceId}` : '';
+        const res = await api(`/api/tenant/subscription/request-upgrade${params}`, {
+          method: 'POST',
+          body: JSON.stringify({
+            plan: _selectedPlan,
+            payment_method: _selectedMethod,
+            trx_id: trxId,
+            sender_phone: senderPhone,
+            amount: _selectedAmount
+          })
+        }).then(r => r.json());
+
+        if (res.ok) {
+          if (msg) {
+            msg.style.color = '#10B981';
+            msg.innerHTML = `✅ <strong>Upgrade Request Submitted!</strong> Your TrxID <code>${trxId}</code> is received. Our team will verify and activate your <strong>${_selectedPlan.toUpperCase()}</strong> subscription within 15 minutes.`;
+          }
+          if (phoneInput) phoneInput.value = '';
+          if (trxInput) trxInput.value = '';
+          setTimeout(() => {
+            closeUpgradeModal();
+            chip(`Upgrade to ${_selectedPlan.toUpperCase()} requested successfully!`);
+          }, 3500);
+        } else {
+          if (msg) {
+            msg.style.color = 'var(--red)';
+            msg.textContent = res.error || 'Failed to submit upgrade request. Please try again.';
+          }
+        }
+      } catch (err) {
+        console.error(err);
+        if (msg) {
+          msg.style.color = 'var(--red)';
+          msg.textContent = 'Network error. Please try again.';
+        }
+      } finally {
+        if (btn) { btn.disabled = false; btn.textContent = 'Confirm Upgrade'; }
+      }
+    }
+
+    /* ---------- BOT SIMULATOR DRAWER (LIVE SANDBOX) ---------- */
+    let _simSessionId = 'sim_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7);
+
+    function toggleBotSimulator() {
+      const drawer = document.getElementById('botSimulatorDrawer');
+      if (drawer?.classList.contains('open')) {
+        closeBotSimulator();
+      } else {
+        openBotSimulator();
+      }
+    }
+
+    function openBotSimulator() {
+      const drawer = document.getElementById('botSimulatorDrawer');
+      if (!drawer) return;
+      drawer.classList.add('open');
+
+      localStorage.setItem('cc_bot_tested', '1');
+      updateLaunchChecklist();
+
+      const botName = S?.business?.name || S?.cafe?.name || 'Clinic AI Assistant';
+      const nameEl = document.getElementById('simBotName');
+      const avatarEl = document.getElementById('simAvatarInitial');
+      if (nameEl) nameEl.textContent = botName;
+      if (avatarEl) avatarEl.textContent = botName.charAt(0).toUpperCase() || 'AI';
+
+      const msgs = document.getElementById('simChatMessages');
+      if (msgs && !msgs.children.length) {
+        resetBotSimulator();
+      }
+
+      setTimeout(() => {
+        document.getElementById('simUserInput')?.focus();
+      }, 350);
+    }
+
+    function closeBotSimulator() {
+      const drawer = document.getElementById('botSimulatorDrawer');
+      if (drawer) drawer.classList.remove('open');
+    }
+
+    function resetBotSimulator() {
+      _simSessionId = 'sim_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7);
+      const msgs = document.getElementById('simChatMessages');
+      if (!msgs) return;
+      msgs.innerHTML = '';
+
+      const bizName = S?.business?.name || S?.cafe?.name || 'our clinic';
+      const greeting = S?.persona?.greeting || `Hello! Welcome to ${bizName}. How can I assist you with appointments, treatments, or information today?`;
+      simAppendBubble('bot', greeting);
+    }
+
+    function simAppendBubble(sender, text) {
+      const msgs = document.getElementById('simChatMessages');
+      if (!msgs) return;
+      const bubble = document.createElement('div');
+      bubble.className = `sim-bubble ${sender}`;
+      bubble.textContent = text;
+      msgs.appendChild(bubble);
+      msgs.scrollTop = msgs.scrollHeight;
+    }
+
+    function simSendChip(text) {
+      const input = document.getElementById('simUserInput');
+      if (input) {
+        input.value = text;
+        simSubmitMessage();
+      }
+    }
+
+    async function simSubmitMessage(e) {
+      if (e) e.preventDefault();
+      const input = document.getElementById('simUserInput');
+      const text = input?.value.trim();
+      if (!text) return;
+      input.value = '';
+
+      simAppendBubble('user', text);
+
+      const typing = document.getElementById('simTypingIndicator');
+      if (typing) typing.classList.add('active');
+
+      const msgs = document.getElementById('simChatMessages');
+      if (msgs) msgs.scrollTop = msgs.scrollHeight;
+
+      try {
+        const ws = currentWorkspaceId || (S?.workspace_id || 1);
+        const res = await fetch(`/api/public/chat?ws=${ws}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            message: text,
+            session_id: _simSessionId,
+            customerName: 'Doctor / Owner (Test)'
+          })
+        }).then(r => r.json());
+
+        if (typing) typing.classList.remove('active');
+
+        if (res && res.reply) {
+          simAppendBubble('bot', res.reply);
+        } else {
+          simAppendBubble('bot', "I'm your assistant! How else may I assist with our treatments, hours, or appointments?");
+        }
+      } catch (err) {
+        console.warn('Simulation chat fetch failed, fallback locally:', err);
+        if (typing) typing.classList.remove('active');
+        simAppendBubble('bot', `Thank you for asking! Based on our catalog, our treatments and appointments are active. (Ensure server is running for live Gemini model replies).`);
+      }
+    }
+
+    /* ---------- OWNER INSTANT ALERTS TEST ---------- */
+    async function testOwnerAlert() {
+      const btn = document.getElementById('btnTestOwnerAlert');
+      const resEl = document.getElementById('testAlertResultMsg');
+      if (btn) { btn.disabled = true; btn.textContent = 'Sending…'; }
+      if (resEl) { resEl.style.display = 'block'; resEl.style.color = 'var(--ink2)'; resEl.textContent = 'Dispatching test alert…'; }
+
+      try {
+        const params = currentWorkspaceId ? `?workspace_id=${currentWorkspaceId}` : '';
+        const res = await api(`/api/tenant/test-owner-alert${params}`, {
+          method: 'POST'
+        }).then(r => r.json());
+
+        if (res.ok) {
+          if (resEl) {
+            resEl.style.color = '#10B981';
+            resEl.textContent = `✅ Test alert sent successfully! Dispatched to: ${res.dispatched?.join(', ') || 'configured channels'}. Check your WhatsApp / Telegram / Email!`;
+          }
+          chip('Test alert sent!');
+        } else {
+          if (resEl) {
+            resEl.style.color = 'var(--red)';
+            resEl.textContent = `❌ ${res.error || 'Please configure phone, email, or Telegram in the fields above first.'}`;
+          }
+        }
+      } catch (err) {
+        console.error(err);
+        if (resEl) {
+          resEl.style.color = 'var(--red)';
+          resEl.textContent = 'Error dispatching test alert.';
+        }
+      } finally {
+        if (btn) { btn.disabled = false; btn.textContent = '📨 Send Test Alert'; }
+      }
+    }
+
+    /* ---------- WEEKLY DIGEST REPORT ---------- */
+    let _weeklyDigestData = null;
+
+    async function loadWeeklyDigest() {
+      try {
+        const params = currentWorkspaceId ? `?workspace_id=${currentWorkspaceId}` : '';
+        const res = await api(`/api/tenant/weekly-digest${params}`).then(r => r.json());
+        if (res.ok && res.digest) {
+          _weeklyDigestData = res.digest;
+          const c = document.getElementById('digConvs');
+          const o = document.getElementById('digOrders');
+          const r = document.getElementById('digRate');
+          const h = document.getElementById('digHours');
+
+          if (c) c.textContent = res.digest.totalConversations ?? 0;
+          if (o) o.textContent = res.digest.totalOrders ?? 0;
+          if (r) r.textContent = (res.digest.autonomousRate ?? 100) + '%';
+          if (h) h.textContent = (res.digest.estimatedHoursSaved ?? 0) + ' hrs';
+        }
+      } catch (err) {
+        console.warn('Could not load weekly digest:', err);
+      }
+    }
+
+    function copyWeeklyDigestForWhatsApp() {
+      const d = _weeklyDigestData || {
+        businessName: S?.business?.name || S?.cafe?.name || 'Clinic',
+        totalConversations: 0,
+        totalOrders: 0,
+        autonomousRate: 100,
+        estimatedHoursSaved: 0
+      };
+
+      const text = `📊 *Weekly CCBot Operations Digest*
+🏥 *${d.businessName || 'Business'}*
+━━━━━━━━━━━━━━━━━━
+💬 *Inquiries Handled:* ${d.totalConversations}
+📅 *Bookings & Leads Captured:* ${d.totalOrders}
+🤖 *Autonomous Resolution Rate:* ${d.autonomousRate}%
+⏱️ *Reception Hours Saved:* ${d.estimatedHoursSaved} hours
+
+⚡ _Powered by CCBot Autonomous AI_`;
+
+      navigator.clipboard.writeText(text).then(() => {
+        chip('Weekly digest copied for WhatsApp!');
+      }).catch(() => {
+        prompt('Copy WhatsApp text:', text);
+      });
+    }
+
+    async function emailWeeklyDigestToOwner() {
+      try {
+        const params = currentWorkspaceId ? `?workspace_id=${currentWorkspaceId}` : '';
+        const res = await api(`/api/tenant/weekly-digest/email${params}`, {
+          method: 'POST'
+        }).then(r => r.json());
+        if (res.ok) {
+          chip(res.message || 'Weekly digest sent to owner email!');
+        } else {
+          alert(res.error || 'Failed to email digest. Ensure alert email is set in Operations & Identity.');
+        }
+      } catch (err) {
+        console.error(err);
+        alert('Error sending weekly digest email.');
+      }
+    }
 
     /* ---------- SYSTEM HEALTH & TELEMETRY ---------- */
     async function loadHealth() {
@@ -7517,6 +8977,8 @@ Crown Operations Support`;
       renderFaq();
       renderGuards();
       renderEsc();
+      updateLaunchChecklist();
+      loadWeeklyDigest();
     }
 
     setInterval(() => {
