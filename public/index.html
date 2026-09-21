@@ -1933,33 +1933,14 @@
       position: relative;
     }
 
-    /* Left Geometric Art Panel */
+
+    /* Left Animated Showcase Panel */
     .login-showcase {
       flex: 1.05;
-      background: #000000;
+      background: #050816;
       position: relative;
       overflow: hidden;
       min-height: 480px;
-    }
-
-    .login-showcase .topo-iframe {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      border: 0;
-      display: block;
-      background: #000;
-    }
-
-    .login-showcase-overlay {
-      position: absolute;
-      inset: 0;
-      z-index: 2;
-      pointer-events: none;
-      background:
-        radial-gradient(circle at 30% 50%, rgba(17, 75, 50, 0.22) 0%, transparent 60%),
-        linear-gradient(180deg, rgba(0, 0, 0, 0.35) 0%, transparent 40%, transparent 60%, rgba(0, 0, 0, 0.50) 100%);
     }
 
     .login-showcase-content {
@@ -3159,17 +3140,48 @@
       <!-- Rounded White Card Container -->
       <div class="login-card">
 
-        <!-- Left Hero Column: ConstellationField Topo-Field (ThreeUI exact source, SHA-256 70dbdaaec639) -->
+        <!-- Left Hero Column: Animated Showcase Panel -->
         <div class="login-showcase" id="loginShowcase">
-          <iframe class="topo-iframe" id="topoFieldFrame" title="Topo Field" sandbox="allow-scripts"
-            loading="eager"></iframe>
-          <div class="login-showcase-overlay"></div>
+
+          <!-- Particle mesh canvas -->
+          <canvas id="showcaseCanvas" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0"></canvas>
+
+          <!-- Glowing orbs -->
+          <div class="sc-orb sc-orb1"></div>
+          <div class="sc-orb sc-orb2"></div>
+          <div class="sc-orb sc-orb3"></div>
+
+          <!-- Floating Chat Bubble Cards -->
+          <div class="sc-bubble-wrap" id="scBubbleWrap">
+            <!-- bubbles injected by JS -->
+          </div>
+
+          <!-- Live Stats Row -->
+          <div class="sc-stats-row">
+            <div class="sc-stat-chip">
+              <span class="sc-stat-dot"></span>
+              <span id="scStatConvs">0</span>
+              <span class="sc-stat-label">Conversations</span>
+            </div>
+            <div class="sc-stat-chip">
+              <span class="sc-stat-dot" style="background:#a78bfa"></span>
+              <span id="scStatRate">98.5%</span>
+              <span class="sc-stat-label">AI Rate</span>
+            </div>
+            <div class="sc-stat-chip">
+              <span class="sc-stat-dot" style="background:#34d399"></span>
+              <span id="scStatMs">820ms</span>
+              <span class="sc-stat-label">Avg Response</span>
+            </div>
+          </div>
+
+          <!-- Bottom Content -->
           <div class="login-showcase-content">
             <div class="login-showcase-badge">
               <span class="pulse-dot"></span>
               <span>Live AI Operations</span>
             </div>
-            <h2 class="login-showcase-tagline">Your Adventure Awaits</h2>
+            <h2 class="login-showcase-tagline" id="scTypewriter"></h2>
             <p class="login-showcase-sub">Powered by Gemini</p>
           </div>
         </div>
@@ -7574,6 +7586,166 @@ ${focusScript}
     })();
 
     checkAuth();
+  </script>
+
+  <!-- ── Animated Showcase Panel ── -->
+  <script>
+  (function () {
+    /* ── Only run while login is visible ── */
+    const loginEl = document.getElementById('login');
+    if (!loginEl) return;
+
+    /* ══════════════ 1. PARTICLE MESH CANVAS ══════════════ */
+    const cvs = document.getElementById('showcaseCanvas');
+    if (cvs) {
+      const cx = cvs.getContext('2d');
+      let cW, cH, pts = [];
+      const N = 55, CONN = 90;
+
+      function resizeCvs() {
+        const box = document.getElementById('loginShowcase');
+        if (!box) return;
+        cW = cvs.width  = box.offsetWidth;
+        cH = cvs.height = box.offsetHeight;
+      }
+
+      function mkPt() {
+        return {
+          x: Math.random() * cW, y: Math.random() * cH,
+          vx: (Math.random() - 0.5) * 0.4,
+          vy: (Math.random() - 0.5) * 0.4,
+          r: Math.random() * 1.8 + 0.5
+        };
+      }
+
+      function drawMesh() {
+        if (!cW) return;
+        cx.clearRect(0, 0, cW, cH);
+        pts.forEach(p => {
+          p.x += p.vx; p.y += p.vy;
+          if (p.x < 0) p.x = cW; if (p.x > cW) p.x = 0;
+          if (p.y < 0) p.y = cH; if (p.y > cH) p.y = 0;
+          cx.beginPath();
+          cx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+          cx.fillStyle = 'rgba(148,163,184,0.55)';
+          cx.fill();
+        });
+        for (let i = 0; i < pts.length; i++) {
+          for (let j = i + 1; j < pts.length; j++) {
+            const dx = pts[i].x - pts[j].x, dy = pts[i].y - pts[j].y;
+            const d = Math.sqrt(dx*dx + dy*dy);
+            if (d < CONN) {
+              cx.beginPath();
+              cx.moveTo(pts[i].x, pts[i].y);
+              cx.lineTo(pts[j].x, pts[j].y);
+              cx.strokeStyle = `rgba(99,102,241,${(1 - d/CONN) * 0.22})`;
+              cx.lineWidth = 0.8;
+              cx.stroke();
+            }
+          }
+        }
+        requestAnimationFrame(drawMesh);
+      }
+
+      resizeCvs();
+      pts = Array.from({ length: N }, mkPt);
+      drawMesh();
+      window.addEventListener('resize', () => { resizeCvs(); pts = Array.from({ length: N }, mkPt); });
+    }
+
+    /* ══════════════ 2. FLOATING CHAT BUBBLES ══════════════ */
+    const wrap = document.getElementById('scBubbleWrap');
+    const CONVS = [
+      { type: 'user', text: 'Do you have Margherita pizza? 🍕' },
+      { type: 'bot',  text: 'Yes! Our classic Margherita starts at ৳320. Want to place an order?' },
+      { type: 'user', text: 'What are your opening hours?' },
+      { type: 'bot',  text: 'We\'re open 10am–11pm every day, including weekends ✅' },
+      { type: 'user', text: 'Is there free delivery?' },
+      { type: 'bot',  text: 'Free delivery on orders above ৳500 within 5km 🛵' },
+      { type: 'user', text: 'Can I book a table for 4?' },
+      { type: 'bot',  text: 'Absolutely! Tap here to reserve your table in 30 seconds 🎉' },
+    ];
+
+    const POSITIONS = [
+      { top: '8%',  left: '6%' },
+      { top: '8%',  right: '6%' },
+      { top: '28%', left: '10%' },
+      { top: '28%', right: '10%' },
+      { top: '48%', left: '6%' },
+      { top: '48%', right: '6%' },
+    ];
+
+    let bubbleEls = [];
+    let bubbleIdx = 0;
+
+    function createBubble(conv, pos) {
+      const div = document.createElement('div');
+      div.className = 'sc-bubble ' + (conv.type === 'user' ? 'user-bubble' : 'bot-bubble');
+      div.style.cssText = Object.entries(pos).map(([k,v])=>`${k}:${v}`).join(';');
+      div.innerHTML = `
+        <div class="sc-bubble-avatar">${conv.type === 'user' ? 'U' : '✦'}</div>
+        <div style="font-size:11.5px;line-height:1.4;flex:1">${conv.text}</div>`;
+      wrap.appendChild(div);
+      requestAnimationFrame(() => {
+        setTimeout(() => div.classList.add('visible'), 20);
+      });
+      return div;
+    }
+
+    function cycleBubbles() {
+      if (!wrap) return;
+      if (bubbleEls.length >= 4) {
+        const old = bubbleEls.shift();
+        old.classList.remove('visible');
+        setTimeout(() => old.remove(), 600);
+      }
+      const conv = CONVS[bubbleIdx % CONVS.length];
+      const pos  = POSITIONS[bubbleEls.length % POSITIONS.length];
+      bubbleEls.push(createBubble(conv, pos));
+      bubbleIdx++;
+    }
+
+    cycleBubbles(); cycleBubbles(); cycleBubbles();
+    setInterval(cycleBubbles, 2800);
+
+    /* ══════════════ 3. LIVE STAT TICKERS ══════════════ */
+    let convCount = 1247;
+    const convEl = document.getElementById('scStatConvs');
+    const msEl   = document.getElementById('scStatMs');
+    if (convEl) {
+      convEl.textContent = convCount.toLocaleString();
+      setInterval(() => {
+        convCount += Math.floor(Math.random() * 3);
+        convEl.textContent = convCount.toLocaleString();
+      }, 3500);
+    }
+    if (msEl) {
+      setInterval(() => {
+        const ms = 600 + Math.floor(Math.random() * 400);
+        msEl.textContent = ms + 'ms';
+      }, 4000);
+    }
+
+    /* ══════════════ 4. TYPEWRITER HEADLINE ══════════════ */
+    const tw = document.getElementById('scTypewriter');
+    if (tw) {
+      const PHRASES = ['Your Adventure Awaits', 'AI That Never Sleeps', 'Instant Smart Replies', 'Omnichannel. Effortless.'];
+      let pi = 0, ci = 0, deleting = false;
+      function type() {
+        const phrase = PHRASES[pi % PHRASES.length];
+        if (!deleting) {
+          tw.innerHTML = phrase.slice(0, ++ci) + '<span class="sc-cursor"></span>';
+          if (ci >= phrase.length) { deleting = true; setTimeout(type, 1800); return; }
+          setTimeout(type, 70);
+        } else {
+          tw.innerHTML = phrase.slice(0, --ci) + '<span class="sc-cursor"></span>';
+          if (ci === 0) { deleting = false; pi++; setTimeout(type, 400); return; }
+          setTimeout(type, 38);
+        }
+      }
+      type();
+    }
+  })();
   </script>
 
   <!-- ── Cosmic Starfield Background ── -->
