@@ -1207,6 +1207,14 @@ app.get(`${BASE}/health`, async () => ({ ok: true }));
 app.get('/chat', (req, reply) => reply.sendFile('chat.html'));
 app.get(`${BASE}/chat`, (req, reply) => reply.sendFile('chat.html'));
 
+/* Public Legal & Policy Pages for Meta Platform Compliance */
+app.get('/privacy', (req, reply) => reply.sendFile('privacy.html'));
+app.get(`${BASE}/privacy`, (req, reply) => reply.sendFile('privacy.html'));
+app.get('/data-deletion', (req, reply) => reply.sendFile('data-deletion.html'));
+app.get(`${BASE}/data-deletion`, (req, reply) => reply.sendFile('data-deletion.html'));
+app.get('/terms', (req, reply) => reply.sendFile('terms.html'));
+app.get(`${BASE}/terms`, (req, reply) => reply.sendFile('terms.html'));
+
 app.get('/widget.js', (req, reply) => {
   reply.header('Content-Type', 'application/javascript; charset=utf-8');
   return reply.sendFile('widget.js');

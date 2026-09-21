@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>User Data Deletion Instructions — AI Customer Assistant</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #090d16;
+    --surface: #111827;
+    --surface2: #1e293b;
+    --line: rgba(255, 255, 255, 0.1);
+    --ink: #f8fafc;
+    --ink2: #94a3b8;
+    --ink3: #64748b;
+    --accent: #4f46e5;
+    --accent-light: #6366f1;
+    --accent-soft: rgba(79, 70, 229, 0.15);
+    --danger: #ef4444;
+    --danger-soft: rgba(239, 68, 68, 0.15);
+  }
+  @media (prefers-color-scheme: light) {
+    :root {
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --surface2: #f1f5f9;
+      --line: #e2e8f0;
+      --ink: #0f172a;
+      --ink2: #475569;
+      --ink3: #94a3b8;
+      --accent: #4f46e5;
+      --accent-light: #6366f1;
+      --accent-soft: rgba(79, 70, 229, 0.08);
+      --danger: #dc2626;
+      --danger-soft: rgba(220, 38, 38, 0.08);
+    }
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.7;
+    padding: 32px 16px;
+    display: flex;
+    justify-content: center;
+  }
+  .container {
+    width: 100%;
+    max-width: 820px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    padding: 40px;
+    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.25);
+  }
+  @media (max-width: 640px) {
+    .container { padding: 24px 20px; border-radius: 14px; }
+  }
+  .header {
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 24px;
+    margin-bottom: 32px;
+  }
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 12px;
+    background: var(--danger-soft);
+    color: var(--danger);
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 12px;
+  }
+  h1 {
+    font-size: 28px;
+    font-weight: 800;
+    line-height: 1.3;
+    margin-bottom: 8px;
+    letter-spacing: -0.02em;
+  }
+  .updated {
+    font-size: 13.5px;
+    color: var(--ink3);
+  }
+  h2 {
+    font-size: 19px;
+    font-weight: 700;
+    margin: 28px 0 12px;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+  }
+  p {
+    margin-bottom: 14px;
+    color: var(--ink2);
+    font-size: 15px;
+  }
+  ol, ul {
+    margin: 0 0 16px 22px;
+    color: var(--ink2);
+    font-size: 15px;
+  }
+  li {
+    margin-bottom: 10px;
+  }
+  strong {
+    color: var(--ink);
+    font-weight: 600;
+  }
+  code {
+    background: var(--surface2);
+    border: 1px solid var(--line);
+    padding: 2px 7px;
+    border-radius: 6px;
+    font-size: 14px;
+    color: var(--accent-light);
+    font-family: monospace;
+  }
+  .step-card {
+    background: var(--surface2);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 18px 20px;
+    margin: 16px 0;
+  }
+  .step-num {
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+    background: var(--accent);
+    color: #fff;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 24px;
+    font-size: 13px;
+    font-weight: 700;
+    margin-right: 8px;
+  }
+  .step-title {
+    font-weight: 700;
+    font-size: 16px;
+    color: var(--ink);
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+  }
+  a {
+    color: var(--accent-light);
+    text-decoration: none;
+    font-weight: 600;
+  }
+  a:hover {
+    text-decoration: underline;
+  }
+  .footer-links {
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid var(--line);
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    font-size: 14px;
+    color: var(--ink3);
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <div class="badge">🛡️ User Data Deletion Instructions</div>
+    <h1>Data Deletion Request Guide</h1>
+    <div class="updated">In compliance with Meta Platform Terms &bull; Updated September 2026</div>
+  </div>
+
+  <p>Under the Meta Platform Terms and global privacy regulations (including GDPR and CCPA), users have the right to request the deletion of any personal data, identifiers, and conversation histories collected during interactions with our chatbot applications across Facebook Messenger and Instagram.</p>
+
+  <p>If you have interacted with any business page powered by <strong>Crown Bot</strong> and wish to permanently delete your data from our database, please choose one of the following methods:</p>
+
+  <h2>Options to Delete Your Data</h2>
+
+  <div class="step-card">
+    <div class="step-title"><span class="step-num">1</span> Option 1: Instant In-Chat Request (Fastest)</div>
+    <p>You can trigger data deletion directly from the Facebook Messenger or Instagram Direct conversation thread:</p>
+    <ol>
+      <li>Open the chat thread with the Facebook Page or Instagram profile.</li>
+      <li>Send a message containing the phrase: <code>Delete my data</code> or <code>Remove my history</code>.</li>
+      <li>Our system will flag your account for purge and confirm the deletion request within the chat thread.</li>
+    </ol>
+  </div>
+
+  <div class="step-card">
+    <div class="step-title"><span class="step-num">2</span> Option 2: Email Data Deletion Request</div>
+    <p>You can send an email to our data privacy team:</p>
+    <ul>
+      <li>Send an email to: <a href="mailto:admin@ccadmin.online">admin@ccadmin.online</a></li>
+      <li>Subject: <code>Meta Platform Data Deletion Request</code></li>
+      <li>Include: Your Facebook / Instagram display name, the Facebook Page or Instagram profile you messaged, and approximate date of conversation.</li>
+      <li>Our administrators will query the database, wipe all corresponding message logs, and send you a written confirmation of deletion within <strong>24 to 48 hours</strong>.</li>
+    </ul>
+  </div>
+
+  <div class="step-card">
+    <div class="step-title"><span class="step-num">3</span> Option 3: Remove Permissions via Facebook Settings</div>
+    <p>To disconnect your Facebook account from our app entirely:</p>
+    <ol>
+      <li>Go to your Facebook Profile &gt; <strong>Settings &amp; Privacy &gt; Settings</strong>.</li>
+      <li>Select <strong>Apps and Websites</strong>.</li>
+      <li>Locate the business assistant app and click <strong>Remove</strong>.</li>
+      <li>Facebook will notify our webhook system to dissociate any linked tokens.</li>
+    </ol>
+  </div>
+
+  <h2>What Data Is Deleted?</h2>
+  <p>Upon receiving and processing a deletion request, we permanently delete:</p>
+  <ul>
+    <li>Your Page-Scoped User ID (<code>PSID</code>) and Instagram Scoped ID (<code>IGSID</code>).</li>
+    <li>Your public display name and any profile metadata retrieved from Meta.</li>
+    <li>All incoming and outgoing message records, transcripts, and timestamps.</li>
+  </ul>
+  <p>Once deleted, this data cannot be recovered.</p>
+
+  <h2>Contact &amp; Status Inquiries</h2>
+  <p>If you need to verify the status of a pending deletion request or have questions, please reach out to:</p>
+  <p>
+    <strong>Privacy Officer:</strong> Data Protection Lead<br>
+    <strong>Email:</strong> <a href="mailto:admin@ccadmin.online">admin@ccadmin.online</a><br>
+    <strong>Website:</strong> <a href="https://bot.ccadmin.online">https://bot.ccadmin.online</a>
+  </p>
+
+  <div class="footer-links">
+    <div>&copy; 2026 Crown Bot Platform. All rights reserved.</div>
+    <div>
+      <a href="/privacy">Privacy Policy</a> &bull;
+      <a href="/data-deletion">Data Deletion</a> &bull;
+      <a href="/terms">Terms of Service</a>
+    </div>
+  </div>
+</div>
+</body>
+</html>

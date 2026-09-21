@@ -5421,7 +5421,26 @@
                 <ul style="margin:0; padding-left:18px; line-height:1.6">
                   <li><strong>Page ID Mismatch:</strong> The Page ID above must be your <em>Facebook Page ID</em> (e.g. <code>836405562898639</code>), NOT your Meta App ID. Clicking <strong>Test Facebook Ping</strong> will automatically detect and save the right Page ID for you.</li>
                   <li><strong>Webhook Page Subscription:</strong> In <a href="https://developers.facebook.com/apps" target="_blank" rel="noopener" style="color:var(--accent); font-weight:600">Meta Developer Portal</a> &rarr; <em>Messenger</em> &rarr; <em>Webhooks</em>, verify your Page is subscribed to <code>messages</code> and <code>messaging_postbacks</code>. Our Ping button attempts to subscribe it automatically.</li>
-                  <li><strong>Meta App Development Mode:</strong> If your Meta App is still in <em>Development Mode</em>, Meta only delivers webhook messages sent from App Admins, Developers, or Testers. Add your personal Facebook profile under <em>App Roles &rarr; Roles &rarr; Add Testers</em>, or switch App to <em>Live Mode</em>.</li>
+                  <li><strong>Meta App Development Mode vs Live Mode:</strong> If your Meta App is still in <em>Development Mode</em>, Meta only delivers webhook messages sent from App Admins, Developers, or Testers.
+                    <div style="margin-top:8px; padding:10px 12px; background:var(--surface); border:1px solid var(--line); border-radius:8px">
+                      <div style="font-weight:700; color:var(--ink); margin-bottom:6px; display:flex; align-items:center; gap:6px">
+                        <span>🚀</span> Option B: Switch App to Live Mode in Meta Settings
+                      </div>
+                      <div style="display:flex; flex-direction:column; gap:6px; font-size:11.5px">
+                        <div style="display:flex; align-items:center; justify-content:space-between; gap:6px; background:var(--surface2); padding:5px 8px; border-radius:6px">
+                          <span><strong>Privacy Policy URL:</strong> <code style="color:var(--accent); font-weight:700" id="livePrivacyUrlDisplay">https://bot.ccadmin.online/privacy</code></span>
+                          <button type="button" class="btn xs" style="padding:2px 8px; font-size:11px" onclick="copyToClipboard(window.location.origin + '/privacy')">Copy</button>
+                        </div>
+                        <div style="display:flex; align-items:center; justify-content:space-between; gap:6px; background:var(--surface2); padding:5px 8px; border-radius:6px">
+                          <span><strong>Data Deletion URL:</strong> <code style="color:var(--accent); font-weight:700" id="liveDeletionUrlDisplay">https://bot.ccadmin.online/data-deletion</code></span>
+                          <button type="button" class="btn xs" style="padding:2px 8px; font-size:11px" onclick="copyToClipboard(window.location.origin + '/data-deletion')">Copy</button>
+                        </div>
+                      </div>
+                      <div style="margin-top:6px; font-size:11px; color:var(--ink3)">
+                        Paste both into Meta Developer Portal &rarr; <em>App Settings &gt; Basic</em>, set Category to <em>Business and Pages</em>, save, then switch the toggle at top from <strong>In Development</strong> to <strong>Live</strong>.
+                      </div>
+                    </div>
+                  </li>
                 </ul>
               </div>
             </div>
@@ -6744,6 +6763,17 @@
                 <li>Paste your <strong>Page Access Token</strong> into the Facebook Token field.</li>
                 <li>Paste your <strong>Page ID</strong> into the Page ID field.</li>
                 <li>Click <strong>Save Facebook Credentials</strong>. Your AI is immediately live for Messenger inquiries!</li>
+              </ul>
+            </div>
+
+            <div style="background:rgba(99,102,241,0.06); border:1px solid rgba(99,102,241,0.25); border-radius:8px; padding:12px 14px">
+              <div style="font-weight:700; color:var(--accent-light); margin-bottom:4px; font-size:13.5px">🌐 Step 5: Switch App from "In Development" to "Live"</div>
+              <div style="color:var(--ink2)">In <a href="https://developers.facebook.com/apps" target="_blank" rel="noopener" style="color:var(--accent); font-weight:600">Meta Developer Portal</a> &gt; <em>App Settings &gt; Basic</em>:</div>
+              <ul style="margin:8px 0 0 18px; padding:0; line-height:1.7; color:var(--ink2)">
+                <li><strong>Privacy Policy URL:</strong> <code style="background:var(--surface); padding:2px 6px; border-radius:4px; font-weight:700; color:var(--accent); font-family:var(--font-mono)">${window.location.origin}/privacy</code> <button type="button" class="btn xs" style="padding:1px 6px; margin-left:6px" onclick="copyToClipboard(window.location.origin + '/privacy')">Copy</button></li>
+                <li><strong>User Data Deletion:</strong> Select <em>Data Deletion Instructions URL</em> and enter: <code style="background:var(--surface); padding:2px 6px; border-radius:4px; font-weight:700; color:var(--accent); font-family:var(--font-mono)">${window.location.origin}/data-deletion</code> <button type="button" class="btn xs" style="padding:1px 6px; margin-left:6px" onclick="copyToClipboard(window.location.origin + '/data-deletion')">Copy</button></li>
+                <li><strong>Category:</strong> Select <em>Business and Pages</em>.</li>
+                <li>Click <strong>Save changes</strong>, then switch the top toggle from <strong>In Development</strong> to <strong>Live</strong>.</li>
               </ul>
             </div>
           </div>
