@@ -6971,10 +6971,13 @@
           const btnHeaderUpgrade = document.getElementById('btnHeaderUpgrade');
           if (btnHeaderUpgrade) btnHeaderUpgrade.style.display = 'none';
 
-          document.getElementById('brandTitleTxt').textContent = 'CC Chatbot';
-          document.getElementById('brandSubTxt').textContent = 'Master Control Hub';
+          const brandTitleTxt = document.getElementById('brandTitleTxt');
+          if (brandTitleTxt) brandTitleTxt.textContent = 'CC Chatbot';
+          const brandSubTxt = document.getElementById('brandSubTxt');
+          if (brandSubTxt) brandSubTxt.textContent = 'Master Control Hub';
           document.title = 'CC Chatbot — Master Admin';
-          document.getElementById('brandLogoBadge').textContent = '👑';
+          const brandLogoBadge = document.getElementById('brandLogoBadge');
+          if (brandLogoBadge) brandLogoBadge.textContent = '👑';
 
           switchTab('tenants');
           await loadMasterTenants();
@@ -6994,10 +6997,13 @@
           if (btnHeaderUpgrade) btnHeaderUpgrade.style.display = 'inline-flex';
 
           const bizName = r.workspace_id === 1 ? 'CC' : (r.workspace_name || 'My Business');
-          document.getElementById('brandTitleTxt').textContent = bizName + ' Chatbot';
-          document.getElementById('brandSubTxt').textContent = 'AI Operations Center';
+          const tBrandTitle = document.getElementById('brandTitleTxt');
+          if (tBrandTitle) tBrandTitle.textContent = bizName + ' Chatbot';
+          const tBrandSub = document.getElementById('brandSubTxt');
+          if (tBrandSub) tBrandSub.textContent = 'AI Operations Center';
           document.title = `${bizName} — CC Chatbot AI Operations`;
-          document.getElementById('brandLogoBadge').textContent = r.workspace_id === 1 ? 'CC' : (bizName.slice(0, 2).toUpperCase());
+          const tLogoBadge = document.getElementById('brandLogoBadge');
+          if (tLogoBadge) tLogoBadge.textContent = r.workspace_id === 1 ? 'CC' : (bizName.slice(0, 2).toUpperCase());
 
           // Render Subscription Status Badge
           const sub = r.subscription;
@@ -9460,23 +9466,28 @@ Thank you for partnering with Crown Operations!`;
       renderMenu();
     });
 
-    document.getElementById('importToggle').onclick = () => {
-      const box = document.getElementById('importBox');
-      const btn = document.getElementById('importBtn');
-      const msg = document.getElementById('importMsg');
-      const open = box.style.display !== 'none';
-      box.style.display = open ? 'none' : 'block';
-      btn.style.display = open ? 'none' : 'inline-flex';
-      msg.style.display = open ? 'none' : 'block';
-    };
+    const importToggleEl = document.getElementById('importToggle');
+    if (importToggleEl) {
+      importToggleEl.onclick = () => {
+        const box = document.getElementById('importBox');
+        const btn = document.getElementById('importBtn');
+        const msg = document.getElementById('importMsg');
+        const open = box.style.display !== 'none';
+        box.style.display = open ? 'none' : 'block';
+        if (btn) btn.style.display = open ? 'none' : 'inline-flex';
+        if (msg) msg.style.display = open ? 'none' : 'block';
+      };
+    }
 
-    document.getElementById('importBtn').onclick = async () => {
-      const text = document.getElementById('importBox').value.trim();
-      const msg = document.getElementById('importMsg');
-      if (!text) { msg.textContent = 'Paste menu text first.'; return; }
-      msg.textContent = 'AI is structuring menu…';
-      try {
-        const r = await api('/api/import-menu', { method: 'POST', body: JSON.stringify({ text }) });
+    const importBtnEl = document.getElementById('importBtn');
+    if (importBtnEl) {
+      importBtnEl.onclick = async () => {
+        const text = document.getElementById('importBox')?.value?.trim() || '';
+        const msg = document.getElementById('importMsg');
+        if (!text) { if (msg) msg.textContent = 'Paste menu text first.'; return; }
+        if (msg) msg.textContent = 'AI is structuring menu…';
+        try {
+          const r = await api('/api/import-menu', { method: 'POST', body: JSON.stringify({ text }) });
         const d = await r.json();
         if (!r.ok) throw new Error(d.error || 'Failed');
         const rows = d.rows || [];
