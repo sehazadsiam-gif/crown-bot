@@ -15,7 +15,7 @@ import {
   listDrafts, stats, db,
   authenticateTenant, authenticateTenantByPasswordOnly, updateTenantCredentials, resetTenantPassword,
   getTenantUser, getSubscription, isSubscriptionActive, updateSubscription,
-  listTenantsOverview, createWorkspaceWithTenant,
+  listTenantsOverview, createWorkspaceWithTenant, seedWorkspaceIndustry,
   createOrder, listOrders, updateOrderStatus, getOrderStats, isPasswordUnique,
   savePushSubscription, removePushSubscription, listPushSubscriptions,
   logWebhookEvent, listWebhookLogs,
@@ -499,6 +499,25 @@ app.post(`${BASE}/api/tenant/onboarding`, { preHandler: requireAuth }, async (re
     req.log.error(e);
     return reply.code(400).send({ error: e.message });
   }
+});
+
+app.post(`${BASE}/api/tenant/seed-industry`, { preHandler: requireAuth }, async (req, reply) => {
+  const wsId = getScopedWorkspaceId(req);
+  const { businessType, industry, force } = req.body || {};
+  const bType = industry || businessType || 'Dentistry';
+  const cfg = seedWorkspaceIndustry(wsId, bType, !!force);
+  let itemsCount = 0;
+  (cfg?.menu || []).forEach(c => { itemsCount += (c.items || []).length; });
+  return { ok: true, config: cfg, industry: bType, itemsCount, faqsCount: (cfg?.faqs || []).length };
+});
+app.post('/api/tenant/seed-industry', { preHandler: requireAuth }, async (req, reply) => {
+  const wsId = getScopedWorkspaceId(req);
+  const { businessType, industry, force } = req.body || {};
+  const bType = industry || businessType || 'Dentistry';
+  const cfg = seedWorkspaceIndustry(wsId, bType, !!force);
+  let itemsCount = 0;
+  (cfg?.menu || []).forEach(c => { itemsCount += (c.items || []).length; });
+  return { ok: true, config: cfg, industry: bType, itemsCount, faqsCount: (cfg?.faqs || []).length };
 });
 
 /* ───────────────────────── Orders Bucket API ───────────────────────── */

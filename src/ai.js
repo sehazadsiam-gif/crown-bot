@@ -1,5 +1,6 @@
 import 'dotenv/config';
 import { buildPrompt } from './prompt.js';
+import { getIndustryPresets } from './db.js';
 
 const getEnv = () => ({
   geminiKey: process.env.GEMINI_API_KEY,
@@ -248,27 +249,31 @@ export async function parseMenuText(raw) {
 export async function suggestFaqsForBusiness({ businessType, businessName, services, location }) {
   const bType = businessType || 'General Business';
   const bName = businessName || 'Our Business';
-  const bServices = services || 'General products and services';
+  const preset = getIndustryPresets(bName, bType, services);
+  const bServices = services || preset.serviceDesc || 'General products and services';
   const bLoc = location || 'Dhaka, Bangladesh';
 
-  const prompt = `You are an expert business operations consultant. A client has registered a new business on our multi-channel AI hub.
-Business Name: ${bName}
-Industry / Business Type: ${bType}
-Services / Products Provided: ${bServices}
-Location / Target Area: ${bLoc}
+  const prompt = `You are a world-class senior operations and customer experience consultant specializing in ${bType}.
+A client has registered a new business on our multi-channel conversational AI operations hub.
 
-Generate 6 realistic, highly useful, and professional Frequently Asked Questions (FAQs) and high-quality answers tailored specifically to this business.
-Cover:
-1. Services/Products offered and scope of work
-2. How to book an appointment, place an order, or get a quotation
-3. Pricing, estimates, and payment methods
-4. Operating hours, location, and service availability
-5. Turnaround time, delivery, or cancellation/rescheduling policy
-6. Emergency, custom requests, or consultation process
+Business Name: ${bName}
+Profession / Industry: ${bType}
+Services Provided: ${bServices}
+Location / Area: ${bLoc}
+
+Generate 6 realistic, highly useful, authoritative, and professional Frequently Asked Questions (FAQs) and detailed official answers tailored specifically to this profession (${bType}).
+
+Ensure you address real questions customers or patients actually ask for this exact profession, such as:
+1. Core services, clinical/technical procedures, packages, and scope of work for ${bType}.
+2. How to book an appointment, reserve a slot, schedule a consultation, or place an order.
+3. Pricing, fee estimates, consultations charges, and accepted payment methods (Cash, Cards, bKash, Nagad).
+4. Operating hours, location address, and service availability.
+5. Turnaround time, delivery timeframe, or cancellation and rescheduling policy.
+6. Emergency procedures, urgent inquiries, warranties, hygiene/safety standards, or custom requests.
 
 Output ONLY a valid JSON array of objects with the exact keys "q" (question string) and "a" (answer string).
 DO NOT use emojis anywhere in the questions or answers.
-Keep answers concise, authoritative, and helpful.`;
+Make answers natural, professional, trustworthy, and directly informative.`;
 
   let out = null;
   const { geminiKey, geminiModel, groqKey } = getEnv();
@@ -308,7 +313,7 @@ Keep answers concise, authoritative, and helpful.`;
   }
 
   if (!out) {
-    return [
+    return preset.faqs && preset.faqs.length ? preset.faqs : [
       { q: `What services does ${bName} offer?`, a: `We specialize in ${bServices}. Contact us anytime to learn more about our packages.` },
       { q: `How can I place an order or book an appointment?`, a: `You can send us a message here with your requested items/services, name, and contact details. Our team will review and confirm with you shortly.` },
       { q: `What are your accepted payment methods?`, a: `We accept Cash, Cards (Visa, Mastercard), bKash, and Nagad.` },
@@ -335,7 +340,7 @@ Keep answers concise, authoritative, and helpful.`;
     }
   } catch {}
 
-  return [
+  return preset.faqs && preset.faqs.length ? preset.faqs : [
     { q: `What services does ${bName} offer?`, a: `We specialize in ${bServices}. Contact us to learn more.` },
     { q: `How can I place an order or book an appointment?`, a: `Send us a message with your request, name, and contact info, and our team will confirm shortly.` },
     { q: `What payment methods do you accept?`, a: `We accept Cash, Cards, bKash, and Nagad.` },

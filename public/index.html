@@ -3103,6 +3103,11 @@
             </div>
             <h2 class="login-showcase-tagline" id="scTypewriter"></h2>
             <p class="login-showcase-sub">Powered by Gemini</p>
+            <div style="margin-top:14px">
+              <button type="button" onclick="openSocialGuideModal()" style="background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.3); border-radius:9999px; color:#fff; padding:6px 14px; font-size:12px; font-weight:600; cursor:pointer; backdrop-filter:blur(8px); display:inline-flex; align-items:center; gap:6px">
+                <span>📘 Social Channels Setup Guide</span>
+              </button>
+            </div>
           </div>
         </div>
 
@@ -3149,6 +3154,13 @@
 
             <div class="user-login-create">
               <a href="#" onclick="switchPortalTab('register'); return false;">Create Your Account &rarr;</a>
+            </div>
+
+            <div class="user-login-guide" style="margin-top:14px; padding-top:12px; border-top:1px dashed rgba(0,0,0,0.1); text-align:center">
+              <a href="#" onclick="openSocialGuideModal(); return false;" style="font-size:12px; font-weight:700; color:#114B32; text-decoration:none; display:inline-flex; align-items:center; gap:5px">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                <span>How to Connect Messenger, Insta &amp; WhatsApp</span>
+              </a>
             </div>
           </form>
 
@@ -3223,6 +3235,13 @@
 
             <div class="user-login-create">
               <a href="#" onclick="switchPortalTab('signin'); return false;">&larr; Back to Login</a>
+            </div>
+
+            <div class="user-login-guide" style="margin-top:14px; padding-top:12px; border-top:1px dashed rgba(0,0,0,0.1); text-align:center">
+              <a href="#" onclick="openSocialGuideModal(); return false;" style="font-size:12px; font-weight:700; color:#114B32; text-decoration:none; display:inline-flex; align-items:center; gap:5px">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                <span>How to Connect Messenger, Insta &amp; WhatsApp</span>
+              </a>
             </div>
           </form>
         </div>
@@ -3343,7 +3362,7 @@
 
     <div class="wrap">
       <nav id="nav">
-        <div class="navlabel">MENU</div>
+        <div class="navlabel">NAVIGATION</div>
         <button data-p="dash" class="active" onclick="switchTab('dash')">
           <svg viewBox="0 0 24 24">
             <rect width="7" height="9" x="3" y="3" rx="1" />
@@ -3367,7 +3386,7 @@
             <path d="M3 6h18" />
             <path d="M16 10a4 4 0 0 1-8 0" />
           </svg>
-          Orders &amp; Inquiries
+          <span id="navOrdersLabel">Appointments &amp; Inquiries</span>
           <span class="badge" id="pendingOrdersBadge"
             style="display:none; margin-left:auto; background:#EF4444; color:#fff; font-size:10px; font-weight:800; padding:2px 6px; border-radius:10px">0</span>
         </button>
@@ -3410,15 +3429,13 @@
           </svg>
           Settings
         </button>
-        <button data-p="menu" onclick="switchTab('menu')">
-          <svg viewBox="0 0 24 24">
-            <path d="M18 8h1a4 4 0 0 1 0 8h-1" />
-            <path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z" />
-            <line x1="6" x1="6" y1="1" y2="4" />
-            <line x1="10" x2="10" y1="1" y2="4" />
-            <line x1="14" x2="14" y1="1" y2="4" />
+        <button data-p="menu" id="navCatalogBtn" onclick="switchTab('menu')">
+          <svg viewBox="0 0 24 24" id="navCatalogIcon">
+            <rect width="18" height="18" x="3" y="3" rx="2" />
+            <path d="M3 9h18" />
+            <path d="M9 21V9" />
           </svg>
-          Catalog &amp; Services
+          <span id="navCatalogLabel">Treatments &amp; Services</span>
         </button>
         <button data-p="faq" onclick="switchTab('faq')">
           <svg viewBox="0 0 24 24">
@@ -3552,6 +3569,14 @@
                   telemetry</p>
               </div>
               <div class="donezo-actions">
+                <button class="donezo-btn-secondary" onclick="openSocialGuideModal()"
+                  title="View Step-by-Step Connection Guide for Messenger, Instagram & WhatsApp">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+                    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+                  </svg>
+                  <span>Channels Guide</span>
+                </button>
                 <button class="donezo-btn-primary" onclick="openTestWebChat()"
                   title="Open Dedicated Client Customer Chat">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
@@ -3597,9 +3622,9 @@
               </div>
 
               <!-- 2. Customer Orders -->
-              <div class="donezo-kpi-card" onclick="switchTab('orders')" title="Click to view Customer Orders bucket">
+              <div class="donezo-kpi-card" onclick="switchTab('orders')" title="Click to view Customer Orders & Inquiries bucket">
                 <div class="kpi-top">
-                  <span class="kpi-label">Customer Orders</span>
+                  <span class="kpi-label" id="kpiLabelOrders">Appointments &amp; Inquiries</span>
                   <div class="kpi-arrow-circle">
                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                       stroke-width="2.5">
@@ -3740,8 +3765,8 @@
                 <div class="reminder-content" style="margin:12px 0 16px">
                   <div class="reminder-subject" style="font-size:16px; font-weight:800; color:var(--ink)">Gemini 2.5
                     Flash Agent</div>
-                  <div class="reminder-time" style="font-size:12.5px; color:var(--ink2); margin-top:4px">
-                    Autonomous ordering, menu pricing knowledge &amp; real-time Bangla/English sentiment detection.
+                  <div class="reminder-time" id="dashAiRuntimeDesc" style="font-size:12.5px; color:var(--ink2); margin-top:4px">
+                    Autonomous appointment scheduling, treatment pricing knowledge &amp; real-time Bangla/English sentiment detection.
                   </div>
                   <div style="margin-top:10px; display:flex; align-items:center; gap:8px">
                     <span
@@ -3837,41 +3862,13 @@
                   <button class="donezo-sub-action-btn" onclick="switchTab('inbox')">View Inbox &rarr;</button>
                 </div>
                 <div class="team-members-list" id="donezoCustomerInquiriesList">
-                  <div class="team-member-item" onclick="switchTab('orders')" style="cursor:pointer">
-                    <div class="member-avatar pink">TA</div>
-                    <div class="member-info">
-                      <div class="member-name">Tanvir Ahmed <span
-                          style="font-size:11px; font-weight:500; color:var(--ink3)">• Web Chat</span></div>
-                      <div class="member-task">"I want to order 2 Cold Brews to Dhanmondi"</div>
+                  <div style="padding:28px 14px; text-align:center; color:var(--ink3)">
+                    <div style="width:38px; height:38px; margin:0 auto 10px; border-radius:50%; background:rgba(17,75,50,0.08); display:grid; place-items:center; color:#114B32">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
                     </div>
-                    <span class="status-pill completed">Order Placed</span>
-                  </div>
-                  <div class="team-member-item" onclick="switchTab('inbox')" style="cursor:pointer">
-                    <div class="member-avatar green">FK</div>
-                    <div class="member-info">
-                      <div class="member-name">Farhana Karim <span
-                          style="font-size:11px; font-weight:500; color:var(--ink3)">• Messenger</span></div>
-                      <div class="member-task">"What are your business opening hours today?"</div>
-                    </div>
-                    <span class="status-pill in-progress">AI Answered</span>
-                  </div>
-                  <div class="team-member-item" onclick="switchTab('inbox')" style="cursor:pointer">
-                    <div class="member-avatar blue">RH</div>
-                    <div class="member-info">
-                      <div class="member-name">Rafi Hassan <span
-                          style="font-size:11px; font-weight:500; color:var(--ink3)">• Instagram</span></div>
-                      <div class="member-task">"Can I get custom pricing for a bulk corporate booking?"</div>
-                    </div>
-                    <span class="status-pill pending">Staff Review</span>
-                  </div>
-                  <div class="team-member-item" onclick="switchTab('inbox')" style="cursor:pointer">
-                    <div class="member-avatar amber">SH</div>
-                    <div class="member-info">
-                      <div class="member-name">Sajjad Hossain <span
-                          style="font-size:11px; font-weight:500; color:var(--ink3)">• WhatsApp</span></div>
-                      <div class="member-task">"Do you have home delivery available right now?"</div>
-                    </div>
-                    <span class="status-pill in-progress">AI Answered</span>
+                    <div style="font-weight:700; color:var(--ink); font-size:13.5px; margin-bottom:4px">No Customer Inquiries Yet</div>
+                    <div style="font-size:11.5px; line-height:1.45; margin-bottom:12px; color:var(--ink2)">Incoming messages from Messenger, Instagram, WhatsApp, or Web Widget will appear here live.</div>
+                    <button class="btn sm" onclick="switchTab('channels')" style="border-radius:9999px; font-size:11px; padding:4px 12px">Connect Channels &rarr;</button>
                   </div>
                 </div>
               </div>
@@ -3894,12 +3891,12 @@
                       stroke-linecap="round" />
                     <path d="M 130 38 A 75 75 0 0 1 175 100" fill="none" stroke="url(#hatchProgress)" stroke-width="22"
                       stroke-linecap="round" />
-                    <path id="donezoGaugeFill" d="M 25 100 A 75 75 0 0 1 155 35" fill="none" stroke="#114B32"
+                    <path id="donezoGaugeFill" d="M 25 100 A 75 75 0 0 1 175 100" fill="none" stroke="#114B32"
                       stroke-width="22" stroke-linecap="round" />
                   </svg>
                   <div class="gauge-center-text">
-                    <div class="gauge-pct" id="resRateTxt">98.5%</div>
-                    <div class="gauge-sub">AI Resolution</div>
+                    <div class="gauge-pct" id="resRateTxt">100%</div>
+                    <div class="gauge-sub" id="resRateSub">Ready (Standby)</div>
                   </div>
                 </div>
                 <div class="gauge-legend">
@@ -3907,8 +3904,8 @@
                   <span class="legend-item"><span class="legend-dot mint"></span> In Progress</span>
                   <span class="legend-item"><span class="legend-dot striped"></span> Escalated</span>
                 </div>
-                <div style="font-size:11.5px; color:var(--ink3); text-align:center; margin-top:8px">
-                  98.5% of incoming customer inquiries resolved without human staff intervention.
+                <div id="resRateCaption" style="font-size:11.5px; color:var(--ink3); text-align:center; margin-top:8px">
+                  AI agent is online and ready to autonomously resolve patient inquiries 24/7.
                 </div>
               </div>
 
@@ -4055,6 +4052,11 @@
               <h2>Multi-Channel Connection Center</h2>
               <p>Configure Facebook Messenger, Instagram Direct, WhatsApp Cloud API, and TikTok Business Messaging.</p>
             </div>
+            <div>
+              <button class="btn sm" onclick="openSocialGuideModal()" style="display:inline-flex; align-items:center; gap:6px">
+                <span>📘 Step-by-Step Connection Guide</span>
+              </button>
+            </div>
           </div>
 
           <div class="info-banner">
@@ -4161,7 +4163,7 @@
                 </div>
                 <label class="chk"><input type="checkbox" data-b="channels.instagram.enabled"> Active</label>
               </div>
-              <p class="hint">Instant AI responses to direct messages sent to @crowncoffee.</p>
+              <p class="hint">Instant 24/7 AI responses to direct messages sent to your Instagram Business account.</p>
 
               <label class="f">Instagram Access Token / Page Token</label>
               <input type="password" data-b="channels.instagram.token"
@@ -4361,27 +4363,27 @@
           </div>
         </section>
 
-        <!-- CAFE INFO PANEL -->
+        <!-- BUSINESS / CLINIC INFO PANEL -->
         <section class="panel" data-p="cafe">
           <div class="phead">
             <div>
-              <h2>Cafe Operations &amp; Identity</h2>
+              <h2 id="settingsPanelTitle">Operations &amp; Identity</h2>
               <p>Official facts and operational parameters. The AI treats these as absolute truth.</p>
             </div>
           </div>
           <div class="card">
             <div class="grid g2">
-              <div><label class="f">Cafe Name</label><input type="text" data-b="cafe.name"></div>
+              <div><label class="f" id="lblBizName">Clinic / Business Name</label><input type="text" data-b="cafe.name"></div>
               <div><label class="f">Hotline Phone</label><input type="text" data-b="cafe.phone"></div>
               <div><label class="f">Area / Landmark</label><input type="text" data-b="cafe.area"></div>
               <div><label class="f">Exact Street Address</label><input type="text" data-b="cafe.address"></div>
             </div>
           </div>
           <div class="card">
-            <h3>Operating Schedule &amp; Orders</h3>
+            <h3 id="settingsHoursTitle">Operating Schedule &amp; Hours</h3>
             <div class="grid g3">
-              <div><label class="f">Kitchen Opens</label><input type="time" data-b="cafe.open"></div>
-              <div><label class="f">Kitchen Closes</label><input type="time" data-b="cafe.close"></div>
+              <div><label class="f" id="lblOpenTime">Opens At</label><input type="time" data-b="cafe.open"></div>
+              <div><label class="f" id="lblCloseTime">Closes At</label><input type="time" data-b="cafe.close"></div>
               <div><label class="f">Weekly Off Day</label><select data-b="cafe.offDay">
                   <option value="">No off days (Open 7 days/week)</option>
                   <option>Sunday</option>
@@ -4394,9 +4396,9 @@
                 </select></div>
             </div>
             <div style="margin-top:14px">
-              <label class="f">Holiday &amp; Last Order Policy Note</label>
+              <label class="f">Holiday &amp; Operational Policy Note</label>
               <input type="text" data-b="cafe.holidayNote"
-                placeholder="e.g. Open every day including Fridays. Last order at 22:30.">
+                placeholder="e.g. Open regular hours. Prior appointment recommended.">
             </div>
           </div>
           <div class="card">
@@ -4404,10 +4406,10 @@
             <div class="grid g2">
               <div><label class="f">Wi-Fi &amp; Work Policy</label><input type="text" data-b="cafe.wifi"></div>
               <div><label class="f">Parking Details</label><input type="text" data-b="cafe.parking"></div>
-              <div><label class="f">Seating &amp; Event Booking</label><input type="text" data-b="cafe.seating"></div>
+              <div><label class="f" id="lblSeating">Seating &amp; Premises</label><input type="text" data-b="cafe.seating"></div>
               <div><label class="f">Accepted Payment Methods</label><input type="text" data-b="cafe.payments"></div>
               <div><label class="f">Service Modes</label><input type="text" data-b="cafe.service"></div>
-              <div><label class="f">Delivery Apps</label><input type="text" data-b="cafe.apps"></div>
+              <div><label class="f" id="lblDeliveryApps">Online / Patient Platforms</label><input type="text" data-b="cafe.apps"></div>
             </div>
             <div style="margin-top:14px">
               <label class="f">Special Notes &amp; Policies</label>
@@ -4416,12 +4418,12 @@
           </div>
         </section>
 
-        <!-- MENU PANEL -->
+        <!-- CATALOG / MENU PANEL -->
         <section class="panel" data-p="menu">
           <div class="phead">
             <div>
-              <h2>Menu Management (89 Items)</h2>
-              <p>Organize items across 22 categories. Instantly toggle stock status or adjust pricing.</p>
+              <h2 id="catalogPanelTitle">Treatments &amp; Services</h2>
+              <p id="catalogPanelSub">Organize clinical treatments across categories. Instantly adjust pricing, consultation fees, and availability.</p>
             </div>
             <div class="row">
               <button class="btn primary sm" id="addCat">+ Add Category</button>
@@ -4429,18 +4431,18 @@
           </div>
 
           <div class="card">
-            <h3>Quick Text Importer</h3>
-            <p class="hint">Paste menu text to auto-parse and add categories.</p>
+            <h3 id="importBoxTitle">Quick Text Importer</h3>
+            <p class="hint" id="importBoxHint">Paste treatments or menu text to auto-parse and add categories.</p>
             <textarea id="importBox"
-              placeholder="Espresso 190&#10;Traditional Breakfast 390&#10;BBQ Chicken Pizza (9&quot;) 595"></textarea>
+              placeholder="Teeth Cleaning &amp; Scaling 1500&#10;Root Canal Therapy 4500&#10;Composite Tooth Filling 1200&#10;Laser Teeth Whitening 8000"></textarea>
             <div class="row" style="margin-top:12px">
-              <button class="btn primary sm" id="importBtn">Parse &amp; Append Menu</button>
+              <button class="btn primary sm" id="importBtn">Parse &amp; Append Catalog</button>
               <span id="importMsg" class="meter"></span>
             </div>
           </div>
 
           <div class="row" style="margin-bottom:16px; justify-content:space-between">
-            <span class="meter" id="menuCount" style="font-weight:700">Loading menu…</span>
+            <span class="meter" id="menuCount" style="font-weight:700">Loading catalog…</span>
           </div>
           <div id="menuList"></div>
         </section>
@@ -4449,17 +4451,20 @@
         <section class="panel" data-p="faq">
           <div class="phead">
             <div>
-              <h2>Verified FAQs (11 Core Answers)</h2>
-              <p>Standardized answers for location, parking, Wi-Fi, Halal food, smoking zone, and private events.</p>
-              <div style="display:flex; gap:8px">
+              <h2 id="faqPanelTitle">Verified FAQs</h2>
+              <p id="faqPanelSub">Standardized answers for appointments, doctor consultations, treatments, clinic hours, and pricing.</p>
+              <div style="display:flex; gap:8px; margin-top:8px">
                 <button class="btn sm"
-                  onclick="openOnboardingModal({ businessName: S?.business?.name || S?.cafe?.name || '', businessType: S?.business?.type || '', services: (S?.business?.services || []).join(', ') })">AI
+                  onclick="openOnboardingModal({ businessName: S?.business?.name || S?.cafe?.name || '', businessType: S?.business?.type || S?.cafe?.type || '', services: Array.isArray(S?.business?.services) ? S.business.services.join(', ') : (S?.business?.services || '') })">AI
                   FAQ Wizard</button>
+                <button class="btn sm ghost" onclick="quickSeedIndustryPresets()" title="Load industry tailored FAQs and treatments">Apply Industry Presets</button>
                 <button class="btn primary sm" id="addFaq">+ Add FAQ</button>
               </div>
               <div class="card">
                 <div id="faqList"></div>
               </div>
+            </div>
+          </div>
         </section>
 
         <!-- PERSONA PANEL -->
@@ -4526,8 +4531,8 @@
                 <label class="chk"><input type="checkbox" data-b="scope.answer"> AI handles directly</label>
               </div>
               <div class="step-box">
-                <h4>Table Reservations</h4>
-                <p>Collect party size, date, time for human confirmation.</p>
+                <h4 id="scopeReserveTitle">Table Reservations</h4>
+                <p id="scopeReserveDesc">Collect party size, date, time for human confirmation.</p>
                 <select data-b="scope.reserve">
                   <option value="draft">Collect details, human confirms (Recommended)</option>
                   <option value="off">Pass immediately to human</option>
@@ -4535,8 +4540,8 @@
                 </select>
               </div>
               <div class="step-box">
-                <h4>Orders &amp; Takeaway</h4>
-                <p>Draft order details for kitchen verification.</p>
+                <h4 id="scopeOrderTitle">Orders &amp; Takeaway</h4>
+                <p id="scopeOrderDesc">Draft order details for kitchen verification.</p>
                 <select data-b="scope.order">
                   <option value="draft">Collect items, human confirms (Recommended)</option>
                   <option value="off">Pass immediately to human</option>
@@ -4905,6 +4910,56 @@
     </div>
   </div>
 
+  <!-- Social Channels Integration Guide Modal -->
+  <div id="socialGuideModal" class="modal-backdrop">
+    <div class="modal-card" style="max-width:780px; max-height:90vh; display:flex; flex-direction:column; padding:24px 28px">
+      <div style="display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:14px; border-bottom:1px solid var(--line); padding-bottom:12px">
+        <div>
+          <div style="display:flex; align-items:center; gap:8px">
+            <span style="font-size:22px">📘</span>
+            <h2 style="margin:0; font-size:20px; font-weight:800; color:var(--ink)">Social Channels Connection Guide</h2>
+          </div>
+          <p style="margin:4px 0 0; font-size:13px; color:var(--ink2)">
+            Follow these step-by-step guidelines to connect your Facebook Page, Instagram Direct, and WhatsApp.
+          </p>
+        </div>
+        <button class="btn sm ghost" onclick="closeSocialGuideModal()" style="border-radius:9999px; padding:4px 12px; font-weight:700">✕ Close</button>
+      </div>
+
+      <!-- Quick Webhook Copy Strip -->
+      <div style="background:var(--surface2); border:1px solid var(--line); border-radius:var(--radius-sm); padding:10px 14px; margin-bottom:16px; display:flex; flex-wrap:wrap; gap:12px; align-items:center; justify-content:space-between">
+        <div style="display:flex; align-items:center; gap:8px; flex:1; min-width:260px">
+          <span style="font-size:11px; font-weight:800; color:var(--ink3); text-transform:uppercase; letter-spacing:0.5px">Meta Webhook URL:</span>
+          <code style="font-size:12px; background:var(--surface); padding:3px 8px; border-radius:4px; border:1px solid var(--line); color:var(--accent); font-family:var(--font-mono)">https://bot.ccadmin.online/webhook/meta</code>
+          <button class="btn sm" onclick="copyToClipboard('https://bot.ccadmin.online/webhook/meta')" style="padding:2px 8px; font-size:11px">Copy</button>
+        </div>
+        <div style="display:flex; align-items:center; gap:8px">
+          <span style="font-size:11px; font-weight:800; color:var(--ink3); text-transform:uppercase; letter-spacing:0.5px">Verify Token:</span>
+          <code style="font-size:12px; background:var(--surface); padding:3px 8px; border-radius:4px; border:1px solid var(--line); color:var(--accent); font-family:var(--font-mono)">botcrowncoffee</code>
+          <button class="btn sm" onclick="copyToClipboard('botcrowncoffee')" style="padding:2px 8px; font-size:11px">Copy</button>
+        </div>
+      </div>
+
+      <!-- Guide Tabs -->
+      <div style="display:flex; gap:6px; border-bottom:1px solid var(--line); padding-bottom:8px; margin-bottom:16px; flex-wrap:wrap">
+        <button type="button" class="btn sm chip-btn selected" id="gTabBtnFb" onclick="switchGuideTab('fb')">Facebook Messenger</button>
+        <button type="button" class="btn sm chip-btn" id="gTabBtnIg" onclick="switchGuideTab('ig')">Instagram Direct</button>
+        <button type="button" class="btn sm chip-btn" id="gTabBtnWa" onclick="switchGuideTab('wa')">WhatsApp Cloud API</button>
+        <button type="button" class="btn sm chip-btn" id="gTabBtnWidget" onclick="switchGuideTab('widget')">Web Chat Widget</button>
+      </div>
+
+      <!-- Guide Tab Body Content -->
+      <div id="guideTabBody" style="overflow-y:auto; flex:1; padding-right:8px; font-size:13px; line-height:1.6; color:var(--ink)">
+        <!-- Dynamic content injected by JS switchGuideTab -->
+      </div>
+
+      <div style="margin-top:16px; padding-top:12px; border-top:1px solid var(--line); display:flex; justify-content:space-between; align-items:center">
+        <span style="font-size:11.5px; color:var(--ink3)">Tokens are securely encrypted in our database and take effect immediately.</span>
+        <button class="btn sm primary" onclick="closeSocialGuideModal()">Got It, Back to Dashboard</button>
+      </div>
+    </div>
+  </div>
+
   <script>
     const API = window.location.pathname.startsWith('/chatbotadmin') ? '/chatbotadmin' : '';
     const api = (p, opts = {}) => {
@@ -5027,6 +5082,14 @@
             document.getElementById('firstLoginModal').classList.add('open');
           } else {
             document.getElementById('firstLoginModal').classList.remove('open');
+            // First login helper: provide clear social channel setup guidelines
+            const seenGuideKey = `seen_social_guide_${r.workspace_id}`;
+            if (r.workspace_id !== 1 && r.role !== 'master_admin' && !localStorage.getItem(seenGuideKey)) {
+              setTimeout(() => {
+                openSocialGuideModal('fb');
+                localStorage.setItem(seenGuideKey, '1');
+              }, 1000);
+            }
           }
 
           switchTab('dash');
@@ -5047,6 +5110,244 @@
         prompt('Copy value:', text);
       });
     }
+
+    /* ---------- SOCIAL CHANNELS INTEGRATION GUIDE MODAL ---------- */
+    function openSocialGuideModal(initialTab = 'fb') {
+      const modal = document.getElementById('socialGuideModal');
+      if (!modal) return;
+      switchGuideTab(initialTab);
+      modal.classList.add('open');
+    }
+    window.openSocialGuideModal = openSocialGuideModal;
+
+    function closeSocialGuideModal() {
+      const modal = document.getElementById('socialGuideModal');
+      if (modal) modal.classList.remove('open');
+    }
+    window.closeSocialGuideModal = closeSocialGuideModal;
+
+    function switchGuideTab(tab) {
+      const tabs = ['fb', 'ig', 'wa', 'widget'];
+      tabs.forEach(t => {
+        const btn = document.getElementById(`gTabBtn${t.charAt(0).toUpperCase() + t.slice(1)}`);
+        if (btn) btn.classList.toggle('selected', t === tab);
+      });
+
+      const body = document.getElementById('guideTabBody');
+      if (!body) return;
+
+      const origin = window.location.origin;
+      const webhookUrl = `${origin}/webhook/meta`;
+      const verifyToken = 'botcrowncoffee';
+      const wsId = currentWorkspaceId || 8;
+
+      if (tab === 'fb') {
+        body.innerHTML = `
+          <div style="display:flex; flex-direction:column; gap:14px">
+            <div style="background:rgba(24,119,242,0.06); border:1px solid rgba(24,119,242,0.22); border-radius:8px; padding:12px 14px">
+              <div style="font-weight:800; color:#1877F2; margin-bottom:4px; font-size:13.5px">📘 Step 1: Create or Open Your Meta App</div>
+              <div style="color:var(--ink2)">Go to <a href="https://developers.facebook.com/apps" target="_blank" style="color:#1877F2; font-weight:700; text-decoration:underline">developers.facebook.com/apps</a>, sign in with your Facebook account, and select or create an App with type <strong>Business</strong>.</div>
+            </div>
+
+            <div style="background:var(--surface2); border:1px solid var(--line); border-radius:8px; padding:12px 14px">
+              <div style="font-weight:700; color:var(--ink); margin-bottom:4px; font-size:13.5px">⚙️ Step 2: Configure Webhook in Messenger</div>
+              <div style="color:var(--ink2)">In your App Dashboard, navigate to <strong>Messenger &gt; Webhooks</strong> (or Add Products &gt; Messenger):</div>
+              <ul style="margin:8px 0 0 18px; padding:0; line-height:1.7; color:var(--ink2)">
+                <li>Click <strong>Edit Callback URL</strong>.</li>
+                <li>Set <strong>Callback URL</strong> to: <code style="background:var(--surface); padding:2px 6px; border-radius:4px; font-weight:700; color:var(--accent); font-family:var(--font-mono)">${webhookUrl}</code></li>
+                <li>Set <strong>Verify Token</strong> to: <code style="background:var(--surface); padding:2px 6px; border-radius:4px; font-weight:700; color:var(--accent); font-family:var(--font-mono)">${verifyToken}</code></li>
+                <li>Click <strong>Verify and Save</strong>.</li>
+                <li>Under <strong>Subscription Fields</strong>, subscribe to <span style="background:#e0f2fe; color:#0369a1; padding:1px 6px; border-radius:4px; font-weight:700; font-size:11.5px">messages</span> and <span style="background:#e0f2fe; color:#0369a1; padding:1px 6px; border-radius:4px; font-weight:700; font-size:11.5px">messaging_postbacks</span>.</li>
+              </ul>
+            </div>
+
+            <div style="background:var(--surface2); border:1px solid var(--line); border-radius:8px; padding:12px 14px">
+              <div style="font-weight:700; color:var(--ink); margin-bottom:4px; font-size:13.5px">🔑 Step 3: Generate Page Access Token</div>
+              <div style="color:var(--ink2)">Under <strong>Messenger &gt; API Settings</strong>:</div>
+              <ul style="margin:8px 0 0 18px; padding:0; line-height:1.7; color:var(--ink2)">
+                <li>Add or select your business <strong>Facebook Page</strong>.</li>
+                <li>Click <strong>Generate Token</strong> and copy the generated token.</li>
+                <li>Copy your <strong>Facebook Page ID</strong> (found in your Page's About / Settings tab).</li>
+              </ul>
+            </div>
+
+            <div style="background:rgba(16,185,129,0.06); border:1px solid rgba(16,185,129,0.25); border-radius:8px; padding:12px 14px">
+              <div style="font-weight:700; color:#059669; margin-bottom:4px; font-size:13.5px">✅ Step 4: Paste into Crown Bot Dashboard</div>
+              <div style="color:var(--ink2)">Navigate to <strong>Multi-Channels</strong> tab in this dashboard:</div>
+              <ul style="margin:8px 0 0 18px; padding:0; line-height:1.7; color:var(--ink2)">
+                <li>Paste your <strong>Page Access Token</strong> into the Facebook Token field.</li>
+                <li>Paste your <strong>Page ID</strong> into the Page ID field.</li>
+                <li>Click <strong>Save Facebook Credentials</strong>. Your AI is immediately live for Messenger inquiries!</li>
+              </ul>
+            </div>
+          </div>
+        `;
+      } else if (tab === 'ig') {
+        body.innerHTML = `
+          <div style="display:flex; flex-direction:column; gap:14px">
+            <div style="background:rgba(225,48,108,0.09); border:1px solid rgba(225,48,108,0.3); border-radius:8px; padding:13px 15px">
+              <div style="font-weight:800; color:#E1306C; margin-bottom:4px; font-size:13.5px">⚠️ CRITICAL: Instagram Mobile App Privacy Setting (MUST DO FIRST)</div>
+              <div style="color:var(--ink); line-height:1.55">Meta will silently drop messages unless this toggle is enabled in your Instagram mobile app:</div>
+              <ol style="margin:8px 0 0 18px; padding:0; line-height:1.75; color:var(--ink)">
+                <li>Open the <strong>Instagram app</strong> on your mobile phone logged into your business profile.</li>
+                <li>Go to your profile &gt; tap the <strong>Menu (☰)</strong> &gt; <strong>Settings and privacy</strong>.</li>
+                <li>Tap <strong>Messages and story replies</strong> &gt; <strong>Message controls</strong>.</li>
+                <li>Under <em>Connected tools</em>, switch <strong>"Allow access to messages"</strong> to <strong style="color:#059669; background:rgba(16,185,129,0.15); padding:2px 6px; border-radius:4px">ON</strong>.</li>
+              </ol>
+            </div>
+
+            <div style="background:var(--surface2); border:1px solid var(--line); border-radius:8px; padding:12px 14px">
+              <div style="font-weight:700; color:var(--ink); margin-bottom:4px; font-size:13.5px">📱 Step 2: Ensure Professional Account &amp; Facebook Page Link</div>
+              <ul style="margin:8px 0 0 18px; padding:0; line-height:1.7; color:var(--ink2)">
+                <li>Your Instagram account must be a <strong>Professional (Business or Creator)</strong> account. (Switch via Settings &gt; Account type and tools).</li>
+                <li>Connect your Instagram account to your Facebook Page in Meta Business Suite or Page Settings.</li>
+              </ul>
+            </div>
+
+            <div style="background:var(--surface2); border:1px solid var(--line); border-radius:8px; padding:12px 14px">
+              <div style="font-weight:700; color:var(--ink); margin-bottom:4px; font-size:13.5px">⚙️ Step 3: Meta App Webhook Setup</div>
+              <div style="color:var(--ink2)">In Meta App Dashboard (developers.facebook.com):</div>
+              <ul style="margin:8px 0 0 18px; padding:0; line-height:1.7; color:var(--ink2)">
+                <li>Add product <strong>Instagram</strong> (or go to Webhooks &gt; Instagram).</li>
+                <li>Callback URL: <code style="background:var(--surface); padding:2px 6px; border-radius:4px; font-weight:700; color:var(--accent); font-family:var(--font-mono)">${webhookUrl}</code></li>
+                <li>Verify Token: <code style="background:var(--surface); padding:2px 6px; border-radius:4px; font-weight:700; color:var(--accent); font-family:var(--font-mono)">${verifyToken}</code></li>
+                <li>Subscribe to <span style="background:#fce7f3; color:#be185d; padding:1px 6px; border-radius:4px; font-weight:700; font-size:11.5px">messages</span>.</li>
+              </ul>
+            </div>
+
+            <div style="background:rgba(16,185,129,0.06); border:1px solid rgba(16,185,129,0.25); border-radius:8px; padding:12px 14px">
+              <div style="font-weight:700; color:#059669; margin-bottom:4px; font-size:13.5px">🔑 Step 4: Add Instagram Credentials to Dashboard</div>
+              <div style="color:var(--ink2)">Under Multi-Channels &gt; Instagram Direct:</div>
+              <ul style="margin:8px 0 0 18px; padding:0; line-height:1.7; color:var(--ink2)">
+                <li>Enter your <strong>Instagram Access Token</strong> and <strong>Instagram Business Account ID</strong>.</li>
+                <li>Click <strong>Save Instagram Credentials</strong>. Test by sending a DM to your Instagram profile!</li>
+              </ul>
+            </div>
+          </div>
+        `;
+      } else if (tab === 'wa') {
+        body.innerHTML = `
+          <div style="display:flex; flex-direction:column; gap:14px">
+            <div style="background:rgba(37,211,102,0.08); border:1px solid rgba(37,211,102,0.3); border-radius:8px; padding:12px 14px">
+              <div style="font-weight:700; color:#128C7E; margin-bottom:4px; font-size:13.5px">💬 Step 1: Add WhatsApp to Your Meta App</div>
+              <div style="color:var(--ink2)">In Meta for Developers, create or open a <strong>Business</strong> App, and click <strong>Set Up</strong> on the <strong>WhatsApp</strong> card.</div>
+            </div>
+
+            <div style="background:var(--surface2); border:1px solid var(--line); border-radius:8px; padding:12px 14px">
+              <div style="font-weight:700; color:var(--ink); margin-bottom:4px; font-size:13.5px">⚙️ Step 2: Configure WhatsApp Webhook</div>
+              <div style="color:var(--ink2)">Under <strong>WhatsApp &gt; Configuration</strong> in the left sidebar:</div>
+              <ul style="margin:8px 0 0 18px; padding:0; line-height:1.7; color:var(--ink2)">
+                <li>Callback URL: <code style="background:var(--surface); padding:2px 6px; border-radius:4px; font-weight:700; color:var(--accent); font-family:var(--font-mono)">${webhookUrl}</code></li>
+                <li>Verify Token: <code style="background:var(--surface); padding:2px 6px; border-radius:4px; font-weight:700; color:var(--accent); font-family:var(--font-mono)">${verifyToken}</code></li>
+                <li>Click <strong>Verify and Save</strong>.</li>
+                <li>In Webhook fields, click <strong>Manage</strong> and subscribe to <span style="background:#dcfce7; color:#15803d; padding:1px 6px; border-radius:4px; font-weight:700; font-size:11.5px">messages</span>.</li>
+              </ul>
+            </div>
+
+            <div style="background:var(--surface2); border:1px solid var(--line); border-radius:8px; padding:12px 14px">
+              <div style="font-weight:700; color:var(--ink); margin-bottom:4px; font-size:13.5px">🔑 Step 3: Get Permanent System User Token &amp; IDs</div>
+              <div style="color:var(--ink2)">Under <strong>WhatsApp &gt; API Setup</strong>:</div>
+              <ul style="margin:8px 0 0 18px; padding:0; line-height:1.7; color:var(--ink2)">
+                <li>Copy <strong>Phone Number ID</strong>.</li>
+                <li>Copy <strong>WhatsApp Business Account ID</strong>.</li>
+                <li>In Meta Business Manager &gt; System Users, create a permanent token with permissions <code style="background:var(--surface); padding:1px 4px; border-radius:3px">whatsapp_business_messaging</code> and <code style="background:var(--surface); padding:1px 4px; border-radius:3px">whatsapp_business_management</code>.</li>
+              </ul>
+            </div>
+
+            <div style="background:rgba(16,185,129,0.06); border:1px solid rgba(16,185,129,0.25); border-radius:8px; padding:12px 14px">
+              <div style="font-weight:700; color:#059669; margin-bottom:4px; font-size:13.5px">✅ Step 4: Connect in Dashboard</div>
+              <div style="color:var(--ink2)">Paste your <strong>Phone Number ID</strong> and <strong>Access Token</strong> into the Multi-Channels WhatsApp section, then click <strong>Save WhatsApp Credentials</strong>.</div>
+            </div>
+          </div>
+        `;
+      } else if (tab === 'widget') {
+        const snippet = `<script src="${origin}/widget.js" data-workspace="${wsId}" async><\/script>`;
+        body.innerHTML = `
+          <div style="display:flex; flex-direction:column; gap:14px">
+            <div style="background:var(--surface2); border:1px solid var(--line); border-radius:8px; padding:14px">
+              <div style="font-weight:700; color:var(--ink); margin-bottom:6px; font-size:13.5px">🌐 Embed AI Chat Directly on Your Website</div>
+              <p style="margin:0 0 12px; font-size:12.5px; color:var(--ink2)">Paste this snippet just before the closing <code>&lt;/body&gt;</code> tag on your clinic or business website to add an instant floating chat widget.</p>
+              <div style="position:relative">
+                <pre style="background:var(--surface); border:1px solid var(--line); border-radius:6px; padding:12px 14px; font-size:12px; overflow-x:auto; margin:0; font-family:var(--font-mono); color:var(--ink); line-height:1.5">${esc(snippet)}</pre>
+                <button class="btn sm" onclick="copyToClipboard('${snippet.replace(/'/g, "\\'")}')" style="position:absolute; top:8px; right:8px; padding:3px 10px; font-size:11px">Copy Snippet</button>
+              </div>
+            </div>
+            <div style="background:rgba(17,75,50,0.06); border:1px solid rgba(17,75,50,0.2); border-radius:8px; padding:12px 14px">
+              <div style="font-weight:700; color:#114B32; margin-bottom:4px; font-size:13px">💡 Direct Subdomain Chat Link</div>
+              <div style="color:var(--ink2); font-size:12px">You can also share direct chat with patients or customers: <a href="${origin}/test-chat.html?workspace=${wsId}" target="_blank" style="color:var(--accent); font-weight:600; text-decoration:underline">${origin}/test-chat.html?workspace=${wsId}</a></div>
+            </div>
+          </div>
+        `;
+      }
+    }
+    window.switchGuideTab = switchGuideTab;
+
+    /* ---------- QUICK SEED INDUSTRY PRESETS ---------- */
+    async function quickSeedIndustryPresets() {
+      const currentType = S?.business?.type || S?.business?.businessType || (currentWorkspaceId === 8 ? 'Dentistry' : 'General Business');
+      const input = prompt(
+        `Select your profession to auto-load tailored services, pricing & verified FAQs:\n\n` +
+        `1. Dentistry & Dental Clinic\n` +
+        `2. Medical Clinic & Healthcare\n` +
+        `3. Salon, Spa & Beauty Care\n` +
+        `4. Law Firm & Legal Advisory\n` +
+        `5. Real Estate & Properties\n` +
+        `6. E-Commerce & Fashion Retail\n` +
+        `7. Education & Coaching Academy\n` +
+        `8. Fitness, Gym & Wellness\n` +
+        `9. Automotive & Car Care\n` +
+        `10. Restaurant, Cafe & Bakery\n` +
+        `11. Photography & Media Studio\n` +
+        `12. IT Services & Software Agency\n\n` +
+        `Enter number (1-12) or type any custom profession:`,
+        currentType
+      );
+      if (!input || !input.trim()) return;
+
+      const numMap = {
+        '1': 'Dentistry',
+        '2': 'Medical Clinic',
+        '3': 'Salon & Spa',
+        '4': 'Law Firm',
+        '5': 'Real Estate',
+        '6': 'E-Commerce',
+        '7': 'Education & Coaching',
+        '8': 'Fitness Gym',
+        '9': 'Auto Repair',
+        '10': 'Restaurant & Cafe',
+        '11': 'Photography Studio',
+        '12': 'IT & Software Agency'
+      };
+
+      const bType = numMap[input.trim()] || input.trim();
+
+      try {
+        const res = await api('/api/tenant/seed-industry', {
+          method: 'POST',
+          body: JSON.stringify({
+            workspace_id: currentWorkspaceId,
+            industry: bType,
+            force: true
+          })
+        });
+        const d = await res.json();
+        if (res.ok && d.ok) {
+          showSaveChip(`${d.industry} Presets Applied`);
+          const cfgRes = await api(`/api/config?workspace_id=${currentWorkspaceId}`).then(r => r.json());
+          S = cfgRes.config;
+          render();
+          paintPrompt(cfgRes.prompt);
+          paintOpen(cfgRes.open);
+          if (cfgRes.stats) paintStats(cfgRes.stats);
+          alert(`Successfully applied verified presets for ${d.industry}!\n\n• ${d.itemsCount} catalog items & procedures loaded\n• ${d.faqsCount} versatile FAQs initialized`);
+        } else {
+          alert('Failed to apply presets: ' + (d.error || 'Unknown error'));
+        }
+      } catch (err) {
+        alert('Network error applying presets: ' + err.message);
+      }
+    }
+    window.quickSeedIndustryPresets = quickSeedIndustryPresets;
 
     function switchPortalTab(tab) {
       const fIn = document.getElementById('loginForm');
@@ -5162,6 +5463,20 @@
     /* ---------- ONBOARDING & AI FAQ WIZARD ---------- */
     let generatedFaqsList = [];
 
+    const professionServiceMap = {
+      'Dental Clinic': 'Dental consultations, digital X-rays, scaling & polishing, root canal therapy, teeth whitening, crowns, and oral surgery',
+      'Healthcare & Dental Clinic': 'Comprehensive dental examinations, scaling, fillings, root canals, crowns, and pediatric checkups',
+      'Clinic / Healthcare': 'General physician consultations, specialist doctor chambers, routine diagnostic tests, and health checkups',
+      'Beauty Salon & Spa': 'Hair styling, keratin treatments, radiant facials, bridal & party makeup packages, manicure, and pedicure',
+      'Retail & E-commerce Store': 'Apparel & clothing, sizing guidance, home delivery inside/outside Dhaka, and Cash on Delivery',
+      'Digital Agency & Software': 'Custom web applications, mobile apps, UI/UX design systems, SEO, and cloud infrastructure',
+      'Specialty Cafe & Restaurant': 'Specialty espresso beverages, artisan burgers, continental pastas, fresh bakery desserts, dine-in, and delivery',
+      'Real Estate Agency': 'Residential apartments, commercial office spaces, luxury duplexes, property viewing, and home loans',
+      'Fitness Gym & Studio': 'Monthly gym memberships, certified 1-on-1 personal trainers, customized diet charts, and steam bath',
+      'Consulting & Law Firm': 'Legal case evaluation, contract drafting, corporate compliance advisory, property dispute litigation, and bail hearings',
+      'Auto Repair & Detailing': 'Periodic car servicing, full synthetic oil change, brake overhaul, 9H nano ceramic coating, and AC repair'
+    };
+
     function openOnboardingModal(initial = {}) {
       const modal = document.getElementById('onboardingModal');
       if (!modal) return;
@@ -5169,7 +5484,10 @@
       if (initial.services) document.getElementById('obServices').value = initial.services;
       if (S?.cafe?.area) document.getElementById('obLocation').value = S.cafe.area;
       modal.classList.add('open');
-      if (initial.businessType && initial.services) {
+      if (initial.businessType) {
+        if (!document.getElementById('obServices').value && professionServiceMap[initial.businessType]) {
+          document.getElementById('obServices').value = professionServiceMap[initial.businessType];
+        }
         triggerAiFaqGeneration();
       }
     }
@@ -5184,7 +5502,11 @@
       document.querySelectorAll('.chip-btn').forEach(b => {
         b.classList.toggle('selected', b.textContent.trim() === type);
       });
-      document.getElementById('obServices').focus();
+      const srvEl = document.getElementById('obServices');
+      if (srvEl && (!srvEl.value || !srvEl.value.trim() || Object.values(professionServiceMap).includes(srvEl.value.trim()))) {
+        srvEl.value = professionServiceMap[type] || '';
+      }
+      triggerAiFaqGeneration();
     }
 
     function handleBusinessTypeInput(val) {
@@ -5193,7 +5515,11 @@
 
     async function triggerAiFaqGeneration() {
       const businessType = document.getElementById('obBusinessType').value.trim() || S?.business?.type || S?.cafe?.type || 'General Business';
-      const services = document.getElementById('obServices').value.trim() || S?.business?.services || S?.cafe?.services || '';
+      let services = document.getElementById('obServices').value.trim() || S?.business?.services || S?.cafe?.services || '';
+      if (!services && professionServiceMap[businessType]) {
+        services = professionServiceMap[businessType];
+        document.getElementById('obServices').value = services;
+      }
       const businessName = S?.business?.name || S?.cafe?.name || document.getElementById('brandTitleTxt').textContent;
       const location = document.getElementById('obLocation').value.trim() || S?.cafe?.area || 'Dhaka, Bangladesh';
 
@@ -5214,7 +5540,7 @@
           generatedFaqsList = data.faqs;
           renderGeneratedFaqs(data.faqs);
           container.style.display = 'block';
-          showSaveChip('AI FAQs generated successfully');
+          showSaveChip(`${businessType} FAQs generated`);
         } else {
           alert('Could not generate FAQs. Please refine your business services description.');
         }
@@ -6192,11 +6518,22 @@ Crown Operations Support`;
       }
 
       const totalOut = (s.aiReplies || 0) + (s.humanReplies || 0);
-      const rate = totalOut > 0 ? Math.round(((s.aiReplies || 0) / totalOut) * 1000) / 10 : 98.5;
-      document.getElementById('resRateTxt').textContent = `${rate}%`;
+      const isZero = totalOut === 0;
+      const rate = !isZero ? Math.round(((s.aiReplies || 0) / totalOut) * 1000) / 10 : 100;
+      const resRateTxt = document.getElementById('resRateTxt');
+      const resRateSub = document.getElementById('resRateSub');
+      const resRateCaption = document.getElementById('resRateCaption');
+
+      if (resRateTxt) resRateTxt.textContent = isZero ? '100%' : `${rate}%`;
+      if (resRateSub) resRateSub.textContent = isZero ? 'Ready (Standby)' : 'AI Resolution Rate';
+      if (resRateCaption) {
+        resRateCaption.textContent = isZero
+          ? 'Autonomous AI agent is active and standing by for incoming inquiries.'
+          : `${s.aiReplies || 0} autonomous replies out of ${totalOut} messages resolved.`;
+      }
 
       // Update Donezo Semicircular Radial Gauge Arc
-      const gaugeRate = Math.min(99.9, Math.max(5, rate));
+      const gaugeRate = isZero ? 100 : Math.min(99.9, Math.max(5, rate));
       const angle = Math.PI * (1 - (gaugeRate / 100));
       const gx = (100 - 75 * Math.cos(angle)).toFixed(1);
       const gy = (100 - 75 * Math.sin(angle)).toFixed(1);
@@ -6354,26 +6691,38 @@ Crown Operations Support`;
       const list = document.getElementById('dashRecentActivity');
       const donezoList = document.getElementById('donezoCustomerInquiriesList');
 
-      if (donezoList && recent && recent.length > 0) {
-        const colors = ['pink', 'green', 'blue', 'amber'];
-        donezoList.innerHTML = recent.slice(0, 4).map((m, idx) => {
-          const name = m.name || (m.sender_id ? `Customer #${String(m.sender_id).slice(-4)}` : 'Guest Customer');
-          const initials = name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase() || 'CU';
-          const color = colors[idx % colors.length];
-          const plat = m.platform === 'facebook' ? 'Messenger' : m.platform === 'instagram' ? 'Instagram' : m.platform === 'whatsapp' ? 'WhatsApp' : 'Web Chat';
-          const isOrder = (m.text || '').toLowerCase().includes('order') || (m.text || '').toLowerCase().includes('delivery') || (m.text || '').toLowerCase().includes('price');
-          const statusPill = isOrder ? `<span class="status-pill completed">Order Query</span>` : `<span class="status-pill in-progress">AI Handled</span>`;
-          return `
-        <div class="team-member-item" onclick="switchTab('inbox')" style="cursor:pointer" title="Click to open conversation in Inbox">
-          <div class="member-avatar ${color}">${initials}</div>
-          <div class="member-info">
-            <div class="member-name">${esc(name)} <span style="font-size:11px; font-weight:500; color:var(--ink3)">• ${plat}</span></div>
-            <div class="member-task">"${esc(m.text || '')}"</div>
+      if (donezoList) {
+        if (recent && recent.length > 0) {
+          const colors = ['pink', 'green', 'blue', 'amber'];
+          donezoList.innerHTML = recent.slice(0, 4).map((m, idx) => {
+            const name = m.name || (m.sender_id ? `Customer #${String(m.sender_id).slice(-4)}` : 'Guest Customer');
+            const initials = name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase() || 'CU';
+            const color = colors[idx % colors.length];
+            const plat = m.platform === 'facebook' ? 'Messenger' : m.platform === 'instagram' ? 'Instagram' : m.platform === 'whatsapp' ? 'WhatsApp' : 'Web Chat';
+            const isOrder = (m.text || '').toLowerCase().includes('order') || (m.text || '').toLowerCase().includes('delivery') || (m.text || '').toLowerCase().includes('price') || (m.text || '').toLowerCase().includes('appointment') || (m.text || '').toLowerCase().includes('consultation');
+            const statusPill = isOrder ? `<span class="status-pill completed">Inquiry / Booking</span>` : `<span class="status-pill in-progress">AI Handled</span>`;
+            return `
+          <div class="team-member-item" onclick="switchTab('inbox')" style="cursor:pointer" title="Click to open conversation in Inbox">
+            <div class="member-avatar ${color}">${initials}</div>
+            <div class="member-info">
+              <div class="member-name">${esc(name)} <span style="font-size:11px; font-weight:500; color:var(--ink3)">• ${plat}</span></div>
+              <div class="member-task">"${esc(m.text || '')}"</div>
+            </div>
+            ${statusPill}
           </div>
-          ${statusPill}
-        </div>
-      `;
-        }).join('');
+        `;
+          }).join('');
+        } else {
+          donezoList.innerHTML = `
+            <div style="padding:28px 14px; text-align:center; color:var(--ink3)">
+              <div style="width:38px; height:38px; margin:0 auto 10px; border-radius:50%; background:rgba(17,75,50,0.08); display:grid; place-items:center; color:#114B32">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              </div>
+              <div style="font-weight:700; color:var(--ink); font-size:13.5px; margin-bottom:4px">No Customer Inquiries Yet</div>
+              <div style="font-size:11.5px; line-height:1.45; margin-bottom:12px; color:var(--ink2)">Incoming messages from Messenger, Instagram, WhatsApp, or Web Widget will appear here live.</div>
+              <button class="btn sm" onclick="switchTab('channels')" style="border-radius:9999px; font-size:11px; padding:4px 12px">Connect Channels &rarr;</button>
+            </div>`;
+        }
       }
 
       if (!list) return;
@@ -6467,8 +6816,33 @@ Crown Operations Support`;
       const w = document.getElementById('menuList');
       if (!w || !S?.menu) return;
       w.innerHTML = '';
+
+      const bType = (S?.business?.type || S?.business?.businessType || '').toLowerCase();
+      const isDentistry = bType.includes('dent') || bType.includes('dental') || bType.includes('smile') || bType.includes('tooth') || bType.includes('teeth');
+      const isHealth = bType.includes('clinic') || bType.includes('health') || bType.includes('doctor') || bType.includes('medic');
+      const isSalon = bType.includes('salon') || bType.includes('spa') || bType.includes('beauty') || bType.includes('hair');
+      const isLaw = bType.includes('law') || bType.includes('legal') || bType.includes('advocate');
+      const isRealEstate = bType.includes('real estate') || bType.includes('property');
+      const isEcommerce = bType.includes('ecommerce') || bType.includes('shop') || bType.includes('clothing') || bType.includes('boutique');
+      const isAuto = bType.includes('auto') || bType.includes('car') || bType.includes('garage');
+
+      let totalItems = 0;
+      (S.menu || []).forEach(cat => { totalItems += (cat.items || []).length; });
+
+      const countEl = document.getElementById('menuCount');
+      if (countEl) {
+        if (isDentistry) countEl.textContent = `(${totalItems} Clinical Procedures & Treatments)`;
+        else if (isHealth) countEl.textContent = `(${totalItems} Medical Services & Tests)`;
+        else if (isSalon) countEl.textContent = `(${totalItems} Beauty & Spa Treatments)`;
+        else if (isLaw) countEl.textContent = `(${totalItems} Legal Services & Retainers)`;
+        else if (isRealEstate) countEl.textContent = `(${totalItems} Properties & Listings)`;
+        else if (isEcommerce) countEl.textContent = `(${totalItems} Products in Catalog)`;
+        else if (isAuto) countEl.textContent = `(${totalItems} Auto Services & Packages)`;
+        else countEl.textContent = `(${totalItems} Items in Catalog)`;
+      }
+
       if (!S.menu.length) {
-        w.innerHTML = '<div class="empty">No menu categories yet. Click "+ Category" or import.</div>';
+        w.innerHTML = '<div class="empty">No catalog categories yet. Click "+ Add Category" or "Apply Industry Presets" in Help &amp; FAQs to auto-load.</div>';
         return;
       }
       S.menu.forEach((cat, ci) => {
@@ -6592,8 +6966,32 @@ Crown Operations Support`;
       const w = document.getElementById('faqList');
       if (!w || !S?.faqs) return;
       w.innerHTML = '';
+
+      const bType = (S?.business?.type || S?.business?.businessType || '').toLowerCase();
+      const isDentistry = bType.includes('dent') || bType.includes('dental') || bType.includes('smile');
+      const isHealth = bType.includes('clinic') || bType.includes('health') || bType.includes('doctor');
+      const isSalon = bType.includes('salon') || bType.includes('spa') || bType.includes('beauty');
+      const isLaw = bType.includes('law') || bType.includes('legal');
+      const isRealEstate = bType.includes('real estate') || bType.includes('property');
+      const isEcommerce = bType.includes('ecommerce') || bType.includes('clothing') || bType.includes('shop');
+
+      const faqTitle = document.getElementById('faqPanelTitle');
+      const faqSub = document.getElementById('faqPanelSub');
+      if (faqTitle) {
+        if (isDentistry) faqTitle.textContent = 'Clinic FAQs & Knowledge Base';
+        else if (isHealth) faqTitle.textContent = 'Medical Practice FAQs';
+        else if (isSalon) faqTitle.textContent = 'Salon & Spa Service FAQs';
+        else if (isLaw) faqTitle.textContent = 'Legal Chambers FAQs & Policies';
+        else if (isRealEstate) faqTitle.textContent = 'Real Estate & Property FAQs';
+        else if (isEcommerce) faqTitle.textContent = 'Store Delivery & Ordering FAQs';
+        else faqTitle.textContent = 'Verified Business FAQs & Knowledge Base';
+      }
+      if (faqSub) {
+        faqSub.textContent = 'Official responses used by the AI assistant before consulting LLM. Always treated as absolute facts.';
+      }
+
       if (!S.faqs.length) {
-        w.innerHTML = '<div class="empty">No verified FAQs yet. Add questions below.</div>';
+        w.innerHTML = '<div class="empty">No verified FAQs yet. Click "Apply Industry Presets" or "AI FAQ Wizard" above.</div>';
         return;
       }
       S.faqs.forEach((f, i) => {
@@ -7022,8 +7420,88 @@ Crown Operations Support`;
     <div class="kv"><span>TikTok Messaging Channel</span><span>${yn(h.channels?.tiktok?.configured)}</span></div>`;
     }
 
+    function adaptTerminology() {
+      const bType = (S?.business?.type || S?.business?.businessType || '').toLowerCase();
+      const isDentistry = bType.includes('dent') || bType.includes('dental') || bType.includes('smile') || bType.includes('tooth') || bType.includes('teeth');
+      const isHealth = bType.includes('clinic') || bType.includes('health') || bType.includes('doctor') || bType.includes('medic');
+      const isSalon = bType.includes('salon') || bType.includes('spa') || bType.includes('beauty') || bType.includes('hair');
+      const isLaw = bType.includes('law') || bType.includes('legal') || bType.includes('advocate');
+      const isRealEstate = bType.includes('real estate') || bType.includes('property');
+      const isEcommerce = bType.includes('ecommerce') || bType.includes('shop') || bType.includes('clothing') || bType.includes('boutique');
+      const isAuto = bType.includes('auto') || bType.includes('car') || bType.includes('garage');
+
+      // Sidebar catalog button label
+      const navLabel = document.getElementById('navCatalogLabel');
+      if (navLabel) {
+        if (isDentistry) navLabel.textContent = 'Treatments & Services';
+        else if (isHealth) navLabel.textContent = 'Medical Services';
+        else if (isSalon) navLabel.textContent = 'Beauty & Spa Services';
+        else if (isLaw) navLabel.textContent = 'Legal Services';
+        else if (isRealEstate) navLabel.textContent = 'Property Listings';
+        else if (isEcommerce) navLabel.textContent = 'Product Catalog';
+        else if (isAuto) navLabel.textContent = 'Services & Packages';
+        else if (currentWorkspaceId === 1) navLabel.textContent = 'Menu Management';
+        else navLabel.textContent = 'Catalog & Services';
+      }
+
+      // KPI card label
+      const kpiOrders = document.getElementById('kpiLabelOrders');
+      if (kpiOrders) {
+        if (isDentistry || isHealth || isSalon || isLaw) kpiOrders.textContent = 'Appointments & Inquiries';
+        else if (isRealEstate) kpiOrders.textContent = 'Property Inquiries';
+        else if (isEcommerce) kpiOrders.textContent = 'Customer Orders Processed';
+        else kpiOrders.textContent = 'Appointments & Inquiries';
+      }
+
+      // AI runtime description in dashboard
+      const aiRuntimeDesc = document.getElementById('dashAiRuntimeDesc');
+      if (aiRuntimeDesc) {
+        if (isDentistry) aiRuntimeDesc.textContent = 'Autonomous appointment scheduling, treatment pricing knowledge & 24/7 patient inquiry support.';
+        else if (isHealth) aiRuntimeDesc.textContent = 'Autonomous doctor serial booking, diagnostic test info & patient inquiry triage.';
+        else if (isSalon) aiRuntimeDesc.textContent = 'Autonomous appointment booking, beauty treatment pricing & slot coordination.';
+        else if (isLaw) aiRuntimeDesc.textContent = 'Autonomous consultation scheduling, legal service scope & client inquiry assistance.';
+        else if (isRealEstate) aiRuntimeDesc.textContent = 'Autonomous site visit scheduling, property inquiry handling & pricing estimates.';
+        else if (isEcommerce) aiRuntimeDesc.textContent = 'Autonomous order processing, product sizing support & delivery tracking.';
+        else aiRuntimeDesc.textContent = 'Autonomous customer support, pricing inquiry assistance & inquiry resolution engine.';
+      }
+
+      // Settings panel labels
+      const settingsTitle = document.getElementById('settingsPanelTitle');
+      if (settingsTitle) {
+        settingsTitle.textContent = isDentistry ? 'Clinic Identity & Operations' : isHealth ? 'Medical Practice & Operations' : 'Operations & Identity';
+      }
+      const lblBizName = document.getElementById('lblBizName');
+      if (lblBizName) {
+        lblBizName.textContent = (isDentistry || isHealth) ? 'Clinic / Practice Name' : isLaw ? 'Chamber / Firm Name' : isSalon ? 'Salon / Studio Name' : 'Business / Brand Name';
+      }
+      const lblOpen = document.getElementById('lblOpenTime');
+      if (lblOpen) {
+        lblOpen.textContent = (isDentistry || isHealth) ? 'Consultation Starts At' : (currentWorkspaceId === 1 ? 'Kitchen Opens At' : 'Opens At');
+      }
+      const lblClose = document.getElementById('lblCloseTime');
+      if (lblClose) {
+        lblClose.textContent = (isDentistry || isHealth) ? 'Consultation Ends At' : (currentWorkspaceId === 1 ? 'Kitchen Closes At' : 'Closes At');
+      }
+      const lblApps = document.getElementById('lblDeliveryApps');
+      if (lblApps) {
+        lblApps.textContent = (isDentistry || isHealth) ? 'Telemedicine / Portals' : isEcommerce ? 'Courier & Shipping Services' : 'Online / Delivery Platforms';
+      }
+
+      // Scope boxes
+      const scopeResTitle = document.getElementById('scopeReserveTitle');
+      const scopeResDesc = document.getElementById('scopeReserveDesc');
+      if (scopeResTitle) scopeResTitle.textContent = (isDentistry || isHealth || isSalon || isLaw) ? 'Appointments & Consultations' : (isRealEstate ? 'Site Visits & Viewings' : 'Table Reservations');
+      if (scopeResDesc) scopeResDesc.textContent = (isDentistry || isHealth || isSalon || isLaw) ? 'Collect patient/client name, preferred date & time for verification.' : (isRealEstate ? 'Collect client contact, preferred location & viewing slot.' : 'Collect party size, date, time for human confirmation.');
+
+      const scopeOrdTitle = document.getElementById('scopeOrderTitle');
+      const scopeOrdDesc = document.getElementById('scopeOrderDesc');
+      if (scopeOrdTitle) scopeOrdTitle.textContent = (isDentistry || isHealth) ? 'Treatments & Procedures' : (isLaw ? 'Retainers & Documentation' : isEcommerce ? 'Product Orders & Delivery' : 'Orders & Takeaway');
+      if (scopeOrdDesc) scopeOrdDesc.textContent = (isDentistry || isHealth) ? 'Draft requested procedure details for clinical confirmation.' : (isLaw ? 'Draft legal documentation request for chamber review.' : isEcommerce ? 'Draft item, size & delivery address for order dispatch.' : 'Draft order details for staff verification.');
+    }
+
     function render() {
       fillBound();
+      adaptTerminology();
       renderMenu();
       renderFaq();
       renderGuards();

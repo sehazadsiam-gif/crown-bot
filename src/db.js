@@ -1066,44 +1066,605 @@ export const DEFAULT_CONFIG = {
   runtime: { enabled: true, offHours: 'reply', fallbackText: 'Thanks for your message! Our team will reply shortly.' }
 };
 
+export function getIndustryPresets(businessName = 'New Business', businessType = 'General Business', services = '') {
+  const normType = String(businessType || '').toLowerCase();
+  const name = businessName || 'Our Business';
+
+  // 1. DENTISTRY & DENTAL CLINIC
+  if (normType.includes('dent') || normType.includes('dental') || normType.includes('smile') || normType.includes('tooth') || normType.includes('teeth') || normType.includes('orthodont')) {
+    return {
+      serviceDesc: services || 'Comprehensive dental consultations, scaling, root canal therapy, tooth-colored fillings, cosmetic whitening, crowns, and oral surgery',
+      holidayNote: 'Open during regular clinic hours. Pre-scheduled appointments recommended.',
+      deliveryApps: 'Tele-consultation, Digital Rx',
+      menu: [
+        {
+          id: 'cat_prev',
+          name: 'Diagnostic & Preventive Care',
+          items: [
+            { id: 'd1', name: 'Comprehensive Dental Examination', desc: 'Oral clinical examination, oral cancer screening & treatment plan', price: 500, available: true },
+            { id: 'd2', name: 'Digital Dental X-Ray (IOPA)', desc: 'High-definition digital diagnostic periapical radiograph', price: 300, available: true },
+            { id: 'd3', name: 'Teeth Scaling & Deep Polishing', desc: 'Full mouth ultrasonic plaque, calculus & stain removal', price: 1500, available: true }
+          ]
+        },
+        {
+          id: 'cat_endo',
+          name: 'Restorative & Endodontics',
+          items: [
+            { id: 'd4', name: 'Composite Tooth Filling', desc: 'Aesthetic light-cured resin filling matched to natural shade', price: 1200, available: true },
+            { id: 'd5', name: 'Root Canal Treatment (Front Tooth)', desc: 'Complete painless single-canal endodontic therapy', price: 4000, available: true },
+            { id: 'd6', name: 'Root Canal Treatment (Molar)', desc: 'Complex multi-canal molar therapy using rotary files', price: 6000, available: true }
+          ]
+        },
+        {
+          id: 'cat_cosm',
+          name: 'Cosmetics & Crowns',
+          items: [
+            { id: 'd7', name: 'Laser In-Office Teeth Whitening', desc: 'Professional clinical shade-brightening laser session', price: 8000, available: true },
+            { id: 'd8', name: 'Porcelain Fused to Metal (PFM) Crown', desc: 'High-strength aesthetic ceramic crown with metal core', price: 6500, available: true },
+            { id: 'd9', name: 'Zirconia All-Ceramic Crown', desc: 'Premium computer-milled metal-free biocompatible crown', price: 12000, available: true }
+          ]
+        },
+        {
+          id: 'cat_surg',
+          name: 'Oral Surgery & Orthodontics',
+          items: [
+            { id: 'd10', name: 'Painless Tooth Extraction', desc: 'Simple clinical extraction with local anesthesia', price: 1000, available: true },
+            { id: 'd11', name: 'Surgical Wisdom Tooth Removal', desc: 'Minor surgical removal of impacted third molar', price: 5000, available: true },
+            { id: 'd12', name: 'Orthodontic Braces Consultation', desc: 'Malocclusion assessment, bite analysis & treatment plan', price: 1000, available: true }
+          ]
+        }
+      ],
+      faqs: [
+        { q: `What dental treatments and services are offered at ${name}?`, a: `We provide comprehensive dental care including routine checkups, ultrasonic teeth scaling and polishing, composite fillings, root canal therapy, porcelain and zirconia crowns, laser teeth whitening, orthodontic consultations, and oral surgery.` },
+        { q: `How can I schedule an appointment with a dentist?`, a: `You can book an appointment by sending us a message here with your preferred day and time, or by calling our clinic reception. Our team will verify doctor availability and confirm your booking promptly.` },
+        { q: `What are your consultation fees and treatment costs?`, a: `Initial doctor consultation starts from Tk 500. Specific treatment fees depend on clinical assessment and diagnostic X-rays. We provide a transparent, itemized estimate prior to starting any procedure.` },
+        { q: `Where is the clinic located and what are your operating hours?`, a: `We are open Saturday through Thursday from 10:00 AM to 8:00 PM, and Fridays from 4:00 PM to 9:00 PM. Prior appointment booking is recommended to minimize waiting time.` },
+        { q: `Do you accommodate emergency dental visits for severe toothache?`, a: `Yes, we prioritize acute dental emergencies such as severe tooth pain, fractured teeth, oral trauma, or facial swelling. Please contact us immediately so our clinical team can arrange immediate care.` },
+        { q: `What payment options are accepted at ${name}?`, a: `We accept Cash, major Credit and Debit cards (Visa, Mastercard), and Mobile Banking (bKash and Nagad).` }
+      ]
+    };
+  }
+
+  // 2. MEDICAL CLINIC, DOCTOR & HEALTHCARE
+  if (normType.includes('clinic') || normType.includes('health') || normType.includes('doctor') || normType.includes('medic') || normType.includes('hospital') || normType.includes('physician') || normType.includes('pharma')) {
+    return {
+      serviceDesc: services || 'Specialist doctor consultations, diagnostic health screenings, pathology testing, and outpatient clinical care',
+      holidayNote: 'Open during clinic hours. Pre-scheduled appointments recommended for specialist chambers.',
+      deliveryApps: 'Telemedicine, Home Sample Collection',
+      menu: [
+        {
+          id: 'cat_med_cons',
+          name: 'Specialist Doctor Chambers',
+          items: [
+            { id: 'm1', name: 'General Physician Consultation', desc: 'Primary diagnosis, health assessment and prescription', price: 800, available: true },
+            { id: 'm2', name: 'Specialist Doctor Consultation', desc: 'Consultation with senior specialist (Medicine / Cardiology / Dermatology / Pediatrics)', price: 1200, available: true },
+            { id: 'm3', name: 'Pediatric Child Health Examination', desc: 'Growth tracking, newborn screening and pediatric care', price: 1000, available: true }
+          ]
+        },
+        {
+          id: 'cat_med_diag',
+          name: 'Diagnostic Tests & Lab Investigations',
+          items: [
+            { id: 'm4', name: 'Complete Blood Count (CBC) with ESR', desc: 'Automated 5-part hematology screening', price: 500, available: true },
+            { id: 'm5', name: 'Lipid Profile & Blood Glucose Test', desc: 'Cholesterol, HDL, LDL, triglycerides and fasting sugar test', price: 900, available: true },
+            { id: 'm6', name: '12-Lead Electrocardiogram (ECG)', desc: 'Cardiological electrical activity examination with report', price: 600, available: true }
+          ]
+        },
+        {
+          id: 'cat_med_care',
+          name: 'Outpatient Nursing & Minor Procedures',
+          items: [
+            { id: 'm7', name: 'Aseptic Wound Dressing & Care', desc: 'Sterile surgical wound dressing and cleaning', price: 800, available: true },
+            { id: 'm8', name: 'Nebulization Respiratory Therapy', desc: 'Bronchodilator aerosol therapy session for acute asthma/cough', price: 300, available: true },
+            { id: 'm9', name: 'IV Cannulation & Fluid Infusion', desc: 'Intravenous drip administration by licensed nurse', price: 600, available: true }
+          ]
+        }
+      ],
+      faqs: [
+        { q: `What doctor specialties and medical services are available at ${name}?`, a: `We provide consultations across General Medicine, Pediatrics, Dermatology, Cardiology, Gynecology, and ENT, along with clinical diagnostics, routine pathology tests, and outpatient nursing care.` },
+        { q: `How do I book a doctor appointment or reserve a serial?`, a: `You can message us directly here with the doctor specialty or doctor name and preferred date. Our reception team will reserve your serial number and send you confirmation details.` },
+        { q: `What are your doctor consultation fees and diagnostic charges?`, a: `General physician consultation is Tk 800, and specialist chamber consultations range from Tk 1,000 to Tk 1,500. Diagnostic test fees follow standardized lab tariffs with no hidden charges.` },
+        { q: `How and when can I collect my diagnostic lab reports?`, a: `Routine blood test and urine test reports are available the same day within 4 to 6 hours. Reports can be collected physically from our reception or delivered electronically to your WhatsApp/Email.` },
+        { q: `Do you provide telemedicine or online video doctor consultations?`, a: `Yes, we offer scheduled telemedicine video consultations for follow-ups and non-emergency medical inquiries. Digital prescriptions are provided immediately after the call.` },
+        { q: `What are your clinic hours and emergency medical policies?`, a: `Our clinic and diagnostic center operate Saturday through Thursday from 8:00 AM to 10:00 PM, and Fridays from 4:00 PM to 9:00 PM. For critical acute emergencies, please visit the nearest hospital emergency room.` }
+      ]
+    };
+  }
+
+  // 3. SALON, SPA & BEAUTY CARE
+  if (normType.includes('salon') || normType.includes('spa') || normType.includes('parlour') || normType.includes('parlor') || normType.includes('beauty') || normType.includes('hair') || normType.includes('makeup') || normType.includes('skin') || normType.includes('aesthetic')) {
+    return {
+      serviceDesc: services || 'Hair styling, keratin treatments, radiant facials, bridal & party makeup, manicure, pedicure, and luxury body spa',
+      holidayNote: 'Open all week. Advance booking recommended for bridal packages and weekends.',
+      deliveryApps: 'Home Grooming Services, Beauty Packages',
+      menu: [
+        {
+          id: 'cat_hair',
+          name: 'Hair Styling & Treatments',
+          items: [
+            { id: 's1', name: 'Precision Haircut, Wash & Blowdry', desc: 'Custom style consultation, hair wash, conditioning and blowout', price: 600, available: true },
+            { id: 's2', name: 'Keratin Protein Treatment', desc: 'Frizz reduction, intensive hair repair and long-lasting smoothness', price: 3500, available: true },
+            { id: 's3', name: 'Organic Herbal Hair Spa', desc: 'Deep scalp massage, nourishing mask and steam infusion', price: 1500, available: true }
+          ]
+        },
+        {
+          id: 'cat_skin',
+          name: 'Facial & Skincare Therapies',
+          items: [
+            { id: 's4', name: 'Bridal Radiance Glow Facial', desc: 'Multi-step skin brightening, gentle exfoliation and gold peel-off mask', price: 2500, available: true },
+            { id: 's5', name: 'Deep Pore Cleansing & Acne Control', desc: 'Ultrasound extraction, clarifying mask and high-frequency therapy', price: 1800, available: true },
+            { id: 's6', name: 'Vitamin C Hydrating Glow Facial', desc: 'Intensive skin hydration, antioxidant serum infusion and radiance massage', price: 2200, available: true }
+          ]
+        },
+        {
+          id: 'cat_makeup',
+          name: 'Bridal & Party Makeover Packages',
+          items: [
+            { id: 's7', name: 'Signature Party Glam Makeup', desc: 'Full party makeup, false lashes, eye styling, and hair design', price: 3000, available: true },
+            { id: 's8', name: 'Deluxe Bridal Makeover Package', desc: 'Premium HD bridal makeup, jewelry setting, dupatta drape, and hairstyling', price: 10000, available: true },
+            { id: 's9', name: 'Engagement & Holud Makeup Package', desc: 'Vibrant theme makeup, floral accessory draping, and hairstyle', price: 6000, available: true }
+          ]
+        },
+        {
+          id: 'cat_nails',
+          name: 'Nails & Relaxation Spa',
+          items: [
+            { id: 's10', name: 'Deluxe Spa Manicure & Pedicure', desc: 'Sea salt scrub, cuticle grooming, moisturizing massage, and polish', price: 1200, available: true },
+            { id: 's11', name: 'Gel Nail Polish & Extension', desc: 'Durable chip-free gel polish application with nail art options', price: 2500, available: true },
+            { id: 's12', name: 'Aromatherapy Stress Relief Massage', desc: 'Essential oil massage targeting neck, back, and shoulders (45 mins)', price: 2000, available: true }
+          ]
+        }
+      ],
+      faqs: [
+        { q: `What beauty, hair, and spa services are offered at ${name}?`, a: `We provide luxury hair styling, keratin and protein treatments, clinical and herbal facials, bridal and party makeup packages, spa manicures/pedicures, nail extensions, and relaxing body massages.` },
+        { q: `How do I book an appointment and do you accept walk-ins?`, a: `We welcome both appointments and walk-ins. However, we strongly recommend pre-booking your slot by messaging us here to avoid waiting, especially on weekends and wedding season.` },
+        { q: `What bridal makeup packages are available and what is included?`, a: `Our bridal packages include high-definition (HD) bridal makeup, customized hairstyle, jewelry placement, saree/lehenga draping, and pre-bridal skin prep. Touch-ups are also provided.` },
+        { q: `What brands of cosmetics and hair products do you use?`, a: `We use only 100% genuine, internationally certified premium brands (including MAC, Huda Beauty, NARS, L'Oréal Professional, and Olaplex). All equipment is strictly sanitized.` },
+        { q: `What is your rescheduling or cancellation policy?`, a: `Please notify us at least 4 hours in advance for general grooming services, or 48 hours in advance for bridal packages, so we can adjust our makeup artist schedules.` },
+        { q: `What are your accepted payment methods at ${name}?`, a: `We accept Cash, major Credit and Debit Cards (Visa, Mastercard), bKash, and Nagad.` }
+      ]
+    };
+  }
+
+  // 4. LAW FIRM, LEGAL CONSULTANCY & ADVOCATES
+  if (normType.includes('law') || normType.includes('legal') || normType.includes('advocate') || normType.includes('barrister') || normType.includes('attorney') || normType.includes('solicitor') || normType.includes('justice')) {
+    return {
+      serviceDesc: services || 'Corporate law, civil property litigation, contract drafting, family law, criminal defense, and legal chamber advisory',
+      holidayNote: 'Chamber open Saturday to Thursday. Appointments strictly scheduled in advance.',
+      deliveryApps: 'Online Legal Chamber, Digital Document Review',
+      menu: [
+        {
+          id: 'cat_law_cons',
+          name: 'Legal Chamber Consultations',
+          items: [
+            { id: 'l1', name: 'Initial Case Assessment & Consultation', desc: 'Comprehensive case review, legal merits evaluation, and preliminary advice', price: 2000, available: true },
+            { id: 'l2', name: 'Senior Advocate Chamber Consultation', desc: 'In-depth strategic legal consultation with senior counsel (1 Hour)', price: 5000, available: true },
+            { id: 'l3', name: 'Corporate Legal Retainer (Monthly)', desc: 'Ongoing business compliance, contract reviews, and corporate advisory', price: 25000, available: true }
+          ]
+        },
+        {
+          id: 'cat_law_draft',
+          name: 'Contract Drafting & Documentation',
+          items: [
+            { id: 'l4', name: 'Commercial Agreement / Contract Drafting', desc: 'Bespoke drafting of partnership, vendor, lease, or employment contracts', price: 5000, available: true },
+            { id: 'l5', name: 'Formal Legal Notice Drafting & Service', desc: 'Drafting and formal dispatch of statutory legal demand notice', price: 3000, available: true },
+            { id: 'l6', name: 'Property Deed & Power of Attorney Vetting', desc: 'Title deed search, RAJUK clearance, and legal verification report', price: 4000, available: true }
+          ]
+        },
+        {
+          id: 'cat_law_court',
+          name: 'Court Litigation & Dispute Resolution',
+          items: [
+            { id: 'l7', name: 'Civil & Property Dispute Representation', desc: 'Filing, pleadings, and court representation for property and land claims', price: 15000, available: true },
+            { id: 'l8', name: 'Criminal Defense & Bail Hearing', desc: 'Filing bail petitions and representation before Magistrates and Sessions Court', price: 20000, available: true },
+            { id: 'l9', name: 'Family & Matrimonial Law Dispute', desc: 'Divorce, custody, maintenance, and family court dispute representation', price: 10000, available: true }
+          ]
+        }
+      ],
+      faqs: [
+        { q: `What areas of law does ${name} practice?`, a: `Our firm provides full legal services across Corporate & Commercial Law, Civil Property & Real Estate Disputes, Contract Drafting & Vetting, Family & Matrimonial Law, and Criminal Defense Litigation.` },
+        { q: `How can I schedule a consultation with an advocate or barrister?`, a: `You can schedule a consultation by messaging us here with a brief description of your legal matter and preferred day/time. Our chamber clerk will confirm your consultation slot.` },
+        { q: `What are your consultation fees and billing structure?`, a: `Initial legal consultations start at Tk 2,000. For court litigation, documentation, or ongoing corporate retainers, we provide a formal fee proposal outlining milestone-based retainers and court filing expenses.` },
+        { q: `Is my consultation and case information kept confidential?`, a: `Yes, absolutely. All communications, documents, and consultations are protected by strict attorney-client privilege and professional ethics confidentiality.` },
+        { q: `Can you review my property documents or commercial contract online?`, a: `Yes, you can securely email or upload your contracts or property deeds. Our legal team will review the documents and provide a comprehensive written vetting opinion within 48 to 72 hours.` },
+        { q: `Do you provide urgent representation for arrest or bail matters?`, a: `Yes, our litigation department handles emergency bail applications and urgent legal interventions. Please contact our hotline immediately for time-sensitive court matters.` }
+      ]
+    };
+  }
+
+  // 5. REAL ESTATE & PROPERTY MANAGEMENT
+  if (normType.includes('real estate') || normType.includes('property') || normType.includes('properties') || normType.includes('developer') || normType.includes('apartment') || normType.includes('housing') || normType.includes('realty')) {
+    return {
+      serviceDesc: services || 'Residential apartments, luxury duplexes, commercial office spaces, planned plots, and property investment advisory',
+      holidayNote: 'Site visits arranged 7 days a week including Fridays. Prior appointment required.',
+      deliveryApps: 'Virtual 3D Tours, Digital Property Brochure',
+      menu: [
+        {
+          id: 'cat_re_res',
+          name: 'Residential Apartments & Flats',
+          items: [
+            { id: 're1', name: 'Ready 3-BHK Luxury Apartment Viewing', desc: '1,650 sq ft 3-bed 3-bath luxury apartment with parking', price: 0, available: true },
+            { id: 're2', name: 'Under-Construction 2-BHK Modern Flat', desc: '1,100 sq ft smart design apartment with flexible payment plan', price: 4500000, available: true },
+            { id: 're3', name: 'Duplex Penthouse Villa Consultation', desc: '3,200 sq ft rooftop penthouse with panoramic city view', price: 0, available: true }
+          ]
+        },
+        {
+          id: 'cat_re_com',
+          name: 'Commercial & Corporate Properties',
+          items: [
+            { id: 're4', name: 'Prime Retail Showroom Space', desc: 'Ground floor road-facing retail commercial showroom for sale/lease', price: 8500000, available: true },
+            { id: 're5', name: 'Corporate Office Floor Lease', desc: '3,500 sq ft open floor office space in Grade-A commercial tower', price: 120000, available: true }
+          ]
+        },
+        {
+          id: 'cat_re_land',
+          name: 'Planned Residential Plots',
+          items: [
+            { id: 're6', name: '5 Katha Approved Residential Plot', desc: 'Demarcated south-facing plot with electricity, water and wide road access', price: 3500000, available: true }
+          ]
+        }
+      ],
+      faqs: [
+        { q: `What residential and commercial properties are currently available at ${name}?`, a: `We offer ready and ongoing luxury residential apartments (2-BHK, 3-BHK, duplexes), commercial office floors, prime retail spaces, and approved residential plots in top locations.` },
+        { q: `How do I book a site visit or property inspection?`, a: `You can schedule a free guided site visit by sending us a message here with your preferred property location, day, and contact number. Our property consultant will escort you.` },
+        { q: `What are your booking terms, installment plans, and down payment requirements?`, a: `Properties can be reserved with a 10% to 20% booking token. The remaining balance can be settled through convenient monthly or quarterly installment schedules up to handover.` },
+        { q: `Are your projects approved by RAJUK and have clear legal title deeds?`, a: `Yes, all our projects hold 100% undisputed land ownership, CS/SA/RS/BS mutation clearance, RAJUK approved structural and architectural drawings, and fire safety clearance.` },
+        { q: `Do you provide assistance with home loans and bank mortgages?`, a: `Yes, we have institutional tie-ups with leading banks and financial institutions (such as DBH, IDLC, BRAC Bank) offering expedited home loan processing with competitive interest rates.` },
+        { q: `What is the expected handover timeline and developer warranty?`, a: `Handover dates are formally specified in the sales contract with guaranteed timelines. We provide 1 year of free structural and operational defect liability warranty post-handover.` }
+      ]
+    };
+  }
+
+  // 6. E-COMMERCE & RETAIL / CLOTHING & FASHION
+  if ((normType.includes('ecommerce') || normType.includes('e-commerce') || normType.includes('clothing') || normType.includes('fashion') || normType.includes('boutique') || /\b(shop|shops|retail|apparel|store|stores)\b/.test(normType)) && !normType.includes('workshop')) {
+    return {
+      serviceDesc: services || 'Trendy fashion apparel, premium cotton menswear, elegant womenswear, footwear, accessories, and nationwide home delivery',
+      holidayNote: 'Online orders processed 24/7. Deliveries dispatched 6 days a week.',
+      deliveryApps: 'Steadfast Courier, RedX, Pathao Courier, Paperfly',
+      menu: [
+        {
+          id: 'cat_ec_men',
+          name: "Men's Collection",
+          items: [
+            { id: 'ec1', name: 'Premium Cotton Jacquard Panjabi', desc: '100% fine combed cotton with designer embroidery and metallic buttons', price: 2450, available: true },
+            { id: 'ec2', name: 'Semi-Fit Oxford Formal Shirt', desc: 'Wrinkle-resistant breathable cotton formal shirt in classic shades', price: 1650, available: true },
+            { id: 'ec3', name: 'Stretch Cotton Slim-Fit Chino Trousers', desc: 'Comfortable everyday casual chinos with reinforced stitching', price: 1850, available: true }
+          ]
+        },
+        {
+          id: 'cat_ec_women',
+          name: "Women's Collection",
+          items: [
+            { id: 'ec4', name: 'Designer Embroidered Lawn 3-Piece', desc: 'Luxury printed lawn kameez with digital silk dupatta and matching pants', price: 3200, available: true },
+            { id: 'ec5', name: 'Premium Dubai Georgette Abaya', desc: 'Elegant flowy modest silhouette with delicate hand-beaded lace cuffs', price: 4500, available: true },
+            { id: 'ec6', name: 'Everyday Casual Printed Kurti', desc: 'Lightweight breathable cotton kurti for daily wear and university', price: 1400, available: true }
+          ]
+        },
+        {
+          id: 'cat_ec_acc',
+          name: 'Accessories & Leather Goods',
+          items: [
+            { id: 'ec7', name: 'Handcrafted Full-Grain Leather Wallet', desc: 'Genuine cowhide leather bifold wallet with RFID blocking protection', price: 1250, available: true },
+            { id: 'ec8', name: 'Genuine Leather Tassel Loafers', desc: 'Comfort cushioned insole with durable rubberized non-slip sole', price: 3800, available: true }
+          ]
+        }
+      ],
+      faqs: [
+        { q: `How do I place an order with ${name}?`, a: `You can order directly by sending us a message here with your desired item name/photo, size, delivery address, and phone number. Our AI and team will immediately confirm your order.` },
+        { q: `What are your delivery timeframes inside and outside Dhaka?`, a: `Inside Dhaka: 24 to 48 hours. Outside Dhaka (nationwide): 48 to 72 hours via our express courier partners.` },
+        { q: `What are your delivery charges and is there free shipping?`, a: `Delivery charge is Tk 70 inside Dhaka and Tk 130 outside Dhaka. We offer FREE nationwide delivery on all orders over Tk 3,000.` },
+        { q: `Do you provide Cash on Delivery (COD)?`, a: `Yes, Cash on Delivery (COD) is available all across Bangladesh. You can inspect the package upon arrival and pay cash directly to the delivery rider.` },
+        { q: `What is your return and size exchange policy?`, a: `If an item does not fit or you wish to exchange, please notify us within 3 days of receiving the package. We will arrange a hassle-free size exchange through courier.` },
+        { q: `What happens if I receive a damaged or incorrect product?`, a: `If you receive a defective or wrong item, inform us immediately with a photo. We will dispatch a brand-new replacement at zero additional shipping cost.` }
+      ]
+    };
+  }
+
+  // 7. EDUCATION, COACHING, ACADEMY & SKILL TRAINING
+  if (normType.includes('education') || normType.includes('coaching') || normType.includes('academy') || normType.includes('training') || normType.includes('course') || normType.includes('school') || normType.includes('college') || normType.includes('tuition') || normType.includes('institute')) {
+    return {
+      serviceDesc: services || 'Academic coaching batches, admission test preparation, professional skill bootcamps, language courses, and certified training',
+      holidayNote: 'Admissions open for upcoming batches. Classes conducted both online and offline.',
+      deliveryApps: 'Zoom Live Classes, Student Portal LMS, Digital Lecture Notes',
+      menu: [
+        {
+          id: 'cat_edu_acad',
+          name: 'Academic & Admission Programs',
+          items: [
+            { id: 'ed1', name: 'HSC & SSC Special Model Test Batch', desc: 'Topic-wise mock tests, creative solution classes, and revision sheets', price: 3000, available: true },
+            { id: 'ed2', name: 'University Admission Preparation Crash Course', desc: 'Comprehensive coaching for Engineering, Medical, or General Universities', price: 8000, available: true },
+            { id: 'ed3', name: 'O/A Level Science Comprehensive Coaching', desc: 'Physics, Chemistry & Math curriculum with past paper solving', price: 5000, available: true }
+          ]
+        },
+        {
+          id: 'cat_edu_skill',
+          name: 'Professional Skill Development',
+          items: [
+            { id: 'ed4', name: 'Full-Stack Web Development Bootcamp', desc: 'Hands-on practical training in HTML, CSS, JavaScript, React, Node & SQLite', price: 12000, available: true },
+            { id: 'ed5', name: 'IELTS Academic & Spoken English Mastery', desc: 'Speaking practice, band-score strategies, mock interviews and feedback', price: 6500, available: true },
+            { id: 'ed6', name: 'UI/UX Design with Figma Bootcamp', desc: 'Design thinking, wireframing, mobile app prototyping, and portfolio building', price: 7500, available: true }
+          ]
+        }
+      ],
+      faqs: [
+        { q: `What courses and coaching programs are available at ${name}?`, a: `We provide academic coaching for SSC/HSC and O/A Levels, University Admission Preparation, and professional skill bootcamps in Web Development, Spoken English & IELTS, and UI/UX Design.` },
+        { q: `Are classes conducted in-person, online, or hybrid?`, a: `We offer both options: physical classroom sessions at our campus, and live interactive online batches via Zoom with recorded lecture access in the student portal.` },
+        { q: `What is the course fee structure and can I pay in installments?`, a: `Course fees vary from Tk 3,000 for academic batches to Tk 12,000 for professional bootcamps. Convenient 2-month installment payment options are available upon admission.` },
+        { q: `Do students receive lecture sheets and study materials?`, a: `Yes, enrolled students receive comprehensive physical lecture sheets, printed problem-solving booklets, daily class quizzes, and full-length weekly mock exams.` },
+        { q: `Do you provide a verified certificate upon course completion?`, a: `Yes, students who successfully complete our professional bootcamps and pass the final capstone project receive an industry-recognized certificate of completion.` },
+        { q: `How do I enroll in an upcoming batch?`, a: `You can enroll by sending us a message here with your target course and contact details. Our academic advisor will guide you through admission and batch allocation.` }
+      ]
+    };
+  }
+
+  // 8. FITNESS, GYM & WELLNESS
+  if (normType.includes('gym') || normType.includes('fitness') || normType.includes('workout') || normType.includes('crossfit') || normType.includes('yoga') || normType.includes('bodybuilding')) {
+    return {
+      serviceDesc: services || 'State-of-the-art gym facilities, certified personal trainers, muscle building, weight loss programs, cardio, and personalized nutrition charts',
+      holidayNote: 'Open 7 days a week. Separate dedicated women-only workout hours available.',
+      deliveryApps: 'Digital Fitness App, Online Diet Consultation',
+      menu: [
+        {
+          id: 'cat_gym_mem',
+          name: 'Membership Plans',
+          items: [
+            { id: 'g1', name: '1-Month Unlimited Gym Membership', desc: 'Full access to free weights, strength machines, cardio zone, and lockers', price: 2500, available: true },
+            { id: 'g2', name: '3-Month Body Transformation Pass', desc: 'Unlimited access, initial fitness assessment, and baseline diet guide', price: 6500, available: true },
+            { id: 'g3', name: '1-Year VIP Executive Membership', desc: 'Annual pass with steam bath access, locker reservation, and guest passes', price: 20000, available: true }
+          ]
+        },
+        {
+          id: 'cat_gym_pt',
+          name: 'Personal Training & Nutrition',
+          items: [
+            { id: 'g4', name: '1-on-1 Personal Trainer Package (12 Sessions)', desc: 'Dedicated certified trainer, form correction, and progressive overload tracking', price: 6000, available: true },
+            { id: 'g5', name: 'Customized Workout & Diet Nutrition Plan', desc: 'Tailored calorie and macronutrient breakdown for fat loss or muscle gain', price: 2000, available: true },
+            { id: 'g6', name: 'InBody Body Composition Analysis', desc: 'Medical-grade body fat %, skeletal muscle mass, and visceral fat scan', price: 500, available: true }
+          ]
+        }
+      ],
+      faqs: [
+        { q: `What are your gym membership plans and pricing at ${name}?`, a: `We offer monthly (Tk 2,500), 3-month (Tk 6,500), and annual VIP passes (Tk 20,000). There are zero hidden registration fees during current promotional admissions.` },
+        { q: `What facilities, equipment, and amenities do you provide?`, a: `Our gym features imported heavy-duty strength equipment, Olympic barbells, dumbells up to 50kg, treadmills, cross-trainers, air-conditioned workout floors, locker rooms, and showers.` },
+        { q: `Are there dedicated ladies-only workout hours or female trainers?`, a: `Yes, we have dedicated ladies-only time slots every day guided by certified female fitness trainers with complete privacy.` },
+        { q: `Do you offer 1-on-1 personal training packages?`, a: `Yes, our certified personal trainers design tailored routines based on your fitness goals (fat loss, hypertrophy, strength) with 1-on-1 supervised workout sessions.` },
+        { q: `Can I try a single workout session before committing to membership?`, a: `Yes, we offer a 1-day trial guest pass so you can experience our facility, equipment, and atmosphere firsthand before signing up.` },
+        { q: `Can I pause or freeze my membership if I travel or fall ill?`, a: `Yes, 3-month and annual members can freeze their membership for up to 30 days by notifying our reception in advance.` }
+      ]
+    };
+  }
+
+  // 9. AUTOMOTIVE, CAR REPAIR & DETAILING
+  if (normType.includes('auto') || /\b(car|cars|vehicle|vehicles)\b/.test(normType) || normType.includes('automobile') || normType.includes('garage') || normType.includes('workshop') || normType.includes('detailing') || normType.includes('mechanic')) {
+    return {
+      serviceDesc: services || 'Periodic car maintenance, computerized engine diagnostics, brake and suspension repair, ceramic coating, paint protection, and AC servicing',
+      holidayNote: 'Open Saturday through Thursday. Emergency breakdown towing support available.',
+      deliveryApps: 'Vehicle Pickup & Drop Service, Mobile Diagnostic Van',
+      menu: [
+        {
+          id: 'cat_auto_maint',
+          name: 'Periodic Maintenance & Mechanical',
+          items: [
+            { id: 'a1', name: 'Comprehensive Periodic Car Servicing', desc: '45-point bumper-to-bumper check, fluid top-up, filter clean & road test', price: 2500, available: true },
+            { id: 'a2', name: 'Full Synthetic Engine Oil & Filter Change', desc: 'Premium synthetic motor oil with genuine OEM oil filter replacement', price: 4500, available: true },
+            { id: 'a3', name: 'Brake Pad Replacement & Rotor Skimming', desc: 'Front/rear brake pad replacement and computerized rotor disc resurfacing', price: 3000, available: true }
+          ]
+        },
+        {
+          id: 'cat_auto_detail',
+          name: 'Auto Detailing & Paint Protection',
+          items: [
+            { id: 'a4', name: 'Multi-Stage Paint Correction & High Gloss Polish', desc: 'Swirl mark removal, dual-action machine polishing, and synthetic sealant', price: 5000, available: true },
+            { id: 'a5', name: '9H Nano Ceramic Coating (3-Year Protection)', desc: 'Multi-layer ceramic coating for extreme gloss, hydrophobic finish, and UV shield', price: 18000, available: true },
+            { id: 'a6', name: 'Interior Deep Steam Cleaning & Sanitization', desc: 'Seat upholstery shampoo, ceiling steam wash, dashboard rejuvenation & odor removal', price: 3500, available: true }
+          ]
+        },
+        {
+          id: 'cat_auto_elec',
+          name: 'AC & Computerized Diagnostics',
+          items: [
+            { id: 'a7', name: 'OBD-II Computerized Engine Diagnostics', desc: 'Live sensor scanning, error code clearing, and electronic systems test', price: 1200, available: true },
+            { id: 'a8', name: 'Car AC Complete Servicing & Gas Recharge', desc: 'Cooling coil flush, condenser cleaning, compressor oil and R134a refrigerant charge', price: 3500, available: true }
+          ]
+        }
+      ],
+      faqs: [
+        { q: `What automotive repair and detailing services are available at ${name}?`, a: `We provide complete periodic maintenance, computerized engine diagnostics, suspension and brake overhauls, car AC servicing, computerized denting & painting, and 9H nano ceramic detailing.` },
+        { q: `How do I book a service appointment or schedule a diagnostic check?`, a: `You can book a slot by sending us a message here with your car model, year, and service requirement. Our service advisor will reserve your bay and confirm your time.` },
+        { q: `Do you provide genuine OEM spare parts with warranty?`, a: `Yes, we only source 100% genuine and OEM-certified replacement parts. All parts installed come with official supplier warranty.` },
+        { q: `What is included in your ceramic coating packages?`, a: `Our 9H ceramic package includes full foam wash, iron decontamination, multi-stage paint correction to remove swirl marks, 2 coats of 9H ceramic coating, and glass hydrophobic treatment.` },
+        { q: `Do you offer vehicle pickup and drop-off services?`, a: `Yes, we offer secure doorstep vehicle pickup and delivery across the city for your convenience so you don't need to wait at the workshop.` },
+        { q: `Do you provide emergency breakdown or towing assistance?`, a: `Yes, if your car breaks down on the road or won't start, please call our emergency service hotline for prompt recovery support and towing.` }
+      ]
+    };
+  }
+
+  // 10. RESTAURANT, CAFE & BAKERY
+  if (normType.includes('cafe') || normType.includes('coffee') || normType.includes('restaurant') || normType.includes('bakery') || normType.includes('bistro') || normType.includes('kitchen') || normType.includes('food') || normType.includes('catering') || normType.includes('burger') || normType.includes('pizza')) {
+    return {
+      serviceDesc: services || 'Artisan single-origin coffee, handcrafted burgers, authentic continental pastas, fresh bakery pastries, dine-in, takeaway, and delivery',
+      holidayNote: 'Open every day including Fridays and public holidays.',
+      deliveryApps: 'Foodpanda, Pathao Food',
+      menu: [
+        {
+          id: 'cat_res_bev',
+          name: 'Coffee & Specialty Beverages',
+          items: [
+            { id: 'r1', name: 'Single-Origin Espresso', desc: 'Rich extracted espresso shot with notes of cocoa and roasted hazelnut', price: 180, available: true },
+            { id: 'r2', name: 'Velvet Cappuccino', desc: 'Espresso balanced with silky steamed microfoam milk', price: 260, available: true },
+            { id: 'r3', name: 'Spanish Iced Latte', desc: 'Espresso poured over chilled sweetened condensed milk and fresh milk', price: 320, available: true }
+          ]
+        },
+        {
+          id: 'cat_res_mains',
+          name: 'Burgers, Mains & Pastas',
+          items: [
+            { id: 'r4', name: 'Classic CC Club Sandwich', desc: 'Smoky chicken breast, fried egg, lettuce, cheddar cheese, and French fries', price: 385, available: true },
+            { id: 'r5', name: 'Angus Beef Burger', desc: 'Flame-grilled Angus patty with melted cheese, caramelized onions, and house sauce', price: 420, available: true },
+            { id: 'r6', name: 'Creamy Fettuccine Alfredo Pasta', desc: 'Fettuccine tossed in rich garlic parmesan cream sauce with grilled chicken and mushrooms', price: 490, available: true }
+          ]
+        },
+        {
+          id: 'cat_res_bake',
+          name: 'Bakery & Sweet Treats',
+          items: [
+            { id: 'r7', name: 'Belgian Dark Chocolate Brownie', desc: 'Warm fudgy dark chocolate brownie with chocolate drizzle', price: 220, available: true },
+            { id: 'r8', name: 'New York Baked Cheesecake', desc: 'Creamy baked Philadelphia cream cheese slice on a buttery graham crust', price: 360, available: true }
+          ]
+        }
+      ],
+      faqs: [
+        { q: `What are your specialty food and beverage offerings at ${name}?`, a: `We serve specialty handcrafted espresso beverages, artisan burgers, continental pastas, club sandwiches, fresh bakery desserts, and refreshing mocktails.` },
+        { q: `How can I reserve a table or book for a private birthday party?`, a: `You can reserve a table by sending us a message here with your party size, date, and preferred time. For private event arrangements, our team will coordinate customized decor and menu sets.` },
+        { q: `Can I order takeaway or get food delivered to my home?`, a: `Yes, takeaway orders can be placed directly here for instant pickup. We are also available for fast doorstep delivery on Foodpanda and Pathao Food.` },
+        { q: `Is all your food 100% Halal and do you cater to dietary preferences?`, a: `Yes, all our meats and ingredients are 100% Halal certified. We also offer vegetarian-friendly pastas, salads, and non-dairy milk options (almond/oat milk).` },
+        { q: `What are your operating hours and location?`, a: `We are open 7 days a week from 11:00 AM to 11:00 PM. High-speed guest Wi-Fi and power outlets are available for work and study.` },
+        { q: `What payment methods are accepted at ${name}?`, a: `We accept Cash, all major Credit/Debit Cards (Visa, Mastercard, Amex), bKash, and Nagad. All prices include applicable VAT.` }
+      ]
+    };
+  }
+
+  // 11. PHOTOGRAPHY, VIDEOGRAPHY & MEDIA STUDIO
+  if (normType.includes('photo') || normType.includes('photography') || normType.includes('studio') || normType.includes('video') || normType.includes('cinematography')) {
+    return {
+      serviceDesc: services || 'Wedding photography, cinematic video production, corporate headshots, studio portraits, fashion shoots, and event coverage',
+      holidayNote: 'Studio open by appointment. Available for outdoor and destination shoots nationwide.',
+      deliveryApps: 'Private Cloud Gallery, High-Speed Drive Download',
+      menu: [
+        {
+          id: 'cat_ph_wed',
+          name: 'Wedding & Celebration Packages',
+          items: [
+            { id: 'p1', name: 'Cinematic Wedding Photography & Highlight Film', desc: '2 Senior photographers + 1 Cinematographer, full event coverage, and highlight teaser', price: 25000, available: true },
+            { id: 'p2', name: 'Holud & Reception Single-Day Coverage', desc: 'Complete candid photography, traditional portraits, and all raw files provided', price: 15000, available: true }
+          ]
+        },
+        {
+          id: 'cat_ph_port',
+          name: 'Studio Portraits & Commercial',
+          items: [
+            { id: 'p3', name: 'Professional Corporate Headshot Session', desc: 'Studio lighting, 3 backdrop setups, and 5 fully retouched high-res photos', price: 3000, available: true },
+            { id: 'p4', name: 'Family & Maternity Studio Session', desc: '1 Hour studio shoot with multiple wardrobe changes and premium mini photo album', price: 6000, available: true }
+          ]
+        }
+      ],
+      faqs: [
+        { q: `What photography and video production packages do you offer at ${name}?`, a: `We provide comprehensive wedding and engagement photography, cinematic event films, corporate executive portraits, maternity and family studio sessions, and commercial e-commerce shoots.` },
+        { q: `How do I reserve a date for my wedding or corporate event?`, a: `You can check date availability and reserve by messaging us here with your event date, venue, and package requirements. A 30% advance deposit secures your date.` },
+        { q: `What is your turnaround delivery time for edited photos and videos?`, a: `Preview photos are shared within 72 hours. Complete edited high-resolution photos and final cinematic video films are delivered within 2 to 3 weeks via a private online cloud gallery.` },
+        { q: `Do we get access to all the unedited raw photos?`, a: `Yes, we provide 100% of the raw, high-resolution original JPEG captures along with the retouched album photos on a high-speed cloud drive.` },
+        { q: `Do you travel outside the city for destination weddings or shoots?`, a: `Yes, our creative team is available for destination weddings and corporate shoots nationwide. Travel and accommodation are arranged in coordination with the client.` },
+        { q: `What happens if I need to postpone or reschedule my booking?`, a: `If you notify us at least 14 days in advance, we will transfer your deposit to any available new date within 6 months with zero penalty.` }
+      ]
+    };
+  }
+
+  // 12. IT SERVICES, SOFTWARE & DIGITAL AGENCY
+  if (normType.includes('software') || normType.includes('it') || normType.includes('tech') || normType.includes('agency') || normType.includes('developer') || normType.includes('web') || normType.includes('digital')) {
+    return {
+      serviceDesc: services || 'Custom web application development, mobile apps, enterprise cloud solutions, UI/UX design, SEO, and AI automation',
+      holidayNote: 'Development teams active Sunday to Thursday. 24/7 technical monitoring on live servers.',
+      deliveryApps: 'Client Jira Portal, GitHub Repositories, Live Staging Servers',
+      menu: [
+        {
+          id: 'cat_it_dev',
+          name: 'Software & Web Development',
+          items: [
+            { id: 'it1', name: 'Custom Responsive Business Website', desc: 'Modern responsive architecture, SEO-ready, speed optimized with CMS admin', price: 25000, available: true },
+            { id: 'it2', name: 'Cross-Platform Mobile App (iOS & Android)', desc: 'Flutter/React Native app with API backend, push notifications and secure auth', price: 60000, available: true },
+            { id: 'it3', name: 'E-Commerce Storefront Platform', desc: 'Secure payment gateway integration, inventory tracking, and order management', price: 35000, available: true }
+          ]
+        },
+        {
+          id: 'cat_it_growth',
+          name: 'Digital Marketing & Product Design',
+          items: [
+            { id: 'it4', name: 'Comprehensive Monthly SEO Package', desc: 'On-page optimization, technical audit, keyword ranking, and monthly reporting', price: 18000, available: true },
+            { id: 'it5', name: 'UI/UX Design System & Interactive Prototype', desc: 'Figma wireframing, high-fidelity UI design system, and clickable user flow prototype', price: 20000, available: true }
+          ]
+        }
+      ],
+      faqs: [
+        { q: `What software, web development, and digital services does ${name} provide?`, a: `We engineer custom web applications, native & hybrid mobile apps, e-commerce platforms, UI/UX design systems, cloud infrastructure, and search engine optimization (SEO).` },
+        { q: `How do we initiate a new project and receive a cost estimate?`, a: `You can share your project requirements by messaging us here. We schedule a brief discovery call and provide a detailed Scope of Work (SOW), timeline milestones, and fixed-price quotation.` },
+        { q: `What is your typical project development methodology and timeline?`, a: `We follow an Agile sprint-based workflow with weekly progress demos. Standard websites take 2 to 3 weeks, while comprehensive mobile apps or custom platforms take 6 to 10 weeks.` },
+        { q: `How are payment milestones structured?`, a: `Projects are structured into transparent milestones: typically 30% upon kickoff, 40% upon staging milestone approval, and 30% upon final testing, deployment, and handover.` },
+        { q: `Do you provide post-launch maintenance, bug fixes, and technical support?`, a: `Yes, all delivered projects include 60 to 90 days of complimentary bug fix warranty and technical support, with optional ongoing monthly maintenance SLA agreements.` },
+        { q: `Who owns the source code and intellectual property (IP)?`, a: `Upon project completion and final settlement, 100% full source code ownership, intellectual property rights, and repository access are handed over directly to the client under NDA.` }
+      ]
+    };
+  }
+
+  // 13. DYNAMIC VERSATILE GENERATOR FOR ANY OTHER PROFESSION
+  const profTitle = businessType && businessType !== 'General Business' ? businessType : 'Professional Services';
+  const cleanServ = services || `${profTitle} solutions, client consultations, customized packages, and reliable customer support`;
+  return {
+    serviceDesc: cleanServ,
+    holidayNote: 'Open during regular business hours. Advance booking or appointment recommended.',
+    deliveryApps: 'Online Consultation & Digital Invoicing',
+    menu: [
+      {
+        id: 'cat_core',
+        name: `Core ${profTitle} Packages`,
+        items: [
+          { id: 'p1', name: `Standard ${profTitle} Consultation`, desc: `Detailed assessment, client requirement review & action plan`, price: 1000, available: true },
+          { id: 'p2', name: `Comprehensive Service Package`, desc: `Full end-to-end service delivery with dedicated specialist support`, price: 3500, available: true },
+          { id: 'p3', name: `Premium / Custom Project`, desc: `Bespoke tailored solution with priority turnaround and warranty`, price: 7500, available: true }
+        ]
+      }
+    ],
+    faqs: [
+      { q: `What services and solutions does ${name} specialize in?`, a: `We specialize in ${cleanServ}. Contact us directly with your requirements for tailored guidance.` },
+      { q: `How do I book a consultation, appointment, or order?`, a: `You can send us a message here with your requested service, name, and contact number. Our team will review your request and confirm with you promptly.` },
+      { q: `What is your pricing structure and how do I receive a quote?`, a: `Our standard consultation and packages start from Tk 1,000. For specific or customized requirements, we provide an itemized, transparent quotation before starting work.` },
+      { q: `Where are you located and what are your operating hours?`, a: `We operate Saturday through Thursday during standard business hours. Pre-scheduled appointments and inquiries can also be coordinated directly via this chat.` },
+      { q: `What is your turnaround time, rescheduling, or cancellation policy?`, a: `We ensure prompt turnaround for all projects and appointments. If you need to reschedule or make adjustments, please notify us at least 4 to 6 hours in advance.` },
+      { q: `What payment options do you accept?`, a: `We accept Cash, major Credit/Debit Cards, and Mobile Banking (bKash and Nagad). Official receipts are provided for all transactions.` }
+    ]
+  };
+}
+
 export function makeCleanTemplate(businessName = 'New Business', businessType = 'General Business', services = '') {
+  const preset = getIndustryPresets(businessName, businessType, services);
+  const bServices = services || preset.serviceDesc;
+
   return {
     business: {
       name: businessName,
       type: businessType || 'General Business',
-      services: services || '',
+      services: bServices,
       phone: '',
       area: '',
       address: '',
-      open: '09:00',
-      close: '21:00',
+      open: '10:00',
+      close: '20:00',
       offDay: '',
-      holidayNote: 'Open during regular business hours.',
+      holidayNote: preset.holidayNote,
       wifi: 'Available',
       parking: 'Available',
       seating: 'Available',
       payments: 'Cash, Card, Mobile Banking (bKash/Nagad)',
-      service: services || 'Customer service, inquiries, orders, bookings',
-      apps: '',
+      service: bServices,
+      apps: preset.deliveryApps,
       notes: ''
     },
     cafe: {
       name: businessName,
       type: businessType || 'General Business',
-      services: services || '',
+      services: bServices,
       phone: '',
       area: '',
       address: '',
-      open: '09:00',
-      close: '21:00',
+      open: '10:00',
+      close: '20:00',
       offDay: '',
-      holidayNote: 'Open during regular business hours.',
+      holidayNote: preset.holidayNote,
       wifi: 'Available',
       parking: 'Available',
       seating: 'Available',
       payments: 'Cash, Card, Mobile Banking (bKash/Nagad)',
-      service: services || 'Customer service, inquiries, orders, bookings',
-      apps: '',
+      service: bServices,
+      apps: preset.deliveryApps,
       notes: ''
     },
     persona: {
@@ -1114,8 +1675,8 @@ export function makeCleanTemplate(businessName = 'New Business', businessType = 
       greeting: '',
       disclose: false
     },
-    menu: [],
-    faqs: [],
+    menu: preset.menu || [],
+    faqs: preset.faqs || [],
     channels: {
       facebook: { enabled: true, pageToken: '', pageId: '', appSecret: '', verifyToken: 'botcrowncoffee' },
       instagram: { enabled: true, token: '', userId: '', graphHost: 'https://graph.facebook.com' },
@@ -1133,6 +1694,38 @@ export function makeCleanTemplate(businessName = 'New Business', businessType = 
     esc: ['refund', 'complaint', 'manager', 'urgent', 'lawyer', 'press', 'ফেরত', 'অভিযোগ', 'ম্যানেজার'],
     runtime: { enabled: true, offHours: 'reply', fallbackText: 'Thanks for reaching out! Our team will review your request and get back to you shortly.' }
   };
+}
+
+export function seedWorkspaceIndustry(workspaceId, businessType = 'Dentistry', force = false) {
+  const wsId = Number(workspaceId);
+  if (!wsId || wsId === 1) return null; // Never override Workspace 1
+  const cfg = getWorkspaceConfig(wsId);
+  const name = cfg.business?.name || cfg.cafe?.name || `Workspace #${wsId}`;
+  const preset = getIndustryPresets(name, businessType, cfg.business?.services || '');
+
+  let modified = false;
+  if (force || !cfg.menu || cfg.menu.length === 0) {
+    cfg.menu = preset.menu;
+    modified = true;
+  }
+  if (force || !cfg.faqs || cfg.faqs.length === 0) {
+    cfg.faqs = preset.faqs;
+    modified = true;
+  }
+  if (businessType) {
+    if (!cfg.business) cfg.business = {};
+    if (!cfg.cafe) cfg.cafe = {};
+    cfg.business.type = businessType;
+    cfg.cafe.type = businessType;
+    if (!cfg.business.services) cfg.business.services = preset.serviceDesc;
+    if (!cfg.cafe.services) cfg.cafe.services = preset.serviceDesc;
+    modified = true;
+  }
+
+  if (modified) {
+    saveWorkspaceConfig(wsId, cfg);
+  }
+  return cfg;
 }
 
 /* ───────── Workspaces ───────── */
