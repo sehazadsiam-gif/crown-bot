@@ -3342,11 +3342,7 @@
 
       <button class="btn sm" id="btnInstallPwa" onclick="triggerPwaInstall()" style="display:none; border-radius:9999px"
         title="Install App">Install App</button>
-      <button class="btn sm primary" id="btnOpenSim" onclick="openSimulator()"
-        style="font-weight:700; background:#114B32; border:none; color:#fff; border-radius:9999px"><svg width="14"
-          height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:4px">
-          <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
-        </svg>Fast Simulator</button>
+
       <button class="btn sm" id="themeBtn" onclick="toggleTheme()" title="Toggle Dark/Light Mode"
         style="border-radius:9999px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
           stroke-width="2">
@@ -3455,12 +3451,7 @@
           </svg>
           Help &amp; FAQs
         </button>
-        <button data-p="play" onclick="switchTab('play')">
-          <svg viewBox="0 0 24 24">
-            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
-          </svg>
-          Playground
-        </button>
+
         <button onclick="logout()">
           <svg viewBox="0 0 24 24">
             <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
@@ -3782,13 +3773,7 @@
                       Webhooks</span>
                   </div>
                 </div>
-                <button class="donezo-pill-btn-green" onclick="switchTab('play')"
-                  title="Open Interactive Playground to test bot queries">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-                    <polygon points="5 3 19 12 5 21 5 3" />
-                  </svg>
-                  <span>Test AI Playground</span>
-                </button>
+
               </div>
 
               <!-- Col 3: Channels & Integrations -->
@@ -4612,26 +4597,7 @@
           </div>
         </section>
 
-        <!-- PLAYGROUND PANEL -->
-        <section class="panel" data-p="play">
-          <div class="phead">
-            <div>
-              <h2>Interactive AI Playground</h2>
-              <p>Simulate customer conversations using the active Gemini engine and current settings.</p>
-            </div>
-            <button class="btn sm" id="clearBtn">Clear Conversation</button>
-          </div>
 
-          <div class="quickrow" id="quickRow"></div>
-
-          <div class="chat">
-            <div class="log" id="chatLog"></div>
-            <div class="composer">
-              <input type="text" id="chatIn" placeholder="Type a question as a customer would…">
-              <button class="btn primary" id="sendBtn">Send Message</button>
-            </div>
-          </div>
-        </section>
 
         <!-- COMPILED PROMPT PANEL -->
         <section class="panel" data-p="prompt">
@@ -4672,26 +4638,7 @@
     </div>
   </div>
 
-  <!-- Slide-Out Quick Simulator Drawer -->
-  <div id="drawerBackdrop" onclick="closeSimulator()"></div>
-  <div id="simDrawer">
-    <div class="drawer-header">
-      <h3 style="font-size:16px">Quick AI Simulator</h3>
-      <button class="btn ghost sm" onclick="closeSimulator()">Close</button>
-    </div>
-    <div class="drawer-body">
-      <div class="quickrow" id="simDrawerQuick"></div>
-      <div class="chat" style="flex:1; display:flex; flex-direction:column">
-        <div class="log" id="simDrawerLog" style="flex:1"></div>
-      </div>
-    </div>
-    <div class="drawer-footer">
-      <div class="row">
-        <input type="text" id="simDrawerIn" placeholder="Test a customer question…" style="flex:1">
-        <button class="btn primary sm" id="simDrawerSend">Send</button>
-      </div>
-    </div>
-  </div>
+
 
   <!-- Command Palette Modal (Ctrl+K) -->
   <div id="cmdModal">
@@ -4707,8 +4654,7 @@
         <div class="cmd-item" data-act="channels"><span>Multi-Channel Settings</span><kbd>G C</kbd></div>
         <div class="cmd-item" data-act="menu"><span>Manage Menu &amp; Catalog</span><kbd>G M</kbd></div>
         <div class="cmd-item" data-act="faq"><span>Manage Verified FAQs</span><kbd>G F</kbd></div>
-        <div class="cmd-item" data-act="play"><span>Open AI Playground</span><kbd>G P</kbd></div>
-        <div class="cmd-item" data-act="sim"><span>Toggle Side Simulator</span><kbd>S</kbd></div>
+
         <div class="cmd-item" data-act="theme"><span>Toggle Dark/Light Theme</span><kbd>T</kbd></div>
       </div>
     </div>
@@ -6763,169 +6709,7 @@ Crown Operations Support`;
       chip('JSON exported');
     };
 
-    /* ---------- PLAYGROUND & SLIDE-OUT SIMULATOR ---------- */
-    let turns = [];
-    const QUICK_QUESTIONS = [
-      'Ki ki coffee ache?',
-      'Apnader thikana kothay?',
-      'Are you open right now?',
-      'Traditional Breakfast er dam koto?',
-      'Table reservation kora jabe?',
-      'Do you have Wi-Fi and parking?',
-      'Is all food Halal?'
-    ];
 
-    function initQuickQuestions() {
-      ['quickRow', 'simDrawerQuick'].forEach(id => {
-        const qr = document.getElementById(id);
-        if (!qr) return;
-        qr.innerHTML = '';
-        QUICK_QUESTIONS.forEach(q => {
-          const b = document.createElement('button');
-          b.textContent = q;
-          b.onclick = () => {
-            if (id === 'quickRow') {
-              document.getElementById('chatIn').value = q; sendTest();
-            } else {
-              document.getElementById('simDrawerIn').value = q; sendDrawerTest();
-            }
-          };
-          qr.appendChild(b);
-        });
-      });
-    }
-    initQuickQuestions();
-
-    function bubble(cls, txt, where = 'chatLog') {
-      const l = document.getElementById(where);
-      if (!l) return null;
-      const d = document.createElement('div');
-      d.className = 'msg ' + cls;
-
-      if (cls === 'b') {
-        if (txt === 'Thinking…') {
-          d.innerHTML = `
-        <div class="msg-header"><span class="msg-badge">✨ AI Assistant</span></div>
-        <div class="typing-wave"><span></span><span></span><span></span></div>
-      `;
-        } else {
-          d.innerHTML = `
-        <div class="msg-header"><span class="msg-badge">✨ AI Assistant</span></div>
-        <div class="msg-content">${esc(txt)}</div>
-      `;
-        }
-      } else if (cls === 'u') {
-        d.innerHTML = `<div class="msg-content">${esc(txt)}</div>`;
-      } else {
-        d.textContent = txt;
-      }
-
-      l.appendChild(d);
-      l.scrollTop = l.scrollHeight;
-      return d;
-    }
-
-    function updateBotBubble(bubbleEl, newText) {
-      if (!bubbleEl) return;
-      bubbleEl.innerHTML = `
-    <div class="msg-header"><span class="msg-badge">✨ AI Assistant</span></div>
-    <div class="msg-content">${esc(newText)}</div>
-  `;
-      const parent = bubbleEl.parentElement;
-      if (parent) parent.scrollTop = parent.scrollHeight;
-    }
-
-    async function sendTest() {
-      const inp = document.getElementById('chatIn');
-      const text = inp.value.trim();
-      if (!text) return;
-      inp.value = '';
-      bubble('u', text);
-      const b = bubble('b', 'Thinking…');
-      const sendBtn = document.getElementById('sendBtn');
-      if (sendBtn) sendBtn.disabled = true;
-
-      try {
-        const r = await api('/api/test', {
-          method: 'POST',
-          body: JSON.stringify({ text, history: turns, workspace_id: currentWorkspaceId })
-        });
-        const d = await r.json();
-        updateBotBubble(b, d.reply || 'No response generated.');
-        if (d.escalated) bubble('sys', `Escalation keyword matched: "${d.escalated}" — thread flagged.`);
-        bubble('sys', `Generated by: ${d.model || 'Gemini Flash'}`);
-        turns.push({ direction: 'in', text }, { direction: 'out', text: d.reply });
-        turns = turns.slice(-12);
-      } catch (e) {
-        updateBotBubble(b, 'Request failed: ' + e.message);
-      }
-      if (sendBtn) sendBtn.disabled = false;
-    }
-    window.sendTest = sendTest;
-
-    function clearPlaygroundChat() {
-      turns = [];
-      const log = document.getElementById('chatLog');
-      if (log) log.innerHTML = '';
-    }
-    window.clearPlaygroundChat = clearPlaygroundChat;
-
-    const sendBtnEl = document.getElementById('sendBtn');
-    if (sendBtnEl) sendBtnEl.onclick = sendTest;
-    const chatInEl = document.getElementById('chatIn');
-    if (chatInEl) chatInEl.addEventListener('keydown', e => { if (e.key === 'Enter') sendTest(); });
-    const clearBtnEl = document.getElementById('clearBtn');
-    if (clearBtnEl) clearBtnEl.onclick = clearPlaygroundChat;
-
-    /* Drawer simulator triggers */
-    function openSimulator() {
-      const drawer = document.getElementById('simDrawer');
-      const backdrop = document.getElementById('drawerBackdrop');
-      if (drawer) drawer.classList.add('open');
-      if (backdrop) backdrop.classList.add('open');
-      const inp = document.getElementById('simDrawerIn');
-      if (inp) setTimeout(() => inp.focus(), 150);
-    }
-    function closeSimulator() {
-      const drawer = document.getElementById('simDrawer');
-      const backdrop = document.getElementById('drawerBackdrop');
-      if (drawer) drawer.classList.remove('open');
-      if (backdrop) backdrop.classList.remove('open');
-    }
-    window.openSimulator = openSimulator;
-    window.closeSimulator = closeSimulator;
-
-    const btnOpenSimEl = document.getElementById('btnOpenSim');
-    if (btnOpenSimEl) btnOpenSimEl.onclick = openSimulator;
-
-    async function sendDrawerTest() {
-      const inp = document.getElementById('simDrawerIn');
-      const text = inp.value.trim();
-      if (!text) return;
-      inp.value = '';
-      bubble('u', text, 'simDrawerLog');
-      const b = bubble('b', 'Thinking…', 'simDrawerLog');
-      const sendBtn = document.getElementById('simDrawerSend');
-      sendBtn.disabled = true;
-
-      try {
-        const r = await api('/api/test', {
-          method: 'POST',
-          body: JSON.stringify({ text, history: turns, workspace_id: currentWorkspaceId })
-        });
-        const d = await r.json();
-        updateBotBubble(b, d.reply || 'No response generated.');
-        if (d.escalated) bubble('sys', `Escalation keyword: "${d.escalated}"`, 'simDrawerLog');
-        turns.push({ direction: 'in', text }, { direction: 'out', text: d.reply });
-        turns = turns.slice(-12);
-      } catch (e) {
-        updateBotBubble(b, 'Request failed: ' + e.message);
-      }
-      sendBtn.disabled = false;
-    }
-    document.getElementById('simDrawerSend').onclick = sendDrawerTest;
-    document.getElementById('simDrawerIn').addEventListener('keydown', e => { if (e.key === 'Enter') sendDrawerTest(); });
-    window.sendDrawerTest = sendDrawerTest;
 
     /* ---------- COMMAND PALETTE (Ctrl+K) ---------- */
     const cmdModal = document.getElementById('cmdModal');
@@ -6954,7 +6738,6 @@ Crown Operations Support`;
       }
       if (e.key === 'Escape') {
         closeCmd();
-        closeSimulator();
         closeNewTenantModal();
         closeRenewalModal();
         closeResetPassModal();
@@ -6967,8 +6750,7 @@ Crown Operations Support`;
       if (!item) return;
       const act = item.dataset.act;
       closeCmd();
-      if (act === 'sim') openSimulator();
-      else if (act === 'theme') document.getElementById('themeBtn').click();
+      if (act === 'theme') document.getElementById('themeBtn').click();
       else switchTab(act);
     });
 
