@@ -1,5 +1,5 @@
 import crypto from 'node:crypto';
-import { getWorkspaceConfig } from './db.js';
+import { getWorkspaceConfig, getAllMetaAppSecrets } from './db.js';
 
 const GRAPH_VERSION = process.env.GRAPH_VERSION || 'v21.0';
 
@@ -25,18 +25,19 @@ export function getChannelConfig(platform, workspaceId = 1) {
   
   if (platform === 'instagram') {
     return {
-      enabled: ch.enabled ?? !!(ch.token || (workspaceId === 1 && (process.env.IG_TOKEN || process.env.IG_USER_ID))),
+      enabled: ch.enabled ?? true,
       token: cleanToken(ch.token || (workspaceId === 1 ? process.env.IG_TOKEN : '') || ''),
       userId: (ch.userId || (workspaceId === 1 ? process.env.IG_USER_ID : '') || '').trim(),
-      graphHost: (ch.graphHost || (workspaceId === 1 ? process.env.IG_GRAPH_HOST : '') || 'https://graph.facebook.com').replace(/\/$/, '')
+      appSecret: (ch.appSecret || (workspaceId === 1 ? process.env.META_APP_SECRET : '') || '').trim(),
+      graphHost: (ch.graphHost || 'https://graph.facebook.com').trim()
     };
   }
   
   if (platform === 'whatsapp') {
     return {
-      enabled: ch.enabled ?? !!(ch.token || (workspaceId === 1 && (process.env.WA_TOKEN || process.env.WA_PHONE_NUMBER_ID))),
+      enabled: ch.enabled ?? true,
       phoneNumberId: (ch.phoneNumberId || (workspaceId === 1 ? process.env.WA_PHONE_NUMBER_ID : '') || '').trim(),
-      wabaId: (ch.wabaId || (workspaceId === 1 ? process.env.WA_BUSINESS_ACCOUNT_ID : '') || '').trim(),
+      wabaId: (ch.wabaId || (workspaceId === 1 ? process.env.WA_WABA_ID : '') || '').trim(),
       token: cleanToken(ch.token || (workspaceId === 1 ? (process.env.WA_TOKEN || process.env.FB_PAGE_TOKEN) : '') || ''),
       verifyToken: (ch.verifyToken || (workspaceId === 1 ? (process.env.WA_VERIFY_TOKEN || process.env.META_VERIFY_TOKEN) : '') || 'botcrowncoffee').trim()
     };
@@ -45,18 +46,36 @@ export function getChannelConfig(platform, workspaceId = 1) {
   return ch;
 }
 
-/** Constant-time check of Meta's X-Hub-Signature-256 header. */
+/** Constant-time check of Meta's X-Hub-Signature-256 header across all configured tenant secrets. */
 export function verifySignature(rawBody, header, customSecret = null) {
-  const appSecret = customSecret || process.env.META_APP_SECRET || getChannelConfig('facebook', 1).appSecret;
-  if (!appSecret || !rawBody) return true; // allow if no secret configured
+  if (!rawBody) return true;
   if (!header?.startsWith('sha256=')) return false;
+
+  const candidateSecrets = new Set();
+  if (customSecret && String(customSecret).trim()) candidateSecrets.add(String(customSecret).trim());
+  if (process.env.META_APP_SECRET && process.env.META_APP_SECRET.trim()) candidateSecrets.add(process.env.META_APP_SECRET.trim());
+
   try {
-    const expected = 'sha256=' + crypto.createHmac('sha256', appSecret).update(rawBody).digest('hex');
-    const a = Buffer.from(header), b = Buffer.from(expected);
-    return a.length === b.length && crypto.timingSafeEqual(a, b);
-  } catch {
-    return false;
+    const allSecrets = getAllMetaAppSecrets();
+    for (const s of allSecrets) {
+      if (s && String(s).trim()) candidateSecrets.add(String(s).trim());
+    }
+  } catch {}
+
+  // If absolutely no secrets are configured in any workspace or .env, allow
+  if (candidateSecrets.size === 0) return true;
+
+  for (const secret of candidateSecrets) {
+    try {
+      const expected = 'sha256=' + crypto.createHmac('sha256', secret).update(rawBody).digest('hex');
+      const a = Buffer.from(header);
+      const b = Buffer.from(expected);
+      if (a.length === b.length && crypto.timingSafeEqual(a, b)) {
+        return true;
+      }
+    } catch {}
   }
+  return false;
 }
 
 /** True when the sender is our own page/account (echo of our own send). */
@@ -243,7 +262,33 @@ export async function testMetaConnection(platform, customConfig = null) {
       const res = await fetch(`https://graph.facebook.com/${GRAPH_VERSION}/me?fields=id,name,link&access_token=${encodeURIComponent(token)}`);
       const data = await res.json();
       if (res.ok && data.id) {
-        return { ok: true, id: data.id, name: data.name, info: `Connected to Page: "${data.name}" (ID: ${data.id})` };
+        // Automatically subscribe this Facebook Page to Webhook events
+        let subNote = '';
+        let subscribed = false;
+        try {
+          const subRes = await fetch(`https://graph.facebook.com/${GRAPH_VERSION}/${data.id}/subscribed_apps?subscribed_fields=messages,messaging_postbacks,message_reads,message_echoes&access_token=${encodeURIComponent(token)}`, {
+            method: 'POST'
+          });
+          const subJson = await subRes.json();
+          if (subJson.success) {
+            subNote = ' · Webhook Subscribed ✅';
+            subscribed = true;
+          } else if (subJson.error) {
+            subNote = ` · Webhook Warning: ${subJson.error.message}`;
+          }
+        } catch (subErr) {
+          subNote = ` · Webhook auto-subscribe: ${subErr.message}`;
+        }
+
+        return {
+          ok: true,
+          id: data.id,
+          name: data.name,
+          info: `Connected to Page: "${data.name}" (ID: ${data.id})${subNote}`,
+          realPageId: data.id,
+          pageName: data.name,
+          subscribed
+        };
       }
       return { ok: false, error: data.error?.message || `API error ${res.status}` };
     } catch (e) {

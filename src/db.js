@@ -1949,11 +1949,110 @@ export function syncChannelAccounts(workspaceId, channels) {
   }
 }
 
+export function getAllMetaAppSecrets() {
+  const secrets = new Set();
+  if (process.env.META_APP_SECRET) secrets.add(process.env.META_APP_SECRET.trim());
+
+  try {
+    const rows = db.prepare('SELECT json FROM workspace_configs').all();
+    for (const r of rows) {
+      try {
+        const cfg = JSON.parse(r.json);
+        const fbSecret = cfg.channels?.facebook?.appSecret;
+        if (fbSecret && String(fbSecret).trim()) secrets.add(String(fbSecret).trim());
+        const igSecret = cfg.channels?.instagram?.appSecret;
+        if (igSecret && String(igSecret).trim()) secrets.add(String(igSecret).trim());
+      } catch {}
+    }
+  } catch {}
+
+  try {
+    const caRows = db.prepare("SELECT config_json FROM channel_accounts WHERE platform IN ('facebook', 'instagram')").all();
+    for (const r of caRows) {
+      try {
+        const c = JSON.parse(r.config_json);
+        if (c.appSecret && String(c.appSecret).trim()) secrets.add(String(c.appSecret).trim());
+      } catch {}
+    }
+  } catch {}
+
+  return Array.from(secrets);
+}
+
+export function getAllMetaVerifyTokens() {
+  const tokens = new Set();
+  if (process.env.META_VERIFY_TOKEN) tokens.add(process.env.META_VERIFY_TOKEN.trim());
+  tokens.add('botcrowncoffee');
+
+  try {
+    const rows = db.prepare('SELECT json FROM workspace_configs').all();
+    for (const r of rows) {
+      try {
+        const cfg = JSON.parse(r.json);
+        const fbToken = cfg.channels?.facebook?.verifyToken;
+        if (fbToken && String(fbToken).trim()) tokens.add(String(fbToken).trim());
+        const igToken = cfg.channels?.instagram?.verifyToken;
+        if (igToken && String(igToken).trim()) tokens.add(String(igToken).trim());
+        const waToken = cfg.channels?.whatsapp?.verifyToken;
+        if (waToken && String(waToken).trim()) tokens.add(String(waToken).trim());
+      } catch {}
+    }
+  } catch {}
+
+  try {
+    const caRows = db.prepare("SELECT config_json FROM channel_accounts").all();
+    for (const r of caRows) {
+      try {
+        const c = JSON.parse(r.config_json);
+        if (c.verifyToken && String(c.verifyToken).trim()) tokens.add(String(c.verifyToken).trim());
+      } catch {}
+    }
+  } catch {}
+
+  return Array.from(tokens);
+}
+
 export function findAccountByPlatformAndId(platform, accountId) {
   if (!platform || !accountId) return null;
   const cleanId = String(accountId).trim();
   const row = db.prepare('SELECT * FROM channel_accounts WHERE platform = ? AND account_id = ? AND enabled = 1').get(platform, cleanId);
-  return row || null;
+  if (row) return row;
+
+  // Fallback 1: trimmed lookup in channel_accounts
+  const caRow = db.prepare('SELECT * FROM channel_accounts WHERE platform = ? AND TRIM(account_id) = ? AND enabled = 1').get(platform, cleanId);
+  if (caRow) return caRow;
+
+  // Fallback 2: search across all workspace configs directly
+  try {
+    const rows = db.prepare('SELECT workspace_id, json FROM workspace_configs').all();
+    for (const r of rows) {
+      try {
+        const cfg = JSON.parse(r.json);
+        const ch = cfg.channels?.[platform];
+        if (!ch) continue;
+
+        const idMatch = platform === 'facebook' ? (String(ch.pageId || '').trim() === cleanId)
+                      : platform === 'instagram' ? (String(ch.userId || '').trim() === cleanId)
+                      : platform === 'whatsapp' ? (String(ch.phoneNumberId || '').trim() === cleanId)
+                      : platform === 'tiktok' ? (String(ch.clientKey || '').trim() === cleanId)
+                      : false;
+
+        if (idMatch && ch.enabled !== false) {
+          syncChannelAccounts(r.workspace_id, cfg.channels);
+          return {
+            workspace_id: r.workspace_id,
+            platform,
+            account_id: cleanId,
+            name: `${platform} Account`,
+            token: ch.pageToken || ch.token || '',
+            enabled: 1
+          };
+        }
+      } catch {}
+    }
+  } catch {}
+
+  return null;
 }
 
 export function listWorkspaceChannels(workspaceId) {

@@ -5407,9 +5407,22 @@
                 </div>
               </div>
 
-              <div class="row" style="margin-top:18px">
+              <div class="row" style="margin-top:18px; gap:10px; flex-wrap:wrap">
                 <button class="btn primary sm" onclick="testChannel('facebook')">Test Facebook Ping</button>
+                <button class="btn sm" onclick="saveChannelsDirect()">💾 Save Facebook Settings</button>
                 <span id="fbTestResult" class="meter"></span>
+              </div>
+
+              <!-- Diagnostic & Troubleshooting Guide -->
+              <div style="margin-top:16px; padding:12px 14px; background:var(--surface2); border:1px solid var(--line); border-radius:10px; font-size:12px; color:var(--ink2)">
+                <div style="font-weight:700; color:var(--ink); margin-bottom:6px; display:flex; align-items:center; gap:6px">
+                  <span>💡</span> Connected but Facebook not replying? Check these 3 steps:
+                </div>
+                <ul style="margin:0; padding-left:18px; line-height:1.6">
+                  <li><strong>Page ID Mismatch:</strong> The Page ID above must be your <em>Facebook Page ID</em> (e.g. <code>836405562898639</code>), NOT your Meta App ID. Clicking <strong>Test Facebook Ping</strong> will automatically detect and save the right Page ID for you.</li>
+                  <li><strong>Webhook Page Subscription:</strong> In <a href="https://developers.facebook.com/apps" target="_blank" rel="noopener" style="color:var(--accent); font-weight:600">Meta Developer Portal</a> &rarr; <em>Messenger</em> &rarr; <em>Webhooks</em>, verify your Page is subscribed to <code>messages</code> and <code>messaging_postbacks</code>. Our Ping button attempts to subscribe it automatically.</li>
+                  <li><strong>Meta App Development Mode:</strong> If your Meta App is still in <em>Development Mode</em>, Meta only delivers webhook messages sent from App Admins, Developers, or Testers. Add your personal Facebook profile under <em>App Roles &rarr; Roles &rarr; Add Testers</em>, or switch App to <em>Live Mode</em>.</li>
+                </ul>
               </div>
             </div>
 
@@ -8382,7 +8395,21 @@ Crown Operations Support`;
         });
         const data = await res.json();
         if (data.ok) {
-          if (el) el.innerHTML = `<span style="color:var(--good);font-weight:700">${data.info || 'Connected'}</span>`;
+          let extraMsg = '';
+          if (platform === 'facebook' && data.id) {
+            const pageIdInput = document.querySelector('[data-b="channels.facebook.pageId"]');
+            const curEnteredId = String(S.channels?.facebook?.pageId || '').trim();
+            if (curEnteredId !== String(data.id).trim()) {
+              if (!S.channels) S.channels = {};
+              if (!S.channels.facebook) S.channels.facebook = {};
+              S.channels.facebook.pageId = String(data.id).trim();
+              if (pageIdInput) pageIdInput.value = String(data.id).trim();
+              save();
+              extraMsg = `<div style="margin-top:6px; font-size:12px; color:var(--accent); font-weight:700">⚡ Page ID auto-corrected to "${data.id}" and saved!</div>`;
+            }
+          }
+
+          if (el) el.innerHTML = `<span style="color:var(--good);font-weight:700">${data.info || 'Connected'}</span>${extraMsg}`;
           else alert(`${platform.toUpperCase()}: ${data.info || 'Connected'}`);
         } else {
           if (el) el.innerHTML = `<span style="color:var(--danger);font-weight:700">${data.error || 'Connection failed'}</span>`;
@@ -8391,6 +8418,11 @@ Crown Operations Support`;
       } catch (e) {
         if (el) el.innerHTML = `<span style="color:var(--danger);font-weight:700">Error: ${e.message}</span>`;
       }
+    }
+
+    function saveChannelsDirect() {
+      save();
+      chip('Channel Settings Saved');
     }
 
     function copyId(id) {

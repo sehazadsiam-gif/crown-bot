@@ -22,7 +22,8 @@ import {
   savePushSubscription, removePushSubscription, listPushSubscriptions,
   logWebhookEvent, listWebhookLogs,
   findWorkspaceByDomain, setWorkspaceCustomDomain,
-  exportConversationsCSV, exportOrdersCSV, slugify
+  exportConversationsCSV, exportOrdersCSV, slugify,
+  getAllMetaVerifyTokens
 } from './db.js';
 import { sendTenantCredentialsEmail, sendWeeklyDigestEmail } from './mailer.js';
 import { buildPrompt, openState, escalationHit } from './prompt.js';
@@ -1364,16 +1365,20 @@ app.get(`${BASE}/api/health`, async (req) => {
 /* ───────────────────────── Meta Webhook (Facebook / Instagram / WhatsApp) ───────────────────────── */
 const handleMetaVerification = (req, reply) => {
   const q = req.query;
-  const cfg = getConfig();
-  const allowedTokens = [
+  const allowedTokens = new Set([
     process.env.META_VERIFY_TOKEN,
     process.env.WA_VERIFY_TOKEN,
-    cfg.channels?.facebook?.verifyToken,
-    cfg.channels?.whatsapp?.verifyToken,
     'botcrowncoffee'
-  ].filter(Boolean);
+  ].filter(Boolean));
 
-  if (q['hub.mode'] === 'subscribe' && allowedTokens.includes(q['hub.verify_token'])) {
+  try {
+    const allTokens = getAllMetaVerifyTokens();
+    for (const t of allTokens) {
+      if (t) allowedTokens.add(t);
+    }
+  } catch {}
+
+  if (q['hub.mode'] === 'subscribe' && allowedTokens.has(q['hub.verify_token'])) {
     return reply.code(200).type('text/plain').send(q['hub.challenge']);
   }
   return reply.code(403).send('forbidden');
@@ -1385,6 +1390,9 @@ app.get('/webhook/whatsapp', handleMetaVerification);
 app.post('/webhook/meta', async (req, reply) => {
   if (!verifySignature(req.rawBody, req.headers['x-hub-signature-256'])) {
     req.log.warn('bad meta webhook signature');
+    try {
+      logWebhookEvent(1, 'meta', 'signature_rejected', 'Invalid HMAC-SHA256 signature in x-hub-signature-256 header', 'error', 'bad signature');
+    } catch {}
     return reply.code(401).send('bad signature');
   }
 
@@ -1393,8 +1401,13 @@ app.post('/webhook/meta', async (req, reply) => {
 
   const events = parseWebhook(req.body);
   for (const ev of events) {
-    const preview = JSON.stringify({ platform: ev.platform, text: (ev.text || '').slice(0, 120) });
-    logWebhookEvent(1, ev.platform || 'meta', 'message', preview, 'ok');
+    let wsId = 1;
+    if (ev.recipientAccountId) {
+      const acc = findAccountByPlatformAndId(ev.platform, ev.recipientAccountId);
+      if (acc?.workspace_id) wsId = acc.workspace_id;
+    }
+    const preview = JSON.stringify({ platform: ev.platform, text: (ev.text || '').slice(0, 120), recipient: ev.recipientAccountId });
+    logWebhookEvent(wsId, ev.platform || 'meta', 'message', preview, 'ok');
     enqueue(ev, req.log);
   }
 });
