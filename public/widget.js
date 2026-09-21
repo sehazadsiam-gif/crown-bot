@@ -12,15 +12,21 @@
     ? new URL(currentScript.src).origin 
     : window.location.origin;
 
-  const tenantSlug = (currentScript && currentScript.getAttribute('data-tenant')) || '';
-  const wsId = (currentScript && currentScript.getAttribute('data-ws')) || '';
-  const primaryColor = (currentScript && currentScript.getAttribute('data-color')) || '#4f46e5';
+  const wsId = (currentScript && (
+    currentScript.getAttribute('data-ws') ||
+    currentScript.getAttribute('data-workspace') ||
+    currentScript.getAttribute('data-tenant') ||
+    currentScript.getAttribute('data-workspace-id')
+  )) || '';
+  const primaryColor = (currentScript && currentScript.getAttribute('data-color')) || '#1A0B2E';
 
   // Build chat URL
   const chatUrl = new URL(serverOrigin + '/chat.html');
   chatUrl.searchParams.set('embedded', '1');
-  if (wsId) chatUrl.searchParams.set('ws', wsId);
-  if (tenantSlug) chatUrl.searchParams.set('tenant', tenantSlug);
+  if (wsId) {
+    chatUrl.searchParams.set('ws', wsId);
+    chatUrl.searchParams.set('tenant', wsId);
+  }
 
   // Inject Styles
   const style = document.createElement('style');
@@ -37,9 +43,9 @@
       height: 58px;
       border-radius: 50%;
       background: ${primaryColor};
-      color: #ffffff;
-      border: none;
-      box-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.35), 0 0 16px -2px ${primaryColor};
+      color: #FFB7A5;
+      border: 1.5px solid rgba(255, 183, 165, 0.45);
+      box-shadow: 0 8px 24px -4px rgba(26, 11, 46, 0.45), 0 0 16px -2px rgba(255, 183, 165, 0.4);
       cursor: pointer;
       display: flex;
       align-items: center;

@@ -1821,8 +1821,11 @@ export function getWorkspaceConfig(workspaceId = 1) {
   const wsId = Number(workspaceId) || 1;
   const row = db.prepare('SELECT json FROM workspace_configs WHERE workspace_id = ?').get(wsId);
   if (!row) {
+    const wsRow = wsId === 1 ? true : db.prepare('SELECT id FROM workspaces WHERE id = ?').get(wsId);
     const fallback = wsId === 1 ? DEFAULT_CONFIG : makeCleanTemplate(`Workspace #${wsId}`);
-    saveWorkspaceConfig(wsId, fallback);
+    if (wsRow) {
+      try { saveWorkspaceConfig(wsId, fallback); } catch {}
+    }
     return structuredClone(fallback);
   }
   try {
@@ -2072,7 +2075,15 @@ export function alreadySeen(mid) {
 
 /* ───────── conversations ───────── */
 export function upsertConversation(platform, psid, name, workspaceId = 1) {
-  const wsId = Number(workspaceId) || 1;
+  let wsId = Number(workspaceId) || 1;
+  if (wsId !== 1) {
+    try {
+      const exists = db.prepare('SELECT id FROM workspaces WHERE id = ?').get(wsId);
+      if (!exists) wsId = 1;
+    } catch {
+      wsId = 1;
+    }
+  }
   db.prepare(`INSERT INTO conversations (platform, psid, name, workspace_id, last_msg_at, created_at)
               VALUES (?, ?, ?, ?, ?, ?)
               ON CONFLICT(platform, psid) DO UPDATE SET
@@ -2200,7 +2211,15 @@ export function listDrafts(workspaceId = null) {
 }
 
 export function createOrder(data = {}) {
-  const wsId = Number(data.workspace_id || data.workspaceId) || 1;
+  let wsId = Number(data.workspace_id || data.workspaceId) || 1;
+  if (wsId !== 1) {
+    try {
+      const exists = db.prepare('SELECT id FROM workspaces WHERE id = ?').get(wsId);
+      if (!exists) wsId = 1;
+    } catch {
+      wsId = 1;
+    }
+  }
   let convId = Number(data.conv_id || data.convId);
   if (!convId || isNaN(convId)) {
     convId = null;
@@ -2350,14 +2369,72 @@ export function recordUpgradeRequest(opts = {}) {
     VALUES (?, ?, ?, ?, ?, ?, 'pending', ?, ?, ?)
   `).run(wsId, plan, fee, method, phone, trx, note, now(), now());
 
-  // Record note in subscriptions
+  // Instant 30-day activation upon TrxID submission so tenant is never blocked
+  const planDisplay = plan.charAt(0).toUpperCase() + plan.slice(1) + ' Plan';
+  const newActiveUntil = new Date(Date.now() + 30 * 86400 * 1000).toISOString();
+
   try {
     db.prepare(`
-      UPDATE subscriptions SET notes = ?, updated_at = ? WHERE workspace_id = ?
-    `).run(`Upgrade requested: ${planName} via ${method.toUpperCase()} (TrxID: ${trx}, Phone: ${phone})`, now(), wsId);
+      UPDATE subscriptions SET
+        status = 'active',
+        plan_name = ?,
+        active_until = ?,
+        monthly_fee = ?,
+        notes = ?,
+        updated_at = ?
+      WHERE workspace_id = ?
+    `).run(
+      planDisplay,
+      newActiveUntil,
+      fee > 0 ? fee : 500,
+      `Activated: ${planDisplay} via ${method.toUpperCase()} (TrxID: ${trx}, Phone: ${phone})`,
+      now(),
+      wsId
+    );
   } catch {}
 
   return db.prepare('SELECT * FROM subscription_requests WHERE id = ?').get(info.lastInsertRowid);
+}
+
+export function approveUpgradeRequest(requestId, days = 30) {
+  const req = db.prepare('SELECT * FROM subscription_requests WHERE id = ?').get(requestId);
+  if (!req) throw new Error('Subscription request not found');
+
+  const currentSub = getSubscription(req.workspace_id);
+  let baseDate = Date.now();
+  if (currentSub?.active_until) {
+    const curMs = new Date(currentSub.active_until).getTime();
+    if (curMs > baseDate) baseDate = curMs;
+  }
+  const newActiveUntil = new Date(baseDate + Number(days) * 86400 * 1000).toISOString();
+  const planDisplay = req.plan_name.charAt(0).toUpperCase() + req.plan_name.slice(1) + ' Plan';
+
+  db.prepare(`UPDATE subscription_requests SET status = 'approved', updated_at = ? WHERE id = ?`).run(now(), requestId);
+  db.prepare(`
+    UPDATE subscriptions SET
+      status = 'active',
+      plan_name = ?,
+      active_until = ?,
+      notes = ?,
+      updated_at = ?
+    WHERE workspace_id = ?
+  `).run(
+    planDisplay,
+    newActiveUntil,
+    `Admin Approved: ${planDisplay} via ${req.payment_method.toUpperCase()} (TrxID: ${req.trx_id})`,
+    now(),
+    req.workspace_id
+  );
+
+  return { request: db.prepare('SELECT * FROM subscription_requests WHERE id = ?').get(requestId), subscription: getSubscription(req.workspace_id) };
+}
+
+export function rejectUpgradeRequest(requestId, reason = 'Payment verification failed') {
+  const req = db.prepare('SELECT * FROM subscription_requests WHERE id = ?').get(requestId);
+  if (!req) throw new Error('Subscription request not found');
+  db.prepare(`UPDATE subscription_requests SET status = 'rejected', notes = ?, updated_at = ? WHERE id = ?`)
+    .run(String(reason || 'Rejected by administrator'), now(), requestId);
+  return db.prepare('SELECT * FROM subscription_requests WHERE id = ?').get(requestId);
 }
 
 export function listUpgradeRequests(opts = null) {

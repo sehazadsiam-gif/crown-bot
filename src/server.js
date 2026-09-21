@@ -13,7 +13,7 @@ import {
   getConfig, saveConfig, alreadySeen, upsertConversation, listConversations,
   getConversation, getMessages, addMessage, setBotEnabled, setFlag,
   pauseConversationBot, resumeConversationBot, isConversationBotActive,
-  recordUpgradeRequest, listUpgradeRequests, dispatchOwnerAlert, getWeeklyDigest,
+  recordUpgradeRequest, listUpgradeRequests, approveUpgradeRequest, rejectUpgradeRequest, dispatchOwnerAlert, getWeeklyDigest,
   listDrafts, stats, db,
   authenticateTenant, authenticateTenantByPasswordOnly, updateTenantCredentials, resetTenantPassword,
   getTenantUser, getSubscription, isSubscriptionActive, updateSubscription,
@@ -202,8 +202,24 @@ function getScopedWorkspaceId(req) {
 
 function resolveWorkspaceFromRequest(req) {
   // 1. Explicit query or body override
-  const queryWs = Number(req.query?.workspace_id || req.query?.ws || req.body?.workspace_id || req.body?.ws);
+  const rawId = req.query?.workspace_id || req.query?.ws || req.query?.workspace || req.query?.tenant ||
+                req.body?.workspace_id || req.body?.ws || req.body?.workspace || req.body?.tenant;
+  const queryWs = Number(rawId);
   if (queryWs && queryWs > 0) return queryWs;
+
+  // 1b. Slug/string lookup if tenant name or slug passed as string
+  if (rawId && typeof rawId === 'string' && isNaN(Number(rawId))) {
+    const clean = rawId.trim().toLowerCase();
+    try {
+      const wsMatch = db.prepare(`
+        SELECT id FROM workspaces 
+        WHERE LOWER(custom_domain) = ? 
+           OR LOWER(REPLACE(REPLACE(name, ' ', ''), '-', '')) = ?
+        LIMIT 1
+      `).get(clean, clean.replace(/[-_]/g, ''));
+      if (wsMatch?.id) return wsMatch.id;
+    } catch {}
+  }
 
   // 2. Hostname resolution
   const rawHost = (req.headers.host || req.hostname || '').split(':')[0].toLowerCase();
@@ -732,7 +748,7 @@ app.get('/api/me', handleMe);
 app.get(`${BASE}/api/me`, handleMe);
 
 /* ───────────────────────── Tenant Profile API ───────────────────────── */
-app.put(`${BASE}/api/tenant/profile`, { preHandler: requireAuth }, async (req, reply) => {
+const handleTenantProfile = async (req, reply) => {
   if (req.session.role !== 'tenant_admin') {
     return reply.code(400).send({ error: 'Only tenants can update profile here.' });
   }
@@ -755,7 +771,9 @@ app.put(`${BASE}/api/tenant/profile`, { preHandler: requireAuth }, async (req, r
   } catch (e) {
     return reply.code(400).send({ error: e.message });
   }
-});
+};
+app.put(`${BASE}/api/tenant/profile`, { preHandler: requireAuth }, handleTenantProfile);
+app.put('/api/tenant/profile', { preHandler: requireAuth }, handleTenantProfile);
 
 /* ───────────────────────── Master Admin Tenant & Subscription API ───────────────────────── */
 app.get(`${BASE}/api/admin/tenants`, { preHandler: requireMasterAdmin }, async () => {
@@ -902,7 +920,7 @@ Invoice Details:
 - Platform URL: https://bot.ccadmin.online/chatbotadmin/
 
 Payment Information:
-- bKash / Nagad Merchant: 01806-576024
+- bKash: 01771784474 (Personal)
 - Bank Transfer / Card: Available on request
 
 Upon confirmation, your service will remain active for the next billing cycle.
@@ -991,7 +1009,20 @@ app.post(`${BASE}/api/channels/test`, { preHandler: requireAuth }, async (req, r
     if (platform === 'tiktok') {
       return await testTikTokConnection(config);
     } else if (['facebook', 'instagram', 'whatsapp'].includes(platform)) {
-      return await testMetaConnection(platform, config);
+      const result = await testMetaConnection(platform, config);
+      if (result.ok && platform === 'facebook' && result.realPageId) {
+        try {
+          const wsId = getScopedWorkspaceId(req);
+          const curCfg = getWorkspaceConfig(wsId);
+          if (curCfg?.channels?.facebook) {
+            curCfg.channels.facebook.pageId = String(result.realPageId).trim();
+            if (config?.pageToken) curCfg.channels.facebook.pageToken = String(config.pageToken).trim();
+            if (config?.appSecret) curCfg.channels.facebook.appSecret = String(config.appSecret).trim();
+            saveWorkspaceConfig(wsId, curCfg);
+          }
+        } catch {}
+      }
+      return result;
     }
     return reply.code(400).send({ ok: false, error: `Unsupported platform: ${platform}` });
   } catch (e) {
@@ -1140,23 +1171,80 @@ const handleUpgradeRequest = async (req, reply) => {
   const { plan_name, plan, monthly_fee, amount, payment_method, sender_number, sender_phone, trx_id, notes } = req.body || {};
   const chosenPlan = plan_name || plan;
   const chosenSender = sender_number || sender_phone;
-  const chosenAmount = monthly_fee ?? amount;
+  const baseAmt = Number(req.body?.base_amount ?? req.body?.monthly_fee ?? req.body?.amount) || 500;
+  // Auto-calculate platform fee: 20 Tk per 500 Tk
+  const platformFee = Math.ceil(baseAmt / 500) * 20;
+  const totalAmount = baseAmt + platformFee;
+
   if (!chosenPlan || !trx_id || !chosenSender) {
     return reply.code(400).send({ error: 'Please provide plan name, sender phone number, and TrxID.' });
   }
+
   const rec = recordUpgradeRequest({
     workspaceId: wsId,
     planName: chosenPlan,
-    monthlyFee: chosenAmount,
+    monthlyFee: totalAmount,
     paymentMethod: payment_method || 'bkash',
     senderNumber: chosenSender,
     trxId: trx_id,
-    notes
+    notes: notes || `Base: ৳${baseAmt.toLocaleString()} + Platform Fee: ৳${platformFee} (Total: ৳${totalAmount.toLocaleString()})`
   });
-  return { ok: true, request: rec };
+
+  const updatedSub = getSubscription(wsId);
+  return { ok: true, request: rec, subscription: updatedSub };
 };
 app.post(`${BASE}/api/tenant/subscription/request-upgrade`, { preHandler: requireAuth }, handleUpgradeRequest);
 app.post('/api/tenant/subscription/request-upgrade', { preHandler: requireAuth }, handleUpgradeRequest);
+
+/* Master Admin Subscription Request Management */
+app.get(`${BASE}/api/admin/subscription-requests`, { preHandler: requireMasterAdmin }, async () => {
+  return { requests: listUpgradeRequests() };
+});
+app.get('/api/admin/subscription-requests', { preHandler: requireMasterAdmin }, async () => {
+  return { requests: listUpgradeRequests() };
+});
+
+app.post(`${BASE}/api/admin/subscription-requests/:id/approve`, { preHandler: requireMasterAdmin }, async (req, reply) => {
+  const id = Number(req.params.id);
+  const days = Number(req.body?.days) || 30;
+  try {
+    const res = approveUpgradeRequest(id, days);
+    return { ok: true, ...res };
+  } catch (e) {
+    return reply.code(400).send({ error: e.message });
+  }
+});
+app.post('/api/admin/subscription-requests/:id/approve', { preHandler: requireMasterAdmin }, async (req, reply) => {
+  const id = Number(req.params.id);
+  const days = Number(req.body?.days) || 30;
+  try {
+    const res = approveUpgradeRequest(id, days);
+    return { ok: true, ...res };
+  } catch (e) {
+    return reply.code(400).send({ error: e.message });
+  }
+});
+
+app.post(`${BASE}/api/admin/subscription-requests/:id/reject`, { preHandler: requireMasterAdmin }, async (req, reply) => {
+  const id = Number(req.params.id);
+  const { reason } = req.body || {};
+  try {
+    const reqRow = rejectUpgradeRequest(id, reason);
+    return { ok: true, request: reqRow };
+  } catch (e) {
+    return reply.code(400).send({ error: e.message });
+  }
+});
+app.post('/api/admin/subscription-requests/:id/reject', { preHandler: requireMasterAdmin }, async (req, reply) => {
+  const id = Number(req.params.id);
+  const { reason } = req.body || {};
+  try {
+    const reqRow = rejectUpgradeRequest(id, reason);
+    return { ok: true, request: reqRow };
+  } catch (e) {
+    return reply.code(400).send({ error: e.message });
+  }
+});
 
 const handleTestOwnerAlert = async (req, reply) => {
   const wsId = req.session.role === 'master_admin' ? Number(req.body?.workspace_id || req.session.workspace_id) : req.session.workspace_id;

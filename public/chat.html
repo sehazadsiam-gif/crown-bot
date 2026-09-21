@@ -9,42 +9,44 @@
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg: #090d16;
-  --bg-chat: #0d121f;
-  --surface: #141b2d;
-  --surface-glass: rgba(20, 27, 45, 0.85);
-  --line: rgba(255, 255, 255, 0.08);
-  --line-highlight: rgba(99, 102, 241, 0.3);
-  --ink: #f8fafc;
-  --ink2: #94a3b8;
-  --ink3: #64748b;
-  --accent: #4f46e5;
-  --accent-light: #6366f1;
-  --accent-soft: rgba(79, 70, 229, 0.15);
-  --accent-glow: 0 4px 20px -2px rgba(79, 70, 229, 0.4);
-  --bubble-bot: #182238;
-  --bubble-user: #4f46e5;
-  --good: #10b981;
-  --good-soft: rgba(16, 185, 129, 0.15);
+  --bg: #1A0B2E;
+  --bg-chat: #1A0B2E;
+  --surface: #240F3F;
+  --surface-glass: rgba(26, 11, 46, 0.88);
+  --line: rgba(255, 183, 165, 0.14);
+  --line-highlight: rgba(255, 183, 165, 0.35);
+  --ink: #FFF5F2;
+  --ink2: #D9C5D2;
+  --ink3: #A68D9E;
+  --accent: #FFB7A5;
+  --accent-light: #FFC9BC;
+  --accent-soft: rgba(255, 183, 165, 0.16);
+  --accent-glow: 0 4px 20px -2px rgba(255, 183, 165, 0.45);
+  --bubble-bot: #2E144F;
+  --bubble-user: #FFB7A5;
+  --bubble-user-text: #1A0B2E;
+  --good: #34D399;
+  --good-soft: rgba(52, 211, 153, 0.15);
   --radius: 16px;
   --radius-sm: 10px;
 }
 
 [data-theme="light"] {
-  --bg: #f1f5f9;
-  --bg-chat: #ffffff;
-  --surface: #ffffff;
-  --surface-glass: rgba(255, 255, 255, 0.9);
-  --line: rgba(0, 0, 0, 0.08);
-  --line-highlight: rgba(79, 70, 229, 0.25);
-  --ink: #0f172a;
-  --ink2: #475569;
-  --ink3: #94a3b8;
-  --accent: #4f46e5;
-  --accent-light: #6366f1;
-  --accent-soft: rgba(79, 70, 229, 0.1);
-  --bubble-bot: #f1f5f9;
-  --bubble-user: #4f46e5;
+  --bg: #FAF5F3;
+  --bg-chat: #FFFFFF;
+  --surface: #FFFFFF;
+  --surface-glass: rgba(255, 255, 255, 0.94);
+  --line: #ECDCD6;
+  --line-highlight: rgba(255, 183, 165, 0.5);
+  --ink: #1A0B2E;
+  --ink2: #4A3362;
+  --ink3: #8C759E;
+  --accent: #1A0B2E;
+  --accent-light: #2E1550;
+  --accent-soft: rgba(255, 183, 165, 0.28);
+  --bubble-bot: #FBF4F1;
+  --bubble-user: #1A0B2E;
+  --bubble-user-text: #FFB7A5;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -243,7 +245,7 @@ body.embedded-mode .chat-app {
 
 .message-row.user .msg-bubble {
   background: var(--bubble-user);
-  color: #fff;
+  color: var(--bubble-user-text, #1A0B2E);
   border-bottom-right-radius: 4px;
   box-shadow: var(--accent-glow);
 }
@@ -475,7 +477,7 @@ body.embedded-mode .chat-app {
 
 <script>
 const urlParams = new URLSearchParams(window.location.search);
-const wsParam = urlParams.get('ws') || urlParams.get('workspace_id') || '';
+const wsParam = urlParams.get('ws') || urlParams.get('workspace') || urlParams.get('workspace_id') || urlParams.get('tenant') || '';
 const isEmbedded = urlParams.get('embedded') === '1';
 
 if (isEmbedded) {
@@ -587,13 +589,14 @@ async function sendMessage(text) {
   sendBtn.disabled = true;
 
   try {
-    const res = await fetch('/api/public/chat' + (wsParam ? `?ws=${wsParam}` : ''), {
+    const res = await fetch('/api/public/chat' + (wsParam ? `?ws=${encodeURIComponent(wsParam)}` : ''), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         message: text,
         history: conversationHistory.slice(-8),
-        sessionId: sessionId
+        sessionId: sessionId,
+        workspace_id: wsParam
       })
     });
     const d = await res.json();
