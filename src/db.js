@@ -3233,4 +3233,102 @@ try {
   console.error('Workspace self-heal notice:', e.message);
 }
 
+/* ───────────────────────── Mandatory Bot Training & Readiness Gate ───────────────────────── */
+export function getWorkspaceTrainingStatus(workspaceId) {
+  const wsId = Number(workspaceId) || 1;
+  const cfg = getWorkspaceConfig(wsId);
+  const biz = cfg?.business || cfg?.cafe || {};
+
+  // 1. Business Profile & Hours
+  const hasProfileName = !!(biz.name && String(biz.name).trim().length >= 2 && !String(biz.name).includes('My Business'));
+  const hasHours = !!(biz.hours && typeof biz.hours === 'object' && Object.values(biz.hours).some(h => h && (h.open || h.close || typeof h === 'string')));
+  const profileComplete = hasProfileName;
+
+  // 2. Catalog / Services count (minimum 3 items)
+  let serviceCount = 0;
+  if (Array.isArray(cfg?.menu)) {
+    for (const cat of cfg.menu) {
+      if (Array.isArray(cat.items)) {
+        serviceCount += cat.items.length;
+      }
+    }
+  }
+  const servicesComplete = serviceCount >= 3;
+
+  // 3. FAQs count (minimum 3 questions & answers)
+  const faqCount = Array.isArray(cfg?.faqs) ? cfg.faqs.filter(f => f && f.q && f.a).length : 0;
+  const faqsComplete = faqCount >= 3;
+
+  // 4. Owner Test Chat (conducted via Simulator drawer or test chat)
+  let hasTested = !!cfg?.training_tested;
+  if (!hasTested) {
+    try {
+      const testMsg = db.prepare(`
+        SELECT m.id FROM messages m
+        JOIN conversations c ON c.id = m.conv_id
+        WHERE c.workspace_id = ? AND (c.external_id LIKE 'sim_%' OR c.name LIKE '%Test%' OR c.platform = 'web')
+        LIMIT 1
+      `).get(wsId);
+      if (testMsg) hasTested = true;
+    } catch {}
+  }
+
+  // Workspace 1 (flagship platform bot) is always deemed 100% trained
+  if (wsId === 1) {
+    return {
+      isReady: true,
+      percent: 100,
+      profileComplete: true,
+      servicesComplete: true,
+      faqsComplete: true,
+      hasTested: true,
+      serviceCount: Math.max(serviceCount, 3),
+      faqCount: Math.max(faqCount, 3),
+      steps: [
+        { key: 'profile', title: 'Business Profile', done: true },
+        { key: 'services', title: 'Services / Catalog Items', done: true, current: serviceCount, required: 3 },
+        { key: 'faqs', title: 'Common Questions & Answers', done: true, current: faqCount, required: 3 },
+        { key: 'test', title: 'Test Chat Verification', done: true }
+      ],
+      missing: []
+    };
+  }
+
+  const steps = [
+    { key: 'profile', title: 'Business Profile & Contact Info', done: profileComplete },
+    { key: 'services', title: 'At Least 3 Services / Catalog Items', done: servicesComplete, current: serviceCount, required: 3 },
+    { key: 'faqs', title: 'At Least 3 Questions & Answers', done: faqsComplete, current: faqCount, required: 3 },
+    { key: 'test', title: 'Send 1 Test Chat Message', done: hasTested }
+  ];
+
+  const completedCount = steps.filter(s => s.done).length;
+  const percent = Math.round((completedCount / steps.length) * 100);
+  const isReady = completedCount === steps.length;
+  const missing = steps.filter(s => !s.done).map(s => s.title);
+
+  return {
+    isReady,
+    percent,
+    profileComplete,
+    servicesComplete,
+    faqsComplete,
+    hasTested,
+    serviceCount,
+    faqCount,
+    steps,
+    missing
+  };
+}
+
+export function recordTrainingTest(workspaceId) {
+  const wsId = Number(workspaceId) || 1;
+  const cfg = getWorkspaceConfig(wsId);
+  if (!cfg.training_tested) {
+    cfg.training_tested = true;
+    saveWorkspaceConfig(wsId, cfg);
+  }
+  return getWorkspaceTrainingStatus(wsId);
+}
+
+
 

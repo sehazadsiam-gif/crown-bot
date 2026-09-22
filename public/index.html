@@ -3082,6 +3082,70 @@
     }
 
     /* ===== COMMERCIAL & ONBOARDING UX STYLES ===== */
+    /* Clean Status Dots (Zero Emojis) */
+    .status-dot {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .status-dot.green { background: #10B981; box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.18); }
+    .status-dot.amber { background: #F59E0B; box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.18); }
+    .status-dot.gray  { background: #94A3B8; box-shadow: 0 0 0 3px rgba(148, 163, 184, 0.18); }
+    .status-dot.red   { background: #EF4444; box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.18); }
+
+    /* Dashboard Live Bot Readiness Gate Card */
+    .dash-gate-card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 18px 22px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.03);
+    }
+    .dash-gate-left {
+      flex: 1;
+      min-width: 250px;
+    }
+    .dash-gate-status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+      padding: 3px 10px;
+      border-radius: 9999px;
+      background: var(--surface2);
+      border: 1px solid var(--line);
+      margin-bottom: 8px;
+    }
+    .dash-gate-title {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 800;
+      letter-spacing: -0.01em;
+      color: var(--ink);
+    }
+    .dash-gate-desc {
+      margin: 3px 0 0;
+      font-size: 13px;
+      color: var(--ink2);
+      line-height: 1.45;
+    }
+    .dash-gate-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
     /* Launch Checklist Stepper */
     .launch-checklist-card {
       background: var(--surface);
@@ -4252,7 +4316,7 @@
             <p class="login-showcase-sub">Powered by Gemini</p>
             <div style="margin-top:14px">
               <button type="button" onclick="openSocialGuideModal()" style="background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.3); border-radius:9999px; color:#fff; padding:6px 14px; font-size:12px; font-weight:600; cursor:pointer; backdrop-filter:blur(8px); display:inline-flex; align-items:center; gap:6px">
-                <span>📘 Social Channels Setup Guide</span>
+                <span> Social Channels Setup Guide</span>
               </button>
             </div>
           </div>
@@ -4426,7 +4490,7 @@
       </div>
 
       <span id="masterAdminBadge"
-        style="display:none; background:linear-gradient(135deg, #1A0B2E, #2A124B); color:#FFB7A5; font-weight:800; padding:5px 12px; border-radius:20px; font-size:11.5px; letter-spacing:0.04em; border:1px solid rgba(255,183,165,0.35); box-shadow:0 2px 10px rgba(26,11,46,0.4); align-items:center; gap:6px">👑
+        style="display:none; background:linear-gradient(135deg, #1A0B2E, #2A124B); color:#FFB7A5; font-weight:800; padding:5px 12px; border-radius:20px; font-size:11.5px; letter-spacing:0.04em; border:1px solid rgba(255,183,165,0.35); box-shadow:0 2px 10px rgba(26,11,46,0.4); align-items:center; gap:6px">
         MASTER ADMIN</span>
 
       <!-- Master Admin Workspace Controls -->
@@ -4502,7 +4566,7 @@
       <button class="btn sm" id="btnHeaderUpgrade" onclick="openUpgradeModal()"
         style="background:linear-gradient(135deg, #10B981, #059669); color:#fff; font-weight:700; border-radius:9999px; border:none; display:none; align-items:center; gap:6px; box-shadow:0 4px 12px rgba(16,185,129,0.3); padding:7px 14px; cursor:pointer"
         title="Upgrade to Pro Plan">
-        <span>⚡ Upgrade Plan</span>
+        <span>Upgrade Plan</span>
       </button>
 
       <span class="savechip" id="saveChip"></span>
@@ -4536,7 +4600,6 @@
         <!-- Mobile Drawer Header -->
         <div class="mobile-nav-header" style="display:none; align-items:center; justify-content:space-between; padding:4px 6px 14px; border-bottom:1px solid var(--line); margin-bottom:12px">
           <div style="display:flex; align-items:center; gap:8px">
-            <span style="font-size:18px">👑</span>
             <span style="font-weight:800; font-size:14px; color:var(--ink)">Crown Bot Menu</span>
           </div>
           <button type="button" class="btn sm ghost" onclick="closeMobileNav()" style="padding:4px 10px; border-radius:9999px; font-weight:700" title="Close Menu">✕</button>
@@ -4552,25 +4615,13 @@
           </svg>
           Dashboard
         </button>
-        <button data-p="tenant-info" id="navTenantInfoBtn" onclick="switchTab('tenant-info')">
-          <svg viewBox="0 0 24 24">
-            <rect width="18" height="14" x="3" y="6" rx="2" />
-            <path d="M8 2v4" />
-            <path d="M16 2v4" />
-            <circle cx="9" cy="13" r="1.5" fill="currentColor" />
-            <circle cx="15" cy="13" r="1.5" fill="currentColor" />
-            <path d="M10 17h4" />
-          </svg>
-          Chatbot Hub
-          <span id="tenantPassActionDot" style="display:none; width:8px; height:8px; background:var(--warn); border-radius:50%; margin-left:auto;" title="Action Required: Change Password"></span>
-        </button>
         <button data-p="inbox" onclick="switchTab('inbox')">
           <svg viewBox="0 0 24 24">
             <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
           </svg>
           Inbox &amp; Chats
           <span class="nav-badge-pill"
-            style="margin-left:auto; background:#1A0B2E; color:#FFB7A5; border:1px solid rgba(255,183,165,0.35); font-size:10px; font-weight:800; padding:1px 7px; border-radius:9999px">Live</span>
+            style="margin-left:auto; background:var(--surface2); color:var(--ink); border:1px solid var(--line); font-size:10px; font-weight:700; padding:1px 7px; border-radius:9999px">Live</span>
         </button>
         <button data-p="orders" id="navOrdersBtn" onclick="switchTab('orders')">
           <svg viewBox="0 0 24 24">
@@ -4582,44 +4633,23 @@
           <span class="badge" id="pendingOrdersBadge"
             style="display:none; margin-left:auto; background:#EF4444; color:#fff; font-size:10px; font-weight:800; padding:2px 6px; border-radius:10px">0</span>
         </button>
-        <button data-p="setup" onclick="switchTab('setup')">
-          <svg viewBox="0 0 24 24">
-            <line x1="18" y1="20" x2="18" y2="10" />
-            <line x1="12" y1="20" x2="12" y2="4" />
-            <line x1="6" y1="20" x2="6" y2="14" />
-          </svg>
-          System Health
-        </button>
         <button data-p="channels" onclick="switchTab('channels')">
           <svg viewBox="0 0 24 24">
             <circle cx="12" cy="12" r="10" />
             <line x1="2" x2="22" y1="12" y2="12" />
             <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
           </svg>
-          Multi-Channels
+          Connect Channels
         </button>
 
-        <!-- Master Admin Navigation Section -->
-        <div id="navMasterSection" style="display:none">
-          <button data-p="tenants" onclick="switchTab('tenants')">
-            <svg viewBox="0 0 24 24">
-              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-              <circle cx="9" cy="7" r="4" />
-              <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
-              <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-            </svg>
-            Tenants
-          </button>
-        </div>
-
-        <div class="navlabel">GENERAL</div>
+        <div class="navlabel">TRAIN YOUR BOT</div>
         <button data-p="cafe" onclick="switchTab('cafe')">
           <svg viewBox="0 0 24 24">
             <circle cx="12" cy="12" r="3" />
             <path
               d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
           </svg>
-          Settings
+          Business Profile
         </button>
         <button data-p="menu" id="navCatalogBtn" onclick="switchTab('menu')">
           <svg viewBox="0 0 24 24" id="navCatalogIcon">
@@ -4627,7 +4657,7 @@
             <path d="M3 9h18" />
             <path d="M9 21V9" />
           </svg>
-          <span id="navCatalogLabel">Treatments &amp; Services</span>
+          <span id="navCatalogLabel">Services &amp; Pricing</span>
         </button>
         <button data-p="faq" onclick="switchTab('faq')">
           <svg viewBox="0 0 24 24">
@@ -4635,8 +4665,44 @@
             <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
             <line x1="12" x2="12.01" y1="17" y2="17" />
           </svg>
-          Help &amp; FAQs
+          Common FAQs
         </button>
+
+        <div class="navlabel">ACCOUNT</div>
+        <button data-p="tenant-info" id="navTenantInfoBtn" onclick="switchTab('tenant-info')">
+          <svg viewBox="0 0 24 24">
+            <rect width="18" height="14" x="3" y="6" rx="2" />
+            <path d="M8 2v4" />
+            <path d="M16 2v4" />
+            <circle cx="9" cy="13" r="1.5" fill="currentColor" />
+            <circle cx="15" cy="13" r="1.5" fill="currentColor" />
+            <path d="M10 17h4" />
+          </svg>
+          Account &amp; Renewal
+          <span id="tenantPassActionDot" style="display:none; width:8px; height:8px; background:var(--warn); border-radius:50%; margin-left:auto;" title="Action Required: Change Password"></span>
+        </button>
+
+        <!-- Master Admin Only Section -->
+        <div id="navMasterSection" style="display:none">
+          <div class="navlabel">MASTER ADMIN</div>
+          <button data-p="tenants" onclick="switchTab('tenants')">
+            <svg viewBox="0 0 24 24">
+              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+              <circle cx="9" cy="7" r="4" />
+              <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+              <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+            </svg>
+            Tenants Directory
+          </button>
+          <button data-p="setup" onclick="switchTab('setup')">
+            <svg viewBox="0 0 24 24">
+              <line x1="18" y1="20" x2="18" y2="10" />
+              <line x1="12" y1="20" x2="12" y2="4" />
+              <line x1="6" y1="20" x2="6" y2="14" />
+            </svg>
+            System Health
+          </button>
+        </div>
 
         <button onclick="logout()">
           <svg viewBox="0 0 24 24">
@@ -4656,7 +4722,7 @@
         <div id="masterInspectingBanner"
           style="display:none; background:linear-gradient(90deg, rgba(124,58,237,0.15), rgba(79,70,229,0.15)); border:1px solid rgba(124,58,237,0.35); border-radius:var(--radius-sm); padding:10px 16px; margin-bottom:18px; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap">
           <div style="display:flex; align-items:center; gap:8px">
-            <span style="font-size:16px">🔍</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
             <span style="font-size:13px; color:var(--ink)">Currently Configuring Client Bot: <strong
                 id="inspectingWsNameTxt" style="color:var(--ink); font-weight:700">CC</strong> (#<span
                 id="inspectingWsIdTxt">1</span>)</span>
@@ -4691,9 +4757,9 @@
                 and send monthly renewal invoices.</p>
             </div>
             <div class="row">
-              <button class="btn sm" onclick="openMessageGuidelinesModal()" title="View and copy message guidelines for tenants" style="font-weight:700;">📋 Message Templates</button>
+              <button class="btn sm" onclick="openMessageGuidelinesModal()" title="View and copy message guidelines for tenants" style="font-weight:700;">Message Templates</button>
               <button class="btn sm" onclick="triggerManualBackup()" id="btnManualBackup"
-                title="Trigger instant SQLite database backup snapshot">💾 Backup Database</button>
+                title="Trigger instant SQLite database backup snapshot">Backup Database</button>
               <button class="btn primary sm" onclick="openNewTenantModal()">+ Create New Tenant</button>
             </div>
           </div>
@@ -4757,14 +4823,14 @@
             <div style="padding:14px 18px; border-bottom:1px solid var(--line); display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px">
               <div>
                 <h3 style="margin:0; font-size:15px; display:flex; align-items:center; gap:8px;">
-                  <span>💳 Upgrade Requests &amp; Payment Audit</span>
+                  <span>Upgrade Requests &amp; Payment Audit</span>
                   <span class="badge" id="mstUpgradeReqCount" style="background:var(--accent-soft); color:var(--accent); font-size:11px;">0</span>
                 </h3>
                 <p style="margin:2px 0 0; font-size:11.5px; color:var(--ink3);">
                   Real-time bKash, Nagad &amp; Rocket subscriber verification logs (bKash: 01771784474 · auto platform fee: ৳20/৳500 included)
                 </p>
               </div>
-              <button class="btn sm ghost" onclick="loadMasterUpgradeRequests()" title="Refresh upgrade requests">🔄 Refresh</button>
+              <button class="btn sm ghost" onclick="loadMasterUpgradeRequests()" title="Refresh upgrade requests">Refresh</button>
             </div>
             <div class="table-wrap" style="border:none; border-radius:0">
               <table class="clean-table">
@@ -4825,58 +4891,82 @@
               </div>
             </div>
 
+            <!-- LIVE BOT STATUS & TRAINING GATE BANNER -->
+            <div class="dash-gate-card" id="dashLiveGateCard">
+              <div class="dash-gate-left">
+                <div class="dash-gate-status-pill" id="dashGatePill">
+                  <span class="status-dot amber" id="dashGateDot"></span>
+                  <span id="dashGateStatusTxt" style="font-weight:700">Training Incomplete</span>
+                </div>
+                <h3 class="dash-gate-title" id="dashGateTitle">Mandatory Bot Training Required</h3>
+                <p class="dash-gate-desc" id="dashGateDesc">
+                  To ensure quality responses, your bot cannot be enabled for live auto-reply until all 4 training steps below are completed.
+                </p>
+              </div>
+              <div class="dash-gate-right">
+                <button type="button" class="btn primary" id="btnDashToggleBot" onclick="toggleDashLiveBot()">
+                  <span id="btnDashToggleBotTxt">Activate Live Bot</span>
+                </button>
+              </div>
+            </div>
+
             <!-- INTERACTIVE LAUNCH CHECKLIST STEPPER -->
             <div class="launch-checklist-card" id="launchChecklistCard">
               <div class="checklist-header">
                 <div class="checklist-title-area">
-                  <div class="checklist-icon-badge">🚀</div>
+                  <div class="checklist-icon-badge">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                      <path d="M9 11l3 3L22 4"/>
+                      <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+                    </svg>
+                  </div>
                   <div>
-                    <h3 class="checklist-title" id="checklistTitle">Your AI Assistant is 75% Ready to Launch!</h3>
-                    <p class="checklist-sub">Follow these 4 quick milestones to get your bot operating 24/7 across all channels.</p>
+                    <h3 class="checklist-title" id="checklistTitle">Training Progress: 0% Complete</h3>
+                    <p class="checklist-sub">Complete these 4 quick milestones to activate your bot for live 24/7 customer auto-reply.</p>
                   </div>
                 </div>
                 <div class="checklist-right">
                   <div class="checklist-progress-bar-wrap">
-                    <div class="checklist-progress-fill" id="checklistProgressFill" style="width: 75%"></div>
+                    <div class="checklist-progress-fill" id="checklistProgressFill" style="width: 0%"></div>
                   </div>
-                  <span class="checklist-pct-txt" id="checklistPctTxt">75%</span>
+                  <span class="checklist-pct-txt" id="checklistPctTxt">0%</span>
                   <button class="checklist-toggle-btn" onclick="toggleLaunchChecklist()" id="btnToggleChecklist" title="Minimize/Maximize">Hide</button>
                 </div>
               </div>
               <div class="checklist-steps-grid" id="checklistStepsGrid">
-                <!-- Step 1 -->
-                <div class="checklist-step" id="stepMenuFaqs" onclick="switchTab('menu')">
-                  <div class="step-check done" id="stepCheck1">✓</div>
+                <!-- Step 1: Profile -->
+                <div class="checklist-step" id="stepProfileHours" onclick="switchTab('cafe')">
+                  <div class="step-check todo" id="stepCheck1">1</div>
                   <div class="step-info">
-                    <div class="step-label">1. Catalog &amp; FAQs</div>
-                    <div class="step-desc" id="stepDesc1">Loaded with industry presets</div>
+                    <div class="step-label">1. Business Profile</div>
+                    <div class="step-desc" id="stepDesc1">Set business name &amp; operating hours</div>
                   </div>
                   <span class="step-arrow">&rarr;</span>
                 </div>
-                <!-- Step 2 -->
-                <div class="checklist-step" id="stepHoursPhone" onclick="switchTab('cafe')">
-                  <div class="step-check done" id="stepCheck2">✓</div>
+                <!-- Step 2: Services & Catalog -->
+                <div class="checklist-step" id="stepMenuCatalog" onclick="switchTab('menu')">
+                  <div class="step-check todo" id="stepCheck2">2</div>
                   <div class="step-info">
-                    <div class="step-label">2. Hours &amp; Contact</div>
-                    <div class="step-desc" id="stepDesc2">Phone and schedule set</div>
+                    <div class="step-label">2. Services &amp; Pricing</div>
+                    <div class="step-desc" id="stepDesc2">Add at least 3 catalog items</div>
                   </div>
                   <span class="step-arrow">&rarr;</span>
                 </div>
-                <!-- Step 3 -->
+                <!-- Step 3: Common FAQs -->
+                <div class="checklist-step" id="stepCommonFaqs" onclick="switchTab('faq')">
+                  <div class="step-check todo" id="stepCheck3">3</div>
+                  <div class="step-info">
+                    <div class="step-label">3. Questions &amp; FAQs</div>
+                    <div class="step-desc" id="stepDesc3">Add at least 3 questions &amp; answers</div>
+                  </div>
+                  <span class="step-arrow">&rarr;</span>
+                </div>
+                <!-- Step 4: Simulator Test -->
                 <div class="checklist-step" id="stepTestBot" onclick="openBotSimulator()">
-                  <div class="step-check todo" id="stepCheck3">&rarr;</div>
-                  <div class="step-info">
-                    <div class="step-label">3. Test Live Sandbox</div>
-                    <div class="step-desc" id="stepDesc3">Ask bot questions in browser</div>
-                  </div>
-                  <span class="step-arrow">&rarr;</span>
-                </div>
-                <!-- Step 4 -->
-                <div class="checklist-step" id="stepChannels" onclick="switchTab('channels')">
                   <div class="step-check todo" id="stepCheck4">4</div>
                   <div class="step-info">
-                    <div class="step-label">4. Connect Channels</div>
-                    <div class="step-desc" id="stepDesc4">Facebook, Instagram, WhatsApp</div>
+                    <div class="step-label">4. Test in Simulator</div>
+                    <div class="step-desc" id="stepDesc4">Send 1 test message to verify bot</div>
                   </div>
                   <span class="step-arrow">&rarr;</span>
                 </div>
@@ -5039,9 +5129,9 @@
                 </div>
                 <div
                   style="display:flex; align-items:center; justify-content:space-between; margin-top:14px; padding-top:12px; border-top:1px solid var(--line); font-size:11.5px; color:var(--ink2)">
-                  <span>🟢 <strong>94.2%</strong> Autonomous</span>
-                  <span>⚡ Latency: <strong>&lt; 1.1s</strong></span>
-                  <span>🛡️ <strong>100%</strong> Uptime</span>
+                  <span><span class="status-dot green"></span> <strong>94.2%</strong> Autonomous</span>
+                  <span>Latency: <strong>&lt; 1.1s</strong></span>
+                  <span><span class="status-dot green"></span> <strong>100%</strong> Uptime</span>
                 </div>
               </div>
 
@@ -5220,12 +5310,12 @@
                   <button class="btn sm" onclick="benchmarkAiLatency()"
                     style="background:rgba(255,255,255,0.18); border:1px solid rgba(255,255,255,0.3); color:#fff; border-radius:9999px; font-weight:700; padding:6px 14px"
                     title="Run real-time speed benchmark">
-                    ⚡ Benchmark Speed
+                    Benchmark Speed
                   </button>
                   <button class="btn sm ghost" onclick="load(currentWorkspaceId)"
                     style="color:#fff; border-color:rgba(255,255,255,0.25); border-radius:9999px"
                     title="Refresh Telemetry">
-                    🔄 Refresh
+                    Refresh
                   </button>
                 </div>
               </div>
@@ -5235,15 +5325,15 @@
             <div class="weekly-digest-card" id="weeklyDigestCard">
               <div class="digest-header">
                 <div style="display:flex; align-items:center; gap:10px">
-                  <span style="font-size:22px">📊</span>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="12" width="4" height="8" rx="1"/><rect x="10" y="7" width="4" height="13" rx="1"/><rect x="17" y="3" width="4" height="17" rx="1"/></svg>
                   <div>
                     <h4 style="margin:0; font-size:15px; font-weight:800; color:var(--ink)">Weekly Performance Digest</h4>
                     <p style="margin:2px 0 0; font-size:12px; color:var(--ink3)">7-Day Autonomous Operations &amp; Value Delivery Report</p>
                   </div>
                 </div>
                 <div style="display:flex; gap:8px; flex-wrap:wrap">
-                  <button class="btn sm ghost" onclick="copyWeeklyDigestForWhatsApp()" title="Copy formatted WhatsApp summary with emojis">📋 Copy for WhatsApp</button>
-                  <button class="btn sm" onclick="emailWeeklyDigestToOwner()" title="Send digest to owner email">✉️ Email to Owner</button>
+                  <button class="btn sm ghost" onclick="copyWeeklyDigestForWhatsApp()" title="Copy formatted WhatsApp summary with emojis">Copy for WhatsApp</button>
+                  <button class="btn sm" onclick="emailWeeklyDigestToOwner()" title="Send digest to owner email">Email to Owner</button>
                 </div>
               </div>
               <div class="digest-grid">
@@ -5378,7 +5468,7 @@
             </div>
             <div>
               <button class="btn sm" onclick="openSocialGuideModal()" style="display:inline-flex; align-items:center; gap:6px">
-                <span>📘 Step-by-Step Connection Guide</span>
+                <span>Connection Guide</span>
               </button>
             </div>
           </div>
@@ -5393,7 +5483,7 @@
             style="margin-bottom:20px; border:1px solid rgba(59,130,246,0.35); background:linear-gradient(135deg, rgba(59,130,246,0.06), rgba(99,102,241,0.04)); box-shadow:0 4px 20px rgba(0,0,0,0.03)">
             <div class="channel-header">
               <div class="channel-title">
-                <div class="channel-badge-icon" style="background:#3b82f6; color:#fff; font-size:14px">🌐</div>
+                <div class="channel-badge-icon" style="background:#3b82f6; color:#fff; font-size:12px">Web</div>
                 Public AI Customer Webchat &amp; Subdomain
               </div>
               <span class="badge"
@@ -5474,14 +5564,14 @@
 
               <div class="row" style="margin-top:18px; gap:10px; flex-wrap:wrap">
                 <button class="btn primary sm" onclick="testChannel('facebook')">Test Facebook Ping</button>
-                <button class="btn sm" onclick="saveChannelsDirect()">💾 Save Facebook Settings</button>
+                <button class="btn sm" onclick="saveChannelsDirect()">Save Facebook Settings</button>
                 <span id="fbTestResult" class="meter"></span>
               </div>
 
               <!-- Diagnostic & Troubleshooting Guide -->
               <div style="margin-top:16px; padding:12px 14px; background:var(--surface2); border:1px solid var(--line); border-radius:10px; font-size:12px; color:var(--ink2)">
                 <div style="font-weight:700; color:var(--ink); margin-bottom:6px; display:flex; align-items:center; gap:6px">
-                  <span>💡</span> Connected but Facebook not replying? Check these 3 steps:
+                  <span style="font-weight:700">Tip:</span> Connected but Facebook not replying? Check these 3 steps:
                 </div>
                 <ul style="margin:0; padding-left:18px; line-height:1.6">
                   <li><strong>Page ID Mismatch:</strong> The Page ID above must be your <em>Facebook Page ID</em> (e.g. <code>836405562898639</code>), NOT your Meta App ID. Clicking <strong>Test Facebook Ping</strong> will automatically detect and save the right Page ID for you.</li>
@@ -5489,7 +5579,7 @@
                   <li><strong>Meta App Development Mode vs Live Mode:</strong> If your Meta App is still in <em>Development Mode</em>, Meta only delivers webhook messages sent from App Admins, Developers, or Testers.
                     <div style="margin-top:8px; padding:10px 12px; background:var(--surface); border:1px solid var(--line); border-radius:8px">
                       <div style="font-weight:700; color:var(--ink); margin-bottom:6px; display:flex; align-items:center; gap:6px">
-                        <span>🚀</span> Option B: Switch App to Live Mode in Meta Settings
+                        <span style="font-weight:700">Option B:</span> Switch App to Live Mode in Meta Settings
                       </div>
                       <div style="display:flex; flex-direction:column; gap:6px; font-size:11.5px">
                         <div style="display:flex; align-items:center; justify-content:space-between; gap:6px; background:var(--surface2); padding:5px 8px; border-radius:6px">
@@ -5709,7 +5799,7 @@
                     ← Back
                   </button>
                   <span class="handover-dot" id="handoverDot"></span>
-                  <span id="handoverStatusTxt" style="font-size:12px; font-weight:700; color:var(--ink)">🤖 AI Autonomous Bot Active</span>
+                  <span id="handoverStatusTxt" style="font-size:12px; font-weight:700; color:var(--ink)">AI Autonomous Bot Active</span>
                 </div>
                 <div style="display:flex; gap:8px; margin-left:auto">
                   <button class="btn sm" id="btnPauseBot" onclick="toggleHandoverPause(60)" disabled style="font-size:11.5px; padding:4px 10px" title="Pause AI for 1 hour so receptionist can reply manually">⏸ Pause AI (1 hr)</button>
@@ -5793,12 +5883,12 @@
             <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px; flex-wrap:wrap; gap:10px;">
               <div>
                 <h3 style="display:flex; align-items:center; gap:8px; margin:0 0 4px 0;">
-                  <span>🔔</span> Instant Owner Booking &amp; Lead Alerts
+                  Instant Owner Booking &amp; Lead Alerts
                 </h3>
                 <p class="hint" style="margin:0;">Get notified immediately on WhatsApp, Telegram, or Email whenever a patient/customer requests an appointment or asks for pricing.</p>
               </div>
               <button class="btn sm" type="button" onclick="testOwnerAlert()" id="btnTestOwnerAlert" style="align-self:center;">
-                📨 Send Test Alert
+                Send Test Alert
               </button>
             </div>
 
@@ -6032,7 +6122,7 @@
           <div class="phead" style="margin-bottom:18px;">
             <div>
               <div style="display:flex; align-items:center; gap:8px;">
-                <span style="font-size:22px;">🤖</span>
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="14" x="3" y="6" rx="2"/><path d="M8 2v4"/><path d="M16 2v4"/><circle cx="9" cy="13" r="1.5" fill="currentColor"/><circle cx="15" cy="13" r="1.5" fill="currentColor"/><path d="M10 17h4"/></svg>
                 <h2 style="margin:0;">My Chatbot &amp; Account Master Hub</h2>
               </div>
               <p style="margin:4px 0 0; color:var(--ink2); font-size:13px;">
@@ -6041,7 +6131,7 @@
             </div>
             <div style="display:flex; gap:8px; align-items:center;">
               <button class="btn sm primary" type="button" onclick="toggleBotSimulator()" style="font-weight:700;">
-                💬 Test Bot Live
+                Test Bot Live
               </button>
             </div>
           </div>
@@ -6050,7 +6140,7 @@
           <div id="hubSecurityAlertBanner" style="display:none; background:linear-gradient(135deg, rgba(239,68,68,0.12), rgba(220,38,38,0.06)); border:1.5px solid #ef4444; border-radius:12px; padding:14px 18px; margin-bottom:20px;">
             <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px;">
               <div style="display:flex; align-items:center; gap:10px;">
-                <span style="font-size:22px;">⚠️</span>
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
                 <div>
                   <strong style="color:#b91c1c; font-size:14px;">Mandatory Security Action: Change Default Password</strong>
                   <div style="font-size:12.5px; color:var(--ink2); margin-top:2px;">
@@ -6092,7 +6182,7 @@
             <div class="card" style="border:1px solid var(--line);">
               <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; border-bottom:1px solid var(--line); padding-bottom:10px;">
                 <div style="display:flex; align-items:center; gap:8px;">
-                  <span style="font-size:18px;">🔒</span>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
                   <h3 style="margin:0; font-size:15px;">Account Security &amp; Login</h3>
                 </div>
                 <span id="hubPassStatusBadge" class="badge" style="font-size:11px; font-weight:700;">Secure</span>
@@ -6120,7 +6210,7 @@
                 <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
                   <span style="font-size:11px; color:var(--ink3);">Leave password blank if only updating email.</span>
                   <button type="submit" class="btn primary sm" id="btnHubSavePass" style="font-weight:700;">
-                    💾 Update Security Credentials
+                    Update Security Credentials
                   </button>
                 </div>
               </form>
@@ -6130,7 +6220,7 @@
             <div class="card" style="border:1px solid rgba(59,130,246,0.3); background:linear-gradient(135deg, rgba(59,130,246,0.04), rgba(99,102,241,0.02));">
               <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; border-bottom:1px solid var(--line); padding-bottom:10px;">
                 <div style="display:flex; align-items:center; gap:8px;">
-                  <span style="font-size:18px;">🌐</span>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
                   <h3 style="margin:0; font-size:15px;">Live Webchat &amp; Website Widget</h3>
                 </div>
                 <span class="badge" style="background:#2563eb; color:#fff; font-size:11px; font-weight:700;">Live 24/7</span>
@@ -6166,7 +6256,7 @@
             <div class="card" style="border:1px solid var(--line);">
               <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; border-bottom:1px solid var(--line); padding-bottom:10px;">
                 <div style="display:flex; align-items:center; gap:8px;">
-                  <span style="font-size:18px;">📘</span>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
                   <h3 style="margin:0; font-size:15px;">Facebook &amp; Social Channels</h3>
                 </div>
                 <span id="hubMetaStatusBadge" class="badge" style="font-size:11px; font-weight:700;">Checking…</span>
@@ -6174,7 +6264,7 @@
 
               <div style="background:var(--surface2); border:1px solid var(--line); border-radius:10px; padding:12px 14px; margin-bottom:14px;">
                 <div style="font-weight:700; color:var(--ink); font-size:13px; margin-bottom:4px; display:flex; align-items:center; gap:6px;">
-                  <span>⚡</span> Easiest Way to Connect (Takes 30 Seconds):
+                  Easiest Way to Connect (Takes 30 Seconds):
                 </div>
                 <p style="margin:0 0 8px 0; font-size:12.5px; color:var(--ink2); line-height:1.5;">
                   You do <strong>not</strong> need to set up Meta Developer tools. Simply grant our system management account Task Access to your Facebook Page:
@@ -6189,7 +6279,7 @@
               <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
                 <span style="font-size:12px; color:var(--ink3);">Have your own Meta Token?</span>
                 <div style="display:flex; gap:6px;">
-                  <button type="button" class="btn sm ghost" onclick="openSocialGuideModal('fb')">📘 Self-Serve Guide</button>
+                  <button type="button" class="btn sm ghost" onclick="openSocialGuideModal('fb')">Self-Serve Guide</button>
                   <button type="button" class="btn sm" onclick="switchTab('channels')">Configure Channels &rarr;</button>
                 </div>
               </div>
@@ -6199,11 +6289,11 @@
             <div class="card" style="border:1px solid var(--line);">
               <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; border-bottom:1px solid var(--line); padding-bottom:10px;">
                 <div style="display:flex; align-items:center; gap:8px;">
-                  <span style="font-size:18px;">💳</span>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
                   <h3 style="margin:0; font-size:15px;">Subscription &amp; Payment Details</h3>
                 </div>
                 <button type="button" class="btn sm primary" onclick="openUpgradeModal()" style="font-weight:700;">
-                  🚀 Upgrade / Renew
+                  Upgrade / Renew
                 </button>
               </div>
 
@@ -6222,7 +6312,7 @@
 
               <div style="background:rgba(236,72,153,0.06); border:1px solid rgba(236,72,153,0.22); border-radius:10px; padding:12px 14px;">
                 <div style="font-weight:700; color:#db2777; font-size:12.5px; margin-bottom:4px; display:flex; align-items:center; gap:6px;">
-                  <span>🌸</span> Official bKash Renewal Account:
+                  Official bKash Renewal Account:
                 </div>
                 <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:6px;">
                   <div>
@@ -6242,7 +6332,7 @@
           <div class="card" style="border:1px solid var(--line);">
             <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; flex-wrap:wrap; gap:8px;">
               <div style="display:flex; align-items:center; gap:8px;">
-                <span style="font-size:18px;">🤝</span>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
                 <h3 style="margin:0; font-size:15px;">Autonomous AI &amp; Human Handover Protection</h3>
               </div>
               <div style="display:flex; align-items:center; gap:10px;">
@@ -6501,7 +6591,7 @@
       </div>
 
       <div id="flMandatoryNotice" style="display:none; background:rgba(239,68,68,0.08); border:1px solid rgba(239,68,68,0.3); border-radius:6px; padding:8px 12px; margin-bottom:12px; font-size:12px; color:#b91c1c; font-weight:700;">
-        ⚠️ Mandatory Security Setup: You must set your permanent password before accessing your chatbot dashboard.
+        Mandatory Security Setup: You must set your permanent password before accessing your chatbot dashboard.
       </div>
 
       <label class="f">Your Email Address</label>
@@ -6530,7 +6620,7 @@
       <div style="display:flex; align-items:flex-start; justify-content:space-between; border-bottom:1px solid var(--line); padding-bottom:12px; margin-bottom:14px;">
         <div>
           <div style="display:flex; align-items:center; gap:8px;">
-            <span style="font-size:22px;">📋</span>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg>
             <h3 style="margin:0; font-size:18px; font-weight:800;">Tenant Communication &amp; Message Guidelines</h3>
           </div>
           <p style="margin:4px 0 0; font-size:12.5px; color:var(--ink2);">
@@ -6554,16 +6644,16 @@
       <!-- Template Tabs -->
       <div class="payment-method-tabs" style="margin-bottom:12px;">
         <button type="button" class="pay-method-btn active" id="msgTabBtnOnboarding" onclick="switchMsgTemplateTab('onboarding')">
-          🚀 1. Onboarding &amp; Login
+          1. Onboarding &amp; Login
         </button>
         <button type="button" class="pay-method-btn" id="msgTabBtnPageAccess" onclick="switchMsgTemplateTab('page_access')">
-          📘 2. Facebook Page Access
+          2. Facebook Page Access
         </button>
         <button type="button" class="pay-method-btn" id="msgTabBtnOperating" onclick="switchMsgTemplateTab('operating')">
           ⚙️ 3. Operating Guidelines
         </button>
         <button type="button" class="pay-method-btn" id="msgTabBtnRenewal" onclick="switchMsgTemplateTab('renewal')">
-          💳 4. Payment Reminder (bKash)
+          4. Payment Reminder (bKash)
         </button>
       </div>
 
@@ -6578,7 +6668,7 @@
         <div style="display:flex; gap:8px;">
           <button type="button" class="btn sm ghost" onclick="closeMessageGuidelinesModal()">Close</button>
           <button type="button" class="btn primary sm" id="btnCopyMsgText" onclick="copyCurrentMsgTemplate()" style="font-weight:700; padding:6px 18px;">
-            📋 Copy to Clipboard
+            Copy to Clipboard
           </button>
         </div>
       </div>
@@ -6671,7 +6761,7 @@
       <div style="display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:14px; border-bottom:1px solid var(--line); padding-bottom:12px">
         <div>
           <div style="display:flex; align-items:center; gap:8px">
-            <span style="font-size:22px">📘</span>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
             <h2 style="margin:0; font-size:20px; font-weight:800; color:var(--ink)">Social Channels Connection Guide</h2>
           </div>
           <p style="margin:4px 0 0; font-size:13px; color:var(--ink2)">
@@ -6721,7 +6811,7 @@
       <div style="display:flex; align-items:flex-start; justify-content:space-between; border-bottom:1px solid var(--line); padding-bottom:14px;">
         <div>
           <div style="display:flex; align-items:center; gap:8px;">
-            <span style="font-size:24px;">🚀</span>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>
             <h2 style="margin:0; font-size:22px; font-weight:800; color:var(--ink);">Upgrade Your CCBot Plan</h2>
           </div>
           <p style="margin:4px 0 0; font-size:13px; color:var(--ink2);">
@@ -6741,10 +6831,10 @@
             <p style="font-size:11.5px; color:var(--ink3); margin:4px 0 0;">Ideal for single-page clinics &amp; boutique businesses</p>
           </div>
           <ul class="plan-features">
-            <li>✅ 1 Facebook Page Connected</li>
-            <li>✅ 500 AI Conversations / month</li>
-            <li>✅ Standard Appointment &amp; Lead Capture</li>
-            <li>✅ Knowledge Base &amp; FAQ Wizard</li>
+            <li>1 Facebook Page Connected</li>
+            <li>500 AI Conversations / month</li>
+            <li>Standard Appointment &amp; Lead Capture</li>
+            <li>Knowledge Base &amp; FAQ Wizard</li>
             <li>ℹ️ "Powered by CCBot" badge shown</li>
           </ul>
           <button type="button" class="btn sm plan-select-btn" id="btnSelectStarter">Select Starter</button>
@@ -6759,12 +6849,12 @@
             <p style="font-size:11.5px; color:var(--ink3); margin:4px 0 0;">For high-volume doctors, salons &amp; growing practices</p>
           </div>
           <ul class="plan-features">
-            <li>✅ <strong>FB + Instagram + WhatsApp + Web Widget</strong></li>
-            <li>✅ <strong>3,000 AI Conversations / month</strong></li>
-            <li>✅ <strong>White-Label</strong> (Removes CCBot branding)</li>
-            <li>✅ Instant Telegram &amp; WhatsApp Owner Alerts</li>
-            <li>✅ 1-Click WhatsApp Weekly Performance Digest</li>
-            <li>✅ Human Handover Pause in Live Inbox</li>
+            <li><strong>FB + Instagram + WhatsApp + Web Widget</strong></li>
+            <li><strong>3,000 AI Conversations / month</strong></li>
+            <li><strong>White-Label</strong> (Removes CCBot branding)</li>
+            <li>Instant Telegram &amp; WhatsApp Owner Alerts</li>
+            <li>1-Click WhatsApp Weekly Performance Digest</li>
+            <li>Human Handover Pause in Live Inbox</li>
           </ul>
           <button type="button" class="btn sm primary plan-select-btn" id="btnSelectPro">Selected (Recommended)</button>
         </div>
@@ -6777,11 +6867,11 @@
             <p style="font-size:11.5px; color:var(--ink3); margin:4px 0 0;">Dedicated support &amp; custom persona fine-tuning</p>
           </div>
           <ul class="plan-features">
-            <li>✅ <strong>Unlimited AI Conversations</strong></li>
-            <li>✅ Multi-Location &amp; Multi-Staff Routing</li>
-            <li>✅ Custom Bengali / Banglish Persona Fine-Tuning</li>
-            <li>✅ 100% White-Label &amp; Custom Domain Widget</li>
-            <li>✅ Priority 24/7 Phone &amp; WhatsApp Support</li>
+            <li><strong>Unlimited AI Conversations</strong></li>
+            <li>Multi-Location &amp; Multi-Staff Routing</li>
+            <li>Custom Bengali / Banglish Persona Fine-Tuning</li>
+            <li>100% White-Label &amp; Custom Domain Widget</li>
+            <li>Priority 24/7 Phone &amp; WhatsApp Support</li>
           </ul>
           <button type="button" class="btn sm plan-select-btn" id="btnSelectEnterprise">Select Enterprise</button>
         </div>
@@ -6801,16 +6891,16 @@
         <!-- Payment Method Tabs -->
         <div class="payment-method-tabs">
           <button type="button" class="pay-method-btn active" id="payMethodBkash" onclick="selectPayMethod('bKash')">
-            🌸 bKash (Personal: 01771784474)
+            bKash (Personal: 01771784474)
           </button>
           <button type="button" class="pay-method-btn" id="payMethodNagad" onclick="selectPayMethod('Nagad')">
-            🔥 Nagad (Personal: 01771784474)
+            Nagad (Personal: 01771784474)
           </button>
           <button type="button" class="pay-method-btn" id="payMethodRocket" onclick="selectPayMethod('Rocket')">
-            🚀 Rocket
+            Rocket
           </button>
           <button type="button" class="pay-method-btn" id="payMethodCard" onclick="selectPayMethod('Bank')">
-            🏦 Bank / Card Transfer
+            Bank / Card Transfer
           </button>
         </div>
 
@@ -6852,7 +6942,7 @@
   <!-- Floating Sticky Button: Test My Bot Live -->
   <button id="floatingTestBotBtn" class="floating-test-bot-btn" type="button" onclick="toggleBotSimulator()" title="Test Your Bot Live">
     <span class="sim-pulse-dot"></span>
-    <span>💬 Test Bot Live</span>
+    <span>Test Bot Live</span>
   </button>
 
   <!-- Bot Live Simulator Drawer -->
@@ -6876,11 +6966,11 @@
 
     <!-- Quick Prompt Testing Chips -->
     <div class="sim-quick-chips">
-      <button type="button" class="sim-chip" onclick="simSendChip('Treatment Pricing &amp; Packages')">💰 Pricing</button>
-      <button type="button" class="sim-chip" onclick="simSendChip('Can I book an appointment for tomorrow?')">📅 Book Visit</button>
-      <button type="button" class="sim-chip" onclick="simSendChip('What are your opening hours and off days?')">⏰ Hours</button>
-      <button type="button" class="sim-chip" onclick="simSendChip('Where is your clinic located?')">📍 Location</button>
-      <button type="button" class="sim-chip" onclick="simSendChip('Root canal er cost koto?')">🇧🇩 Banglish Ask</button>
+      <button type="button" class="sim-chip" onclick="simSendChip('Treatment Pricing &amp; Packages')">Pricing</button>
+      <button type="button" class="sim-chip" onclick="simSendChip('Can I book an appointment for tomorrow?')">Book Visit</button>
+      <button type="button" class="sim-chip" onclick="simSendChip('What are your opening hours and off days?')">Hours</button>
+      <button type="button" class="sim-chip" onclick="simSendChip('Where is your clinic located?')">Location</button>
+      <button type="button" class="sim-chip" onclick="simSendChip('Root canal er cost koto?')">Banglish Ask</button>
     </div>
 
     <!-- Chat Messages Container -->
@@ -6983,7 +7073,7 @@
             if (brandSubTxt) brandSubTxt.textContent = 'Master Control Hub';
             document.title = 'CC Chatbot — Master Admin';
             const brandLogoBadge = document.getElementById('brandLogoBadge');
-            if (brandLogoBadge) brandLogoBadge.textContent = '👑';
+            if (brandLogoBadge) brandLogoBadge.textContent = 'CC';
 
             switchTab('tenants');
             try {
@@ -7136,7 +7226,7 @@
         body.innerHTML = `
           <div style="display:flex; flex-direction:column; gap:14px">
             <div style="background:rgba(24,119,242,0.06); border:1px solid rgba(24,119,242,0.22); border-radius:8px; padding:12px 14px">
-              <div style="font-weight:800; color:#1877F2; margin-bottom:4px; font-size:13.5px">📘 Step 1: Create or Open Your Meta App</div>
+              <div style="font-weight:800; color:#1877F2; margin-bottom:4px; font-size:13.5px"> Step 1: Create or Open Your Meta App</div>
               <div style="color:var(--ink2)">Go to <a href="https://developers.facebook.com/apps" target="_blank" style="color:#1877F2; font-weight:700; text-decoration:underline">developers.facebook.com/apps</a>, sign in with your Facebook account, and select or create an App with type <strong>Business</strong>.</div>
             </div>
 
@@ -7153,7 +7243,7 @@
             </div>
 
             <div style="background:var(--surface2); border:1px solid var(--line); border-radius:8px; padding:12px 14px">
-              <div style="font-weight:700; color:var(--ink); margin-bottom:4px; font-size:13.5px">🔑 Step 3: Generate Page Access Token &amp; Copy App Secret</div>
+              <div style="font-weight:700; color:var(--ink); margin-bottom:4px; font-size:13.5px"> Step 3: Generate Page Access Token &amp; Copy App Secret</div>
               <div style="color:var(--ink2)">Under <strong>Messenger &gt; API Settings</strong>:</div>
               <ul style="margin:8px 0 0 18px; padding:0; line-height:1.7; color:var(--ink2)">
                 <li>Add or select your business <strong>Facebook Page</strong>.</li>
@@ -7164,7 +7254,7 @@
             </div>
 
             <div style="background:rgba(16,185,129,0.06); border:1px solid rgba(16,185,129,0.25); border-radius:8px; padding:12px 14px">
-              <div style="font-weight:700; color:#059669; margin-bottom:4px; font-size:13.5px">✅ Step 4: Paste into Crown Bot Dashboard</div>
+              <div style="font-weight:700; color:#059669; margin-bottom:4px; font-size:13.5px">Step 4: Paste into Crown Bot Dashboard</div>
               <div style="color:var(--ink2)">Navigate to <strong>Channels</strong> tab in this dashboard:</div>
               <ul style="margin:8px 0 0 18px; padding:0; line-height:1.7; color:var(--ink2)">
                 <li>Paste your <strong>Page Access Token</strong> and <strong>Page ID</strong>.</li>
@@ -7175,7 +7265,7 @@
             </div>
 
             <div style="background:rgba(99,102,241,0.06); border:1px solid rgba(99,102,241,0.25); border-radius:8px; padding:12px 14px">
-              <div style="font-weight:700; color:var(--accent-light); margin-bottom:4px; font-size:13.5px">🌐 Step 5: Switch App from "In Development" to "Live"</div>
+              <div style="font-weight:700; color:var(--accent-light); margin-bottom:4px; font-size:13.5px"> Step 5: Switch App from "In Development" to "Live"</div>
               <div style="color:var(--ink2)">In <a href="https://developers.facebook.com/apps" target="_blank" rel="noopener" style="color:var(--accent); font-weight:600">Meta Developer Portal</a> &gt; <em>App Settings &gt; Basic</em>:</div>
               <ul style="margin:8px 0 0 18px; padding:0; line-height:1.7; color:var(--ink2)">
                 <li><strong>Privacy Policy URL:</strong> <code style="background:var(--surface); padding:2px 6px; border-radius:4px; font-weight:700; color:var(--accent); font-family:var(--font-mono)">${window.location.origin}/privacy</code> <button type="button" class="btn xs" style="padding:1px 6px; margin-left:6px" onclick="copyToClipboard(window.location.origin + '/privacy')">Copy</button></li>
@@ -7190,7 +7280,7 @@
         body.innerHTML = `
           <div style="display:flex; flex-direction:column; gap:14px">
             <div style="background:rgba(225,48,108,0.09); border:1px solid rgba(225,48,108,0.3); border-radius:8px; padding:13px 15px">
-              <div style="font-weight:800; color:#E1306C; margin-bottom:4px; font-size:13.5px">⚠️ CRITICAL: Instagram Mobile App Privacy Setting (MUST DO FIRST)</div>
+              <div style="font-weight:800; color:#E1306C; margin-bottom:4px; font-size:13.5px">CRITICAL: Instagram Mobile App Privacy Setting (MUST DO FIRST)</div>
               <div style="color:var(--ink); line-height:1.55">Meta will silently drop messages unless this toggle is enabled in your Instagram mobile app:</div>
               <ol style="margin:8px 0 0 18px; padding:0; line-height:1.75; color:var(--ink)">
                 <li>Open the <strong>Instagram app</strong> on your mobile phone logged into your business profile.</li>
@@ -7201,7 +7291,7 @@
             </div>
 
             <div style="background:var(--surface2); border:1px solid var(--line); border-radius:8px; padding:12px 14px">
-              <div style="font-weight:700; color:var(--ink); margin-bottom:4px; font-size:13.5px">📱 Step 2: Ensure Professional Account &amp; Facebook Page Link</div>
+              <div style="font-weight:700; color:var(--ink); margin-bottom:4px; font-size:13.5px"> Step 2: Ensure Professional Account &amp; Facebook Page Link</div>
               <ul style="margin:8px 0 0 18px; padding:0; line-height:1.7; color:var(--ink2)">
                 <li>Your Instagram account must be a <strong>Professional (Business or Creator)</strong> account. (Switch via Settings &gt; Account type and tools).</li>
                 <li>Connect your Instagram account to your Facebook Page in Meta Business Suite or Page Settings.</li>
@@ -7220,7 +7310,7 @@
             </div>
 
             <div style="background:rgba(16,185,129,0.06); border:1px solid rgba(16,185,129,0.25); border-radius:8px; padding:12px 14px">
-              <div style="font-weight:700; color:#059669; margin-bottom:4px; font-size:13.5px">🔑 Step 4: Add Instagram Credentials to Dashboard</div>
+              <div style="font-weight:700; color:#059669; margin-bottom:4px; font-size:13.5px"> Step 4: Add Instagram Credentials to Dashboard</div>
               <div style="color:var(--ink2)">Under Multi-Channels &gt; Instagram Direct:</div>
               <ul style="margin:8px 0 0 18px; padding:0; line-height:1.7; color:var(--ink2)">
                 <li>Enter your <strong>Instagram Access Token</strong> and <strong>Instagram Business Account ID</strong>.</li>
@@ -7233,7 +7323,7 @@
         body.innerHTML = `
           <div style="display:flex; flex-direction:column; gap:14px">
             <div style="background:rgba(37,211,102,0.08); border:1px solid rgba(37,211,102,0.3); border-radius:8px; padding:12px 14px">
-              <div style="font-weight:700; color:#128C7E; margin-bottom:4px; font-size:13.5px">💬 Step 1: Add WhatsApp to Your Meta App</div>
+              <div style="font-weight:700; color:#128C7E; margin-bottom:4px; font-size:13.5px"> Step 1: Add WhatsApp to Your Meta App</div>
               <div style="color:var(--ink2)">In Meta for Developers, create or open a <strong>Business</strong> App, and click <strong>Set Up</strong> on the <strong>WhatsApp</strong> card.</div>
             </div>
 
@@ -7249,7 +7339,7 @@
             </div>
 
             <div style="background:var(--surface2); border:1px solid var(--line); border-radius:8px; padding:12px 14px">
-              <div style="font-weight:700; color:var(--ink); margin-bottom:4px; font-size:13.5px">🔑 Step 3: Get Permanent System User Token &amp; IDs</div>
+              <div style="font-weight:700; color:var(--ink); margin-bottom:4px; font-size:13.5px"> Step 3: Get Permanent System User Token &amp; IDs</div>
               <div style="color:var(--ink2)">Under <strong>WhatsApp &gt; API Setup</strong>:</div>
               <ul style="margin:8px 0 0 18px; padding:0; line-height:1.7; color:var(--ink2)">
                 <li>Copy <strong>Phone Number ID</strong>.</li>
@@ -7259,7 +7349,7 @@
             </div>
 
             <div style="background:rgba(16,185,129,0.06); border:1px solid rgba(16,185,129,0.25); border-radius:8px; padding:12px 14px">
-              <div style="font-weight:700; color:#059669; margin-bottom:4px; font-size:13.5px">✅ Step 4: Connect in Dashboard</div>
+              <div style="font-weight:700; color:#059669; margin-bottom:4px; font-size:13.5px">Step 4: Connect in Dashboard</div>
               <div style="color:var(--ink2)">Paste your <strong>Phone Number ID</strong> and <strong>Access Token</strong> into the Multi-Channels WhatsApp section, then click <strong>Save WhatsApp Credentials</strong>.</div>
             </div>
           </div>
@@ -7269,7 +7359,7 @@
         body.innerHTML = `
           <div style="display:flex; flex-direction:column; gap:14px">
             <div style="background:var(--surface2); border:1px solid var(--line); border-radius:8px; padding:14px">
-              <div style="font-weight:700; color:var(--ink); margin-bottom:6px; font-size:13.5px">🌐 Embed AI Chat Directly on Your Website</div>
+              <div style="font-weight:700; color:var(--ink); margin-bottom:6px; font-size:13.5px"> Embed AI Chat Directly on Your Website</div>
               <p style="margin:0 0 12px; font-size:12.5px; color:var(--ink2)">Paste this snippet just before the closing <code>&lt;/body&gt;</code> tag on your clinic or business website to add an instant floating chat widget.</p>
               <div style="position:relative">
                 <pre style="background:var(--surface); border:1px solid var(--line); border-radius:6px; padding:12px 14px; font-size:12px; overflow-x:auto; margin:0; font-family:var(--font-mono); color:var(--ink); line-height:1.5">${esc(snippet)}</pre>
@@ -7277,7 +7367,7 @@
               </div>
             </div>
             <div style="background:rgba(255,183,165,0.14); border:1px solid rgba(255,183,165,0.35); border-radius:8px; padding:12px 14px">
-              <div style="font-weight:700; color:var(--accent); margin-bottom:4px; font-size:13px">💡 Direct Online Chat Link</div>
+              <div style="font-weight:700; color:var(--accent); margin-bottom:4px; font-size:13px">Direct Online Chat Link</div>
               <div style="color:var(--ink2); font-size:12px">You can also share direct chat with patients or customers: <a href="${origin}/chat?ws=${wsId}" target="_blank" style="color:var(--accent); font-weight:600; text-decoration:underline">${origin}/chat?ws=${wsId}</a></div>
             </div>
           </div>
@@ -7674,15 +7764,15 @@
         const isAppt = o.kind === 'appointment' || (o.details && /appointment|booking|consult|scaling|root canal|dental|doctor|clinic/i.test(o.details));
         const isInq = o.kind === 'inquiry';
         const kindBadge = isAppt 
-          ? `<span class="pill" style="font-size:10px; padding:2px 7px; background:rgba(99, 102, 241, 0.15); color:#6366f1; font-weight:700; border:1px solid rgba(99, 102, 241, 0.3)">📅 APPOINTMENT</span>`
+          ? `<span class="pill" style="font-size:10px; padding:2px 7px; background:rgba(99, 102, 241, 0.15); color:#6366f1; font-weight:700; border:1px solid rgba(99, 102, 241, 0.3)"> APPOINTMENT</span>`
           : (isInq 
-            ? `<span class="pill" style="font-size:10px; padding:2px 7px; background:rgba(245, 158, 11, 0.15); color:#d97706; font-weight:700; border:1px solid rgba(245, 158, 11, 0.3)">💬 INQUIRY</span>`
-            : `<span class="pill" style="font-size:10px; padding:2px 7px; background:rgba(16, 185, 129, 0.15); color:#059669; font-weight:700; border:1px solid rgba(16, 185, 129, 0.3)">🛍️ ORDER</span>`);
+            ? `<span class="pill" style="font-size:10px; padding:2px 7px; background:rgba(245, 158, 11, 0.15); color:#d97706; font-weight:700; border:1px solid rgba(245, 158, 11, 0.3)"> INQUIRY</span>`
+            : `<span class="pill" style="font-size:10px; padding:2px 7px; background:rgba(16, 185, 129, 0.15); color:#059669; font-weight:700; border:1px solid rgba(16, 185, 129, 0.3)">️ ORDER</span>`);
 
         const platformBadge = `<span class="pill" style="font-size:10px; padding:2px 6px; text-transform:uppercase; background:var(--surface2); color:var(--ink2)">${esc(o.platform || 'web')}</span>`;
 
         const hasScheduleOrAddr = !!o.customer_address;
-        const scheduleLabel = isAppt ? '📅 Schedule:' : '📍 Address:';
+        const scheduleLabel = isAppt ? 'Schedule:' : 'Address:';
 
         return `
       <tr>
@@ -7712,7 +7802,7 @@
         <td style="text-align:right">
           <div style="display:inline-flex; gap:6px; justify-content:flex-end; align-items:center">
             ${o.conv_id ? `
-              <button class="btn sm ghost" onclick="openConversationInInbox(${o.conv_id})" title="Open live customer dialogue in Inbox" style="font-size:11.5px; padding:4px 8px">💬 Chat</button>
+              <button class="btn sm ghost" onclick="openConversationInInbox(${o.conv_id})" title="Open live customer dialogue in Inbox" style="font-size:11.5px; padding:4px 8px">Chat</button>
             ` : ''}
             ${o.status === 'pending' ? `
               <button class="btn sm primary" onclick="confirmOrder(${o.id})">${isAppt ? 'Confirm Slot' : 'Confirm'}</button>
@@ -7774,7 +7864,7 @@
       } finally {
         if (btn) {
           btn.disabled = false;
-          btn.innerHTML = origHtml || '⚡ Simulate Sample Order';
+          btn.innerHTML = origHtml || 'Simulate Sample Order';
         }
       }
     }
@@ -7836,7 +7926,7 @@
             </div>
             <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap">
               <span style="font-size:11px; color:var(--ink3)">ID: #${ws.id} · Created: ${new Date(ws.created_at).toLocaleDateString()}</span>
-              ${ws.custom_domain ? `<span class="badge" style="font-size:10px; font-family:monospace; background:rgba(6,182,212,0.12); color:#06b6d4; border:1px solid rgba(6,182,212,0.25)">🌐 ${esc(ws.custom_domain)}</span>` : ''}
+              ${ws.custom_domain ? `<span class="badge" style="font-size:10px; font-family:monospace; background:rgba(6,182,212,0.12); color:#06b6d4; border:1px solid rgba(6,182,212,0.25)"> ${esc(ws.custom_domain)}</span>` : ''}
             </div>
           </div>
         </td>
@@ -7862,11 +7952,11 @@
         <td style="text-align:right">
           <div style="display:inline-flex; gap:6px; flex-wrap:wrap; justify-content:flex-end">
             <button class="btn sm" onclick="switchWorkspace(${ws.id}); switchTab('dash');">Manage</button>
-            <button class="btn sm ghost" style="color:var(--accent); font-weight:700;" onclick="openMessageGuidelinesModal(${ws.id})" title="Copy formatted client message for WhatsApp/Messenger">💬 Copy Message</button>
+            <button class="btn sm ghost" style="color:var(--accent); font-weight:700;" onclick="openMessageGuidelinesModal(${ws.id})" title="Copy formatted client message for WhatsApp/Messenger"> Copy Message</button>
             <button class="btn sm" onclick="activatePackagePrompt(${ws.id}, '${esc(ws.name)}')">+ Paid Package</button>
             <button class="btn sm ghost" onclick="extendTrialPrompt(${ws.id}, '${esc(ws.name)}')">+ Trial</button>
             <button class="btn sm ghost" onclick="setCustomDomainPrompt(${ws.id}, '${esc(ws.name)}', '${esc(ws.custom_domain || '')}')" title="Configure custom domain">Domain</button>
-            <button class="btn sm ghost" onclick="emailCredentialsPrompt(${ws.id}, '${esc(ws.name)}', '${esc(user.email || sub.contact_email || '')}')" title="Dispatch credentials and domain to email">✉️ Email Creds</button>
+            <button class="btn sm ghost" onclick="emailCredentialsPrompt(${ws.id}, '${esc(ws.name)}', '${esc(user.email || sub.contact_email || '')}')" title="Dispatch credentials and domain to email">️ Email Creds</button>
             <button class="btn sm ghost" onclick="openResetPassModal(${ws.id}, '${esc(ws.name)}')">Reset Pass</button>
             <button class="btn sm ghost" onclick="openRenewalModal(${ws.id}, '${esc(ws.name)}', '${esc(user.email || sub.contact_email || '')}', ${sub.monthly_fee || 500}, '${sub.active_until || ''}')">Invoice</button>
             ${!isPrimary ? `<button class="btn sm ghost" style="color:var(--danger)" onclick="deleteTenantWs(${ws.id})">Delete</button>` : ''}
@@ -8086,9 +8176,9 @@
         const d = await res.json();
         if (res.ok && d.ok) {
           chip(`Credentials emailed to ${recipient.trim()}`);
-          alert(`✅ Credentials and dedicated portal dispatched to: ${recipient.trim()}\n\nDedicated Domain: ${d.details?.domain || 'Auto-routed'}\nAdmin User: ${d.details?.email || recipient.trim()}`);
+          alert(`Success: Credentials and dedicated portal dispatched to: ${recipient.trim()}\n\nDedicated Domain: ${d.details?.domain || 'Auto-routed'}\nAdmin User: ${d.details?.email || recipient.trim()}`);
         } else {
-          alert(`⚠️ Could not send email: ${d.error || 'Check SMTP configuration in environment'}`);
+          alert(`Notice: Could not send email: ${d.error || 'Check SMTP configuration in environment'}`);
         }
       } catch (e) {
         alert(`Failed to send email: ${e.message}`);
@@ -8109,7 +8199,7 @@
       } catch (e) {
         alert('Backup failed: ' + e.message);
       } finally {
-        if (btn) { btn.disabled = false; btn.textContent = '💾 Backup Database'; }
+        if (btn) { btn.disabled = false; btn.textContent = 'Backup Database'; }
       }
     }
 
@@ -8155,7 +8245,7 @@
         const origin = location.origin + API;
         const assignedDomain = d.tenant.workspace.custom_domain || (subdomain ? `${subdomain}.ccadmin.online` : '');
         const botUrl = assignedDomain ? `https://${assignedDomain}/` : `${location.origin}/chat?ws=${d.tenant.workspace.id}`;
-        const mailStatus = d.emailDispatched ? '✅ Sent to ' + d.tenant.credentials.email : (d.tenant.emailError ? '⚠️ Email error: ' + d.tenant.emailError : 'ℹ️ Saved (SMTP not configured)');
+        const mailStatus = d.emailDispatched ? 'Sent to ' + d.tenant.credentials.email : (d.tenant.emailError ? '️ Email error: ' + d.tenant.emailError : 'ℹ️ Saved (SMTP not configured)');
         document.getElementById('ntCredsBox').textContent =
           `Client Business:  ${d.tenant.workspace.name}
 Dedicated Domain: ${assignedDomain || 'Standard shared pool'}
@@ -8324,7 +8414,7 @@ Crown Operations Support`;
     function dismissFirstLoginModal() {
       if (currentUser?.must_change_password) {
         const err = document.getElementById('flErr');
-        if (err) err.textContent = '⚠️ Password change is mandatory to secure your business chatbot before entering the dashboard.';
+        if (err) err.textContent = 'Notice: Password change is mandatory to secure your business chatbot before entering the dashboard.';
         return;
       }
       document.getElementById('firstLoginModal').classList.remove('open');
@@ -8435,7 +8525,7 @@ Crown Operations Support`;
       const fbMetaBadge = document.getElementById('hubMetaStatusBadge');
       const isFbActive = !!(S?.channels?.facebook?.enabled && S?.channels?.facebook?.pageToken);
       if (fbMetaBadge) {
-        fbMetaBadge.textContent = isFbActive ? 'Connected 🟢' : 'Pending Connection ⚪';
+        fbMetaBadge.textContent = isFbActive ? 'Connected' : 'Pending Connection';
         fbMetaBadge.style.background = isFbActive ? 'rgba(16,185,129,0.12)' : 'rgba(100,116,139,0.12)';
         fbMetaBadge.style.color = isFbActive ? 'var(--good)' : 'var(--ink3)';
       }
@@ -8516,7 +8606,7 @@ Crown Operations Support`;
       } catch (err) {
         if (err) { err.style.display = 'block'; err.textContent = 'Network error. Please try again.'; }
       } finally {
-        if (btn) { btn.disabled = false; btn.textContent = '💾 Update Security Credentials'; }
+        if (btn) { btn.disabled = false; btn.textContent = 'Update Security Credentials'; }
       }
     }
     window.submitHubPassword = submitHubPassword;
@@ -8634,22 +8724,22 @@ Crown Operations Support`;
 
       let text = '';
       if (_msgGuideActiveTab === 'onboarding') {
-        text = `Welcome to Crown AI Operations! 🚀
+        text = `Welcome to Crown AI Operations!
 
 Here are your official login credentials for your business chatbot operations center:
 
-🔗 Platform URL: https://bot.ccadmin.online/chatbotadmin/
-📧 Login Email: ${email}
-🔑 Temporary Password: ${pass}
+Platform URL: https://bot.ccadmin.online/chatbotadmin/
+Login Email: ${email}
+Temporary Password: ${pass}
 
-⚠️ MANDATORY SECURITY STEP:
+MANDATORY SECURITY STEP:
 Please log in immediately and set your personal secure password under "Chatbot Hub" -> "Account Security". For your safety, do not share this temporary password.
 
 Once logged in, you can test your AI assistant live, configure your service catalog, and monitor real-time customer inquiries.
 
 If you need any assistance, our support team is ready to help!`;
       } else if (_msgGuideActiveTab === 'page_access') {
-        text = `How to Connect Your Facebook Page to CCBot (Takes 30 Seconds) 📘
+        text = `How to Connect Your Facebook Page to CCBot (Takes 30 Seconds)
 
 To activate 24/7 automated AI replies on your Facebook Messenger, please grant our management profile Task Access (Messages):
 
@@ -8659,43 +8749,43 @@ To activate 24/7 automated AI replies on your Facebook Messenger, please grant o
 4. Search for our management account: Crown Operations (or enter our email).
 5. Toggle "Messages" (Community Activity) to ON, and click "Give Access".
 
-✅ Once granted, reply to this message! Our technical team will activate your 24/7 AI chatbot within 10 minutes. Zero developer tools required on your end!`;
+Once granted, reply to this message! Our technical team will activate your 24/7 AI chatbot within 10 minutes. Zero developer tools required on your end!`;
       } else if (_msgGuideActiveTab === 'operating') {
         text = `Crown Operations AI Chatbot — General Guidelines & Tips ⚙️
 
 Here is how to get the most out of your 24/7 AI chatbot:
 
-1. 💬 Test Your Bot Anytime:
+1. Test Your Bot Anytime:
 Click "Test Bot Live" inside your dashboard or visit your dedicated web chat link to test how your AI answers patient/customer queries in English, Bengali, or Banglish.
 
-2. 🤝 Automatic Human Handover (Peace of Mind):
+2. Automatic Human Handover:
 Whenever you or your staff replies to a customer directly in Facebook Page Inbox or CCBot Live Inbox, the AI automatically pauses for 30 minutes on that conversation so you always have full priority.
 
-3. 📝 Updating Treatments, Prices & Hours:
+3. Updating Treatments, Prices & Hours:
 Need to change prices, add a new service, or update opening hours? Update them in your "Treatments & Services" tab, and your bot will instantly know the new information.
 
-4. 🌐 Share Your Direct Chat Link:
+4. Share Your Direct Chat Link:
 Put your direct webchat link in your Instagram Bio and website so customers can chat and book 24/7 without needing social media.`;
       } else {
-        text = `Monthly Subscription Renewal Notice 💳
+        text = `Monthly Subscription Renewal Notice
 
 Dear ${bName},
 
 This is a reminder that your monthly subscription for Crown Operations AI Chatbot is due for renewal (${days} days remaining).
 
-📋 Package Details:
+Package Details:
 - Plan: ${plan}
 - Total Renewal Amount: BDT ${fee.toLocaleString()}
   (Includes standard platform fee: ৳20 per ৳500)
 
-🌸 bKash Payment Instructions:
+bKash Payment Instructions:
 1. Open your bKash app or dial *247# -> Choose "Send Money".
 2. Enter Account Number: 01771784474 (Personal)
 3. Enter exact amount: BDT ${fee.toLocaleString()}
 4. Enter Reference: ${refName}
 5. Confirm with PIN and copy the TrxID.
 
-⚡ Instant 30-Day Activation:
+Instant 30-Day Activation:
 Enter your TrxID in your dashboard (Chatbot Hub -> Upgrade/Renew) or reply with your TrxID here to keep your chatbot running smoothly.
 
 Thank you for partnering with Crown Operations!`;
@@ -8712,7 +8802,7 @@ Thank you for partnering with Crown Operations!`;
 
       copyToClipboard(area.value);
       if (statusEl) {
-        statusEl.textContent = '✅ Message copied to clipboard!';
+        statusEl.textContent = 'Message copied to clipboard!';
         setTimeout(() => { statusEl.textContent = ''; }, 3000);
       }
       if (btn) {
@@ -8767,6 +8857,7 @@ Thank you for partnering with Crown Operations!`;
         })
         .catch(() => ({ config: {} }));
       S = d.config || {};
+      if (d.readiness) S.readiness = d.readiness;
 
       if (currentUser?.role !== 'master_admin') {
         const bizName = (currentWorkspaceId === 1 ? 'CC' : (S?.business?.name || S?.cafe?.name || 'My Business'));
@@ -8782,6 +8873,8 @@ Thank you for partnering with Crown Operations!`;
       paintOpen(d.open);
       paintStats(d.stats);
       loadOrders();
+      if (typeof updateLaunchChecklist === 'function') updateLaunchChecklist();
+      if (typeof updateDashGateUI === 'function') updateDashGateUI();
 
       const curWs = workspaces.find(w => w.id === currentWorkspaceId);
       const domText = document.getElementById('dashDomainStatusText');
@@ -8799,9 +8892,12 @@ Thank you for partnering with Crown Operations!`;
         });
         if (r.ok) {
           const d = await r.json();
+          if (d.readiness) S.readiness = d.readiness;
           paintPrompt(d.prompt);
           paintOpen(d.open);
           if (d.stats) paintStats(d.stats);
+          if (typeof updateLaunchChecklist === 'function') updateLaunchChecklist();
+          if (typeof updateDashGateUI === 'function') updateDashGateUI();
           chip('Active & Synced');
         } else {
           chip('Save failed');
@@ -8988,7 +9084,7 @@ Thank you for partnering with Crown Operations!`;
     }
 
     function startMeetingDemo() {
-      alert('🔔 Executive Video Standup with Arc Company:\n\nTopic: Q4 AI Chatbot Deployment & Production Metrics\nScheduled: 10:00 AM - 04:00 PM\nStatus: Room Active & Encrypted');
+      alert('Executive Video Standup with Arc Company:\n\nTopic: Q4 AI Chatbot Deployment & Production Metrics\nScheduled: 10:00 AM - 04:00 PM\nStatus: Room Active & Encrypted');
     }
 
     function openAddMemberModal() {
@@ -9366,7 +9462,7 @@ Thank you for partnering with Crown Operations!`;
               S.channels.facebook.pageId = String(data.id).trim();
               if (pageIdInput) pageIdInput.value = String(data.id).trim();
               save();
-              extraMsg = `<div style="margin-top:6px; font-size:12px; color:var(--accent); font-weight:700">⚡ Page ID auto-corrected to "${data.id}" and saved!</div>`;
+              extraMsg = `<div style="margin-top:6px; font-size:12px; color:var(--accent); font-weight:700">Page ID auto-corrected to "${data.id}" and saved!</div>`;
             }
           }
 
@@ -9842,7 +9938,7 @@ Thank you for partnering with Crown Operations!`;
 
       if (!('Notification' in window)) {
         alert('Browser notifications are not supported in this browser.');
-        if (notifBtn) notifBtn.textContent = origText || '🔔 Enable Notifications';
+        if (notifBtn) notifBtn.textContent = origText || 'Enable Notifications';
         return;
       }
 
@@ -9854,7 +9950,7 @@ Thank you for partnering with Crown Operations!`;
 
         if (perm !== 'granted') {
           alert('Notification permission: ' + perm + '. If you are using Incognito mode or your browser blocks notifications, please check your browser address bar permissions.');
-          if (notifBtn) notifBtn.textContent = '🔔 Enable Notifications';
+          if (notifBtn) notifBtn.textContent = 'Enable Notifications';
           return;
         }
 
@@ -9897,7 +9993,7 @@ Thank you for partnering with Crown Operations!`;
 
       } catch (e) {
         alert('Could not enable notifications: ' + e.message);
-        if (notifBtn) notifBtn.textContent = '🔔 Enable Notifications';
+        if (notifBtn) notifBtn.textContent = 'Enable Notifications';
       }
     }
     window.enablePushNotifications = enablePushNotifications;
@@ -9976,7 +10072,7 @@ Thank you for partnering with Crown Operations!`;
         if (cb) { cb.disabled = false; cb.checked = !!d.conversation?.bot_enabled; }
         if (badge) {
           const platName = d.conversation?.platform || 'Unknown';
-          const platIcon = platName === 'facebook' ? '📘' : platName === 'instagram' ? '📷' : platName === 'whatsapp' ? '📱' : '💬';
+          const platIcon = platName === 'facebook' ? '[FB]' : platName === 'instagram' ? '[IG]' : platName === 'whatsapp' ? '[WA]' : '[Chat]';
           badge.textContent = `${platIcon} ${platName.charAt(0).toUpperCase() + platName.slice(1)}`;
         }
         updateHandoverUi(d.conversation);
@@ -10042,7 +10138,7 @@ Thank you for partnering with Crown Operations!`;
         cb.disabled = false;
         cb.checked = !!d.conversation?.bot_enabled;
         const platName = d.conversation?.platform || 'Unknown';
-        const platIcon = platName === 'facebook' ? '📘' : platName === 'instagram' ? '📷' : platName === 'whatsapp' ? '📱' : '💬';
+        const platIcon = platName === 'facebook' ? '[FB]' : platName === 'instagram' ? '[IG]' : platName === 'whatsapp' ? '[WA]' : '[Chat]';
         badge.textContent = `${platIcon} ${platName.charAt(0).toUpperCase() + platName.slice(1)}`;
         updateHandoverUi(d.conversation);
       } catch (err) {
@@ -10090,7 +10186,7 @@ Thank you for partnering with Crown Operations!`;
         if (btnPause) { btnPause.style.display = 'inline-flex'; btnPause.disabled = true; }
         if (btnResume) btnResume.style.display = 'none';
         if (dot) dot.className = 'handover-dot';
-        txt.textContent = '🤖 Select a customer thread to manage AI Handover';
+        txt.textContent = 'Select a customer thread to manage AI Handover';
         return;
       }
 
@@ -10112,7 +10208,7 @@ Thank you for partnering with Crown Operations!`;
         if (btnPause) { btnPause.style.display = 'inline-flex'; btnPause.disabled = false; }
         if (btnResume) btnResume.style.display = 'none';
         if (dot) dot.className = 'handover-dot';
-        txt.textContent = '🤖 AI Autonomous Bot Active (Replies immediately)';
+        txt.textContent = 'AI Autonomous Bot Active (Replies immediately)';
       }
     }
 
@@ -10155,6 +10251,128 @@ Thank you for partnering with Crown Operations!`;
       }
     }
 
+    /* ---------- DASHBOARD LIVE BOT READINESS GATE & CONTROLS ---------- */
+    function updateDashGateUI() {
+      const card = document.getElementById('dashLiveGateCard');
+      if (!card) return;
+
+      const dot = document.getElementById('dashGateDot');
+      const txt = document.getElementById('dashGateStatusTxt');
+      const title = document.getElementById('dashGateTitle');
+      const desc = document.getElementById('dashGateDesc');
+      const btn = document.getElementById('btnDashToggleBot');
+      const btnTxt = document.getElementById('btnDashToggleBotTxt');
+
+      const rd = S?.readiness;
+      const isFlagship = currentWorkspaceId === 1;
+      const isMaster = currentUser?.role === 'master_admin';
+      const isTrained = isFlagship || isMaster || !!(rd && rd.isReady);
+      const isLive = S?.bot_enabled !== false;
+
+      if (!isTrained) {
+        if (dot) dot.className = 'status-dot amber';
+        if (txt) { txt.textContent = 'Training Incomplete'; txt.style.color = 'var(--warn)'; }
+        if (title) title.textContent = 'Mandatory Bot Training Required';
+        const missingCount = (rd?.missing?.length) || 4;
+        if (desc) desc.textContent = `Complete all 4 training steps below (${missingCount} remaining) before activating 24/7 auto-reply.`;
+        if (btn) {
+          btn.className = 'btn ghost';
+          btn.title = 'Complete required training steps to unlock live bot';
+        }
+        if (btnTxt) btnTxt.textContent = 'Complete Training to Unlock';
+      } else if (isLive) {
+        if (dot) dot.className = 'status-dot green';
+        if (txt) { txt.textContent = 'Live Auto-Reply Active'; txt.style.color = 'var(--good)'; }
+        if (title) title.textContent = 'Bot is Live & Responding 24/7';
+        if (desc) desc.textContent = 'Your AI assistant is answering customer inquiries across connected social channels and web widget.';
+        if (btn) {
+          btn.className = 'btn ghost';
+          btn.title = 'Temporarily pause bot auto-replies';
+        }
+        if (btnTxt) btnTxt.textContent = 'Pause Auto-Reply';
+      } else {
+        if (dot) dot.className = 'status-dot gray';
+        if (txt) { txt.textContent = 'Bot Paused (Manual Mode)'; txt.style.color = 'var(--ink2)'; }
+        if (title) title.textContent = 'Bot Auto-Reply is Paused';
+        if (desc) desc.textContent = 'Human staff mode: the bot will not automatically reply to incoming customer messages.';
+        if (btn) {
+          btn.className = 'btn primary';
+          btn.title = 'Turn on live AI auto-reply';
+        }
+        if (btnTxt) btnTxt.textContent = 'Activate Live Bot';
+      }
+    }
+    window.updateDashGateUI = updateDashGateUI;
+
+    async function toggleDashLiveBot() {
+      if (!S) return;
+
+      // Ensure latest readiness
+      let rd = S.readiness;
+      try {
+        const r = await api('/api/tenant/readiness');
+        if (r.ok) {
+          rd = await r.json();
+          S.readiness = rd;
+        }
+      } catch (err) {
+        console.warn('Readiness fetch error:', err);
+      }
+
+      const isFlagship = currentWorkspaceId === 1;
+      const isMaster = currentUser?.role === 'master_admin';
+      const isTrained = isFlagship || isMaster || !!(rd && rd.isReady);
+      const isCurrentlyActive = S.bot_enabled !== false;
+
+      if (!isCurrentlyActive) {
+        // Trying to activate
+        if (!isTrained) {
+          const missingItems = (rd?.missing && rd.missing.length)
+            ? rd.missing.map(m => `• ${m}`).join("\n")
+            : `• Business Profile & Hours\n• At least 3 Services / Catalog items\n• At least 3 Common Questions & Answers\n• Send 1 Test Chat in Simulator`;
+          alert(`Bot Training Incomplete
+
+Your bot cannot go live until mandatory training is finished:
+
+${missingItems}
+
+Please complete the checklist steps below.`);
+          const clCard = document.getElementById('launchChecklistCard');
+          if (clCard) clCard.scrollIntoView({ behavior: 'smooth' });
+          return;
+        }
+        S.bot_enabled = true;
+      } else {
+        // Pausing
+        S.bot_enabled = false;
+      }
+
+      const res = await api(`/api/config?workspace_id=${currentWorkspaceId}`, {
+        method: 'PUT',
+        body: JSON.stringify({ config: S, workspace_id: currentWorkspaceId })
+      });
+
+      if (res.ok) {
+        const d = await res.json();
+        if (d.readiness) S.readiness = d.readiness;
+        chip(S.bot_enabled ? 'Live bot auto-reply activated' : 'Live bot paused (manual replies only)');
+        updateDashGateUI();
+        updateLaunchChecklist();
+        if (typeof renderTenantChatbotHub === 'function') renderTenantChatbotHub();
+      } else {
+        const errData = await res.json().catch(() => ({}));
+        if (errData.error === 'training_incomplete') {
+          alert(`Bot Training Incomplete
+
+${errData.message}`);
+        } else {
+          alert('Failed to update bot state: ' + (errData.error || 'Unknown error'));
+        }
+        updateDashGateUI();
+      }
+    }
+    window.toggleDashLiveBot = toggleDashLiveBot;
+
     /* ---------- INTERACTIVE LAUNCH CHECKLIST ---------- */
     let _launchChecklistHidden = false;
 
@@ -10167,29 +10385,28 @@ Thank you for partnering with Crown Operations!`;
       if (btn) btn.textContent = _launchChecklistHidden ? 'Show' : 'Hide';
     }
 
-    function updateLaunchChecklist() {
+    async function updateLaunchChecklist() {
       const card = document.getElementById('launchChecklistCard');
       if (!card || !S) return;
 
-      const hasMenu = (S.menu?.categories?.length || 0) > 0;
-      const hasFaqs = (S.faqs?.length || 0) > 0;
-      const s1Done = hasMenu || hasFaqs;
+      if (!S.readiness) {
+        try {
+          const r = await api('/api/tenant/readiness');
+          if (r.ok) S.readiness = await r.json();
+        } catch {}
+      }
 
-      const hasPhone = !!(S.cafe?.phone && S.cafe.phone.trim());
-      const hasHours = !!(S.cafe?.open || S.cafe?.address);
-      const s2Done = hasPhone && hasHours;
+      const rd = S.readiness;
+      const isFlagship = currentWorkspaceId === 1;
 
-      const s3Done = localStorage.getItem('cc_bot_tested') === '1';
-
-      const s4Done = !!(
-        S.channels?.facebook?.enabled ||
-        S.channels?.instagram?.enabled ||
-        S.channels?.whatsapp?.enabled ||
-        S.channels?.tiktok?.enabled
-      );
+      // 4 Milestone checks:
+      const s1Done = isFlagship ? true : (rd ? rd.profileComplete : !!(S.business?.name || S.cafe?.name));
+      const s2Done = isFlagship ? true : (rd ? rd.servicesComplete : ((rd?.serviceCount || 0) >= 3));
+      const s3Done = isFlagship ? true : (rd ? rd.faqsComplete : ((rd?.faqCount || 0) >= 3));
+      const s4Done = isFlagship ? true : (rd ? rd.hasTested : (localStorage.getItem('cc_bot_tested') === '1'));
 
       const doneCount = [s1Done, s2Done, s3Done, s4Done].filter(Boolean).length;
-      const pct = Math.round((doneCount / 4) * 100);
+      const pct = isFlagship ? 100 : Math.round((doneCount / 4) * 100);
 
       const progressFill = document.getElementById('checklistProgressFill');
       const pctTxt = document.getElementById('checklistPctTxt');
@@ -10199,9 +10416,9 @@ Thank you for partnering with Crown Operations!`;
       if (pctTxt) pctTxt.textContent = pct + '%';
       if (title) {
         if (pct === 100) {
-          title.textContent = '🎉 100% Ready! Your Bot is Live & Operational!';
+          title.textContent = 'Training Complete: 100% Ready to Go Live';
         } else {
-          title.textContent = `🚀 Your Bot is ${pct}% Ready to Launch!`;
+          title.textContent = `Training Progress: ${pct}% Complete (${doneCount} of 4 steps)`;
         }
       }
 
@@ -10211,23 +10428,25 @@ Thank you for partnering with Crown Operations!`;
         c1.className = 'step-check ' + (s1Done ? 'done' : 'todo');
         c1.textContent = s1Done ? '✓' : '1';
       }
-      if (d1) d1.textContent = s1Done ? `${S.menu?.categories?.length || 0} Categories, ${S.faqs?.length || 0} FAQs loaded` : 'Add treatments, services & FAQs';
+      if (d1) d1.textContent = s1Done ? `Name: ${S.business?.name || S.cafe?.name || 'Configured'}` : 'Set business name & operating hours';
 
       const c2 = document.getElementById('stepCheck2');
       const d2 = document.getElementById('stepDesc2');
+      const sCount = rd?.serviceCount || (Array.isArray(S.menu) ? S.menu.reduce((acc, c) => acc + (c.items?.length || 0), 0) : 0);
       if (c2) {
         c2.className = 'step-check ' + (s2Done ? 'done' : 'todo');
         c2.textContent = s2Done ? '✓' : '2';
       }
-      if (d2) d2.textContent = s2Done ? `Hotline: ${S.cafe?.phone || 'Configured'}` : 'Set phone number & opening hours';
+      if (d2) d2.textContent = s2Done ? `${sCount} services loaded` : `Add at least 3 services or catalog items (${sCount}/3)`;
 
       const c3 = document.getElementById('stepCheck3');
       const d3 = document.getElementById('stepDesc3');
+      const fCount = rd?.faqCount || (Array.isArray(S.faqs) ? S.faqs.filter(f => f && f.q && f.a).length : 0);
       if (c3) {
         c3.className = 'step-check ' + (s3Done ? 'done' : 'todo');
-        c3.textContent = s3Done ? '✓' : '→';
+        c3.textContent = s3Done ? '✓' : '3';
       }
-      if (d3) d3.textContent = s3Done ? 'Tested live in browser sandbox' : 'Click to test bot responses live';
+      if (d3) d3.textContent = s3Done ? `${fCount} FAQs configured` : `Add at least 3 questions & answers (${fCount}/3)`;
 
       const c4 = document.getElementById('stepCheck4');
       const d4 = document.getElementById('stepDesc4');
@@ -10235,7 +10454,9 @@ Thank you for partnering with Crown Operations!`;
         c4.className = 'step-check ' + (s4Done ? 'done' : 'todo');
         c4.textContent = s4Done ? '✓' : '4';
       }
-      if (d4) d4.textContent = s4Done ? 'Social channels connected & active' : 'Connect Facebook, Instagram, or WhatsApp';
+      if (d4) d4.textContent = s4Done ? 'Owner test verified in simulator' : 'Send 1 test message in simulator';
+
+      updateDashGateUI();
     }
 
     /* ---------- COMMERCIAL UPGRADE & MONETIZATION (bKash / Nagad) ---------- */
@@ -10398,7 +10619,7 @@ Thank you for partnering with Crown Operations!`;
         if (res.ok) {
           if (msg) {
             msg.style.color = '#10B981';
-            msg.innerHTML = `🎉 <strong>Plan Activated Instantly!</strong> Your TrxID <code>${trxId}</code> has been verified. Your <strong>${_selectedPlan.toUpperCase()}</strong> plan is active for the next 30 days.`;
+            msg.innerHTML = `<strong>Plan Activated Instantly!</strong> Your TrxID <code>${trxId}</code> has been verified. Your <strong>${_selectedPlan.toUpperCase()}</strong> plan is active for the next 30 days.`;
           }
           if (phoneInput) phoneInput.value = '';
           if (trxInput) trxInput.value = '';
@@ -10535,6 +10756,15 @@ Thank you for partnering with Crown Operations!`;
         if (res.ok && data && data.reply) {
           _simHistory.push({ direction: 'out', text: data.reply });
           simAppendBubble('bot', data.reply);
+          localStorage.setItem('cc_bot_tested', '1');
+          try {
+            const tr = await api('/api/tenant/record-test', { method: 'POST' });
+            if (tr.ok) {
+              const rData = await tr.json();
+              if (S) S.readiness = rData;
+            }
+          } catch {}
+          updateLaunchChecklist();
         } else {
           simAppendBubble('bot', data?.error || data?.message || "I'm your assistant! How else may I assist with our treatments, hours, or appointments?");
         }
@@ -10561,13 +10791,13 @@ Thank you for partnering with Crown Operations!`;
         if (res.ok) {
           if (resEl) {
             resEl.style.color = '#10B981';
-            resEl.textContent = `✅ Test alert sent successfully! Dispatched to: ${res.dispatched?.join(', ') || 'configured channels'}. Check your WhatsApp / Telegram / Email!`;
+            resEl.textContent = `Success: Test alert sent successfully! Dispatched to: ${res.dispatched?.join(', ') || 'configured channels'}. Check your WhatsApp / Telegram / Email!`;
           }
           chip('Test alert sent!');
         } else {
           if (resEl) {
             resEl.style.color = 'var(--red)';
-            resEl.textContent = `❌ ${res.error || 'Please configure phone, email, or Telegram in the fields above first.'}`;
+            resEl.textContent = `Error: ${res.error || 'Please configure phone, email, or Telegram in the fields above first.'}`;
           }
         }
       } catch (err) {
@@ -10577,7 +10807,7 @@ Thank you for partnering with Crown Operations!`;
           resEl.textContent = 'Error dispatching test alert.';
         }
       } finally {
-        if (btn) { btn.disabled = false; btn.textContent = '📨 Send Test Alert'; }
+        if (btn) { btn.disabled = false; btn.textContent = 'Send Test Alert'; }
       }
     }
 
@@ -10614,15 +10844,15 @@ Thank you for partnering with Crown Operations!`;
         estimatedHoursSaved: 0
       };
 
-      const text = `📊 *Weekly CCBot Operations Digest*
-🏥 *${d.businessName || 'Business'}*
+      const text = `*Weekly CCBot Operations Digest*
+*${d.businessName || 'Business'}*
 ━━━━━━━━━━━━━━━━━━
-💬 *Inquiries Handled:* ${d.totalConversations}
-📅 *Bookings & Leads Captured:* ${d.totalOrders}
-🤖 *Autonomous Resolution Rate:* ${d.autonomousRate}%
+*Inquiries Handled:* ${d.totalConversations}
+*Bookings & Leads Captured:* ${d.totalOrders}
+*Autonomous Resolution Rate:* ${d.autonomousRate}%
 ⏱️ *Reception Hours Saved:* ${d.estimatedHoursSaved} hours
 
-⚡ _Powered by CCBot Autonomous AI_`;
+_Powered by CCBot Autonomous AI_`;
 
       navigator.clipboard.writeText(text).then(() => {
         chip('Weekly digest copied for WhatsApp!');

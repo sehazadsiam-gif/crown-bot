@@ -23,7 +23,8 @@ import {
   logWebhookEvent, listWebhookLogs,
   findWorkspaceByDomain, setWorkspaceCustomDomain,
   exportConversationsCSV, exportOrdersCSV, slugify,
-  getAllMetaVerifyTokens
+  getAllMetaVerifyTokens,
+  getWorkspaceTrainingStatus, recordTrainingTest
 } from './db.js';
 import { sendTenantCredentialsEmail, sendWeeklyDigestEmail } from './mailer.js';
 import { buildPrompt, openState, escalationHit } from './prompt.js';
@@ -753,6 +754,7 @@ async function handleMe(req) {
   const sub = getSubscription(s.workspace_id);
   const tenantUser = getTenantUser(s.workspace_id);
   const ws = db.prepare('SELECT name FROM workspaces WHERE id = ?').get(s.workspace_id);
+  const readiness = getWorkspaceTrainingStatus(s.workspace_id);
   return {
     authed: true,
     role: 'tenant_admin',
@@ -760,7 +762,8 @@ async function handleMe(req) {
     workspace_name: s.workspace_id === 1 ? 'CC' : (ws?.name || 'My Workspace'),
     email: tenantUser?.email || s.email,
     must_change_password: s.workspace_id === 1 ? false : !!tenantUser?.must_change_password,
-    subscription: sub
+    subscription: sub,
+    trainingStatus: readiness
   };
 }
 
@@ -1018,21 +1021,54 @@ async function handleGetConfig(req) {
   const wsId = getScopedWorkspaceId(req);
   const cfg = getWorkspaceConfig(wsId);
   const sub = getSubscription(wsId);
-  return { config: cfg, prompt: buildPrompt(cfg), open: openState(cfg), stats: stats(wsId), workspaceId: wsId, subscription: sub };
+  const readiness = getWorkspaceTrainingStatus(wsId);
+  return { config: cfg, prompt: buildPrompt(cfg), open: openState(cfg), stats: stats(wsId), workspaceId: wsId, subscription: sub, readiness };
 }
 app.get('/api/config', { preHandler: requireAuth }, handleGetConfig);
 app.get(`${BASE}/api/config`, { preHandler: requireAuth }, handleGetConfig);
 
 async function handlePutConfig(req, reply) {
   const wsId = getScopedWorkspaceId(req);
-  const cfg = req.body?.config;
+  const cfg = req.body?.config || (req.body && typeof req.body === 'object' && (req.body.business || req.body.cafe || req.body.menu || req.body.bot_enabled !== undefined) ? req.body : null);
   if (!cfg || typeof cfg !== 'object') return reply.code(400).send({ error: 'bad config' });
+
+  // Guard: Do not let tenant turn on live auto-reply before training bot
+  if (cfg.bot_enabled === true && req.session.role !== 'master_admin') {
+    const readiness = getWorkspaceTrainingStatus(wsId);
+    if (!readiness.isReady) {
+      cfg.bot_enabled = false;
+      saveWorkspaceConfig(wsId, cfg);
+      return reply.code(400).send({
+        error: 'training_incomplete',
+        message: 'Please complete all required bot training steps before activating live auto-reply.',
+        readiness
+      });
+    }
+  }
+
   saveWorkspaceConfig(wsId, cfg);
   const sub = getSubscription(wsId);
-  return { ok: true, prompt: buildPrompt(cfg), open: openState(cfg), stats: stats(wsId), workspaceId: wsId, subscription: sub };
+  const readiness = getWorkspaceTrainingStatus(wsId);
+  return { ok: true, prompt: buildPrompt(cfg), open: openState(cfg), stats: stats(wsId), workspaceId: wsId, subscription: sub, readiness };
 }
 app.put('/api/config', { preHandler: requireAuth }, handlePutConfig);
 app.put(`${BASE}/api/config`, { preHandler: requireAuth }, handlePutConfig);
+app.post('/api/config', { preHandler: requireAuth }, handlePutConfig);
+app.post(`${BASE}/api/config`, { preHandler: requireAuth }, handlePutConfig);
+
+async function handleTenantReadiness(req) {
+  const wsId = getScopedWorkspaceId(req);
+  return getWorkspaceTrainingStatus(wsId);
+}
+app.get('/api/tenant/readiness', { preHandler: requireAuth }, handleTenantReadiness);
+app.get(`${BASE}/api/tenant/readiness`, { preHandler: requireAuth }, handleTenantReadiness);
+
+async function handleTenantRecordTest(req) {
+  const wsId = getScopedWorkspaceId(req);
+  return recordTrainingTest(wsId);
+}
+app.post('/api/tenant/record-test', { preHandler: requireAuth }, handleTenantRecordTest);
+app.post(`${BASE}/api/tenant/record-test`, { preHandler: requireAuth }, handleTenantRecordTest);
 
 async function handleGetStats(req) {
   const wsId = getScopedWorkspaceId(req);
@@ -1445,6 +1481,11 @@ async function handlePublicChat(req, reply) {
     }
   } catch (err) {
     req.log.warn({ err }, 'Failed to record public webchat message');
+  }
+
+  // If simulator or preview test chat, automatically fulfill owner test verification
+  if (sessionId.startsWith('sim_') || customerName.toLowerCase().includes('test')) {
+    try { recordTrainingTest(wsId); } catch {}
   }
 
   // Background order / appointment capture
