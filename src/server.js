@@ -160,17 +160,28 @@ function readToken(tok) {
   } catch { return null; }
 }
 
-function getToken(req) {
-  if (req.cookies && req.cookies.cc_session) return req.cookies.cc_session;
+function getAuthSession(req) {
+  // 1. Prioritize explicit Authorization bearer header (from client localStorage)
   const authHeader = req.headers?.authorization;
   if (authHeader && authHeader.startsWith('Bearer ')) {
-    return authHeader.slice(7).trim();
+    const s = readToken(authHeader.slice(7).trim());
+    if (s) return s;
+  }
+  // 2. Fall back to cookie
+  if (req.cookies && req.cookies.cc_session) {
+    const s = readToken(req.cookies.cc_session);
+    if (s) return s;
   }
   return null;
 }
 
+function getToken(req) {
+  const s = getAuthSession(req);
+  return s ? (req.headers?.authorization?.slice(7)?.trim() || req.cookies?.cc_session) : null;
+}
+
 async function requireAuth(req, reply) {
-  const s = readToken(getToken(req));
+  const s = getAuthSession(req);
   if (!s) return reply.code(401).send({ error: 'unauthorized' });
   // Enforce subscription expiry for tenant admins (workspace #1 is always exempt)
   if (s.role === 'tenant_admin' && s.workspace_id && s.workspace_id !== 1) {
@@ -185,7 +196,7 @@ async function requireAuth(req, reply) {
 }
 
 async function requireMasterAdmin(req, reply) {
-  const s = readToken(getToken(req));
+  const s = getAuthSession(req);
   if (!s || s.role !== 'master_admin') {
     return reply.code(403).send({ error: 'forbidden: requires master admin privileges' });
   }
@@ -194,7 +205,7 @@ async function requireMasterAdmin(req, reply) {
 
 function getScopedWorkspaceId(req) {
   if (req.session.role === 'master_admin') {
-    const qWs = Number(req.query?.ws);
+    const qWs = Number(req.query?.workspace_id || req.query?.ws);
     return qWs && qWs > 0 ? qWs : 1;
   }
   return req.session.workspace_id || 1;
@@ -468,7 +479,7 @@ async function handleSignup(req, reply) {
 app.post('/api/signup', handleSignup);
 app.post(`${BASE}/api/signup`, handleSignup);
 
-app.post(`${BASE}/api/ai/suggest-faqs`, async (req, reply) => {
+async function handleSuggestFaqs(req, reply) {
   const ip = req.ip;
   if (!rateLimit(ip, 'suggest-faqs', 10, 60 * 1000)) {
     return reply.code(429).send({ error: 'Rate limit: max 10 FAQ suggestions per minute.' });
@@ -481,9 +492,11 @@ app.post(`${BASE}/api/ai/suggest-faqs`, async (req, reply) => {
     req.log.warn(e);
     return reply.code(500).send({ ok: false, error: 'Could not generate FAQs.' });
   }
-});
+}
+app.post('/api/ai/suggest-faqs', handleSuggestFaqs);
+app.post(`${BASE}/api/ai/suggest-faqs`, handleSuggestFaqs);
 
-app.post(`${BASE}/api/tenant/onboarding`, { preHandler: requireAuth }, async (req, reply) => {
+async function handleTenantOnboarding(req, reply) {
   const wsId = getScopedWorkspaceId(req);
   const { businessName, businessType, services, faqs, open, close, phone, address, parking, payments } = req.body || {};
   try {
@@ -518,9 +531,11 @@ app.post(`${BASE}/api/tenant/onboarding`, { preHandler: requireAuth }, async (re
     req.log.error(e);
     return reply.code(400).send({ error: e.message });
   }
-});
+}
+app.post('/api/tenant/onboarding', { preHandler: requireAuth }, handleTenantOnboarding);
+app.post(`${BASE}/api/tenant/onboarding`, { preHandler: requireAuth }, handleTenantOnboarding);
 
-app.post(`${BASE}/api/tenant/seed-industry`, { preHandler: requireAuth }, async (req, reply) => {
+async function handleSeedIndustry(req, reply) {
   const wsId = getScopedWorkspaceId(req);
   const { businessType, industry, force } = req.body || {};
   const bType = industry || businessType || 'Dentistry';
@@ -528,16 +543,9 @@ app.post(`${BASE}/api/tenant/seed-industry`, { preHandler: requireAuth }, async 
   let itemsCount = 0;
   (cfg?.menu || []).forEach(c => { itemsCount += (c.items || []).length; });
   return { ok: true, config: cfg, industry: bType, itemsCount, faqsCount: (cfg?.faqs || []).length };
-});
-app.post('/api/tenant/seed-industry', { preHandler: requireAuth }, async (req, reply) => {
-  const wsId = getScopedWorkspaceId(req);
-  const { businessType, industry, force } = req.body || {};
-  const bType = industry || businessType || 'Dentistry';
-  const cfg = seedWorkspaceIndustry(wsId, bType, !!force);
-  let itemsCount = 0;
-  (cfg?.menu || []).forEach(c => { itemsCount += (c.items || []).length; });
-  return { ok: true, config: cfg, industry: bType, itemsCount, faqsCount: (cfg?.faqs || []).length };
-});
+}
+app.post('/api/tenant/seed-industry', { preHandler: requireAuth }, handleSeedIndustry);
+app.post(`${BASE}/api/tenant/seed-industry`, { preHandler: requireAuth }, handleSeedIndustry);
 
 /* ───────────────────────── Orders Bucket API ───────────────────────── */
 async function handleOrdersList(req) {
@@ -646,30 +654,36 @@ app.post('/api/orders/simulate', { preHandler: requireAuth }, handleSimulateOrde
 app.post(`${BASE}/api/orders/simulate`, { preHandler: requireAuth }, handleSimulateOrder);
 
 // CSV Export: Conversations
-app.get(`${BASE}/api/conversations/export.csv`, { preHandler: requireAuth }, async (req, reply) => {
+async function handleExportConversations(req, reply) {
   const wsId = getScopedWorkspaceId(req);
   const filters = { q: req.query?.q || '', platform: req.query?.platform || '', from: req.query?.from || '', to: req.query?.to || '' };
   const csv = exportConversationsCSV(wsId, filters);
   reply.header('Content-Type', 'text/csv; charset=utf-8');
   reply.header('Content-Disposition', 'attachment; filename="conversations.csv"');
   return reply.send(csv);
-});
+}
+app.get('/api/conversations/export.csv', { preHandler: requireAuth }, handleExportConversations);
+app.get(`${BASE}/api/conversations/export.csv`, { preHandler: requireAuth }, handleExportConversations);
 
 // CSV Export: Orders
-app.get(`${BASE}/api/orders/export.csv`, { preHandler: requireAuth }, async (req, reply) => {
+async function handleExportOrders(req, reply) {
   const wsId = getScopedWorkspaceId(req);
   const csv = exportOrdersCSV(wsId);
   reply.header('Content-Type', 'text/csv; charset=utf-8');
   reply.header('Content-Disposition', 'attachment; filename="orders.csv"');
   return reply.send(csv);
-});
+}
+app.get('/api/orders/export.csv', { preHandler: requireAuth }, handleExportOrders);
+app.get(`${BASE}/api/orders/export.csv`, { preHandler: requireAuth }, handleExportOrders);
 
 // Webhook Logs
-app.get(`${BASE}/api/webhook-logs`, { preHandler: requireAuth }, async (req) => {
+async function handleWebhookLogs(req) {
   const wsId = getScopedWorkspaceId(req);
   const limit = Math.min(Number(req.query?.limit || 50), 200);
   return { logs: listWebhookLogs(wsId, limit) };
-});
+}
+app.get('/api/webhook-logs', { preHandler: requireAuth }, handleWebhookLogs);
+app.get(`${BASE}/api/webhook-logs`, { preHandler: requireAuth }, handleWebhookLogs);
 
 // Push Notification Routes
 const handleVapidKey = async () => ({ key: vapidPublic || '' });
@@ -698,13 +712,15 @@ app.post('/api/push/unsubscribe', { preHandler: requireAuth }, handlePushUnsubsc
 app.post(`${BASE}/api/push/unsubscribe`, { preHandler: requireAuth }, handlePushUnsubscribe);
 
 // Custom Domain Routes
-app.get(`${BASE}/api/admin/workspaces/:id/custom-domain`, { preHandler: requireMasterAdmin }, async (req) => {
+async function handleGetCustomDomain(req) {
   const id = Number(req.params.id);
   const ws = db.prepare('SELECT id, name, custom_domain FROM workspaces WHERE id = ?').get(id);
   return { workspace_id: id, custom_domain: ws?.custom_domain || null };
-});
+}
+app.get('/api/admin/workspaces/:id/custom-domain', { preHandler: requireMasterAdmin }, handleGetCustomDomain);
+app.get(`${BASE}/api/admin/workspaces/:id/custom-domain`, { preHandler: requireMasterAdmin }, handleGetCustomDomain);
 
-app.put(`${BASE}/api/admin/workspaces/:id/custom-domain`, { preHandler: requireMasterAdmin }, async (req, reply) => {
+async function handlePutCustomDomain(req, reply) {
   const id = Number(req.params.id);
   const domain = req.body?.domain || null;
   try {
@@ -712,20 +728,24 @@ app.put(`${BASE}/api/admin/workspaces/:id/custom-domain`, { preHandler: requireM
   } catch (e) {
     return reply.code(400).send({ error: e.message });
   }
-});
+}
+app.put('/api/admin/workspaces/:id/custom-domain', { preHandler: requireMasterAdmin }, handlePutCustomDomain);
+app.put(`${BASE}/api/admin/workspaces/:id/custom-domain`, { preHandler: requireMasterAdmin }, handlePutCustomDomain);
 
 // On-demand DB Backup
-app.post(`${BASE}/api/admin/backup`, { preHandler: requireMasterAdmin }, async (req, reply) => {
+async function handleAdminBackup(req, reply) {
   try {
     const result = await performBackup();
     return { ok: true, ...result };
   } catch (e) {
     return reply.code(500).send({ error: e.message });
   }
-});
+}
+app.post('/api/admin/backup', { preHandler: requireMasterAdmin }, handleAdminBackup);
+app.post(`${BASE}/api/admin/backup`, { preHandler: requireMasterAdmin }, handleAdminBackup);
 
 async function handleMe(req) {
-  const s = readToken(getToken(req));
+  const s = getAuthSession(req);
   if (!s) return { authed: false };
   if (s.role === 'master_admin') {
     return { authed: true, role: 'master_admin', email: s.email || 'masteradmin', is_master: true };
@@ -776,11 +796,13 @@ app.put(`${BASE}/api/tenant/profile`, { preHandler: requireAuth }, handleTenantP
 app.put('/api/tenant/profile', { preHandler: requireAuth }, handleTenantProfile);
 
 /* ───────────────────────── Master Admin Tenant & Subscription API ───────────────────────── */
-app.get(`${BASE}/api/admin/tenants`, { preHandler: requireMasterAdmin }, async () => {
+async function handleListTenants() {
   return { tenants: listTenantsOverview() };
-});
+}
+app.get('/api/admin/tenants', { preHandler: requireMasterAdmin }, handleListTenants);
+app.get(`${BASE}/api/admin/tenants`, { preHandler: requireMasterAdmin }, handleListTenants);
 
-app.post(`${BASE}/api/admin/tenants`, { preHandler: requireMasterAdmin }, async (req, reply) => {
+async function handleCreateTenant(req, reply) {
   const { name, monthly_fee, contact_email, custom_password, password, business_type, services, subdomain, custom_domain } = req.body || {};
   if (!name || !String(name).trim()) return reply.code(400).send({ error: 'Tenant business name is required.' });
   try {
@@ -828,7 +850,9 @@ app.post(`${BASE}/api/admin/tenants`, { preHandler: requireMasterAdmin }, async 
   } catch (e) {
     return reply.code(400).send({ error: e.message });
   }
-});
+}
+app.post('/api/admin/tenants', { preHandler: requireMasterAdmin }, handleCreateTenant);
+app.post(`${BASE}/api/admin/tenants`, { preHandler: requireMasterAdmin }, handleCreateTenant);
 
 const handleSendCredentials = async (req, reply) => {
   const id = Number(req.params.id);
@@ -876,7 +900,7 @@ const handleSendCredentials = async (req, reply) => {
 app.post(`${BASE}/api/admin/tenants/:id/send-credentials`, { preHandler: requireMasterAdmin }, handleSendCredentials);
 app.post('/api/admin/tenants/:id/send-credentials', { preHandler: requireMasterAdmin }, handleSendCredentials);
 
-app.put(`${BASE}/api/admin/tenants/:id/subscription`, { preHandler: requireMasterAdmin }, async (req, reply) => {
+async function handleUpdateTenantSubscription(req, reply) {
   const id = Number(req.params.id);
   try {
     const sub = updateSubscription(id, req.body || {});
@@ -884,9 +908,11 @@ app.put(`${BASE}/api/admin/tenants/:id/subscription`, { preHandler: requireMaste
   } catch (e) {
     return reply.code(400).send({ error: e.message });
   }
-});
+}
+app.put('/api/admin/tenants/:id/subscription', { preHandler: requireMasterAdmin }, handleUpdateTenantSubscription);
+app.put(`${BASE}/api/admin/tenants/:id/subscription`, { preHandler: requireMasterAdmin }, handleUpdateTenantSubscription);
 
-app.post(`${BASE}/api/admin/tenants/:id/reset-password`, { preHandler: requireMasterAdmin }, async (req, reply) => {
+async function handleResetTenantPassword(req, reply) {
   const id = Number(req.params.id);
   const { password } = req.body || {};
   try {
@@ -895,9 +921,11 @@ app.post(`${BASE}/api/admin/tenants/:id/reset-password`, { preHandler: requireMa
   } catch (e) {
     return reply.code(400).send({ error: e.message });
   }
-});
+}
+app.post('/api/admin/tenants/:id/reset-password', { preHandler: requireMasterAdmin }, handleResetTenantPassword);
+app.post(`${BASE}/api/admin/tenants/:id/reset-password`, { preHandler: requireMasterAdmin }, handleResetTenantPassword);
 
-app.post(`${BASE}/api/admin/tenants/:id/send-renewal-email`, { preHandler: requireMasterAdmin }, async (req, reply) => {
+async function handleSendRenewalEmail(req, reply) {
   const id = Number(req.params.id);
   const ws = db.prepare('SELECT * FROM workspaces WHERE id = ?').get(id);
   if (!ws) return reply.code(404).send({ error: 'Tenant not found.' });
@@ -936,24 +964,30 @@ Crown Operations Admin`;
     body: emailBody,
     dispatched_at: new Date().toISOString()
   };
-});
+}
+app.post('/api/admin/tenants/:id/send-renewal-email', { preHandler: requireMasterAdmin }, handleSendRenewalEmail);
+app.post(`${BASE}/api/admin/tenants/:id/send-renewal-email`, { preHandler: requireMasterAdmin }, handleSendRenewalEmail);
 
 /* ───────────────────────── Workspace Management API ───────────────────────── */
-app.get(`${BASE}/api/workspaces`, { preHandler: requireAuth }, async (req) => {
+async function handleListWorkspaces(req) {
   if (req.session.role === 'tenant_admin') {
     return { workspaces: listWorkspaces().filter(w => w.id === req.session.workspace_id) };
   }
   return { workspaces: listWorkspaces() };
-});
+}
+app.get('/api/workspaces', { preHandler: requireAuth }, handleListWorkspaces);
+app.get(`${BASE}/api/workspaces`, { preHandler: requireAuth }, handleListWorkspaces);
 
-app.post(`${BASE}/api/workspaces`, { preHandler: requireMasterAdmin }, async (req, reply) => {
+async function handleCreateWorkspace(req, reply) {
   const name = String(req.body?.name || '').trim();
   if (!name) return reply.code(400).send({ error: 'Workspace name is required.' });
   const res = createWorkspaceWithTenant(name);
   return { ok: true, workspace: res.workspace, credentials: res.credentials };
-});
+}
+app.post('/api/workspaces', { preHandler: requireMasterAdmin }, handleCreateWorkspace);
+app.post(`${BASE}/api/workspaces`, { preHandler: requireMasterAdmin }, handleCreateWorkspace);
 
-app.put(`${BASE}/api/workspaces/:id/rename`, { preHandler: requireMasterAdmin }, async (req, reply) => {
+async function handleRenameWorkspace(req, reply) {
   const id = Number(req.params.id);
   const name = String(req.body?.name || '').trim();
   if (!name) return reply.code(400).send({ error: 'Workspace name is required.' });
@@ -962,9 +996,11 @@ app.put(`${BASE}/api/workspaces/:id/rename`, { preHandler: requireMasterAdmin },
   } catch (e) {
     return reply.code(400).send({ error: e.message });
   }
-});
+}
+app.put('/api/workspaces/:id/rename', { preHandler: requireMasterAdmin }, handleRenameWorkspace);
+app.put(`${BASE}/api/workspaces/:id/rename`, { preHandler: requireMasterAdmin }, handleRenameWorkspace);
 
-app.delete(`${BASE}/api/workspaces/:id`, { preHandler: requireMasterAdmin }, async (req, reply) => {
+async function handleDeleteWorkspace(req, reply) {
   const id = Number(req.params.id);
   if (id === 1) return reply.code(400).send({ error: 'Primary workspace cannot be deleted.' });
   try {
@@ -973,31 +1009,39 @@ app.delete(`${BASE}/api/workspaces/:id`, { preHandler: requireMasterAdmin }, asy
   } catch (e) {
     return reply.code(400).send({ error: e.message });
   }
-});
+}
+app.delete('/api/workspaces/:id', { preHandler: requireMasterAdmin }, handleDeleteWorkspace);
+app.delete(`${BASE}/api/workspaces/:id`, { preHandler: requireMasterAdmin }, handleDeleteWorkspace);
 
 /* ───────────────────────── admin API (Workspace Scoped) ───────────────────────── */
-app.get(`${BASE}/api/config`, { preHandler: requireAuth }, async (req) => {
+async function handleGetConfig(req) {
   const wsId = getScopedWorkspaceId(req);
   const cfg = getWorkspaceConfig(wsId);
   const sub = getSubscription(wsId);
   return { config: cfg, prompt: buildPrompt(cfg), open: openState(cfg), stats: stats(wsId), workspaceId: wsId, subscription: sub };
-});
+}
+app.get('/api/config', { preHandler: requireAuth }, handleGetConfig);
+app.get(`${BASE}/api/config`, { preHandler: requireAuth }, handleGetConfig);
 
-app.put(`${BASE}/api/config`, { preHandler: requireAuth }, async (req, reply) => {
+async function handlePutConfig(req, reply) {
   const wsId = getScopedWorkspaceId(req);
   const cfg = req.body?.config;
   if (!cfg || typeof cfg !== 'object') return reply.code(400).send({ error: 'bad config' });
   saveWorkspaceConfig(wsId, cfg);
   const sub = getSubscription(wsId);
   return { ok: true, prompt: buildPrompt(cfg), open: openState(cfg), stats: stats(wsId), workspaceId: wsId, subscription: sub };
-});
+}
+app.put('/api/config', { preHandler: requireAuth }, handlePutConfig);
+app.put(`${BASE}/api/config`, { preHandler: requireAuth }, handlePutConfig);
 
-app.get(`${BASE}/api/stats`, { preHandler: requireAuth }, async (req) => {
+async function handleGetStats(req) {
   const wsId = getScopedWorkspaceId(req);
   return { stats: stats(wsId) };
-});
+}
+app.get('/api/stats', { preHandler: requireAuth }, handleGetStats);
+app.get(`${BASE}/api/stats`, { preHandler: requireAuth }, handleGetStats);
 
-app.post(`${BASE}/api/channels/test`, { preHandler: requireAuth }, async (req, reply) => {
+async function handleChannelsTest(req, reply) {
   const ip = req.ip;
   if (!rateLimit(ip, 'channels-test', 10, 60 * 1000)) {
     return reply.code(429).send({ error: 'Rate limit: max 10 connection tests per minute.' });
@@ -1029,9 +1073,11 @@ app.post(`${BASE}/api/channels/test`, { preHandler: requireAuth }, async (req, r
     req.log.error(e);
     return reply.code(500).send({ ok: false, error: e.message });
   }
-});
+}
+app.post('/api/channels/test', { preHandler: requireAuth }, handleChannelsTest);
+app.post(`${BASE}/api/channels/test`, { preHandler: requireAuth }, handleChannelsTest);
 
-app.post(`${BASE}/api/import-menu`, { preHandler: requireAuth }, async (req, reply) => {
+async function handleImportMenu(req, reply) {
   try {
     const rows = await parseMenuText(String(req.body?.text || '').slice(0, 20000));
     return { ok: true, rows };
@@ -1039,7 +1085,9 @@ app.post(`${BASE}/api/import-menu`, { preHandler: requireAuth }, async (req, rep
     req.log.warn(e);
     return reply.code(502).send({ error: 'Could not parse that menu. Try a simpler paste.' });
   }
-});
+}
+app.post('/api/import-menu', { preHandler: requireAuth }, handleImportMenu);
+app.post(`${BASE}/api/import-menu`, { preHandler: requireAuth }, handleImportMenu);
 
 async function handleTest(req) {
   const ip = req.ip;
@@ -1055,17 +1103,21 @@ async function handleTest(req) {
   const { text: reply, model } = await generateReply(cfg, history, text, req.log, lang);
 
   // Background order capture
-  detectOrderOrInquiry(text, history).then(extracted => {
+  detectOrderOrInquiry(text, history, cfg).then(extracted => {
     if (extracted && extracted.is_order) {
+      const isAppt = extracted.kind === 'appointment' || extracted.kind === 'booking';
       createOrder({
         workspace_id: wsId,
         platform: 'web-test',
+        kind: isAppt ? 'appointment' : (extracted.kind || 'order'),
         customer_name: extracted.customer_name || 'Test User',
         customer_phone: extracted.customer_phone || '',
-        customer_address: extracted.customer_address || '',
+        customer_address: extracted.appointment_time
+          ? (extracted.customer_address ? `${extracted.customer_address} [Time: ${extracted.appointment_time}]` : `Time: ${extracted.appointment_time}`)
+          : (extracted.customer_address || ''),
         details: extracted.details,
         estimated_total: extracted.estimated_total || '',
-        notes: 'Captured order from test playground'
+        notes: `Captured ${extracted.kind || 'order'} from test playground`
       });
     }
   }).catch(() => {});
@@ -1075,7 +1127,7 @@ async function handleTest(req) {
 app.post('/api/test', { preHandler: requireAuth }, handleTest);
 app.post(`${BASE}/api/test`, { preHandler: requireAuth }, handleTest);
 
-app.get(`${BASE}/api/conversations`, { preHandler: requireAuth }, async (req) => {
+async function handleConversationsList(req) {
   const wsId = getScopedWorkspaceId(req);
   const filters = {
     q: req.query?.q || '',
@@ -1086,18 +1138,22 @@ app.get(`${BASE}/api/conversations`, { preHandler: requireAuth }, async (req) =>
     limit: req.query?.limit || 200
   };
   return { conversations: listConversations(wsId, filters), drafts: listDrafts(wsId) };
-});
+}
+app.get('/api/conversations', { preHandler: requireAuth }, handleConversationsList);
+app.get(`${BASE}/api/conversations`, { preHandler: requireAuth }, handleConversationsList);
 
-app.get(`${BASE}/api/conversations/:id`, { preHandler: requireAuth }, async (req, reply) => {
+async function handleConversationGet(req, reply) {
   const conv = getConversation(req.params.id);
   if (!conv) return reply.code(404).send({ error: 'not found' });
   if (req.session.role === 'tenant_admin' && conv.workspace_id !== req.session.workspace_id) {
     return reply.code(403).send({ error: 'Forbidden' });
   }
   return { conversation: conv, messages: getMessages(req.params.id) };
-});
+}
+app.get('/api/conversations/:id', { preHandler: requireAuth }, handleConversationGet);
+app.get(`${BASE}/api/conversations/:id`, { preHandler: requireAuth }, handleConversationGet);
 
-app.post(`${BASE}/api/conversations/:id/bot`, { preHandler: requireAuth }, async (req, reply) => {
+async function handleConversationBot(req, reply) {
   const conv = getConversation(req.params.id);
   if (!conv) return reply.code(404).send({ error: 'not found' });
   if (req.session.role === 'tenant_admin' && conv.workspace_id !== req.session.workspace_id) {
@@ -1105,9 +1161,11 @@ app.post(`${BASE}/api/conversations/:id/bot`, { preHandler: requireAuth }, async
   }
   setBotEnabled(req.params.id, !!req.body?.enabled);
   return { ok: true };
-});
+}
+app.post('/api/conversations/:id/bot', { preHandler: requireAuth }, handleConversationBot);
+app.post(`${BASE}/api/conversations/:id/bot`, { preHandler: requireAuth }, handleConversationBot);
 
-app.post(`${BASE}/api/conversations/:id/flag`, { preHandler: requireAuth }, async (req, reply) => {
+async function handleConversationFlag(req, reply) {
   const conv = getConversation(req.params.id);
   if (!conv) return reply.code(404).send({ error: 'not found' });
   if (req.session.role === 'tenant_admin' && conv.workspace_id !== req.session.workspace_id) {
@@ -1115,9 +1173,11 @@ app.post(`${BASE}/api/conversations/:id/flag`, { preHandler: requireAuth }, asyn
   }
   setFlag(req.params.id, !!req.body?.flagged, req.body?.reason || null);
   return { ok: true };
-});
+}
+app.post('/api/conversations/:id/flag', { preHandler: requireAuth }, handleConversationFlag);
+app.post(`${BASE}/api/conversations/:id/flag`, { preHandler: requireAuth }, handleConversationFlag);
 
-app.post(`${BASE}/api/conversations/:id/reply`, { preHandler: requireAuth }, async (req, reply) => {
+async function handleConversationReply(req, reply) {
   const conv = getConversation(req.params.id);
   if (!conv) return reply.code(404).send({ error: 'not found' });
   if (req.session.role === 'tenant_admin' && conv.workspace_id !== req.session.workspace_id) {
@@ -1139,7 +1199,9 @@ app.post(`${BASE}/api/conversations/:id/reply`, { preHandler: requireAuth }, asy
     req.log.error(e);
     return reply.code(502).send({ error: e.message });
   }
-});
+}
+app.post('/api/conversations/:id/reply', { preHandler: requireAuth }, handleConversationReply);
+app.post(`${BASE}/api/conversations/:id/reply`, { preHandler: requireAuth }, handleConversationReply);
 
 const handleConvPause = async (req, reply) => {
   const conv = getConversation(req.params.id);
@@ -1355,8 +1417,13 @@ async function handlePublicChat(req, reply) {
   const cfg = getWorkspaceConfig(wsId);
   const body = req.body || {};
   const message = String(body.message || body.text || '').trim();
-  const history = (Array.isArray(body.history) ? body.history : []).slice(-12);
-  const sessionId = String(body.sessionId || crypto.randomUUID()).slice(0, 64);
+  const rawHistory = Array.isArray(body.history) ? body.history : [];
+  const history = rawHistory.map(m => {
+    if (m && m.direction) return { direction: m.direction, text: String(m.text || '') };
+    if (m && m.role) return { direction: m.role === 'user' ? 'in' : 'out', text: String(m.content || m.text || '') };
+    return { direction: 'in', text: String(m || '') };
+  }).filter(m => m.text).slice(-12);
+  const sessionId = String(body.sessionId || body.session_id || crypto.randomUUID()).slice(0, 64);
   const customerName = String(body.customerName || 'Web Visitor').slice(0, 100);
 
   if (!message) {
@@ -1368,38 +1435,46 @@ async function handlePublicChat(req, reply) {
   const { text: botReply, model } = await generateReply(cfg, history, message, req.log, lang);
 
   // Record conversation in database for live customer inbox
+  let activeConv = null;
   try {
-    const conv = upsertConversation('web', sessionId, customerName, wsId);
-    if (conv && conv.id) {
-      addMessage(conv.id, 'in', message);
-      addMessage(conv.id, 'out', botReply);
-      if (hit) setFlag(conv.id, true);
+    activeConv = upsertConversation('web', sessionId, customerName, wsId);
+    if (activeConv && activeConv.id) {
+      addMessage(activeConv.id, 'in', message);
+      addMessage(activeConv.id, 'out', botReply);
+      if (hit) setFlag(activeConv.id, true);
     }
   } catch (err) {
     req.log.warn({ err }, 'Failed to record public webchat message');
   }
 
-  // Background order capture
-  detectOrderOrInquiry(message, history).then(async extracted => {
+  // Background order / appointment capture
+  detectOrderOrInquiry(message, history, cfg).then(async extracted => {
     if (extracted && extracted.is_order) {
       try {
+        const isAppt = extracted.kind === 'appointment' || extracted.kind === 'booking';
+        const scheduleOrAddress = extracted.appointment_time
+          ? (extracted.customer_address ? `${extracted.customer_address} [Time: ${extracted.appointment_time}]` : `Time: ${extracted.appointment_time}`)
+          : (extracted.customer_address || body.customerAddress || '');
+
         const order = createOrder({
           workspace_id: wsId,
+          conv_id: activeConv?.id || null,
           platform: 'web',
+          kind: isAppt ? 'appointment' : (extracted.kind || 'order'),
           customer_name: extracted.customer_name || customerName,
           customer_phone: extracted.customer_phone || body.customerPhone || '',
-          customer_address: extracted.customer_address || body.customerAddress || '',
+          customer_address: scheduleOrAddress,
           details: extracted.details || message,
-          total_price: extracted.total_price || 0,
-          currency: 'BDT'
+          estimated_total: extracted.estimated_total || '',
+          notes: isAppt ? 'Web Appointment Booking' : 'Web Order Request'
         });
 
         // Send Push Notifications to subscribed tenant admins
         const subs = listPushSubscriptions(wsId);
         if (subs && subs.length) {
           const payload = JSON.stringify({
-            title: `🔔 New Order: ${order.customer_name}`,
-            body: `${order.details} — BDT ${order.total_price}`,
+            title: isAppt ? `📅 New Appointment: ${order.customer_name}` : `🔔 New Order: ${order.customer_name}`,
+            body: `${order.details}${order.estimated_total ? ' — BDT ' + order.estimated_total : ''}`,
             url: `${process.env.PUBLIC_URL || ''}${BASE}/`
           });
           for (const s of subs) {
@@ -1424,7 +1499,7 @@ async function handlePublicChat(req, reply) {
 app.post('/api/public/chat', handlePublicChat);
 app.post(`${BASE}/api/public/chat`, handlePublicChat);
 
-app.get(`${BASE}/api/health`, async (req) => {
+async function handleHealthCheck(req) {
   const wsId = Number(req.query?.workspace_id) || 1;
   const cfg = getWorkspaceConfig(wsId);
   const publicUrl = (process.env.PUBLIC_URL || '').replace(/\/$/, '');
@@ -1456,7 +1531,9 @@ app.get(`${BASE}/api/health`, async (req) => {
     },
     stats: stats(wsId)
   };
-});
+}
+app.get('/api/health', handleHealthCheck);
+app.get(`${BASE}/api/health`, handleHealthCheck);
 
 /* ───────────────────────── Meta Webhook (Facebook / Instagram / WhatsApp) ───────────────────────── */
 const handleMetaVerification = (req, reply) => {
@@ -1616,23 +1693,29 @@ async function handleEvent(ev, log) {
   const { text: replyText, model } = await generateReply(cfg, history, text, log, lang);
 
   // Background order capture
-  detectOrderOrInquiry(text, history).then(extracted => {
+  detectOrderOrInquiry(text, history, cfg).then(extracted => {
     if (extracted && extracted.is_order) {
+      const isAppt = extracted.kind === 'appointment' || extracted.kind === 'booking';
+      const scheduleOrAddress = extracted.appointment_time
+        ? (extracted.customer_address ? `${extracted.customer_address} [Time: ${extracted.appointment_time}]` : `Time: ${extracted.appointment_time}`)
+        : (extracted.customer_address || '');
+
       const order = createOrder({
         workspace_id: workspaceId,
         conv_id: conv.id,
         platform,
+        kind: isAppt ? 'appointment' : (extracted.kind || 'order'),
         customer_name: extracted.customer_name || name || '',
         customer_phone: extracted.customer_phone || '',
-        customer_address: extracted.customer_address || '',
+        customer_address: scheduleOrAddress,
         details: extracted.details,
         estimated_total: extracted.estimated_total || '',
-        notes: `Automated order capture from ${platform}`
+        notes: `Automated ${extracted.kind || 'order'} capture from ${platform}`
       });
       log.info(`[orders] Captured incoming ${extracted.kind} for workspace #${workspaceId}`);
-      // Broadcast push notification for new order
+      // Broadcast push notification for new order / appointment
       broadcastPush(workspaceId, {
-        title: 'New Order Received',
+        title: isAppt ? 'New Appointment Request' : 'New Order Received',
         body: `From ${name || platform}: ${String(extracted.details || '').slice(0, 80)}`,
         tag: `order-${order.id}`,
         url: `${process.env.PUBLIC_URL || ''}${BASE}/`

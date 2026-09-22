@@ -108,6 +108,7 @@ CREATE TABLE IF NOT EXISTS orders (
   workspace_id     INTEGER NOT NULL REFERENCES workspaces(id) ON DELETE CASCADE,
   conv_id          INTEGER REFERENCES conversations(id) ON DELETE SET NULL,
   platform         TEXT DEFAULT 'web',
+  kind             TEXT DEFAULT 'order',
   customer_name    TEXT,
   customer_phone   TEXT,
   customer_address TEXT,
@@ -165,6 +166,15 @@ try {
   }
 } catch (e) {
   console.error('Migration warning (drafts.workspace_id):', e.message);
+}
+
+try {
+  const orderCols = db.pragma('table_info(orders)');
+  if (!orderCols.some(c => c.name === 'kind')) {
+    db.exec("ALTER TABLE orders ADD COLUMN kind TEXT DEFAULT 'order'");
+  }
+} catch (e) {
+  console.error('Migration warning (orders.kind):', e.message);
 }
 
 try {
@@ -2136,14 +2146,14 @@ export function exportConversationsCSV(workspaceId = null, filters = {}) {
 export function exportOrdersCSV(workspaceId) {
   const wsId = Number(workspaceId) || 1;
   const rows = db.prepare('SELECT * FROM orders WHERE workspace_id = ? ORDER BY id DESC').all(wsId);
-  const header = 'id,platform,customer_name,customer_phone,customer_address,details,estimated_total,status,notes,created_at,confirmed_at';
+  const header = 'id,platform,kind,customer_name,customer_phone,customer_address,details,estimated_total,status,notes,created_at,confirmed_at';
   const escape = v => {
     if (v === null || v === undefined) return '';
     const s = String(v).replace(/"/g, '""');
     return s.includes(',') || s.includes('"') || s.includes('\n') ? `"${s}"` : s;
   };
   const lines = rows.map(r =>
-    [r.id, r.platform, r.customer_name, r.customer_phone, r.customer_address, r.details, r.estimated_total, r.status, r.notes, r.created_at, r.confirmed_at]
+    [r.id, r.platform, r.kind || 'order', r.customer_name, r.customer_phone, r.customer_address, r.details, r.estimated_total, r.status, r.notes, r.created_at, r.confirmed_at]
       .map(escape).join(','));
   return [header, ...lines].join('\n');
 }
@@ -2232,6 +2242,7 @@ export function createOrder(data = {}) {
     }
   }
   const platform = data.platform || 'web';
+  const kind = data.kind || (data.details && /appointment|booking|consult|scaling|root canal|dental|doctor|clinic/i.test(data.details) ? 'appointment' : 'order');
   const customerName = data.customer_name || data.customerName || '';
   const customerPhone = data.customer_phone || data.customerPhone || '';
   const customerAddress = data.customer_address || data.customerAddress || '';
@@ -2240,9 +2251,9 @@ export function createOrder(data = {}) {
   const notes = data.notes || '';
 
   const info = db.prepare(`
-    INSERT INTO orders (workspace_id, conv_id, platform, customer_name, customer_phone, customer_address, details, estimated_total, status, notes, created_at)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'pending', ?, ?)
-  `).run(wsId, convId, platform, customerName, customerPhone, customerAddress, details, estimatedTotal, notes, now());
+    INSERT INTO orders (workspace_id, conv_id, platform, kind, customer_name, customer_phone, customer_address, details, estimated_total, status, notes, created_at)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', ?, ?)
+  `).run(wsId, convId, platform, kind, customerName, customerPhone, customerAddress, details, estimatedTotal, notes, now());
   const created = db.prepare('SELECT * FROM orders WHERE id = ?').get(info.lastInsertRowid);
 
   // Dispatch real-time owner alert

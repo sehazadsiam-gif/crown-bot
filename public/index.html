@@ -4261,7 +4261,7 @@
         <!-- Right Form Column -->
         <div class="login-form-pane">
           <!-- Sign In View -->
-          <form id="loginForm" class="auth-form">
+          <form id="loginForm" class="auth-form" onsubmit="return false;">
             <h1 class="user-login-title">User Login</h1>
 
             <div class="input-pill-wrap">
@@ -4312,7 +4312,7 @@
           </form>
 
           <!-- Sign Up View -->
-          <form id="signupForm" class="auth-form" style="display:none">
+          <form id="signupForm" class="auth-form" onsubmit="return false;" style="display:none">
             <h1 class="user-login-title" style="margin-bottom:18px">Create Account</h1>
 
             <div class="input-pill-wrap">
@@ -6920,6 +6920,9 @@
     let currentWorkspaceId = 1, workspaces = [];
     let currentUser = null, allMasterTenants = [];
     let pendingNewWsId = null;
+    let donezoTimerSeconds = 5048;
+    let donezoTimerInterval = null;
+    let donezoTimerRunning = false;
 
     function chip(t) {
       const e = document.getElementById('saveChip');
@@ -6936,135 +6939,157 @@
 
     /* ---------- AUTHENTICATION & ROLE ENGINE ---------- */
     async function checkAuth() {
-      const r = await api('/api/me').then(r => r.json()).catch(() => ({ authed: false }));
-      if (r.authed) {
-        currentUser = r;
-        document.getElementById('login').style.display = 'none';
-        document.getElementById('app').style.display = 'block';
+      try {
+        const r = await api('/api/me').then(r => r.json()).catch(() => ({ authed: false }));
+        if (r.authed) {
+          currentUser = r;
+          const loginEl = document.getElementById('login');
+          const appEl = document.getElementById('app');
+          if (loginEl) loginEl.style.display = 'none';
+          if (appEl) appEl.style.display = 'block';
 
-        // Populate Donezo Executive Header Profile Chip
-        const userName = r.username || (r.role === 'master_admin' ? 'Master Admin' : (r.workspace_name || 'Admin'));
-        const userEmail = r.email || (r.role === 'master_admin' ? 'admin@ccadmin.online' : 'operations@ccadmin.online');
-        const userInitial = (userName || 'A').slice(0, 2).toUpperCase();
-        const hName = document.getElementById('headerUserName');
-        if (hName) hName.textContent = userName;
-        const hEmail = document.getElementById('headerUserEmail');
-        if (hEmail) hEmail.textContent = userEmail;
-        const hAvatar = document.getElementById('headerUserAvatar');
-        if (hAvatar) hAvatar.textContent = userInitial;
+          // Populate Donezo Executive Header Profile Chip
+          const userName = r.username || (r.role === 'master_admin' ? 'Master Admin' : (r.workspace_name || 'Admin'));
+          const userEmail = r.email || (r.role === 'master_admin' ? 'admin@ccadmin.online' : 'operations@ccadmin.online');
+          const userInitial = (userName || 'A').slice(0, 2).toUpperCase();
+          const hName = document.getElementById('headerUserName');
+          if (hName) hName.textContent = userName;
+          const hEmail = document.getElementById('headerUserEmail');
+          if (hEmail) hEmail.textContent = userEmail;
+          const hAvatar = document.getElementById('headerUserAvatar');
+          if (hAvatar) hAvatar.textContent = userInitial;
 
-        startDonezoTimer();
+          startDonezoTimer();
 
-        const masterControls = document.getElementById('masterWsControls');
-        const masterNav = document.getElementById('navMasterSection');
-        const tenantControls = document.getElementById('tenantControls');
-        const tenantExpiredBanner = document.getElementById('tenantExpiredBanner');
+          const masterControls = document.getElementById('masterWsControls');
+          const masterNav = document.getElementById('navMasterSection');
+          const tenantControls = document.getElementById('tenantControls');
+          const tenantExpiredBanner = document.getElementById('tenantExpiredBanner');
 
-        if (r.role === 'master_admin') {
-          if (masterControls) masterControls.style.display = 'flex';
-          if (masterNav) masterNav.style.display = 'block';
-          if (tenantControls) tenantControls.style.display = 'none';
-          if (tenantExpiredBanner) tenantExpiredBanner.style.display = 'none';
+          if (r.role === 'master_admin') {
+            if (masterControls) masterControls.style.display = 'flex';
+            if (masterNav) masterNav.style.display = 'block';
+            if (tenantControls) tenantControls.style.display = 'none';
+            if (tenantExpiredBanner) tenantExpiredBanner.style.display = 'none';
 
-          const masterBadge = document.getElementById('masterAdminBadge');
-          if (masterBadge) masterBadge.style.display = 'inline-flex';
-          const btnHeaderUpgrade = document.getElementById('btnHeaderUpgrade');
-          if (btnHeaderUpgrade) btnHeaderUpgrade.style.display = 'none';
+            const masterBadge = document.getElementById('masterAdminBadge');
+            if (masterBadge) masterBadge.style.display = 'inline-flex';
+            const btnHeaderUpgrade = document.getElementById('btnHeaderUpgrade');
+            if (btnHeaderUpgrade) btnHeaderUpgrade.style.display = 'none';
 
-          const brandTitleTxt = document.getElementById('brandTitleTxt');
-          if (brandTitleTxt) brandTitleTxt.textContent = 'CC Chatbot';
-          const brandSubTxt = document.getElementById('brandSubTxt');
-          if (brandSubTxt) brandSubTxt.textContent = 'Master Control Hub';
-          document.title = 'CC Chatbot — Master Admin';
-          const brandLogoBadge = document.getElementById('brandLogoBadge');
-          if (brandLogoBadge) brandLogoBadge.textContent = '👑';
+            const brandTitleTxt = document.getElementById('brandTitleTxt');
+            if (brandTitleTxt) brandTitleTxt.textContent = 'CC Chatbot';
+            const brandSubTxt = document.getElementById('brandSubTxt');
+            if (brandSubTxt) brandSubTxt.textContent = 'Master Control Hub';
+            document.title = 'CC Chatbot — Master Admin';
+            const brandLogoBadge = document.getElementById('brandLogoBadge');
+            if (brandLogoBadge) brandLogoBadge.textContent = '👑';
 
-          switchTab('tenants');
-          await loadMasterTenants();
-          await loadWorkspaces();
-        } else {
-          // Tenant Admin
-          currentWorkspaceId = r.workspace_id;
-          if (masterControls) masterControls.style.display = 'none';
-          if (masterNav) masterNav.style.display = 'none';
-          if (tenantControls) tenantControls.style.display = 'flex';
-
-          const masterBadge = document.getElementById('masterAdminBadge');
-          if (masterBadge) masterBadge.style.display = 'none';
-          const inspectingBanner = document.getElementById('masterInspectingBanner');
-          if (inspectingBanner) inspectingBanner.style.display = 'none';
-          const btnHeaderUpgrade = document.getElementById('btnHeaderUpgrade');
-          if (btnHeaderUpgrade) btnHeaderUpgrade.style.display = 'inline-flex';
-
-          const bizName = r.workspace_id === 1 ? 'CC' : (r.workspace_name || 'My Business');
-          const tBrandTitle = document.getElementById('brandTitleTxt');
-          if (tBrandTitle) tBrandTitle.textContent = bizName + ' Chatbot';
-          const tBrandSub = document.getElementById('brandSubTxt');
-          if (tBrandSub) tBrandSub.textContent = 'AI Operations Center';
-          document.title = `${bizName} — CC Chatbot AI Operations`;
-          const tLogoBadge = document.getElementById('brandLogoBadge');
-          if (tLogoBadge) tLogoBadge.textContent = r.workspace_id === 1 ? 'CC' : (bizName.slice(0, 2).toUpperCase());
-
-          // Render Subscription Status Badge
-          const sub = r.subscription;
-          const subBadge = document.getElementById('tenantSubBadge');
-          if (subBadge && sub) {
-            if (sub.status === 'trial') {
-              subBadge.className = 'sub-badge ' + (sub.isExpired ? 'expired' : 'trial');
-              subBadge.textContent = sub.isExpired ? 'Trial Expired' : `14-Day Free Trial (${sub.daysRemaining}d left)`;
-            } else if (sub.status === 'active') {
-              subBadge.className = 'sub-badge active';
-              subBadge.textContent = `Active Package (${sub.daysRemaining}d)`;
-            } else if (sub.status === 'suspended') {
-              subBadge.className = 'sub-badge suspended';
-              subBadge.textContent = 'Service Suspended';
-            } else {
-              subBadge.className = 'sub-badge expired';
-              subBadge.textContent = 'Subscription Inactive';
+            switchTab('tenants');
+            try {
+              await loadMasterTenants();
+              await loadWorkspaces();
+            } catch (loadErr) {
+              console.warn('Master initial data load error:', loadErr);
             }
-          }
-
-          if (tenantExpiredBanner) {
-            tenantExpiredBanner.style.display = (r.workspace_id !== 1 && (sub?.isExpired || sub?.status === 'suspended')) ? 'block' : 'none';
-          }
-
-          // Mandatory First-Time Password Setup (Never for Workspace 1)
-          const isMustPass = r.must_change_password && r.workspace_id !== 1;
-          const flNotice = document.getElementById('flMandatoryNotice');
-          const flClose = document.getElementById('flCloseBtn');
-          const flDismiss = document.getElementById('flDismissBtn');
-          const dot = document.getElementById('tenantPassActionDot');
-
-          if (dot) dot.style.display = isMustPass ? 'inline-block' : 'none';
-
-          if (isMustPass) {
-            document.getElementById('flEmailIn').value = r.email || '';
-            if (flNotice) flNotice.style.display = 'block';
-            if (flClose) flClose.style.display = 'none';
-            if (flDismiss) flDismiss.style.display = 'none';
-            document.getElementById('firstLoginModal').classList.add('open');
           } else {
-            if (flNotice) flNotice.style.display = 'none';
-            if (flClose) flClose.style.display = 'inline-block';
-            if (flDismiss) flDismiss.style.display = 'inline-block';
-            document.getElementById('firstLoginModal').classList.remove('open');
-            // First login helper: provide clear social channel setup guidelines
-            const seenGuideKey = `seen_social_guide_${r.workspace_id}`;
-            if (r.workspace_id !== 1 && r.role !== 'master_admin' && !localStorage.getItem(seenGuideKey)) {
-              setTimeout(() => {
-                openSocialGuideModal('fb');
-                localStorage.setItem(seenGuideKey, '1');
-              }, 1000);
+            // Tenant Admin
+            currentWorkspaceId = r.workspace_id;
+            if (masterControls) masterControls.style.display = 'none';
+            if (masterNav) masterNav.style.display = 'none';
+            if (tenantControls) tenantControls.style.display = 'flex';
+
+            const masterBadge = document.getElementById('masterAdminBadge');
+            if (masterBadge) masterBadge.style.display = 'none';
+            const inspectingBanner = document.getElementById('masterInspectingBanner');
+            if (inspectingBanner) inspectingBanner.style.display = 'none';
+            const btnHeaderUpgrade = document.getElementById('btnHeaderUpgrade');
+            if (btnHeaderUpgrade) btnHeaderUpgrade.style.display = 'inline-flex';
+
+            const bizName = r.workspace_id === 1 ? 'CC' : (r.workspace_name || 'My Business');
+            const tBrandTitle = document.getElementById('brandTitleTxt');
+            if (tBrandTitle) tBrandTitle.textContent = bizName + ' Chatbot';
+            const tBrandSub = document.getElementById('brandSubTxt');
+            if (tBrandSub) tBrandSub.textContent = 'AI Operations Center';
+            document.title = `${bizName} — CC Chatbot AI Operations`;
+            const tLogoBadge = document.getElementById('brandLogoBadge');
+            if (tLogoBadge) tLogoBadge.textContent = r.workspace_id === 1 ? 'CC' : (bizName.slice(0, 2).toUpperCase());
+
+            // Render Subscription Status Badge
+            const sub = r.subscription;
+            const subBadge = document.getElementById('tenantSubBadge');
+            if (subBadge && sub) {
+              if (sub.status === 'trial') {
+                subBadge.className = 'sub-badge ' + (sub.isExpired ? 'expired' : 'trial');
+                subBadge.textContent = sub.isExpired ? 'Trial Expired' : `14-Day Free Trial (${sub.daysRemaining}d left)`;
+              } else if (sub.status === 'active') {
+                subBadge.className = 'sub-badge active';
+                subBadge.textContent = `Active Package (${sub.daysRemaining}d)`;
+              } else if (sub.status === 'suspended') {
+                subBadge.className = 'sub-badge suspended';
+                subBadge.textContent = 'Service Suspended';
+              } else {
+                subBadge.className = 'sub-badge expired';
+                subBadge.textContent = 'Subscription Inactive';
+              }
+            }
+
+            if (tenantExpiredBanner) {
+              tenantExpiredBanner.style.display = (r.workspace_id !== 1 && (sub?.isExpired || sub?.status === 'suspended')) ? 'block' : 'none';
+            }
+
+            // Mandatory First-Time Password Setup (Never for Workspace 1)
+            const isMustPass = r.must_change_password && r.workspace_id !== 1;
+            const flNotice = document.getElementById('flMandatoryNotice');
+            const flClose = document.getElementById('flCloseBtn');
+            const flDismiss = document.getElementById('flDismissBtn');
+            const dot = document.getElementById('tenantPassActionDot');
+
+            if (dot) dot.style.display = isMustPass ? 'inline-block' : 'none';
+
+            if (isMustPass) {
+              const flEmail = document.getElementById('flEmailIn');
+              if (flEmail) flEmail.value = r.email || '';
+              if (flNotice) flNotice.style.display = 'block';
+              if (flClose) flClose.style.display = 'none';
+              if (flDismiss) flDismiss.style.display = 'none';
+              const flModal = document.getElementById('firstLoginModal');
+              if (flModal) flModal.classList.add('open');
+            } else {
+              if (flNotice) flNotice.style.display = 'none';
+              if (flClose) flClose.style.display = 'inline-block';
+              if (flDismiss) flDismiss.style.display = 'inline-block';
+              const flModal = document.getElementById('firstLoginModal');
+              if (flModal) flModal.classList.remove('open');
+              // First login helper: provide clear social channel setup guidelines
+              const seenGuideKey = `seen_social_guide_${r.workspace_id}`;
+              if (r.workspace_id !== 1 && r.role !== 'master_admin' && !localStorage.getItem(seenGuideKey)) {
+                setTimeout(() => {
+                  openSocialGuideModal('fb');
+                  localStorage.setItem(seenGuideKey, '1');
+                }, 1000);
+              }
+            }
+
+            switchTab('dash');
+            try {
+              await load(currentWorkspaceId);
+              await loadOrders();
+            } catch (loadErr) {
+              console.warn('Tenant initial data load error:', loadErr);
             }
           }
-
-          switchTab('dash');
-          await load(currentWorkspaceId);
-          await loadOrders();
+          return true;
+        } else {
+          const loginEl = document.getElementById('login');
+          const appEl = document.getElementById('app');
+          if (loginEl) loginEl.style.display = 'flex';
+          if (appEl) appEl.style.display = 'none';
+          return false;
         }
-      } else {
-        document.getElementById('login').style.display = 'flex';
-        document.getElementById('app').style.display = 'none';
+      } catch (err) {
+        console.error('checkAuth execution error:', err);
+        return false;
       }
     }
 
@@ -7380,28 +7405,35 @@
 
     document.getElementById('loginForm').onsubmit = async e => {
       e.preventDefault();
-      const err = document.getElementById('loginErr'); err.textContent = '';
-      const email = (document.getElementById('lEmail').value || '').trim();
-      const password = (document.getElementById('lPass').value || '').trim();
+      const err = document.getElementById('loginErr'); if (err) err.textContent = '';
+      const email = (document.getElementById('lEmail')?.value || '').trim();
+      const password = (document.getElementById('lPass')?.value || '').trim();
       const btn = e.target.querySelector('button[type="submit"]');
-      const oldText = btn.textContent;
-      btn.textContent = 'Verifying...';
-      btn.disabled = true;
+      const oldText = btn ? btn.textContent : 'LOGIN';
+      if (btn) {
+        btn.textContent = 'Verifying...';
+        btn.disabled = true;
+      }
 
       try {
         const res = await api('/api/login', { method: 'POST', body: JSON.stringify({ email, password }) });
         const data = await res.json();
         if (res.ok && data.ok) {
           if (data.token) localStorage.setItem('cc_token', data.token);
-          await checkAuth();
+          const authed = await checkAuth();
+          if (!authed && err) {
+            err.textContent = 'Authorization token verification failed. Please try again.';
+          }
         } else {
-          err.textContent = data.error || 'Sign in failed.';
+          if (err) err.textContent = data.error || 'Sign in failed.';
         }
       } catch (e) {
-        err.textContent = 'Network or server error.';
+        if (err) err.textContent = 'Network or server error.';
       } finally {
-        btn.textContent = oldText;
-        btn.disabled = false;
+        if (btn) {
+          btn.textContent = oldText;
+          btn.disabled = false;
+        }
       }
     };
 
@@ -7593,7 +7625,8 @@
 
     async function loadOrders(status = null) {
       if (status) currentOrderFilter = status;
-      const res = await api(`/api/orders?status=${currentOrderFilter}`).then(r => r.json()).catch(() => ({ orders: [], stats: {} }));
+      const wsParam = currentWorkspaceId ? `&workspace_id=${currentWorkspaceId}` : '';
+      const res = await api(`/api/orders?status=${currentOrderFilter}${wsParam}`).then(r => r.json()).catch(() => ({ orders: [], stats: {} }));
       allOrdersList = res.orders || [];
       const stats = res.stats || {};
 
@@ -7629,7 +7662,7 @@
       if (!tbody) return;
 
       if (!orders.length) {
-        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:32px; color:var(--ink3)">No orders found in this view.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:32px; color:var(--ink3)">No records found in this view.</td></tr>';
         return;
       }
 
@@ -7638,35 +7671,54 @@
         if (o.status === 'confirmed') statusClass = 'confirmed';
         if (o.status === 'rejected') statusClass = 'rejected';
 
-        const platformBadge = `<span class="pill" style="font-size:10.5px; padding:2px 7px; text-transform:uppercase">${esc(o.platform || 'web')}</span>`;
+        const isAppt = o.kind === 'appointment' || (o.details && /appointment|booking|consult|scaling|root canal|dental|doctor|clinic/i.test(o.details));
+        const isInq = o.kind === 'inquiry';
+        const kindBadge = isAppt 
+          ? `<span class="pill" style="font-size:10px; padding:2px 7px; background:rgba(99, 102, 241, 0.15); color:#6366f1; font-weight:700; border:1px solid rgba(99, 102, 241, 0.3)">📅 APPOINTMENT</span>`
+          : (isInq 
+            ? `<span class="pill" style="font-size:10px; padding:2px 7px; background:rgba(245, 158, 11, 0.15); color:#d97706; font-weight:700; border:1px solid rgba(245, 158, 11, 0.3)">💬 INQUIRY</span>`
+            : `<span class="pill" style="font-size:10px; padding:2px 7px; background:rgba(16, 185, 129, 0.15); color:#059669; font-weight:700; border:1px solid rgba(16, 185, 129, 0.3)">🛍️ ORDER</span>`);
+
+        const platformBadge = `<span class="pill" style="font-size:10px; padding:2px 6px; text-transform:uppercase; background:var(--surface2); color:var(--ink2)">${esc(o.platform || 'web')}</span>`;
+
+        const hasScheduleOrAddr = !!o.customer_address;
+        const scheduleLabel = isAppt ? '📅 Schedule:' : '📍 Address:';
 
         return `
       <tr>
         <td style="white-space:nowrap; font-size:12px; color:var(--ink2)">
           ${new Date(o.created_at).toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
         </td>
-        <td>${platformBadge}</td>
+        <td>
+          <div style="display:flex; flex-direction:column; gap:4px; align-items:flex-start">
+            ${kindBadge}
+            ${platformBadge}
+          </div>
+        </td>
         <td>
           <strong>${esc(o.customer_name || 'Customer')}</strong>
         </td>
         <td>
           <span class="mono" style="font-size:12px">${esc(o.customer_phone || 'Not provided')}</span>
-          ${o.customer_address ? `<div style="font-size:11px; color:var(--ink3)">${esc(o.customer_address)}</div>` : ''}
+          ${hasScheduleOrAddr ? `<div style="font-size:11px; color:var(--ink2); margin-top:3px"><span style="color:var(--ink3); font-weight:600">${scheduleLabel}</span> ${esc(o.customer_address)}</div>` : ''}
         </td>
         <td style="max-width:320px">
-          <div style="font-size:13px; line-height:1.4; color:var(--ink)">${esc(o.details)}</div>
+          <div style="font-size:13px; line-height:1.4; color:var(--ink); font-weight:500">${esc(o.details)}</div>
           ${o.estimated_total ? `<div style="font-size:11px; font-weight:700; color:var(--accent); margin-top:2px">${esc(o.estimated_total)}</div>` : ''}
         </td>
         <td>
           <span class="status-pill ${statusClass}">${esc(o.status)}</span>
         </td>
         <td style="text-align:right">
-          <div style="display:inline-flex; gap:6px; justify-content:flex-end">
+          <div style="display:inline-flex; gap:6px; justify-content:flex-end; align-items:center">
+            ${o.conv_id ? `
+              <button class="btn sm ghost" onclick="openConversationInInbox(${o.conv_id})" title="Open live customer dialogue in Inbox" style="font-size:11.5px; padding:4px 8px">💬 Chat</button>
+            ` : ''}
             ${o.status === 'pending' ? `
-              <button class="btn sm primary" onclick="confirmOrder(${o.id})">Confirm</button>
-              <button class="btn sm ghost" style="color:var(--danger)" onclick="rejectOrder(${o.id})">Reject</button>
+              <button class="btn sm primary" onclick="confirmOrder(${o.id})">${isAppt ? 'Confirm Slot' : 'Confirm'}</button>
+              <button class="btn sm ghost" style="color:var(--danger)" onclick="rejectOrder(${o.id})">Decline</button>
             ` : `
-              <span style="font-size:11.5px; color:var(--ink3)">${o.confirmed_at ? new Date(o.confirmed_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Processed'}</span>
+              <span style="font-size:11px; color:var(--ink3); font-weight:500">${o.confirmed_at ? new Date(o.confirmed_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Processed'}</span>
             `}
           </div>
         </td>
@@ -8708,8 +8760,13 @@ Thank you for partnering with Crown Operations!`;
     async function load(wsId = null) {
       if (wsId) currentWorkspaceId = Number(wsId);
       await loadWorkspaces();
-      const d = await api(`/api/config?workspace_id=${currentWorkspaceId}`).then(r => r.json());
-      S = d.config;
+      const d = await api(`/api/config?workspace_id=${currentWorkspaceId}`)
+        .then(async r => {
+          if (!r.ok) return { config: {} };
+          return r.json();
+        })
+        .catch(() => ({ config: {} }));
+      S = d.config || {};
 
       if (currentUser?.role !== 'master_admin') {
         const bizName = (currentWorkspaceId === 1 ? 'CC' : (S?.business?.name || S?.cafe?.name || 'My Business'));
@@ -8731,14 +8788,6 @@ Thank you for partnering with Crown Operations!`;
       if (domText && curWs) {
         domText.textContent = curWs.custom_domain ? (curWs.custom_domain.includes('.') ? curWs.custom_domain : `${curWs.custom_domain}.ccadmin.online`) : 'Auto-routed & SSL Secured';
       }
-    }
-
-    function chip(t) {
-      const e = document.getElementById('saveChip');
-      if (!e) return;
-      e.textContent = t;
-      clearTimeout(chip._t);
-      chip._t = setTimeout(() => { if (e) e.textContent = ''; }, 2200);
     }
 
     function save() {
@@ -8876,9 +8925,9 @@ Thank you for partnering with Crown Operations!`;
     }
 
     /* ---------- DONEZO EXECUTIVE DASHBOARD INTERACTIVITY ---------- */
-    let donezoTimerSeconds = 5048; // 01:24:08 matching Donezo executive reference
-    let donezoTimerInterval = null;
-    let donezoTimerRunning = false;
+    donezoTimerSeconds = 5048; // 01:24:08 matching Donezo executive reference
+    donezoTimerInterval = null;
+    donezoTimerRunning = false;
 
     function formatDonezoTime(totalSec) {
       const h = Math.floor(totalSec / 3600);
@@ -9507,6 +9556,7 @@ Thank you for partnering with Crown Operations!`;
         msg.textContent = e.message || 'Could not parse text.';
       }
     };
+    }
 
     /* ---------- FAQ MANAGEMENT ---------- */
     function renderFaq() {
@@ -9878,6 +9928,70 @@ Thank you for partnering with Crown Operations!`;
       document.body.prepend(banner);
     }
 
+    function bubble(cls, txt, where = 'threadLog') {
+      const log = document.getElementById(where);
+      if (!log) return null;
+      const d = document.createElement('div');
+      d.className = 'msg ' + cls;
+      d.textContent = txt;
+      log.appendChild(d);
+      log.scrollTop = log.scrollHeight;
+      return d;
+    }
+    window.bubble = bubble;
+
+    async function openConversationInInbox(convId) {
+      if (!convId) return;
+      switchTab('inbox');
+      selConv = +convId;
+      document.querySelectorAll('#convList .conv').forEach(c => c.classList.toggle('sel', +c.dataset.cid === selConv));
+      
+      const log = document.getElementById('threadLog');
+      if (log) log.innerHTML = '<div class="empty" style="text-align:center;padding:32px;opacity:0.5">Loading conversation…</div>';
+
+      const threadIn = document.getElementById('threadIn');
+      const threadSend = document.getElementById('threadSend');
+      const cb = document.getElementById('convBot');
+      const badge = document.getElementById('convChannelBadge');
+      if (threadIn) threadIn.disabled = true;
+      if (threadSend) threadSend.disabled = true;
+      if (cb) cb.disabled = true;
+
+      try {
+        const params = currentWorkspaceId ? `?workspace_id=${currentWorkspaceId}` : '';
+        const d = await api(`/api/conversations/${selConv}${params}`).then(r => r.json());
+        if (log) {
+          log.innerHTML = '';
+          if (!d.messages?.length) {
+            log.innerHTML = '<div class="empty">No messages in this conversation yet.</div>';
+          } else {
+            d.messages.forEach(m => bubble(m.direction === 'in' ? 'b' : 'u', m.text, 'threadLog'));
+          }
+          if (d.conversation?.flagged) bubble('sys', '⚑ ' + (d.conversation.flag_reason || 'Flagged thread'), 'threadLog');
+          log.scrollTop = log.scrollHeight;
+        }
+
+        if (threadIn) threadIn.disabled = false;
+        if (threadSend) threadSend.disabled = false;
+        if (cb) { cb.disabled = false; cb.checked = !!d.conversation?.bot_enabled; }
+        if (badge) {
+          const platName = d.conversation?.platform || 'Unknown';
+          const platIcon = platName === 'facebook' ? '📘' : platName === 'instagram' ? '📷' : platName === 'whatsapp' ? '📱' : '💬';
+          badge.textContent = `${platIcon} ${platName.charAt(0).toUpperCase() + platName.slice(1)}`;
+        }
+        updateHandoverUi(d.conversation);
+
+        if (window.innerWidth <= 860) {
+          document.querySelector('.inbox')?.classList.add('chat-view-active');
+        }
+      } catch (err) {
+        if (log) log.innerHTML = `<div class="empty" style="color:var(--danger)">Failed to load conversation. Please try again.</div>`;
+        selConv = null;
+        updateHandoverUi(null);
+      }
+    }
+    window.openConversationInInbox = openConversationInInbox;
+
     document.getElementById('convList').addEventListener('click', async e => {
       const el = e.target.closest('[data-cid]');
       if (!el) return;
@@ -9895,7 +10009,7 @@ Thank you for partnering with Crown Operations!`;
         document.querySelector('.inbox')?.classList.add('chat-view-active');
       }
 
-      // Immediately highlight selected item and refresh list
+      // Immediately highlight selected item in list
       document.querySelectorAll('#convList .conv').forEach(c => c.classList.toggle('sel', +c.dataset.cid === selConv));
 
       // Show loading state in thread view
@@ -9936,9 +10050,6 @@ Thank you for partnering with Crown Operations!`;
         selConv = null;
         updateHandoverUi(null);
       }
-
-      // Refresh the list to show updated selection state
-      loadInbox();
     });
 
     document.getElementById('convBot').onchange = async e => {
@@ -10357,8 +10468,10 @@ Thank you for partnering with Crown Operations!`;
       if (drawer) drawer.classList.remove('open');
     }
 
+    let _simHistory = [];
     function resetBotSimulator() {
       _simSessionId = 'sim_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7);
+      _simHistory = [];
       const msgs = document.getElementById('simChatMessages');
       if (!msgs) return;
       msgs.innerHTML = '';
@@ -10394,6 +10507,7 @@ Thank you for partnering with Crown Operations!`;
       input.value = '';
 
       simAppendBubble('user', text);
+      _simHistory.push({ direction: 'in', text });
 
       const typing = document.getElementById('simTypingIndicator');
       if (typing) typing.classList.add('active');
@@ -10407,8 +10521,10 @@ Thank you for partnering with Crown Operations!`;
           method: 'POST',
           body: JSON.stringify({
             message: text,
+            history: _simHistory.slice(-10),
+            sessionId: _simSessionId,
             session_id: _simSessionId,
-            customerName: 'Doctor / Owner (Test)',
+            customerName: 'Test Patient / Client',
             workspace_id: ws
           })
         });
@@ -10417,6 +10533,7 @@ Thank you for partnering with Crown Operations!`;
         if (typing) typing.classList.remove('active');
 
         if (res.ok && data && data.reply) {
+          _simHistory.push({ direction: 'out', text: data.reply });
           simAppendBubble('bot', data.reply);
         } else {
           simAppendBubble('bot', data?.error || data?.message || "I'm your assistant! How else may I assist with our treatments, hours, or appointments?");

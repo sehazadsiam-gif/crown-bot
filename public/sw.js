@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ccadmin-pwa-v2.1.0';
+const CACHE_NAME = 'ccadmin-pwa-v2.2.0';
 const BASE_PATH = '/chatbotadmin';
 
 const PRECACHE_ASSETS = [

@@ -349,92 +349,192 @@ Make answers natural, professional, trustworthy, and directly informative.`;
 }
 
 /**
- * Detects if a customer message is an order, service booking, or reservation inquiry.
+ * Detects if a customer message is an order, appointment booking, or service inquiry
+ * utilizing business context, industry type, and catalog services.
  */
-export async function detectOrderOrInquiry(text, history = []) {
+export async function detectOrderOrInquiry(text, history = [], cfg = null) {
   if (!text || text.trim().length < 3) return null;
   const userText = String(text).trim();
   const lower = userText.toLowerCase();
 
-  const orderKeywords = [
-    'order', 'buy', 'purchase', 'want', 'need', 'book', 'booking', 'appointment', 'reserve', 'reservation',
-    'takeaway', 'parcel', 'deliver', 'delivery', 'send me', 'please send', 'how much for', 'price for',
-    'অর্ডার', 'বুকিং', 'কিনতে চাই', 'নিতে চাই', 'পাঠান'
+  // Extract business context from workspace config
+  const bName = cfg?.business?.name || cfg?.cafe?.name || 'Our Business';
+  const bType = cfg?.business?.type || cfg?.cafe?.businessType || 'General Business';
+  const servicesDesc = cfg?.business?.services || cfg?.cafe?.service || '';
+  
+  const catalogItems = [];
+  for (const cat of (cfg?.menu || [])) {
+    for (const it of (cat.items || [])) {
+      if (it.name) catalogItems.push(it.name);
+    }
+  }
+
+  // Broadened intent keywords across Orders, Appointments, Services, Bengali & Banglish
+  const intentKeywords = [
+    // Orders & Retail
+    'order', 'buy', 'purchase', 'takeaway', 'parcel', 'deliver', 'delivery', 'send me', 'please send',
+    'how much for', 'price for', 'cost', 'menu', 'bill', 'total', 'payment',
+    // Appointments, Bookings & Consultations
+    'book', 'booking', 'appointment', 'schedule', 'reserve', 'reservation', 'consult', 'consultation',
+    'visit', 'slot', 'available', 'availability', 'session', 'doctor', 'dentist', 'clinic', 'treatment',
+    'cleaning', 'scaling', 'root canal', 'filling', 'extraction', 'braces', 'crown', 'haircut', 'spa',
+    'timing', 'time', 'meet', 'serial', 'table', 'seat',
+    // Bengali (Bangla script)
+    'অর্ডার', 'বুকিং', 'কিনতে চাই', 'নিতে চাই', 'পাঠান', 'সিরিয়াল', 'অ্যাপয়েন্টমেন্ট', 'ডাক্তার',
+    'চিকিৎসা', 'দাঁত', 'ফাঁকা', 'তারিখ', 'সময়', 'দেখা', 'টেবিল', 'খাবার', 'দাম', 'কত',
+    // Banglish / Romanized Bengali
+    'order korbo', 'korte chai', 'nite chai', 'kinte chai', 'serial pabo', 'doctor dekhabo',
+    'appointment lagbe', 'kobe faka', 'slot ache', 'schedule kora', 'table lagbe', 'dam koto', 'pathan'
   ];
-  const hasKeyword = orderKeywords.some(k => lower.includes(k));
+
+  // Also check if any specific catalog service or product name is mentioned
+  const catalogMatch = catalogItems.some(it => it && lower.includes(it.toLowerCase()));
+  const phoneMatch = /(?:\+?88)?01[3-9]\d{8}/.test(userText);
+  const hasKeyword = intentKeywords.some(k => lower.includes(k)) || catalogMatch || phoneMatch;
   if (!hasKeyword) return null;
 
-  const prompt = `Analyze this customer message in a business messaging channel.
+  // Normalize history format
+  const normalizedHistory = (history || []).map(m => {
+    if (m.text) return `${m.direction === 'in' ? 'Customer' : 'Bot'}: ${m.text}`;
+    if (m.content) return `${m.role === 'user' ? 'Customer' : 'Bot'}: ${m.content}`;
+    return '';
+  }).filter(Boolean);
+
+  const prompt = `You are an AI order and appointment booking extraction engine for "${bName}", an enterprise in the "${bType}" industry.
+Business services / offerings: ${servicesDesc || catalogItems.slice(0, 15).join(', ') || 'Professional services and products'}
+
 Customer message: "${userText}"
-Recent history: ${JSON.stringify(history.slice(-4))}
+Recent dialogue:
+${normalizedHistory.slice(-4).join('\n') || 'None'}
 
-Determine if the customer is requesting to place an order, book an appointment/reservation, or initiate a serious service request.
-If YES, extract:
-- is_order: true
-- kind: "order" (for purchasing goods/food), "booking" (for services/appointments/reservations), or "inquiry" (detailed request for quotation)
-- details: Clear summary of items or services requested, including quantities or specifics if mentioned.
-- customer_name: Full name if provided, or empty string.
-- customer_phone: Phone number if provided, or empty string.
-- customer_address: Address or delivery location if provided, or empty string.
-- estimated_total: Price or total estimate if obvious, or empty string.
+Determine if the customer is requesting to:
+1. "appointment": Book an appointment, schedule a consultation/treatment/doctor visit/procedure/session, or reserve a slot (common for dental clinics, healthcare, salons, consulting, agencies).
+2. "order": Order products, meals, takeaway items, or request delivery.
+3. "inquiry": Submit a serious inquiry, request for custom quotation, or ask for available booking times.
 
-If NO (it is just a general question, casual greeting, or simple FAQ inquiry):
-- is_order: false
+If YES (intent to book, order, or request service):
+Return ONLY a valid JSON object:
+{
+  "is_order": true,
+  "kind": "appointment" | "order" | "inquiry",
+  "details": "Clear concise summary of the requested service, procedure, items, or requirements",
+  "customer_name": "Full name if provided, else empty string",
+  "customer_phone": "Phone number if provided (e.g. 017XXXXXXXX), else empty string",
+  "customer_address": "Delivery address for orders, or empty string",
+  "appointment_time": "Requested date, day, or time slot for appointments (e.g. 'Tomorrow at 4 PM', 'Friday 5:00 PM'), or empty string",
+  "estimated_total": "Estimated price or fee if mentioned or obvious from catalog, else empty string"
+}
 
-Output ONLY a valid JSON object. No emojis, no markdown wrappers.`;
+If NO (casual greeting, generic FAQ without intent to book or purchase):
+Return ONLY:
+{
+  "is_order": false
+}
 
-  try {
-    const { geminiKey, geminiModel } = getEnv();
-    if (!geminiKey) {
-      if (hasKeyword && (lower.includes('order') || lower.includes('book') || lower.includes('want'))) {
-        return {
-          is_order: true,
-          kind: lower.includes('book') ? 'booking' : 'order',
-          details: userText,
-          customer_name: '',
-          customer_phone: '',
-          customer_address: '',
-          estimated_total: ''
-        };
-      }
-      return null;
-    }
+Output ONLY valid JSON. No markdown blocks, no commentary.`;
 
-    const res = await post(
-      `https://generativelanguage.googleapis.com/v1beta/models/${geminiModel || 'gemini-3.5-flash'}:generateContent`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'x-goog-api-key': geminiKey },
-        body: JSON.stringify({
-          contents: [{ role: 'user', parts: [{ text: prompt }] }],
-          generationConfig: {
-            temperature: 0.1,
-            maxOutputTokens: 512,
-            responseMimeType: 'application/json'
+  const { geminiKey, geminiModel, groqKey, groqModel } = getEnv();
+
+  // Try Gemini first
+  if (geminiKey) {
+    const modelsToTry = Array.from(new Set([geminiModel, 'gemini-2.5-flash', 'gemini-1.5-flash', 'gemini-2.0-flash', 'gemini-flash-latest']));
+    for (const model of modelsToTry) {
+      try {
+        const res = await post(
+          `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`,
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'x-goog-api-key': geminiKey },
+            body: JSON.stringify({
+              contents: [{ role: 'user', parts: [{ text: prompt }] }],
+              generationConfig: {
+                temperature: 0.1,
+                maxOutputTokens: 512,
+                responseMimeType: 'application/json'
+              }
+            })
           }
-        })
-      }
-    );
+        );
 
-    if (res.ok) {
-      const data = await res.json();
-      const rawText = data?.candidates?.[0]?.content?.parts?.map(p => p.text).filter(Boolean).join('').trim();
-      if (rawText) {
-        const parsed = JSON.parse(rawText);
-        if (parsed.is_order) {
-          return {
-            is_order: true,
-            kind: parsed.kind || 'order',
-            details: parsed.details || userText,
-            customer_name: parsed.customer_name || '',
-            customer_phone: parsed.customer_phone || '',
-            customer_address: parsed.customer_address || '',
-            estimated_total: parsed.estimated_total || ''
-          };
+        if (res.ok) {
+          const data = await res.json();
+          const rawText = data?.candidates?.[0]?.content?.parts?.map(p => p.text).filter(Boolean).join('').trim();
+          if (rawText) {
+            const parsed = JSON.parse(rawText);
+            if (parsed.is_order) {
+              const isAppt = parsed.kind === 'appointment' || parsed.kind === 'booking' || /dent|clinic|doctor|appoint|consult|treat|scaling|salon/i.test(bType + ' ' + (parsed.details || ''));
+              return {
+                is_order: true,
+                kind: isAppt ? 'appointment' : (parsed.kind || 'order'),
+                details: parsed.details || userText,
+                customer_name: parsed.customer_name || '',
+                customer_phone: parsed.customer_phone || (userText.match(/(?:\+?88)?01[3-9]\d{8}/)?.[0] || ''),
+                customer_address: parsed.customer_address || '',
+                appointment_time: parsed.appointment_time || '',
+                estimated_total: parsed.estimated_total || ''
+              };
+            }
+            return null;
+          }
+        }
+      } catch {}
+    }
+  }
+
+  // Fallback to Groq if available
+  if (groqKey) {
+    try {
+      const res = await post('https://api.groq.com/openai/v1/chat/completions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${groqKey}` },
+        body: JSON.stringify({
+          model: groqModel,
+          messages: [{ role: 'user', content: prompt }],
+          temperature: 0.1,
+          max_tokens: 400,
+          response_format: { type: 'json_object' }
+        })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        const raw = data?.choices?.[0]?.message?.content?.trim();
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (parsed.is_order) {
+            const isAppt = parsed.kind === 'appointment' || parsed.kind === 'booking' || /dent|clinic|doctor|appoint|consult|treat|scaling|salon/i.test(bType + ' ' + (parsed.details || ''));
+            return {
+              is_order: true,
+              kind: isAppt ? 'appointment' : (parsed.kind || 'order'),
+              details: parsed.details || userText,
+              customer_name: parsed.customer_name || '',
+              customer_phone: parsed.customer_phone || (userText.match(/(?:\+?88)?01[3-9]\d{8}/)?.[0] || ''),
+              customer_address: parsed.customer_address || '',
+              appointment_time: parsed.appointment_time || '',
+              estimated_total: parsed.estimated_total || ''
+            };
+          }
+          return null;
         }
       }
-    }
-  } catch {}
+    } catch {}
+  }
+
+  // Heuristic rule-based fallback if offline or API keys unavailable
+  const isAppointmentIntent = /appointment|book|schedule|consult|doctor|clinic|scaling|root canal|dent|serial|সিরিয়াল|অ্যাপয়েন্টমেন্ট/i.test(userText + ' ' + bType);
+  const isOrderIntent = /order|buy|parcel|delivery|takeaway| খাবার|অর্ডার|কিনতে/i.test(userText);
+  if (isAppointmentIntent || isOrderIntent) {
+    const extractedPhone = userText.match(/(?:\+?88)?01[3-9]\d{8}/)?.[0] || '';
+    return {
+      is_order: true,
+      kind: isAppointmentIntent ? 'appointment' : 'order',
+      details: userText,
+      customer_name: '',
+      customer_phone: extractedPhone,
+      customer_address: '',
+      appointment_time: '',
+      estimated_total: ''
+    };
+  }
 
   return null;
 }
