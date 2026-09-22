@@ -29,28 +29,39 @@
     rel="stylesheet">
   <style>
     :root {
-      --bg: #1A0B2E;
-      --bg-subtle: #140824;
-      --bg2: #220E3D;
-      --surface: #240F3F;
-      --surface-glass: rgba(26, 11, 46, 0.88);
-      --surface2: #2E144F;
-      --surface3: #3B1B64;
-      --ink: #FFF5F2;
-      --ink2: #D9C5D2;
-      --ink3: #A68D9E;
-      --line: rgba(255, 183, 165, 0.14);
-      --line2: rgba(255, 183, 165, 0.25);
-      --accent: #FFB7A5;
-      --accent-hover: #FFA590;
-      --accent-soft: rgba(255, 183, 165, 0.16);
-      --accent-glow: 0 0 25px -3px rgba(255, 183, 165, 0.45);
-      --gold: #FFB7A5;
-      --gold-soft: rgba(255, 183, 165, 0.16);
+      /* User Specified Master Color Palette */
+      --pal-yellow: #FAED26;
+      --pal-plum: #46344E;
+      --pal-slate: #5A5560;
+      --pal-ash: #9D8D8F;
+      --pal-clay: #9B786F;
+
+      /* Dark Theme (Default) */
+      --bg: #2C1F32;
+      --bg-subtle: #231828;
+      --bg2: #46344E;
+      --surface: #46344E;
+      --surface-glass: rgba(70, 52, 78, 0.92);
+      --surface2: #5A5560;
+      --surface3: #6B6573;
+      --ink: #FFFFFF;
+      --ink2: #E8E2E4;
+      --ink3: #9D8D8F;
+      --line: rgba(157, 141, 143, 0.28);
+      --line2: rgba(250, 237, 38, 0.35);
+      --accent: #FAED26;
+      --accent-hover: #FFF13B;
+      --accent-ink: #46344E;
+      --accent-soft: rgba(250, 237, 38, 0.16);
+      --accent-glow: 0 0 25px -3px rgba(250, 237, 38, 0.45);
+      --gold: #FAED26;
+      --gold-soft: rgba(250, 237, 38, 0.18);
+      --clay: #9B786F;
+      --clay-soft: rgba(155, 120, 111, 0.20);
       --good: #34D399;
       --good-soft: rgba(52, 211, 153, 0.15);
-      --warn: #FBBF24;
-      --warn-soft: rgba(251, 191, 36, 0.15);
+      --warn: #FAED26;
+      --warn-soft: rgba(250, 237, 38, 0.18);
       --danger: #F87171;
       --danger-soft: rgba(248, 113, 113, 0.15);
       --fb: #1877f2;
@@ -59,37 +70,40 @@
       --ig-soft: rgba(225, 48, 108, 0.15);
       --wa: #25d366;
       --wa-soft: rgba(37, 211, 102, 0.15);
-      --tt: #FFF5F2;
-      --tt-soft: rgba(255, 245, 242, 0.12);
+      --tt: #FFFFFF;
+      --tt-soft: rgba(255, 255, 255, 0.12);
       --radius: 22px;
       --radius-sm: 10px;
       --radius-xs: 5px;
-      --shadow: 0 4px 20px -2px rgba(10, 4, 18, 0.55);
-      --shadow-lg: 0 16px 40px -8px rgba(10, 4, 18, 0.75);
-      --shadow-glow: 0 0 35px -5px rgba(255, 183, 165, 0.35);
-      --glass: rgba(36, 15, 63, 0.85);
+      --shadow: 0 4px 20px -2px rgba(32, 20, 37, 0.55);
+      --shadow-lg: 0 16px 40px -8px rgba(32, 20, 37, 0.75);
+      --shadow-glow: 0 0 35px -5px rgba(250, 237, 38, 0.35);
+      --glass: rgba(70, 52, 78, 0.88);
       --transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
     :root[data-theme="light"] {
-      --bg: #FAF5F3;
-      --bg-subtle: #F3EAE6;
-      --bg2: #EFE4DF;
+      --bg: #F7F5F6;
+      --bg-subtle: #EFECEC;
+      --bg2: #E6E0E2;
       --surface: #FFFFFF;
       --surface-glass: rgba(255, 255, 255, 0.94);
-      --surface2: #FBF4F1;
-      --surface3: #F4E7E2;
-      --ink: #1A0B2E;
-      --ink2: #4A3362;
-      --ink3: #8C759E;
-      --line: #ECDCD6;
-      --line2: #DECECA;
-      --accent: #1A0B2E;
-      --accent-hover: #2E1550;
-      --accent-soft: rgba(255, 183, 165, 0.28);
-      --accent-glow: 0 0 20px -3px rgba(26, 11, 46, 0.25);
-      --gold: #D97706;
-      --gold-soft: rgba(217, 119, 6, 0.1);
+      --surface2: #F5F1F3;
+      --surface3: #EAE3E6;
+      --ink: #46344E;
+      --ink2: #5A5560;
+      --ink3: #9D8D8F;
+      --line: #E1DADB;
+      --line2: #D1C7C9;
+      --accent: #46344E;
+      --accent-hover: #36273C;
+      --accent-ink: #FAED26;
+      --accent-soft: rgba(250, 237, 38, 0.28);
+      --accent-glow: 0 0 20px -3px rgba(70, 52, 78, 0.25);
+      --gold: #9B786F;
+      --gold-soft: rgba(155, 120, 111, 0.12);
+      --clay: #9B786F;
+      --clay-soft: rgba(155, 120, 111, 0.15);
       --good: #059669;
       --good-soft: rgba(5, 150, 105, 0.12);
       --warn: #D97706;
@@ -102,21 +116,21 @@
       --ig-soft: rgba(193, 53, 132, 0.1);
       --wa: #128c7e;
       --wa-soft: rgba(18, 140, 126, 0.1);
-      --tt: #1A0B2E;
-      --tt-soft: rgba(26, 11, 46, 0.08);
+      --tt: #46344E;
+      --tt-soft: rgba(70, 52, 78, 0.08);
       --radius: 22px;
       --radius-sm: 10px;
       --radius-xs: 6px;
-      --shadow: 0 2px 10px rgba(26, 11, 46, 0.04);
-      --shadow-lg: 0 12px 30px -4px rgba(26, 11, 46, 0.08);
+      --shadow: 0 2px 10px rgba(70, 52, 78, 0.04);
+      --shadow-lg: 0 12px 30px -4px rgba(70, 52, 78, 0.08);
       --glass: rgba(255, 255, 255, 0.95);
     }
 
     :root[data-theme="light"] body {
-      background: #FAF5F3;
+      background: #F7F5F6;
       background-image:
-        radial-gradient(at 0% 0%, rgba(255, 183, 165, 0.35) 0px, transparent 50%),
-        radial-gradient(at 100% 100%, rgba(26, 11, 46, 0.06) 0px, transparent 50%);
+        radial-gradient(at 0% 0%, rgba(250, 237, 38, 0.20) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(70, 52, 78, 0.08) 0px, transparent 50%);
     }
 
     :root[data-theme="light"] header {
@@ -136,14 +150,14 @@
 
     :root[data-theme="light"] nav button:hover {
       background: #FBF4F1;
-      color: #1A0B2E;
+      color: #46344E;
     }
 
     :root[data-theme="light"] nav button.active {
-      background: rgba(255, 183, 165, 0.28);
-      color: #1A0B2E;
+      background: rgba(250, 237, 38, 0.22);
+      color: #46344E;
       font-weight: 800;
-      border-left: 3px solid #1A0B2E;
+      border-left: 3px solid #46344E;
     }
 
     :root[data-theme="light"] .card {
@@ -160,7 +174,7 @@
     }
 
     :root[data-theme="light"] .stat-card:hover {
-      border-color: rgba(255, 183, 165, 0.6);
+      border-color: rgba(250, 237, 38, 0.6);
       box-shadow: 0 12px 28px -4px rgba(26, 11, 46, 0.12);
     }
 
@@ -219,7 +233,7 @@
       -moz-osx-font-smoothing: grayscale;
       text-rendering: optimizeLegibility;
       background-image:
-        radial-gradient(at 0% 0%, rgba(255, 183, 165, 0.12) 0px, transparent 50%),
+        radial-gradient(at 0% 0%, rgba(250, 237, 38, 0.12) 0px, transparent 50%),
         radial-gradient(at 100% 100%, rgba(26, 11, 46, 0.9) 0px, transparent 50%);
       background-attachment: fixed;
     }
@@ -253,13 +267,13 @@
     }
 
     ::-webkit-scrollbar-thumb {
-      background: rgba(255, 183, 165, 0.22);
+      background: rgba(250, 237, 38, 0.22);
       border-radius: 9999px;
       transition: background 0.2s;
     }
 
     ::-webkit-scrollbar-thumb:hover {
-      background: rgba(255, 183, 165, 0.45);
+      background: rgba(250, 237, 38, 0.45);
     }
 
     /* Header */
@@ -682,17 +696,17 @@
     }
 
     .btn.primary {
-      background: linear-gradient(135deg, #FFB7A5 0%, #FFA28D 100%);
-      border-color: rgba(255, 183, 165, 0.85);
-      color: #1A0B2E;
+      background: linear-gradient(135deg, #FAED26 0%, #F5E51B 100%);
+      border-color: #FAED26;
+      color: #46344E;
       font-weight: 800;
-      box-shadow: 0 2px 14px rgba(255, 183, 165, 0.38);
+      box-shadow: 0 2px 14px rgba(250, 237, 38, 0.38);
     }
 
     .btn.primary:hover {
-      background: linear-gradient(135deg, #FFAE9A 0%, #FF967F 100%);
-      color: #1A0B2E;
-      box-shadow: 0 4px 20px rgba(255, 183, 165, 0.55);
+      background: linear-gradient(135deg, #FFF13B 0%, #EBD815 100%);
+      color: #46344E;
+      box-shadow: 0 4px 20px rgba(250, 237, 38, 0.55);
     }
 
     .btn.success {
@@ -1870,7 +1884,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      background: radial-gradient(ellipse at 20% 60%, #1A0B2E 0%, #120720 40%, #080310 100%);
+      background: radial-gradient(ellipse at 20% 60%, #46344E 0%, #322338 40%, #1C1220 100%);
       overflow-y: auto;
       padding: 30px 20px;
     }
@@ -1893,9 +1907,9 @@
       pointer-events: none;
       z-index: 1;
       background:
-        radial-gradient(ellipse 70% 55% at 15% 35%, rgba(255, 183, 165, 0.25) 0%, transparent 70%),
+        radial-gradient(ellipse 70% 55% at 15% 35%, rgba(250, 237, 38, 0.25) 0%, transparent 70%),
         radial-gradient(ellipse 50% 45% at 80% 25%, rgba(26, 11, 46, 0.7) 0%, transparent 65%),
-        radial-gradient(ellipse 55% 40% at 55% 80%, rgba(255, 183, 165, 0.18) 0%, transparent 65%),
+        radial-gradient(ellipse 55% 40% at 55% 80%, rgba(250, 237, 38, 0.18) 0%, transparent 65%),
         radial-gradient(ellipse 40% 30% at 90% 70%, rgba(36, 15, 63, 0.6) 0%, transparent 60%);
       animation: nebula-drift 18s ease-in-out infinite alternate;
     }
@@ -1929,7 +1943,7 @@
     .login-card {
       background: #ffffff;
       border-radius: 28px;
-      box-shadow: 0 30px 80px -15px rgba(10, 4, 18, 0.65), 0 0 0 1px rgba(255, 183, 165, 0.2);
+      box-shadow: 0 30px 80px -15px rgba(10, 4, 18, 0.65), 0 0 0 1px rgba(250, 237, 38, 0.2);
       display: flex;
       min-height: 500px;
       overflow: hidden;
@@ -1940,7 +1954,7 @@
     /* Left Animated Showcase Panel */
     .login-showcase {
       flex: 1.05;
-      background: #1A0B2E;
+      background: #46344E;
       position: relative;
       overflow: hidden;
       min-height: 480px;
@@ -2115,16 +2129,16 @@
       width: 100%;
       padding: 13px 20px;
       border-radius: 30px;
-      background: linear-gradient(135deg, #FFB7A5 0%, #FFA28D 100%);
-      color: #1A0B2E;
+      background: linear-gradient(135deg, #FAED26 0%, #F5E51B 100%);
+      color: #46344E;
       font-size: 15px;
       font-weight: 800;
       letter-spacing: 0.06em;
       text-transform: uppercase;
-      border: 1px solid rgba(255, 183, 165, 0.85);
+      border: 1px solid #FAED26;
       cursor: pointer;
       transition: all 0.2s ease;
-      box-shadow: 0 4px 16px rgba(255, 183, 165, 0.4);
+      box-shadow: 0 4px 16px rgba(250, 237, 38, 0.4);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -2132,10 +2146,10 @@
     }
 
     .btn-green-pill:hover {
-      background: linear-gradient(135deg, #FFAE9A 0%, #FF967F 100%);
-      box-shadow: 0 6px 22px rgba(255, 183, 165, 0.55);
+      background: linear-gradient(135deg, #FFF13B 0%, #EBD815 100%);
+      box-shadow: 0 6px 22px rgba(250, 237, 38, 0.55);
       transform: translateY(-1px);
-      color: #1A0B2E;
+      color: #46344E;
     }
 
     .btn-green-pill:active {
@@ -2156,7 +2170,7 @@
     }
 
     .user-login-forgot a:hover {
-      color: #1A0B2E;
+      color: #46344E;
       text-decoration: underline;
     }
 
@@ -2167,14 +2181,14 @@
 
     .user-login-create a {
       font-size: 13.5px;
-      color: #1A0B2E;
+      color: #46344E;
       font-weight: 700;
       text-decoration: none;
       transition: color 0.15s;
     }
 
     .user-login-create a:hover {
-      color: #FFB7A5;
+      color: #FAED26;
       text-decoration: underline;
     }
 
@@ -2199,9 +2213,9 @@
 
     .chip-pill:hover,
     .chip-pill.active {
-      background: #1A0B2E;
-      color: #FFB7A5;
-      border-color: #1A0B2E;
+      background: #46344E;
+      color: #FAED26;
+      border-color: #46344E;
     }
 
     @media (max-width: 820px) {
@@ -2263,24 +2277,24 @@
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      background: #1A0B2E;
-      color: #FFB7A5;
-      border: 1px solid rgba(255, 183, 165, 0.4);
+      background: #FAED26;
+      color: #46344E;
+      border: 1px solid #FAED26;
       padding: 10px 22px;
       border-radius: 9999px;
       font-size: 13.5px;
-      font-weight: 750;
+      font-weight: 800;
       cursor: pointer;
       transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-      box-shadow: 0 4px 14px rgba(26, 11, 46, 0.35);
+      box-shadow: 0 4px 14px rgba(250, 237, 38, 0.35);
     }
 
     .donezo-btn-primary:hover {
-      background: #2E144F;
-      color: #FFF5F2;
-      border-color: #FFB7A5;
+      background: #FFF13B;
+      color: #46344E;
+      border-color: #FAED26;
       transform: translateY(-1px);
-      box-shadow: 0 6px 20px rgba(26, 11, 46, 0.5);
+      box-shadow: 0 6px 20px rgba(250, 237, 38, 0.5);
     }
 
     .donezo-btn-secondary {
@@ -2347,15 +2361,15 @@
     }
 
     .donezo-kpi-card.featured {
-      background: linear-gradient(145deg, #1A0B2E 0%, #2A124B 100%);
-      border: 1px solid rgba(255, 183, 165, 0.35);
-      color: #FFF5F2;
-      box-shadow: 0 8px 24px -4px rgba(26, 11, 46, 0.5);
+      background: linear-gradient(145deg, #46344E 0%, #3B2A43 100%);
+      border: 1px solid rgba(250, 237, 38, 0.35);
+      color: #FFFFFF;
+      box-shadow: 0 8px 24px -4px rgba(70, 52, 78, 0.5);
     }
 
     .donezo-kpi-card.featured:hover {
-      border-color: #FFB7A5;
-      box-shadow: 0 14px 30px -4px rgba(26, 11, 46, 0.65);
+      border-color: #FAED26;
+      box-shadow: 0 14px 30px -4px rgba(70, 52, 78, 0.65);
     }
 
     .kpi-top {
@@ -2387,9 +2401,9 @@
     }
 
     .donezo-kpi-card:hover .kpi-arrow-circle {
-      border-color: #FFB7A5;
-      color: #1A0B2E;
-      background: rgba(255, 183, 165, 0.25);
+      border-color: #FAED26;
+      color: #46344E;
+      background: rgba(250, 237, 38, 0.25);
       transform: translate(2px, -2px);
     }
 
@@ -2541,7 +2555,7 @@
     }
 
     .analytics-bar-fill.dark-forest {
-      background: #1A0B2E;
+      background: #46344E;
     }
 
     .analytics-bar-fill.hatched {
@@ -2557,18 +2571,18 @@
     }
 
     .analytics-bar-col.peak .day-label {
-      color: #1A0B2E;
+      color: #46344E;
     }
 
     .peak-tag {
       position: absolute;
       top: 0;
-      background: #1A0B2E;
-      border: 1px solid rgba(255, 183, 165, 0.4);
+      background: #46344E;
+      border: 1px solid rgba(250, 237, 38, 0.4);
       border-radius: 6px;
       font-size: 10.5px;
       font-weight: 800;
-      color: #FFB7A5;
+      color: #FAED26;
       padding: 1px 6px;
       box-shadow: 0 2px 6px rgba(26, 11, 46, 0.15);
     }
@@ -2602,16 +2616,16 @@
       align-items: center;
       justify-content: center;
       gap: 8px;
-      background: linear-gradient(135deg, #FFB7A5 0%, #FFA28D 100%);
-      color: #1A0B2E;
-      border: 1px solid rgba(255, 183, 165, 0.85);
+      background: linear-gradient(135deg, #FAED26 0%, #F5E51B 100%);
+      color: #46344E;
+      border: 1px solid rgba(250, 237, 38, 0.85);
       border-radius: 9999px;
       padding: 14px 20px;
       font-size: 14px;
       font-weight: 800;
       cursor: pointer;
       transition: all 0.2s;
-      box-shadow: 0 4px 14px rgba(255, 183, 165, 0.4);
+      box-shadow: 0 4px 14px rgba(250, 237, 38, 0.4);
     }
 
     .donezo-pill-btn-green:hover {
@@ -2849,11 +2863,11 @@
     }
 
     .legend-dot.green {
-      background: #1A0B2E;
+      background: #46344E;
     }
 
     .legend-dot.mint {
-      background: #FFB7A5;
+      background: #FAED26;
     }
 
     .legend-dot.striped {
@@ -2863,9 +2877,9 @@
 
     /* Time Tracker Card with Wavy Contour Background */
     .time-tracker-card {
-      background: #1A0B2E;
+      background: #46344E;
       color: #FFF5F2;
-      border: 1px solid rgba(255, 183, 165, 0.35);
+      border: 1px solid rgba(250, 237, 38, 0.35);
       position: relative;
       overflow: hidden;
       display: flex;
@@ -2899,7 +2913,7 @@
       font-size: 38px;
       font-weight: 800;
       letter-spacing: -0.02em;
-      color: #FFB7A5;
+      color: #FAED26;
       margin: 18px 0;
       position: relative;
       z-index: 2;
@@ -2925,12 +2939,12 @@
     }
 
     .timer-circle-btn.pause {
-      background: #FFB7A5;
-      color: #1A0B2E;
+      background: #FAED26;
+      color: #46344E;
     }
 
     .timer-circle-btn.pause:hover {
-      background: #FFAE9A;
+      background: #FFF13B;
       transform: scale(1.05);
     }
 
@@ -3028,13 +3042,13 @@
       width: 32px;
       height: 32px;
       border-radius: 50%;
-      background: #1A0B2E;
-      color: #FFB7A5;
+      background: #46344E;
+      color: #FAED26;
       font-weight: 800;
       font-size: 12px;
       display: grid;
       place-items: center;
-      border: 1px solid rgba(255, 183, 165, 0.3);
+      border: 1px solid rgba(250, 237, 38, 0.3);
     }
 
     .donezo-user-chip .user-meta {
@@ -3306,9 +3320,9 @@
       align-items: center;
       gap: 8px;
       padding: 11px 20px;
-      background: linear-gradient(135deg, #1A0B2E, #2A124B);
-      color: #FFB7A5;
-      border: 1px solid rgba(255, 183, 165, 0.4);
+      background: linear-gradient(135deg, #46344E, #3B2A43);
+      color: #FAED26;
+      border: 1px solid rgba(250, 237, 38, 0.4);
       border-radius: 9999px;
       font-weight: 700;
       font-size: 13.5px;
@@ -3319,20 +3333,20 @@
     .floating-test-bot-btn:hover {
       transform: translateY(-2px) scale(1.02);
       box-shadow: 0 14px 30px -4px rgba(26, 11, 46, 0.65);
-      border-color: #FFB7A5;
+      border-color: #FAED26;
     }
     .sim-pulse-dot {
       width: 8px;
       height: 8px;
       border-radius: 50%;
-      background: #FFB7A5;
-      box-shadow: 0 0 0 0 rgba(255, 183, 165, 0.7);
+      background: #FAED26;
+      box-shadow: 0 0 0 0 rgba(250, 237, 38, 0.7);
       animation: simPulse 2s infinite;
     }
     @keyframes simPulse {
-      0% { box-shadow: 0 0 0 0 rgba(255, 183, 165, 0.7); }
-      70% { box-shadow: 0 0 0 7px rgba(255, 183, 165, 0); }
-      100% { box-shadow: 0 0 0 0 rgba(255, 183, 165, 0); }
+      0% { box-shadow: 0 0 0 0 rgba(250, 237, 38, 0.7); }
+      70% { box-shadow: 0 0 0 7px rgba(250, 237, 38, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(250, 237, 38, 0); }
     }
 
     /* Bot Simulator Drawer */
@@ -3356,12 +3370,12 @@
     }
     .sim-header {
       padding: 16px 18px;
-      background: #1A0B2E;
-      color: #FFB7A5;
+      background: #46344E;
+      color: #FAED26;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      border-bottom: 1px solid rgba(255, 183, 165, 0.2);
+      border-bottom: 1px solid rgba(250, 237, 38, 0.2);
     }
     .sim-bot-meta {
       display: flex;
@@ -3443,9 +3457,9 @@
       flex-shrink: 0;
     }
     .sim-chip:hover {
-      background: #1A0B2E;
-      color: #FFB7A5;
-      border-color: #FFB7A5;
+      background: #46344E;
+      color: #FAED26;
+      border-color: #FAED26;
     }
     .sim-messages-wrap {
       flex: 1;
@@ -3472,11 +3486,11 @@
       border: 1px solid var(--line);
     }
     .sim-bubble.user {
-      background: #1A0B2E;
-      color: #FFB7A5;
+      background: #46344E;
+      color: #FAED26;
       align-self: flex-end;
       border-bottom-right-radius: 3px;
-      border: 1px solid rgba(255, 183, 165, 0.35);
+      border: 1px solid rgba(250, 237, 38, 0.35);
     }
     .sim-typing-bubble {
       display: none;
@@ -3526,9 +3540,9 @@
       width: 36px;
       height: 36px;
       border-radius: 50%;
-      background: #1A0B2E;
-      color: #FFB7A5;
-      border: 1px solid rgba(255, 183, 165, 0.4);
+      background: #46344E;
+      color: #FAED26;
+      border: 1px solid rgba(250, 237, 38, 0.4);
       cursor: pointer;
       display: grid;
       place-items: center;
@@ -3537,7 +3551,7 @@
     }
     .sim-input-row button:hover {
       background: #2E144F;
-      border-color: #FFB7A5;
+      border-color: #FAED26;
     }
 
     /* Commercial Upgrade Modal */
@@ -3571,21 +3585,21 @@
       justify-content: space-between;
     }
     .plan-card:hover {
-      border-color: #FFB7A5;
+      border-color: #FAED26;
       transform: translateY(-2px);
     }
     .plan-card.active {
-      border: 2px solid #FFB7A5;
+      border: 2px solid #FAED26;
       background: var(--surface);
-      box-shadow: 0 10px 28px rgba(255, 183, 165, 0.25);
+      box-shadow: 0 10px 28px rgba(250, 237, 38, 0.25);
     }
     .plan-badge {
       position: absolute;
       top: -11px;
       left: 50%;
       transform: translateX(-50%);
-      background: #FFB7A5;
-      color: #1A0B2E;
+      background: #FAED26;
+      color: #46344E;
       font-size: 9.5px;
       font-weight: 800;
       padding: 3px 12px;
@@ -3654,9 +3668,9 @@
       transition: all 0.15s;
     }
     .pay-method-btn.active {
-      background: #1A0B2E;
-      color: #FFB7A5;
-      border-color: #FFB7A5;
+      background: #46344E;
+      color: #FAED26;
+      border-color: #FAED26;
     }
     .payment-instructions-box {
       background: var(--surface);
@@ -3832,10 +3846,10 @@
       transition: transform 0.15s;
     }
     .mobile-bottom-btn.active {
-      color: #1A0B2E;
+      color: #46344E;
     }
     :root[data-theme="dark"] .mobile-bottom-btn.active {
-      color: #FFB7A5;
+      color: #FAED26;
     }
     .mobile-bottom-btn.active svg {
       transform: scale(1.1);
@@ -4368,7 +4382,7 @@
             </div>
 
             <div class="user-login-guide" style="margin-top:14px; padding-top:12px; border-top:1px dashed rgba(0,0,0,0.1); text-align:center">
-              <a href="#" onclick="openSocialGuideModal(); return false;" style="font-size:12px; font-weight:700; color:#1A0B2E; text-decoration:none; display:inline-flex; align-items:center; gap:5px">
+              <a href="#" onclick="openSocialGuideModal(); return false;" style="font-size:12px; font-weight:700; color:#46344E; text-decoration:none; display:inline-flex; align-items:center; gap:5px">
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
                 <span>How to Connect Messenger, Insta &amp; WhatsApp</span>
               </a>
@@ -4449,7 +4463,7 @@
             </div>
 
             <div class="user-login-guide" style="margin-top:14px; padding-top:12px; border-top:1px dashed rgba(0,0,0,0.1); text-align:center">
-              <a href="#" onclick="openSocialGuideModal(); return false;" style="font-size:12px; font-weight:700; color:#1A0B2E; text-decoration:none; display:inline-flex; align-items:center; gap:5px">
+              <a href="#" onclick="openSocialGuideModal(); return false;" style="font-size:12px; font-weight:700; color:#46344E; text-decoration:none; display:inline-flex; align-items:center; gap:5px">
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
                 <span>How to Connect Messenger, Insta &amp; WhatsApp</span>
               </a>
@@ -4476,7 +4490,7 @@
       <div class="brand" onclick="switchTab(currentUser?.role==='master_admin'?'tenants':'dash')"
         style="cursor:pointer">
         <div class="brand-glyph"
-          style="background:rgba(255,183,165,0.2); border:1px solid rgba(255,183,165,0.35); width:36px; height:36px; border-radius:10px; display:grid; place-items:center">
+          style="background:rgba(250,237,38,0.2); border:1px solid rgba(250,237,38,0.35); width:36px; height:36px; border-radius:10px; display:grid; place-items:center">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.5"
             stroke-linecap="round" stroke-linejoin="round">
             <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2z" />
@@ -4490,7 +4504,7 @@
       </div>
 
       <span id="masterAdminBadge"
-        style="display:none; background:linear-gradient(135deg, #1A0B2E, #2A124B); color:#FFB7A5; font-weight:800; padding:5px 12px; border-radius:20px; font-size:11.5px; letter-spacing:0.04em; border:1px solid rgba(255,183,165,0.35); box-shadow:0 2px 10px rgba(26,11,46,0.4); align-items:center; gap:6px">
+        style="display:none; background:linear-gradient(135deg, #46344E, #3B2A43); color:#FAED26; font-weight:800; padding:5px 12px; border-radius:20px; font-size:11.5px; letter-spacing:0.04em; border:1px solid rgba(250,237,38,0.35); box-shadow:0 2px 10px rgba(26,11,46,0.4); align-items:center; gap:6px">
         MASTER ADMIN</span>
 
       <!-- Master Admin Workspace Controls -->
@@ -4506,7 +4520,7 @@
           </select>
         </div>
         <button class="btn sm primary" id="btnOpenNewWsModal" title="Add New Business Account"
-          style="margin-top:14px; background:linear-gradient(135deg, #FFB7A5 0%, #FFA28D 100%); color:#1A0B2E; font-weight:800; border:1px solid rgba(255,183,165,0.85); border-radius:9999px; box-shadow:0 2px 8px rgba(255,183,165,0.35)">+ New Tenant</button>
+          style="margin-top:14px; background:linear-gradient(135deg, #FAED26 0%, #F5E51B 100%); color:#46344E; font-weight:800; border:1px solid rgba(250,237,38,0.85); border-radius:9999px; box-shadow:0 2px 8px rgba(250,237,38,0.35)">+ New Tenant</button>
       </div>
 
       <!-- Tenant Subscription Controls -->
@@ -5079,7 +5093,7 @@
                 <div class="card-head-row">
                   <h3 class="donezo-card-title">Message Traffic &amp; Volume</h3>
                   <span
-                    style="font-size:11.5px; font-weight:700; color:#1A0B2E; background:rgba(255,183,165,0.25); border:1px solid rgba(255,183,165,0.4); padding:2px 8px; border-radius:9999px">Last
+                    style="font-size:11.5px; font-weight:700; color:#46344E; background:rgba(250,237,38,0.25); border:1px solid rgba(250,237,38,0.4); padding:2px 8px; border-radius:9999px">Last
                     7 Days</span>
                 </div>
                 <div class="analytics-chart-container">
@@ -5242,7 +5256,7 @@
                 </div>
                 <div class="team-members-list" id="donezoCustomerInquiriesList">
                   <div style="padding:28px 14px; text-align:center; color:var(--ink3)">
-                    <div style="width:38px; height:38px; margin:0 auto 10px; border-radius:50%; background:rgba(255,183,165,0.22); display:grid; place-items:center; color:#1A0B2E">
+                    <div style="width:38px; height:38px; margin:0 auto 10px; border-radius:50%; background:rgba(250,237,38,0.22); display:grid; place-items:center; color:#46344E">
                       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
                     </div>
                     <div style="font-weight:700; color:var(--ink); font-size:13.5px; margin-bottom:4px">No Customer Inquiries Yet</div>
@@ -7366,7 +7380,7 @@
                 <button class="btn sm" onclick="copyToClipboard('${snippet.replace(/'/g, "\\'")}')" style="position:absolute; top:8px; right:8px; padding:3px 10px; font-size:11px">Copy Snippet</button>
               </div>
             </div>
-            <div style="background:rgba(255,183,165,0.14); border:1px solid rgba(255,183,165,0.35); border-radius:8px; padding:12px 14px">
+            <div style="background:rgba(250,237,38,0.14); border:1px solid rgba(250,237,38,0.35); border-radius:8px; padding:12px 14px">
               <div style="font-weight:700; color:var(--accent); margin-bottom:4px; font-size:13px">Direct Online Chat Link</div>
               <div style="color:var(--ink2); font-size:12px">You can also share direct chat with patients or customers: <a href="${origin}/chat?ws=${wsId}" target="_blank" style="color:var(--accent); font-weight:600; text-decoration:underline">${origin}/chat?ws=${wsId}</a></div>
             </div>
@@ -9383,7 +9397,7 @@ Thank you for partnering with Crown Operations!`;
         } else {
           donezoList.innerHTML = `
             <div style="padding:28px 14px; text-align:center; color:var(--ink3)">
-              <div style="width:38px; height:38px; margin:0 auto 10px; border-radius:50%; background:rgba(255,183,165,0.22); display:grid; place-items:center; color:var(--accent)">
+              <div style="width:38px; height:38px; margin:0 auto 10px; border-radius:50%; background:rgba(250,237,38,0.22); display:grid; place-items:center; color:var(--accent)">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
               </div>
               <div style="font-weight:700; color:var(--ink); font-size:13.5px; margin-bottom:4px">No Customer Inquiries Yet</div>
