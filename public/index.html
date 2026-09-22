@@ -5544,43 +5544,67 @@
               </div>
               <p class="hint">Direct 24/7 AI conversation on your Facebook Page.</p>
 
-              <label class="f">Page Access Token (Permanent)</label>
-              <input type="password" data-b="channels.facebook.pageToken"
-                placeholder="EAAG... (Leave blank to use .env)">
-
-              <div class="grid g2" style="margin-top:10px">
-                <div>
-                  <label class="f">Page ID</label>
-                  <input type="text" data-b="channels.facebook.pageId" placeholder="758487290680242">
+              <!-- 1-Click Fast Connect Banner -->
+              <div class="fb-oauth-box" style="background:var(--surface2); border:1px solid rgba(250,237,38,0.28); border-radius:14px; padding:16px; margin:14px 0; display:flex; flex-direction:column; gap:10px">
+                <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px">
+                  <div style="display:flex; align-items:center; gap:8px">
+                    <span class="status-dot gray" id="fbOauthStatusDot"></span>
+                    <span id="fbOauthStatusTxt" style="font-size:12px; font-weight:700; color:var(--ink)">Not Connected</span>
+                  </div>
+                  <span id="fbOauthPageNameTxt" style="font-size:11.5px; color:var(--ink); font-weight:700"></span>
                 </div>
-                <div>
-                  <label class="f">Meta App Secret</label>
-                  <input type="password" data-b="channels.facebook.appSecret" placeholder="••••••••">
-                </div>
-              </div>
-
-              <div style="margin-top:12px">
-                <label class="f">Webhook Callback URL</label>
-                <div class="input-with-btn">
-                  <input type="text" readonly id="fbWebhookUrl" class="mono"
-                    value="https://bot.ccadmin.online/webhook/meta">
-                  <button class="btn sm" onclick="copyId('fbWebhookUrl')">Copy</button>
+                <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap">
+                  <button type="button" class="btn primary sm" id="btnFbOAuth" onclick="startFacebookOAuth()" style="display:inline-flex; align-items:center; gap:7px; font-weight:800">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                    <span id="btnFbOAuthTxt">Connect Facebook Page</span>
+                  </button>
+                  <span style="font-size:11.5px; color:var(--ink3)">1-Click Official Meta Connect &bull; Zero technical setup</span>
                 </div>
               </div>
 
-              <div style="margin-top:12px">
-                <label class="f">Verify Token</label>
-                <div class="input-with-btn">
-                  <input type="text" data-b="channels.facebook.verifyToken" placeholder="botcrowncoffee" class="mono">
-                  <button class="btn sm" onclick="copyVal('channels.facebook.verifyToken')">Copy</button>
-                </div>
-              </div>
+              <!-- Manual Configuration Toggle -->
+              <details style="margin-top:10px" id="fbManualCredsDetails">
+                <summary style="font-size:12px; font-weight:600; color:var(--ink2); cursor:pointer; padding:6px 0">Or configure credentials manually (Advanced)</summary>
+                <div style="margin-top:10px">
+                  <label class="f">Page Access Token (Permanent)</label>
+                  <input type="password" data-b="channels.facebook.pageToken"
+                    placeholder="EAAG... (Leave blank to use .env)">
 
-              <div class="row" style="margin-top:18px; gap:10px; flex-wrap:wrap">
-                <button class="btn primary sm" onclick="testChannel('facebook')">Test Facebook Ping</button>
-                <button class="btn sm" onclick="saveChannelsDirect()">Save Facebook Settings</button>
-                <span id="fbTestResult" class="meter"></span>
-              </div>
+                  <div class="grid g2" style="margin-top:10px">
+                    <div>
+                      <label class="f">Page ID</label>
+                      <input type="text" data-b="channels.facebook.pageId" placeholder="758487290680242">
+                    </div>
+                    <div>
+                      <label class="f">Meta App Secret</label>
+                      <input type="password" data-b="channels.facebook.appSecret" placeholder="••••••••">
+                    </div>
+                  </div>
+
+                  <div style="margin-top:12px">
+                    <label class="f">Webhook Callback URL</label>
+                    <div class="input-with-btn">
+                      <input type="text" readonly id="fbWebhookUrl" class="mono"
+                        value="https://bot.ccadmin.online/webhook/meta">
+                      <button class="btn sm" onclick="copyId('fbWebhookUrl')">Copy</button>
+                    </div>
+                  </div>
+
+                  <div style="margin-top:12px">
+                    <label class="f">Verify Token</label>
+                    <div class="input-with-btn">
+                      <input type="text" data-b="channels.facebook.verifyToken" placeholder="botcrowncoffee" class="mono">
+                      <button class="btn sm" onclick="copyVal('channels.facebook.verifyToken')">Copy</button>
+                    </div>
+                  </div>
+
+                  <div class="row" style="margin-top:18px; gap:10px; flex-wrap:wrap">
+                    <button class="btn primary sm" onclick="testChannel('facebook')">Test Facebook Ping</button>
+                    <button class="btn sm" onclick="saveChannelsDirect()">Save Facebook Settings</button>
+                    <span id="fbTestResult" class="meter"></span>
+                  </div>
+                </div>
+              </details>
 
               <!-- Diagnostic & Troubleshooting Guide -->
               <div style="margin-top:16px; padding:12px 14px; background:var(--surface2); border:1px solid var(--line); border-radius:10px; font-size:12px; color:var(--ink2)">
@@ -6288,6 +6312,13 @@
                   <li>Click <strong>"Add Person with Task Access"</strong> and add our agency manager account with <strong>Messages</strong> enabled.</li>
                   <li>Our technical team connects and activates your 24/7 AI chatbot within 10 minutes!</li>
                 </ol>
+                <div style="margin-top:12px; padding-top:10px; border-top:1px solid var(--line); display:flex; align-items:center; gap:8px; flex-wrap:wrap">
+                  <button type="button" class="btn primary sm" onclick="startFacebookOAuth()" style="font-weight:800; display:inline-flex; align-items:center; gap:6px">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                    <span>1-Click Connect with Facebook</span>
+                  </button>
+                  <span style="font-size:11.5px; color:var(--ink3)">Or invite our manager account above</span>
+                </div>
               </div>
 
               <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
@@ -10988,7 +11019,60 @@ _Powered by CCBot Autonomous AI_`;
       if (scopeOrdDesc) scopeOrdDesc.textContent = (isDentistry || isHealth) ? 'Draft requested procedure details for clinical confirmation.' : (isLaw ? 'Draft legal documentation request for chamber review.' : isEcommerce ? 'Draft item, size & delivery address for order dispatch.' : 'Draft order details for staff verification.');
     }
 
+    function startFacebookOAuth() {
+      const ws = currentWorkspaceId || (currentUser?.workspace_id || 1);
+      const width = 600;
+      const height = 720;
+      const left = Math.max(0, Math.round((window.innerWidth - width) / 2 + window.screenX));
+      const top = Math.max(0, Math.round((window.innerHeight - height) / 2 + window.screenY));
+      const basePrefix = window.location.pathname.startsWith('/chatbotadmin') ? '/chatbotadmin' : '';
+      const url = `${basePrefix}/api/oauth/facebook/start?workspace_id=${ws}`;
+      const popup = window.open(url, 'fb_oauth_window', `width=${width},height=${height},left=${left},top=${top},scrollbars=yes,status=no`);
+      if (!popup || popup.closed || typeof popup.closed === 'undefined') {
+        alert('Popup was blocked by your browser. Please allow popups for this site to connect with Facebook.');
+      }
+    }
+    window.startFacebookOAuth = startFacebookOAuth;
+
+    window.addEventListener('message', async (event) => {
+      if (event.data && event.data.type === 'FB_OAUTH_RESULT') {
+        if (event.data.success) {
+          const pName = event.data.pageName || 'Facebook Page';
+          chip(`Connected to ${pName}`);
+          await load(currentWorkspaceId);
+          if (typeof updateLaunchChecklist === 'function') updateLaunchChecklist();
+          if (typeof renderTenantChatbotHub === 'function') renderTenantChatbotHub();
+          if (typeof updateFacebookOAuthUI === 'function') updateFacebookOAuthUI();
+        } else if (event.data.message) {
+          console.warn('OAuth message:', event.data.message);
+        }
+      }
+    });
+
+    function updateFacebookOAuthUI() {
+      const dot = document.getElementById('fbOauthStatusDot');
+      const txt = document.getElementById('fbOauthStatusTxt');
+      const pageNameEl = document.getElementById('fbOauthPageNameTxt');
+      const btnTxt = document.getElementById('btnFbOAuthTxt');
+      const isFbConnected = !!(S?.channels?.facebook?.pageToken && S?.channels?.facebook?.enabled);
+
+      if (isFbConnected) {
+        if (dot) dot.className = 'status-dot green';
+        if (txt) { txt.textContent = 'Connected'; txt.style.color = 'var(--good)'; }
+        const name = S?.channels?.facebook?.pageName ? `Page: ${S.channels.facebook.pageName}` : (S?.channels?.facebook?.pageId ? `ID: ${S.channels.facebook.pageId}` : '');
+        if (pageNameEl) pageNameEl.textContent = name;
+        if (btnTxt) btnTxt.textContent = 'Reconnect / Switch Page';
+      } else {
+        if (dot) dot.className = 'status-dot gray';
+        if (txt) { txt.textContent = 'Not Connected'; txt.style.color = 'var(--ink2)'; }
+        if (pageNameEl) pageNameEl.textContent = '';
+        if (btnTxt) btnTxt.textContent = 'Connect Facebook Page';
+      }
+    }
+    window.updateFacebookOAuthUI = updateFacebookOAuthUI;
+
     function render() {
+      if (typeof updateFacebookOAuthUI === 'function') updateFacebookOAuthUI();
       fillBound();
       adaptTerminology();
       renderMenu();

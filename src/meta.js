@@ -331,3 +331,148 @@ export async function testMetaConnection(platform, customConfig = null) {
 
   return { ok: false, error: 'Unknown platform' };
 }
+
+export function getMetaAppId() {
+  return (process.env.META_APP_ID || process.env.FB_APP_ID || '').trim();
+}
+
+export function getMetaAppSecret() {
+  return (process.env.META_APP_SECRET || '').trim();
+}
+
+const DEFAULT_SECRET = process.env.SESSION_SECRET || 'crown-coffee-default-session-secret-32-chars-min!!';
+
+/** Create a cryptographically signed state token for Meta OAuth flow */
+export function createOAuthStateToken(workspaceId, userId = '', secret = DEFAULT_SECRET) {
+  const payload = {
+    ws: Number(workspaceId) || 1,
+    u: String(userId || ''),
+    exp: Date.now() + 15 * 60 * 1000 // 15 minutes validity
+  };
+  const data = Buffer.from(JSON.stringify(payload)).toString('base64url');
+  const sig = crypto.createHmac('sha256', secret).update(data).digest('base64url');
+  return `${data}.${sig}`;
+}
+
+/** Verify a state token returned from Meta OAuth callback */
+export function verifyOAuthStateToken(stateToken, secret = DEFAULT_SECRET) {
+  if (!stateToken || typeof stateToken !== 'string') return null;
+  const parts = stateToken.split('.');
+  if (parts.length !== 2) return null;
+  const [data, sig] = parts;
+  const expected = crypto.createHmac('sha256', secret).update(data).digest('base64url');
+  if (sig.length !== expected.length) return null;
+  if (!crypto.timingSafeEqual(Buffer.from(sig), Buffer.from(expected))) return null;
+
+  try {
+    const payload = JSON.parse(Buffer.from(data, 'base64url').toString('utf8'));
+    if (!payload.exp || Date.now() > payload.exp) return null;
+    return payload;
+  } catch {
+    return null;
+  }
+}
+
+/** Exchange Meta OAuth authorization code for permanent Page Access Tokens */
+export async function exchangeOAuthCode(code, redirectUri, customAppId = null, customAppSecret = null) {
+  const appId = (customAppId || getMetaAppId()).trim();
+  const appSecret = (customAppSecret || getMetaAppSecret()).trim();
+
+  if (!appId) {
+    return { ok: false, error: 'META_APP_ID is not configured on the server. Please add META_APP_ID to your environment variables.' };
+  }
+  if (!appSecret) {
+    return { ok: false, error: 'META_APP_SECRET is not configured on the server. Please add META_APP_SECRET to your environment variables.' };
+  }
+
+  try {
+    // 1. Exchange authorization code for short-lived user access token
+    const tokenUrl = `https://graph.facebook.com/${GRAPH_VERSION}/oauth/access_token?` + new URLSearchParams({
+      client_id: appId,
+      client_secret: appSecret,
+      redirect_uri: redirectUri,
+      code: code
+    });
+
+    const tokenRes = await fetch(tokenUrl);
+    const tokenData = await tokenRes.json();
+
+    if (!tokenRes.ok || !tokenData.access_token) {
+      return { ok: false, error: tokenData.error?.message || 'Failed to exchange authorization code for access token.' };
+    }
+
+    const shortUserToken = tokenData.access_token;
+
+    // 2. Exchange short-lived token for long-lived user token (60-day validity)
+    let userToken = shortUserToken;
+    try {
+      const longTokenUrl = `https://graph.facebook.com/${GRAPH_VERSION}/oauth/access_token?` + new URLSearchParams({
+        grant_type: 'fb_exchange_token',
+        client_id: appId,
+        client_secret: appSecret,
+        fb_exchange_token: shortUserToken
+      });
+      const longRes = await fetch(longTokenUrl);
+      const longData = await longRes.json();
+      if (longRes.ok && longData.access_token) {
+        userToken = longData.access_token;
+      }
+    } catch (longErr) {
+      console.warn('Long-lived token exchange warning:', longErr.message);
+    }
+
+    // 3. Retrieve Facebook Pages managed by this user
+    // Note: When queried using a long-lived user token, page access tokens are permanent!
+    const accountsUrl = `https://graph.facebook.com/${GRAPH_VERSION}/me/accounts?` + new URLSearchParams({
+      fields: 'id,name,access_token,category,link,tasks',
+      access_token: userToken
+    });
+
+    const accountsRes = await fetch(accountsUrl);
+    const accountsData = await accountsRes.json();
+
+    if (!accountsRes.ok) {
+      return { ok: false, error: accountsData.error?.message || 'Failed to fetch Facebook Pages for this account.' };
+    }
+
+    const pages = (accountsData.data || []).map(p => ({
+      id: p.id,
+      name: p.name,
+      accessToken: p.access_token,
+      category: p.category,
+      link: p.link,
+      tasks: p.tasks || []
+    }));
+
+    return {
+      ok: true,
+      userToken,
+      pages
+    };
+  } catch (err) {
+    return { ok: false, error: err.message || 'Meta OAuth network error.' };
+  }
+}
+
+/** Subscribe a Facebook Page to webhook events (messages, postbacks, reads) */
+export async function subscribePageWebhooks(pageId, pageAccessToken) {
+  const token = cleanToken(pageAccessToken);
+  if (!pageId || !token) return { ok: false, error: 'Missing pageId or pageAccessToken' };
+
+  try {
+    const url = `https://graph.facebook.com/${GRAPH_VERSION}/${pageId}/subscribed_apps?` + new URLSearchParams({
+      subscribed_fields: 'messages,messaging_postbacks,message_reads,message_echoes',
+      access_token: token
+    });
+
+    const res = await fetch(url, { method: 'POST' });
+    const data = await res.json();
+
+    if (res.ok && data.success) {
+      return { ok: true, success: true };
+    }
+    return { ok: false, error: data.error?.message || 'Failed to subscribe page to webhooks.' };
+  } catch (err) {
+    return { ok: false, error: err.message };
+  }
+}

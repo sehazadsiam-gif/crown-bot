@@ -29,7 +29,10 @@ import {
 import { sendTenantCredentialsEmail, sendWeeklyDigestEmail } from './mailer.js';
 import { buildPrompt, openState, escalationHit } from './prompt.js';
 import { generateReply, parseMenuText, suggestFaqsForBusiness, detectOrderOrInquiry, detectLanguage } from './ai.js';
-import { verifySignature, isSelf, sendMessage, fetchProfileName, parseWebhook, testMetaConnection } from './meta.js';
+import {
+  verifySignature, isSelf, sendMessage, fetchProfileName, parseWebhook, testMetaConnection,
+  getMetaAppId, getMetaAppSecret, createOAuthStateToken, verifyOAuthStateToken, exchangeOAuthCode, subscribePageWebhooks
+} from './meta.js';
 import { sendTikTokMessage, parseTikTokWebhook, testTikTokConnection, verifyTikTokSignature } from './tiktok.js';
 import webpush from 'web-push';
 import { createReadStream } from 'node:fs';
@@ -1112,6 +1115,429 @@ async function handleChannelsTest(req, reply) {
 }
 app.post('/api/channels/test', { preHandler: requireAuth }, handleChannelsTest);
 app.post(`${BASE}/api/channels/test`, { preHandler: requireAuth }, handleChannelsTest);
+
+function escHtml(str) {
+  if (!str) return '';
+  return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+
+function renderOAuthPopupResult({ success, title, message, pageId, pageName }) {
+  return `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>${escHtml(title)}</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #2C1F32;
+      color: #FFFFFF;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+    .card {
+      background: #46344E;
+      border: 1px solid rgba(157, 141, 143, 0.28);
+      border-radius: 20px;
+      padding: 32px 28px;
+      max-width: 440px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    }
+    .status-icon-wrap {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      margin: 0 auto 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: ${success ? 'rgba(52, 211, 153, 0.15)' : 'rgba(248, 113, 113, 0.15)'};
+      color: ${success ? '#34D399' : '#F87171'};
+    }
+    h2 {
+      margin: 0 0 10px 0;
+      font-size: 18px;
+      color: ${success ? '#FAED26' : '#FFFFFF'};
+      font-weight: 800;
+    }
+    p {
+      margin: 0 0 20px 0;
+      font-size: 13.5px;
+      color: #E8E2E4;
+      line-height: 1.5;
+    }
+    .page-pill {
+      display: inline-block;
+      background: #5A5560;
+      border: 1px solid rgba(157, 141, 143, 0.35);
+      border-radius: 9999px;
+      padding: 5px 14px;
+      font-size: 12.5px;
+      font-weight: 700;
+      color: #FAED26;
+      margin-bottom: 20px;
+    }
+    button {
+      background: #FAED26;
+      color: #46344E;
+      border: none;
+      font-weight: 800;
+      padding: 10px 24px;
+      border-radius: 9999px;
+      cursor: pointer;
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="status-icon-wrap">
+      ${success
+        ? '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>'
+        : '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>'}
+    </div>
+    <h2>${escHtml(title)}</h2>
+    <p>${escHtml(message)}</p>
+    ${pageName ? `<div class="page-pill">${escHtml(pageName)}</div>` : ''}
+    <div>
+      <button onclick="window.close()">Close Window</button>
+    </div>
+  </div>
+  <script>
+    try {
+      if (window.opener) {
+        window.opener.postMessage({
+          type: 'FB_OAUTH_RESULT',
+          success: ${JSON.stringify(success)},
+          pageId: ${JSON.stringify(pageId || '')},
+          pageName: ${JSON.stringify(pageName || '')}
+        }, '*');
+        ${success ? 'setTimeout(() => window.close(), 1600);' : ''}
+      }
+    } catch (e) {}
+  </script>
+</body>
+</html>`;
+}
+
+function renderOAuthPageSelector({ wsId, state, pages }) {
+  return `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Select Facebook Page</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #2C1F32;
+      color: #FFFFFF;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+    .card {
+      background: #46344E;
+      border: 1px solid rgba(157, 141, 143, 0.28);
+      border-radius: 20px;
+      padding: 28px 24px;
+      max-width: 480px;
+      width: 100%;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    }
+    h2 {
+      margin: 0 0 6px 0;
+      font-size: 18px;
+      color: #FAED26;
+      font-weight: 800;
+    }
+    p {
+      margin: 0 0 18px 0;
+      font-size: 13px;
+      color: #E8E2E4;
+      line-height: 1.45;
+    }
+    .pages-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-height: 280px;
+      overflow-y: auto;
+      margin-bottom: 20px;
+    }
+    .page-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #5A5560;
+      border: 1px solid rgba(157, 141, 143, 0.25);
+      border-radius: 12px;
+      padding: 12px 16px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .page-item:hover {
+      border-color: #FAED26;
+      background: #6B6573;
+    }
+    .page-name {
+      font-weight: 700;
+      font-size: 14px;
+      color: #FFFFFF;
+    }
+    .page-category {
+      font-size: 11.5px;
+      color: #9D8D8F;
+      margin-top: 2px;
+    }
+    .btn-select {
+      background: #FAED26;
+      color: #46344E;
+      border: none;
+      font-weight: 800;
+      padding: 6px 14px;
+      border-radius: 9999px;
+      font-size: 12px;
+      cursor: pointer;
+    }
+    .btn-cancel {
+      background: transparent;
+      color: #9D8D8F;
+      border: 1px solid rgba(157, 141, 143, 0.3);
+      padding: 8px 18px;
+      border-radius: 9999px;
+      font-size: 12px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h2>Select Your Facebook Page</h2>
+    <p>Choose which Facebook Page you want Crown Bot to automatically respond to:</p>
+    <div class="pages-list">
+      ${pages.map(p => `
+        <div class="page-item" onclick="selectPage('${escHtml(p.id)}', '${escHtml(p.accessToken)}', '${escHtml(p.name)}')">
+          <div>
+            <div class="page-name">${escHtml(p.name)}</div>
+            <div class="page-category">${escHtml(p.category || 'Facebook Business Page')}</div>
+          </div>
+          <button type="button" class="btn-select">Connect</button>
+        </div>
+      `).join('')}
+    </div>
+    <div style="text-align:center">
+      <button type="button" class="btn-cancel" onclick="window.close()">Cancel</button>
+    </div>
+  </div>
+  <script>
+    async function selectPage(pageId, pageToken, pageName) {
+      try {
+        const res = await fetch('${BASE}/api/oauth/facebook/select-page', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            state: ${JSON.stringify(state)},
+            pageId,
+            pageToken,
+            pageName
+          })
+        });
+        const data = await res.json();
+        if (data.ok) {
+          if (window.opener) {
+            window.opener.postMessage({
+              type: 'FB_OAUTH_RESULT',
+              success: true,
+              pageId,
+              pageName
+            }, '*');
+          }
+          window.close();
+        } else {
+          alert('Could not link page: ' + (data.error || 'Server error'));
+        }
+      } catch (err) {
+        alert('Network error linking page.');
+      }
+    }
+  </script>
+</body>
+</html>`;
+}
+
+async function handleFacebookOAuthStart(req, reply) {
+  const wsId = getScopedWorkspaceId(req);
+  const appId = getMetaAppId();
+
+  if (!appId) {
+    return reply.type('text/html').send(`<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Meta App ID Required</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #2C1F32; color: #FFFFFF; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; padding: 20px; box-sizing: border-box; }
+    .card { background: #46344E; border: 1px solid rgba(157, 141, 143, 0.28); border-radius: 20px; padding: 32px 28px; max-width: 460px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+    h2 { color: #FAED26; margin: 0 0 12px 0; font-size: 18px; font-weight: 800; }
+    p { color: #E8E2E4; line-height: 1.5; font-size: 13.5px; margin: 0 0 16px 0; }
+    code { background: #5A5560; padding: 2px 6px; border-radius: 4px; font-family: monospace; color: #FAED26; font-size: 12px; }
+    button { background: #FAED26; color: #46344E; border: none; font-weight: 800; padding: 10px 22px; border-radius: 9999px; cursor: pointer; font-size: 13px; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h2>Meta App ID Not Configured</h2>
+    <p>To enable 1-click Facebook connection, please set <code>META_APP_ID</code> in your server environment variables (Coolify / .env).</p>
+    <p>In the meantime, you can connect your Facebook Page by entering your Page Token manually in the Connect Channels tab.</p>
+    <button onclick="window.close()">Close Window</button>
+  </div>
+</body>
+</html>`);
+  }
+
+  const host = req.headers['x-forwarded-host'] || req.headers.host || 'bot.ccadmin.online';
+  const proto = req.headers['x-forwarded-proto'] || 'https';
+  const redirectUri = `${proto}://${host}${BASE}/api/oauth/facebook/callback`;
+
+  const state = createOAuthStateToken(wsId, req.session?.email || req.session?.username || 'user');
+
+  const metaAuthUrl = 'https://www.facebook.com/v21.0/dialog/oauth?' + new URLSearchParams({
+    client_id: appId,
+    redirect_uri: redirectUri,
+    state: state,
+    scope: 'pages_show_list,pages_messaging,pages_read_engagement,pages_manage_metadata',
+    response_type: 'code'
+  });
+
+  return reply.redirect(metaAuthUrl);
+}
+
+async function handleFacebookOAuthCallback(req, reply) {
+  const { code, state, error, error_description } = req.query || {};
+
+  if (error || !code) {
+    const errMsg = error_description || error || 'Facebook authorization was cancelled by the user.';
+    return reply.type('text/html').send(renderOAuthPopupResult({
+      success: false,
+      title: 'Connection Cancelled',
+      message: errMsg
+    }));
+  }
+
+  const payload = verifyOAuthStateToken(state);
+  if (!payload || !payload.ws) {
+    return reply.type('text/html').send(renderOAuthPopupResult({
+      success: false,
+      title: 'Session Expired',
+      message: 'The authorization session has expired or is invalid. Please close this window and try clicking "Connect Facebook Page" again.'
+    }));
+  }
+
+  const wsId = payload.ws;
+  const host = req.headers['x-forwarded-host'] || req.headers.host || 'bot.ccadmin.online';
+  const proto = req.headers['x-forwarded-proto'] || 'https';
+  const redirectUri = `${proto}://${host}${BASE}/api/oauth/facebook/callback`;
+
+  // Exchange authorization code with Meta Graph API
+  const exchangeRes = await exchangeOAuthCode(code, redirectUri);
+  if (!exchangeRes.ok) {
+    return reply.type('text/html').send(renderOAuthPopupResult({
+      success: false,
+      title: 'Authorization Error',
+      message: exchangeRes.error || 'Failed to exchange authorization code with Meta.'
+    }));
+  }
+
+  const pages = exchangeRes.pages || [];
+
+  if (pages.length === 0) {
+    return reply.type('text/html').send(renderOAuthPopupResult({
+      success: false,
+      title: 'No Facebook Pages Found',
+      message: 'We could not find any Facebook Pages managed by this Facebook account. Please ensure your personal Facebook account is an Admin or Task Manager of your business Page.'
+    }));
+  }
+
+  if (pages.length === 1) {
+    // Exactly 1 page found - automatically link and subscribe!
+    const page = pages[0];
+    await subscribePageWebhooks(page.id, page.accessToken);
+
+    const cfg = getWorkspaceConfig(wsId);
+    if (!cfg.channels) cfg.channels = {};
+    if (!cfg.channels.facebook) cfg.channels.facebook = {};
+    cfg.channels.facebook.enabled = true;
+    cfg.channels.facebook.pageId = page.id;
+    cfg.channels.facebook.pageToken = page.accessToken;
+    cfg.channels.facebook.pageName = page.name;
+    const appSecret = getMetaAppSecret();
+    if (appSecret) cfg.channels.facebook.appSecret = appSecret;
+    saveWorkspaceConfig(wsId, cfg);
+
+    return reply.type('text/html').send(renderOAuthPopupResult({
+      success: true,
+      title: 'Connected Successfully!',
+      message: `Your Facebook Page "${page.name}" is now connected to Crown Bot. Webhooks have been automatically subscribed.`,
+      pageId: page.id,
+      pageName: page.name
+    }));
+  }
+
+  // Multiple pages found - render clean selector inside popup
+  return reply.type('text/html').send(renderOAuthPageSelector({
+    wsId,
+    state,
+    pages
+  }));
+}
+
+async function handleFacebookOAuthSelectPage(req, reply) {
+  const { state, pageId, pageToken, pageName } = req.body || {};
+  const payload = verifyOAuthStateToken(state);
+  if (!payload || !payload.ws) {
+    return reply.code(400).send({ ok: false, error: 'invalid_or_expired_state' });
+  }
+
+  const wsId = payload.ws;
+  if (!pageId || !pageToken) {
+    return reply.code(400).send({ ok: false, error: 'missing_page_credentials' });
+  }
+
+  await subscribePageWebhooks(pageId, pageToken);
+
+  const cfg = getWorkspaceConfig(wsId);
+  if (!cfg.channels) cfg.channels = {};
+  if (!cfg.channels.facebook) cfg.channels.facebook = {};
+  cfg.channels.facebook.enabled = true;
+  cfg.channels.facebook.pageId = pageId;
+  cfg.channels.facebook.pageToken = pageToken;
+  cfg.channels.facebook.pageName = pageName || pageId;
+  const appSecret = getMetaAppSecret();
+  if (appSecret) cfg.channels.facebook.appSecret = appSecret;
+  saveWorkspaceConfig(wsId, cfg);
+
+  return { ok: true, pageId, pageName };
+}
+
+app.get('/api/oauth/facebook/start', { preHandler: requireAuth }, handleFacebookOAuthStart);
+app.get(`${BASE}/api/oauth/facebook/start`, { preHandler: requireAuth }, handleFacebookOAuthStart);
+
+app.get('/api/oauth/facebook/callback', handleFacebookOAuthCallback);
+app.get(`${BASE}/api/oauth/facebook/callback`, handleFacebookOAuthCallback);
+
+app.post('/api/oauth/facebook/select-page', handleFacebookOAuthSelectPage);
+app.post(`${BASE}/api/oauth/facebook/select-page`, handleFacebookOAuthSelectPage);
 
 async function handleImportMenu(req, reply) {
   try {
