@@ -117,6 +117,26 @@ docker cp <container>:/app/data/backup.db ./
 
 ## 7. Connect Facebook
 
+There are 3 supported ways to connect a Facebook Page to Crown Bot:
+
+### Option 1: 30-Second Page Invite / "Task Access" (Recommended Alternative for Clients)
+Best for non-technical clinic, salon, or store owners who do not want to manage Meta Developer tools:
+1. **Tenant Action (30 seconds):**
+   - Open Facebook Page → **Settings & Privacy** → **Settings** → **New Pages Experience** → **Page Access**.
+   - Under **People with Task Access**, click **Add New**.
+   - Enter your agency Facebook account or email (`admin@crowncoffee.com`).
+   - Toggle **Messages** access to **ON** and confirm with password.
+2. **Master Admin Action:**
+   - Your agency Meta App (configured on the server) generates a permanent Page Access Token for the page.
+   - In Master Admin → **Tenants Directory** → **Inspect Client Bot** → **Connect Channels**, paste the token and click **Test Facebook Ping**.
+   - Crown Bot auto-detects the Page ID, subscribes webhooks, and activates AI replies immediately.
+
+### Option 2: 1-Click Meta Connect (Direct OAuth)
+- From the **Connect Channels** tab, the tenant or admin clicks **Connect Facebook Page**.
+- Meta launches the standard permissions dialogue to authorize the page.
+- Tokens and webhook subscriptions are synchronized automatically.
+
+### Option 3: Manual Meta Developer Console Setup (Advanced / Self-Hosted)
 1. <https://developers.facebook.com> → **Create App** → type **Business**.
 2. Add the **Messenger** product.
 3. Under *Messenger → Settings*, connect your Facebook Page and click
@@ -127,7 +147,7 @@ docker cp <container>:/app/data/backup.db ./
    - Callback URL: `https://ccadmin.online/webhook/meta`
    - Verify Token: the exact `META_VERIFY_TOKEN` string from your `.env`
 6. Subscribe to the **`messages`** field, and subscribe your Page.
-7. Redeploy in Coolify.
+7. Redeploy or click **Test Facebook Ping** in the dashboard.
 
 Message your Page from a different Facebook account to test.
 

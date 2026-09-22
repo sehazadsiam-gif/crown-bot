@@ -752,7 +752,7 @@ async function handleMe(req) {
   const s = getAuthSession(req);
   if (!s) return { authed: false };
   if (s.role === 'master_admin') {
-    return { authed: true, role: 'master_admin', email: s.email || 'masteradmin', is_master: true };
+    return { authed: true, role: 'master_admin', email: s.email || 'masteradmin', is_master: true, agency_email: effectiveAdminEmail };
   }
   const sub = getSubscription(s.workspace_id);
   const tenantUser = getTenantUser(s.workspace_id);
@@ -766,7 +766,8 @@ async function handleMe(req) {
     email: tenantUser?.email || s.email,
     must_change_password: s.workspace_id === 1 ? false : !!tenantUser?.must_change_password,
     subscription: sub,
-    trainingStatus: readiness
+    trainingStatus: readiness,
+    agency_email: effectiveAdminEmail
   };
 }
 
@@ -1164,29 +1165,29 @@ function renderOAuthPopupResult({ success, title, message, pageId, pageName }) {
     h2 {
       margin: 0 0 10px 0;
       font-size: 18px;
-      color: ${success ? '#FAED26' : '#FFFFFF'};
+      color: ${success ? '#D0BDF4' : '#FFFFFF'};
       font-weight: 800;
     }
     p {
       margin: 0 0 20px 0;
       font-size: 13.5px;
-      color: #E8E2E4;
+      color: #E5EAF5;
       line-height: 1.5;
     }
     .page-pill {
       display: inline-block;
-      background: #5A5560;
-      border: 1px solid rgba(157, 141, 143, 0.35);
+      background: #494D5F;
+      border: 1px solid rgba(208, 189, 244, 0.35);
       border-radius: 9999px;
       padding: 5px 14px;
       font-size: 12.5px;
       font-weight: 700;
-      color: #FAED26;
+      color: #A0D2EB;
       margin-bottom: 20px;
     }
     button {
-      background: #FAED26;
-      color: #46344E;
+      background: #8458B3;
+      color: #FFFFFF;
       border: none;
       font-weight: 800;
       padding: 10px 24px;
@@ -1236,7 +1237,7 @@ function renderOAuthPageSelector({ wsId, state, pages }) {
   <style>
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background: #2C1F32;
+      background: #1F2129;
       color: #FFFFFF;
       display: flex;
       align-items: center;
@@ -1247,8 +1248,8 @@ function renderOAuthPageSelector({ wsId, state, pages }) {
       box-sizing: border-box;
     }
     .card {
-      background: #46344E;
-      border: 1px solid rgba(157, 141, 143, 0.28);
+      background: #494D5F;
+      border: 1px solid rgba(208, 189, 244, 0.28);
       border-radius: 20px;
       padding: 28px 24px;
       max-width: 480px;
@@ -1258,13 +1259,13 @@ function renderOAuthPageSelector({ wsId, state, pages }) {
     h2 {
       margin: 0 0 6px 0;
       font-size: 18px;
-      color: #FAED26;
+      color: #D0BDF4;
       font-weight: 800;
     }
     p {
       margin: 0 0 18px 0;
       font-size: 13px;
-      color: #E8E2E4;
+      color: #E5EAF5;
       line-height: 1.45;
     }
     .pages-list {
@@ -1279,16 +1280,16 @@ function renderOAuthPageSelector({ wsId, state, pages }) {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      background: #5A5560;
-      border: 1px solid rgba(157, 141, 143, 0.25);
+      background: #3A3E4E;
+      border: 1px solid rgba(208, 189, 244, 0.22);
       border-radius: 12px;
       padding: 12px 16px;
       cursor: pointer;
       transition: all 0.15s ease;
     }
     .page-item:hover {
-      border-color: #FAED26;
-      background: #6B6573;
+      border-color: #8458B3;
+      background: #2E313D;
     }
     .page-name {
       font-weight: 700;
@@ -1297,12 +1298,12 @@ function renderOAuthPageSelector({ wsId, state, pages }) {
     }
     .page-category {
       font-size: 11.5px;
-      color: #9D8D8F;
+      color: #A0D2EB;
       margin-top: 2px;
     }
     .btn-select {
-      background: #FAED26;
-      color: #46344E;
+      background: #8458B3;
+      color: #FFFFFF;
       border: none;
       font-weight: 800;
       padding: 6px 14px;
@@ -1312,8 +1313,8 @@ function renderOAuthPageSelector({ wsId, state, pages }) {
     }
     .btn-cancel {
       background: transparent;
-      color: #9D8D8F;
-      border: 1px solid rgba(157, 141, 143, 0.3);
+      color: #E5EAF5;
+      border: 1px solid rgba(208, 189, 244, 0.3);
       padding: 8px 18px;
       border-radius: 9999px;
       font-size: 12px;
@@ -1387,12 +1388,12 @@ async function handleFacebookOAuthStart(req, reply) {
   <meta charset="utf-8">
   <title>Meta App ID Required</title>
   <style>
-    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #2C1F32; color: #FFFFFF; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; padding: 20px; box-sizing: border-box; }
-    .card { background: #46344E; border: 1px solid rgba(157, 141, 143, 0.28); border-radius: 20px; padding: 32px 28px; max-width: 460px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
-    h2 { color: #FAED26; margin: 0 0 12px 0; font-size: 18px; font-weight: 800; }
-    p { color: #E8E2E4; line-height: 1.5; font-size: 13.5px; margin: 0 0 16px 0; }
-    code { background: #5A5560; padding: 2px 6px; border-radius: 4px; font-family: monospace; color: #FAED26; font-size: 12px; }
-    button { background: #FAED26; color: #46344E; border: none; font-weight: 800; padding: 10px 22px; border-radius: 9999px; cursor: pointer; font-size: 13px; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #1F2129; color: #FFFFFF; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; padding: 20px; box-sizing: border-box; }
+    .card { background: #494D5F; border: 1px solid rgba(208, 189, 244, 0.28); border-radius: 20px; padding: 32px 28px; max-width: 460px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+    h2 { color: #D0BDF4; margin: 0 0 12px 0; font-size: 18px; font-weight: 800; }
+    p { color: #E5EAF5; line-height: 1.5; font-size: 13.5px; margin: 0 0 16px 0; }
+    code { background: #3A3E4E; padding: 2px 6px; border-radius: 4px; font-family: monospace; color: #A0D2EB; font-size: 12px; }
+    button { background: #8458B3; color: #FFFFFF; border: none; font-weight: 800; padding: 10px 22px; border-radius: 9999px; cursor: pointer; font-size: 13px; }
   </style>
 </head>
 <body>

@@ -29,39 +29,40 @@
     rel="stylesheet">
   <style>
     :root {
-      /* User Specified Master Color Palette */
-      --pal-yellow: #FAED26;
-      --pal-plum: #46344E;
-      --pal-slate: #5A5560;
-      --pal-ash: #9D8D8F;
-      --pal-clay: #9B786F;
+      /* Minimal Colors by Dumma Branding */
+      --pal-sky: #A0D2EB;
+      --pal-mist: #E5EAF5;
+      --pal-lilac: #D0BDF4;
+      --pal-violet: #8458B3;
+      --pal-slate: #494D5F;
 
       /* Dark Theme (Default) */
-      --bg: #2C1F32;
-      --bg-subtle: #231828;
-      --bg2: #46344E;
-      --surface: #46344E;
-      --surface-glass: rgba(70, 52, 78, 0.92);
-      --surface2: #5A5560;
-      --surface3: #6B6573;
+      --bg: #1F2129;
+      --bg-subtle: #191A21;
+      --bg2: #282A35;
+      --surface: #2E313D;
+      --surface-glass: rgba(46, 49, 61, 0.92);
+      --surface2: #3A3E4E;
+      --surface3: #494D5F;
       --ink: #FFFFFF;
-      --ink2: #E8E2E4;
-      --ink3: #9D8D8F;
-      --line: rgba(157, 141, 143, 0.28);
-      --line2: rgba(250, 237, 38, 0.35);
-      --accent: #FAED26;
-      --accent-hover: #FFF13B;
-      --accent-ink: #46344E;
-      --accent-soft: rgba(250, 237, 38, 0.16);
-      --accent-glow: 0 0 25px -3px rgba(250, 237, 38, 0.45);
-      --gold: #FAED26;
-      --gold-soft: rgba(250, 237, 38, 0.18);
-      --clay: #9B786F;
-      --clay-soft: rgba(155, 120, 111, 0.20);
+      --ink2: #E5EAF5;
+      --ink3: #A0D2EB;
+      --line: rgba(208, 189, 244, 0.16);
+      --line2: rgba(132, 88, 179, 0.35);
+      --accent: #8458B3;
+      --accent-hover: #986DC7;
+      --accent-ink: #FFFFFF;
+      --accent-soft: rgba(132, 88, 179, 0.20);
+      --accent-glow: 0 0 25px -3px rgba(132, 88, 179, 0.48);
+      --gold: #A0D2EB;
+      --gold-soft: rgba(160, 210, 235, 0.18);
+      --lilac: #D0BDF4;
+      --lilac-soft: rgba(208, 189, 244, 0.18);
+      --slate: #494D5F;
       --good: #34D399;
       --good-soft: rgba(52, 211, 153, 0.15);
-      --warn: #FAED26;
-      --warn-soft: rgba(250, 237, 38, 0.18);
+      --warn: #D0BDF4;
+      --warn-soft: rgba(208, 189, 244, 0.20);
       --danger: #F87171;
       --danger-soft: rgba(248, 113, 113, 0.15);
       --fb: #1877f2;
@@ -75,39 +76,40 @@
       --radius: 22px;
       --radius-sm: 10px;
       --radius-xs: 5px;
-      --shadow: 0 4px 20px -2px rgba(32, 20, 37, 0.55);
-      --shadow-lg: 0 16px 40px -8px rgba(32, 20, 37, 0.75);
-      --shadow-glow: 0 0 35px -5px rgba(250, 237, 38, 0.35);
-      --glass: rgba(70, 52, 78, 0.88);
+      --shadow: 0 4px 20px -2px rgba(15, 16, 22, 0.55);
+      --shadow-lg: 0 16px 40px -8px rgba(15, 16, 22, 0.75);
+      --shadow-glow: 0 0 35px -5px rgba(132, 88, 179, 0.35);
+      --glass: rgba(46, 49, 61, 0.88);
       --transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
     :root[data-theme="light"] {
-      --bg: #F7F5F6;
-      --bg-subtle: #EFECEC;
-      --bg2: #E6E0E2;
+      --bg: #F4F6FB;
+      --bg-subtle: #E5EAF5;
+      --bg2: #DCE2F0;
       --surface: #FFFFFF;
       --surface-glass: rgba(255, 255, 255, 0.94);
-      --surface2: #F5F1F3;
-      --surface3: #EAE3E6;
-      --ink: #46344E;
-      --ink2: #5A5560;
-      --ink3: #9D8D8F;
-      --line: #E1DADB;
-      --line2: #D1C7C9;
-      --accent: #46344E;
-      --accent-hover: #36273C;
-      --accent-ink: #FAED26;
-      --accent-soft: rgba(250, 237, 38, 0.28);
-      --accent-glow: 0 0 20px -3px rgba(70, 52, 78, 0.25);
-      --gold: #9B786F;
-      --gold-soft: rgba(155, 120, 111, 0.12);
-      --clay: #9B786F;
-      --clay-soft: rgba(155, 120, 111, 0.15);
+      --surface2: #E5EAF5;
+      --surface3: #D0BDF4;
+      --ink: #494D5F;
+      --ink2: #5F6478;
+      --ink3: #8A8FA4;
+      --line: #DCE2F0;
+      --line2: #C5CEE5;
+      --accent: #8458B3;
+      --accent-hover: #7346A2;
+      --accent-ink: #FFFFFF;
+      --accent-soft: rgba(132, 88, 179, 0.14);
+      --accent-glow: 0 0 20px -3px rgba(132, 88, 179, 0.3);
+      --gold: #A0D2EB;
+      --gold-soft: rgba(160, 210, 235, 0.20);
+      --lilac: #D0BDF4;
+      --lilac-soft: rgba(208, 189, 244, 0.20);
+      --slate: #494D5F;
       --good: #059669;
       --good-soft: rgba(5, 150, 105, 0.12);
-      --warn: #D97706;
-      --warn-soft: rgba(217, 119, 6, 0.1);
+      --warn: #8458B3;
+      --warn-soft: rgba(132, 88, 179, 0.12);
       --danger: #E11D48;
       --danger-soft: rgba(225, 29, 72, 0.1);
       --fb: #1877f2;
@@ -116,96 +118,96 @@
       --ig-soft: rgba(193, 53, 132, 0.1);
       --wa: #128c7e;
       --wa-soft: rgba(18, 140, 126, 0.1);
-      --tt: #46344E;
-      --tt-soft: rgba(70, 52, 78, 0.08);
+      --tt: #494D5F;
+      --tt-soft: rgba(73, 77, 95, 0.08);
       --radius: 22px;
       --radius-sm: 10px;
       --radius-xs: 6px;
-      --shadow: 0 2px 10px rgba(70, 52, 78, 0.04);
-      --shadow-lg: 0 12px 30px -4px rgba(70, 52, 78, 0.08);
+      --shadow: 0 2px 10px rgba(73, 77, 95, 0.04);
+      --shadow-lg: 0 12px 30px -4px rgba(73, 77, 95, 0.08);
       --glass: rgba(255, 255, 255, 0.95);
     }
 
     :root[data-theme="light"] body {
-      background: #F7F5F6;
+      background: #F4F6FB;
       background-image:
-        radial-gradient(at 0% 0%, rgba(250, 237, 38, 0.20) 0px, transparent 50%),
-        radial-gradient(at 100% 100%, rgba(70, 52, 78, 0.08) 0px, transparent 50%);
+        radial-gradient(at 0% 0%, rgba(160, 210, 235, 0.35) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(208, 189, 244, 0.25) 0px, transparent 50%);
     }
 
     :root[data-theme="light"] header {
       background: rgba(255, 255, 255, 0.95);
-      border-bottom: 1px solid #ECDCD6;
-      box-shadow: 0 1px 3px rgba(26, 11, 46, 0.03);
+      border-bottom: 1px solid #DCE2F0;
+      box-shadow: 0 1px 3px rgba(73, 77, 95, 0.03);
     }
 
     :root[data-theme="light"] nav {
       background: #ffffff;
-      border-right: 1px solid #ECDCD6;
+      border-right: 1px solid #DCE2F0;
     }
 
     :root[data-theme="light"] nav button {
-      color: #4A3362;
+      color: #494D5F;
     }
 
     :root[data-theme="light"] nav button:hover {
-      background: #FBF4F1;
-      color: #46344E;
+      background: #E5EAF5;
+      color: #8458B3;
     }
 
     :root[data-theme="light"] nav button.active {
-      background: rgba(250, 237, 38, 0.22);
-      color: #46344E;
+      background: rgba(132, 88, 179, 0.12);
+      color: #8458B3;
       font-weight: 800;
-      border-left: 3px solid #46344E;
+      border-left: 3px solid #8458B3;
     }
 
     :root[data-theme="light"] .card {
       background: #ffffff;
-      border: 1px solid #ECDCD6;
+      border: 1px solid #DCE2F0;
       border-radius: 22px;
-      box-shadow: 0 2px 10px rgba(26, 11, 46, 0.02);
+      box-shadow: 0 2px 10px rgba(73, 77, 95, 0.02);
     }
 
     :root[data-theme="light"] .stat-card {
       background: #ffffff;
-      border: 1px solid #ECDCD6;
-      box-shadow: 0 1px 3px rgba(26, 11, 46, 0.04), 0 4px 12px -2px rgba(26, 11, 46, 0.03);
+      border: 1px solid #DCE2F0;
+      box-shadow: 0 1px 3px rgba(73, 77, 95, 0.04), 0 4px 12px -2px rgba(73, 77, 95, 0.03);
     }
 
     :root[data-theme="light"] .stat-card:hover {
-      border-color: rgba(250, 237, 38, 0.6);
-      box-shadow: 0 12px 28px -4px rgba(26, 11, 46, 0.12);
+      border-color: #8458B3;
+      box-shadow: 0 12px 28px -4px rgba(132, 88, 179, 0.15);
     }
 
     :root[data-theme="light"] .stat-pill-trend {
-      background: #FBF4F1;
-      color: #4A3362;
+      background: #E5EAF5;
+      color: #8458B3;
     }
 
     :root[data-theme="light"] .activity-item {
-      background: #FAF5F3;
-      border: 1px solid #ECDCD6;
+      background: #F8FAFD;
+      border: 1px solid #DCE2F0;
     }
 
     :root[data-theme="light"] .activity-item:hover {
-      background: #F4E7E2;
+      background: #E5EAF5;
     }
 
     :root[data-theme="light"] #simDrawer {
       background: rgba(255, 255, 255, 0.98);
-      border-left: 1px solid #ECDCD6;
-      box-shadow: -15px 0 45px rgba(26, 11, 46, 0.12);
+      border-left: 1px solid #DCE2F0;
+      box-shadow: -15px 0 45px rgba(73, 77, 95, 0.12);
     }
 
     :root[data-theme="light"] .drawer-header {
-      background: #FAF5F3;
-      border-bottom: 1px solid #ECDCD6;
+      background: #E5EAF5;
+      border-bottom: 1px solid #DCE2F0;
     }
 
     :root[data-theme="light"] .drawer-footer {
-      background: #FAF5F3;
-      border-top: 1px solid #ECDCD6;
+      background: #E5EAF5;
+      border-top: 1px solid #DCE2F0;
     }
 
     /* Reset & Global */
@@ -233,8 +235,9 @@
       -moz-osx-font-smoothing: grayscale;
       text-rendering: optimizeLegibility;
       background-image:
-        radial-gradient(at 0% 0%, rgba(250, 237, 38, 0.12) 0px, transparent 50%),
-        radial-gradient(at 100% 100%, rgba(26, 11, 46, 0.9) 0px, transparent 50%);
+        radial-gradient(at 0% 0%, rgba(132, 88, 179, 0.16) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(73, 77, 95, 0.45) 0px, transparent 50%),
+        radial-gradient(at 50% 0%, rgba(160, 210, 235, 0.10) 0px, transparent 40%);
       background-attachment: fixed;
     }
 
@@ -267,13 +270,13 @@
     }
 
     ::-webkit-scrollbar-thumb {
-      background: rgba(250, 237, 38, 0.22);
+      background: rgba(132, 88, 179, 0.28);
       border-radius: 9999px;
       transition: background 0.2s;
     }
 
     ::-webkit-scrollbar-thumb:hover {
-      background: rgba(250, 237, 38, 0.45);
+      background: rgba(132, 88, 179, 0.55);
     }
 
     /* Header */
@@ -696,17 +699,17 @@
     }
 
     .btn.primary {
-      background: linear-gradient(135deg, #FAED26 0%, #F5E51B 100%);
-      border-color: #FAED26;
-      color: #46344E;
+      background: linear-gradient(135deg, #8458B3 0%, #6E429E 100%);
+      border-color: #8458B3;
+      color: #FFFFFF;
       font-weight: 800;
-      box-shadow: 0 2px 14px rgba(250, 237, 38, 0.38);
+      box-shadow: 0 3px 14px rgba(132, 88, 179, 0.40);
     }
 
     .btn.primary:hover {
-      background: linear-gradient(135deg, #FFF13B 0%, #EBD815 100%);
-      color: #46344E;
-      box-shadow: 0 4px 20px rgba(250, 237, 38, 0.55);
+      background: linear-gradient(135deg, #986DC7 0%, #7D51AB 100%);
+      color: #FFFFFF;
+      box-shadow: 0 5px 20px rgba(132, 88, 179, 0.58);
     }
 
     .btn.success {
@@ -1884,7 +1887,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      background: radial-gradient(ellipse at 20% 60%, #46344E 0%, #322338 40%, #1C1220 100%);
+      background: radial-gradient(ellipse at 20% 60%, #494D5F 0%, #2E313D 40%, #191A21 100%);
       overflow-y: auto;
       padding: 30px 20px;
     }
@@ -1907,10 +1910,10 @@
       pointer-events: none;
       z-index: 1;
       background:
-        radial-gradient(ellipse 70% 55% at 15% 35%, rgba(250, 237, 38, 0.25) 0%, transparent 70%),
-        radial-gradient(ellipse 50% 45% at 80% 25%, rgba(26, 11, 46, 0.7) 0%, transparent 65%),
-        radial-gradient(ellipse 55% 40% at 55% 80%, rgba(250, 237, 38, 0.18) 0%, transparent 65%),
-        radial-gradient(ellipse 40% 30% at 90% 70%, rgba(36, 15, 63, 0.6) 0%, transparent 60%);
+        radial-gradient(ellipse 70% 55% at 15% 35%, rgba(132, 88, 179, 0.32) 0%, transparent 70%),
+        radial-gradient(ellipse 50% 45% at 80% 25%, rgba(73, 77, 95, 0.6) 0%, transparent 65%),
+        radial-gradient(ellipse 55% 40% at 55% 80%, rgba(160, 210, 235, 0.25) 0%, transparent 65%),
+        radial-gradient(ellipse 40% 30% at 90% 70%, rgba(208, 189, 244, 0.28) 0%, transparent 60%);
       animation: nebula-drift 18s ease-in-out infinite alternate;
     }
 
@@ -1943,7 +1946,7 @@
     .login-card {
       background: #ffffff;
       border-radius: 28px;
-      box-shadow: 0 30px 80px -15px rgba(10, 4, 18, 0.65), 0 0 0 1px rgba(250, 237, 38, 0.2);
+      box-shadow: 0 30px 80px -15px rgba(25, 26, 33, 0.65), 0 0 0 1px rgba(208, 189, 244, 0.35);
       display: flex;
       min-height: 500px;
       overflow: hidden;
@@ -1954,7 +1957,7 @@
     /* Left Animated Showcase Panel */
     .login-showcase {
       flex: 1.05;
-      background: #46344E;
+      background: #494D5F;
       position: relative;
       overflow: hidden;
       min-height: 480px;
@@ -2129,16 +2132,16 @@
       width: 100%;
       padding: 13px 20px;
       border-radius: 30px;
-      background: linear-gradient(135deg, #FAED26 0%, #F5E51B 100%);
-      color: #46344E;
+      background: linear-gradient(135deg, #8458B3 0%, #6E429E 100%);
+      color: #FFFFFF;
       font-size: 15px;
       font-weight: 800;
       letter-spacing: 0.06em;
       text-transform: uppercase;
-      border: 1px solid #FAED26;
+      border: 1px solid #8458B3;
       cursor: pointer;
       transition: all 0.2s ease;
-      box-shadow: 0 4px 16px rgba(250, 237, 38, 0.4);
+      box-shadow: 0 4px 16px rgba(132, 88, 179, 0.42);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -2146,10 +2149,10 @@
     }
 
     .btn-green-pill:hover {
-      background: linear-gradient(135deg, #FFF13B 0%, #EBD815 100%);
-      box-shadow: 0 6px 22px rgba(250, 237, 38, 0.55);
+      background: linear-gradient(135deg, #986DC7 0%, #7D51AB 100%);
+      box-shadow: 0 6px 22px rgba(132, 88, 179, 0.58);
       transform: translateY(-1px);
-      color: #46344E;
+      color: #FFFFFF;
     }
 
     .btn-green-pill:active {
@@ -2163,14 +2166,14 @@
 
     .user-login-forgot a {
       font-size: 13px;
-      color: #8C759E;
+      color: #8A8FA4;
       text-decoration: none;
       font-weight: 500;
       transition: color 0.15s;
     }
 
     .user-login-forgot a:hover {
-      color: #46344E;
+      color: #8458B3;
       text-decoration: underline;
     }
 
@@ -2181,14 +2184,14 @@
 
     .user-login-create a {
       font-size: 13.5px;
-      color: #46344E;
+      color: #494D5F;
       font-weight: 700;
       text-decoration: none;
       transition: color 0.15s;
     }
 
     .user-login-create a:hover {
-      color: #FAED26;
+      color: #8458B3;
       text-decoration: underline;
     }
 
@@ -2202,9 +2205,9 @@
     .chip-pill {
       padding: 4px 10px;
       border-radius: 9999px;
-      border: 1px solid #ECDCD6;
-      background: #FAF5F3;
-      color: #4A3362;
+      border: 1px solid #DCE2F0;
+      background: #E5EAF5;
+      color: #494D5F;
       font-size: 11.5px;
       font-weight: 600;
       cursor: pointer;
@@ -2213,9 +2216,9 @@
 
     .chip-pill:hover,
     .chip-pill.active {
-      background: #46344E;
-      color: #FAED26;
-      border-color: #46344E;
+      background: #8458B3;
+      color: #FFFFFF;
+      border-color: #8458B3;
     }
 
     @media (max-width: 820px) {
@@ -2277,24 +2280,24 @@
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      background: #FAED26;
-      color: #46344E;
-      border: 1px solid #FAED26;
+      background: #8458B3;
+      color: #FFFFFF;
+      border: 1px solid #8458B3;
       padding: 10px 22px;
       border-radius: 9999px;
       font-size: 13.5px;
       font-weight: 800;
       cursor: pointer;
       transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-      box-shadow: 0 4px 14px rgba(250, 237, 38, 0.35);
+      box-shadow: 0 4px 14px rgba(132, 88, 179, 0.35);
     }
 
     .donezo-btn-primary:hover {
-      background: #FFF13B;
-      color: #46344E;
-      border-color: #FAED26;
+      background: #986DC7;
+      color: #FFFFFF;
+      border-color: #8458B3;
       transform: translateY(-1px);
-      box-shadow: 0 6px 20px rgba(250, 237, 38, 0.5);
+      box-shadow: 0 6px 20px rgba(132, 88, 179, 0.5);
     }
 
     .donezo-btn-secondary {
@@ -2361,15 +2364,15 @@
     }
 
     .donezo-kpi-card.featured {
-      background: linear-gradient(145deg, #46344E 0%, #3B2A43 100%);
-      border: 1px solid rgba(250, 237, 38, 0.35);
+      background: linear-gradient(145deg, #494D5F 0%, #353846 100%);
+      border: 1px solid rgba(208, 189, 244, 0.35);
       color: #FFFFFF;
-      box-shadow: 0 8px 24px -4px rgba(70, 52, 78, 0.5);
+      box-shadow: 0 8px 24px -4px rgba(73, 77, 95, 0.5);
     }
 
     .donezo-kpi-card.featured:hover {
-      border-color: #FAED26;
-      box-shadow: 0 14px 30px -4px rgba(70, 52, 78, 0.65);
+      border-color: #8458B3;
+      box-shadow: 0 14px 30px -4px rgba(132, 88, 179, 0.45);
     }
 
     .kpi-top {
@@ -2401,9 +2404,9 @@
     }
 
     .donezo-kpi-card:hover .kpi-arrow-circle {
-      border-color: #FAED26;
-      color: #46344E;
-      background: rgba(250, 237, 38, 0.25);
+      border-color: #8458B3;
+      color: #8458B3;
+      background: rgba(132, 88, 179, 0.15);
       transform: translate(2px, -2px);
     }
 
@@ -2555,7 +2558,7 @@
     }
 
     .analytics-bar-fill.dark-forest {
-      background: #46344E;
+      background: #494D5F;
     }
 
     .analytics-bar-fill.hatched {
@@ -2571,20 +2574,20 @@
     }
 
     .analytics-bar-col.peak .day-label {
-      color: #46344E;
+      color: #8458B3;
     }
 
     .peak-tag {
       position: absolute;
       top: 0;
-      background: #46344E;
-      border: 1px solid rgba(250, 237, 38, 0.4);
+      background: #494D5F;
+      border: 1px solid rgba(208, 189, 244, 0.4);
       border-radius: 6px;
       font-size: 10.5px;
       font-weight: 800;
-      color: #FAED26;
+      color: #D0BDF4;
       padding: 1px 6px;
-      box-shadow: 0 2px 6px rgba(26, 11, 46, 0.15);
+      box-shadow: 0 2px 6px rgba(15, 16, 22, 0.15);
     }
 
     /* Reminders Card */
@@ -2616,21 +2619,21 @@
       align-items: center;
       justify-content: center;
       gap: 8px;
-      background: linear-gradient(135deg, #FAED26 0%, #F5E51B 100%);
-      color: #46344E;
-      border: 1px solid rgba(250, 237, 38, 0.85);
+      background: linear-gradient(135deg, #8458B3 0%, #6E429E 100%);
+      color: #FFFFFF;
+      border: 1px solid rgba(132, 88, 179, 0.85);
       border-radius: 9999px;
       padding: 14px 20px;
       font-size: 14px;
       font-weight: 800;
       cursor: pointer;
       transition: all 0.2s;
-      box-shadow: 0 4px 14px rgba(250, 237, 38, 0.4);
+      box-shadow: 0 4px 14px rgba(132, 88, 179, 0.38);
     }
 
     .donezo-pill-btn-green:hover {
       transform: translateY(-1px);
-      box-shadow: 0 8px 20px rgba(17, 75, 50, 0.35);
+      box-shadow: 0 8px 20px rgba(132, 88, 179, 0.5);
     }
 
     /* Project List */
@@ -2863,11 +2866,11 @@
     }
 
     .legend-dot.green {
-      background: #46344E;
+      background: #494D5F;
     }
 
     .legend-dot.mint {
-      background: #FAED26;
+      background: #A0D2EB;
     }
 
     .legend-dot.striped {
@@ -2877,15 +2880,15 @@
 
     /* Time Tracker Card with Wavy Contour Background */
     .time-tracker-card {
-      background: #46344E;
+      background: #494D5F;
       color: #FFF5F2;
-      border: 1px solid rgba(250, 237, 38, 0.35);
+      border: 1px solid rgba(208, 189, 244, 0.35);
       position: relative;
       overflow: hidden;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      box-shadow: 0 8px 24px -4px rgba(26, 11, 46, 0.5);
+      box-shadow: 0 8px 24px -4px rgba(25, 26, 33, 0.5);
     }
 
     .contour-lines-bg {
@@ -2913,7 +2916,7 @@
       font-size: 38px;
       font-weight: 800;
       letter-spacing: -0.02em;
-      color: #FAED26;
+      color: #A0D2EB;
       margin: 18px 0;
       position: relative;
       z-index: 2;
@@ -2939,12 +2942,12 @@
     }
 
     .timer-circle-btn.pause {
-      background: #FAED26;
-      color: #46344E;
+      background: #8458B3;
+      color: #FFFFFF;
     }
 
     .timer-circle-btn.pause:hover {
-      background: #FFF13B;
+      background: #986DC7;
       transform: scale(1.05);
     }
 
@@ -3042,13 +3045,13 @@
       width: 32px;
       height: 32px;
       border-radius: 50%;
-      background: #46344E;
-      color: #FAED26;
+      background: #8458B3;
+      color: #FFFFFF;
       font-weight: 800;
       font-size: 12px;
       display: grid;
       place-items: center;
-      border: 1px solid rgba(250, 237, 38, 0.3);
+      border: 1px solid rgba(208, 189, 244, 0.4);
     }
 
     .donezo-user-chip .user-meta {
@@ -3320,33 +3323,33 @@
       align-items: center;
       gap: 8px;
       padding: 11px 20px;
-      background: linear-gradient(135deg, #46344E, #3B2A43);
-      color: #FAED26;
-      border: 1px solid rgba(250, 237, 38, 0.4);
+      background: linear-gradient(135deg, #8458B3, #6E429E);
+      color: #FFFFFF;
+      border: 1px solid rgba(208, 189, 244, 0.4);
       border-radius: 9999px;
       font-weight: 700;
       font-size: 13.5px;
-      box-shadow: 0 10px 25px -4px rgba(26, 11, 46, 0.5);
+      box-shadow: 0 10px 25px -4px rgba(25, 26, 33, 0.5);
       cursor: pointer;
       transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
     }
     .floating-test-bot-btn:hover {
       transform: translateY(-2px) scale(1.02);
-      box-shadow: 0 14px 30px -4px rgba(26, 11, 46, 0.65);
-      border-color: #FAED26;
+      box-shadow: 0 14px 30px -4px rgba(25, 26, 33, 0.65);
+      border-color: #D0BDF4;
     }
     .sim-pulse-dot {
       width: 8px;
       height: 8px;
       border-radius: 50%;
-      background: #FAED26;
-      box-shadow: 0 0 0 0 rgba(250, 237, 38, 0.7);
+      background: #D0BDF4;
+      box-shadow: 0 0 0 0 rgba(208, 189, 244, 0.7);
       animation: simPulse 2s infinite;
     }
     @keyframes simPulse {
-      0% { box-shadow: 0 0 0 0 rgba(250, 237, 38, 0.7); }
-      70% { box-shadow: 0 0 0 7px rgba(250, 237, 38, 0); }
-      100% { box-shadow: 0 0 0 0 rgba(250, 237, 38, 0); }
+      0% { box-shadow: 0 0 0 0 rgba(208, 189, 244, 0.7); }
+      70% { box-shadow: 0 0 0 7px rgba(208, 189, 244, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(208, 189, 244, 0); }
     }
 
     /* Bot Simulator Drawer */
@@ -3370,12 +3373,12 @@
     }
     .sim-header {
       padding: 16px 18px;
-      background: #46344E;
-      color: #FAED26;
+      background: #494D5F;
+      color: #E5EAF5;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      border-bottom: 1px solid rgba(250, 237, 38, 0.2);
+      border-bottom: 1px solid rgba(208, 189, 244, 0.2);
     }
     .sim-bot-meta {
       display: flex;
@@ -3457,9 +3460,9 @@
       flex-shrink: 0;
     }
     .sim-chip:hover {
-      background: #46344E;
-      color: #FAED26;
-      border-color: #FAED26;
+      background: #8458B3;
+      color: #FFFFFF;
+      border-color: #8458B3;
     }
     .sim-messages-wrap {
       flex: 1;
@@ -3486,11 +3489,11 @@
       border: 1px solid var(--line);
     }
     .sim-bubble.user {
-      background: #46344E;
-      color: #FAED26;
+      background: #8458B3;
+      color: #FFFFFF;
       align-self: flex-end;
       border-bottom-right-radius: 3px;
-      border: 1px solid rgba(250, 237, 38, 0.35);
+      border: 1px solid rgba(208, 189, 244, 0.35);
     }
     .sim-typing-bubble {
       display: none;
@@ -3540,9 +3543,9 @@
       width: 36px;
       height: 36px;
       border-radius: 50%;
-      background: #46344E;
-      color: #FAED26;
-      border: 1px solid rgba(250, 237, 38, 0.4);
+      background: #8458B3;
+      color: #FFFFFF;
+      border: 1px solid rgba(208, 189, 244, 0.4);
       cursor: pointer;
       display: grid;
       place-items: center;
@@ -3550,8 +3553,8 @@
       transition: all 0.15s;
     }
     .sim-input-row button:hover {
-      background: #2E144F;
-      border-color: #FAED26;
+      background: #986DC7;
+      border-color: #D0BDF4;
     }
 
     /* Commercial Upgrade Modal */
@@ -3585,21 +3588,21 @@
       justify-content: space-between;
     }
     .plan-card:hover {
-      border-color: #FAED26;
+      border-color: #8458B3;
       transform: translateY(-2px);
     }
     .plan-card.active {
-      border: 2px solid #FAED26;
+      border: 2px solid #8458B3;
       background: var(--surface);
-      box-shadow: 0 10px 28px rgba(250, 237, 38, 0.25);
+      box-shadow: 0 10px 28px rgba(132, 88, 179, 0.25);
     }
     .plan-badge {
       position: absolute;
       top: -11px;
       left: 50%;
       transform: translateX(-50%);
-      background: #FAED26;
-      color: #46344E;
+      background: #8458B3;
+      color: #FFFFFF;
       font-size: 9.5px;
       font-weight: 800;
       padding: 3px 12px;
@@ -3668,9 +3671,9 @@
       transition: all 0.15s;
     }
     .pay-method-btn.active {
-      background: #46344E;
-      color: #FAED26;
-      border-color: #FAED26;
+      background: #8458B3;
+      color: #FFFFFF;
+      border-color: #8458B3;
     }
     .payment-instructions-box {
       background: var(--surface);
@@ -3846,10 +3849,10 @@
       transition: transform 0.15s;
     }
     .mobile-bottom-btn.active {
-      color: #46344E;
+      color: #8458B3;
     }
     :root[data-theme="dark"] .mobile-bottom-btn.active {
-      color: #FAED26;
+      color: #D0BDF4;
     }
     .mobile-bottom-btn.active svg {
       transform: scale(1.1);
@@ -4490,7 +4493,7 @@
       <div class="brand" onclick="switchTab(currentUser?.role==='master_admin'?'tenants':'dash')"
         style="cursor:pointer">
         <div class="brand-glyph"
-          style="background:rgba(250,237,38,0.2); border:1px solid rgba(250,237,38,0.35); width:36px; height:36px; border-radius:10px; display:grid; place-items:center">
+          style="background:rgba(132,88,179,0.2); border:1px solid rgba(208,189,244,0.4); width:36px; height:36px; border-radius:10px; display:grid; place-items:center">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.5"
             stroke-linecap="round" stroke-linejoin="round">
             <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2z" />
@@ -4504,7 +4507,7 @@
       </div>
 
       <span id="masterAdminBadge"
-        style="display:none; background:linear-gradient(135deg, #46344E, #3B2A43); color:#FAED26; font-weight:800; padding:5px 12px; border-radius:20px; font-size:11.5px; letter-spacing:0.04em; border:1px solid rgba(250,237,38,0.35); box-shadow:0 2px 10px rgba(26,11,46,0.4); align-items:center; gap:6px">
+        style="display:none; background:linear-gradient(135deg, #8458B3, #6E429E); color:#FFFFFF; font-weight:800; padding:5px 12px; border-radius:20px; font-size:11.5px; letter-spacing:0.04em; border:1px solid rgba(208,189,244,0.4); box-shadow:0 2px 10px rgba(25,26,33,0.4); align-items:center; gap:6px">
         MASTER ADMIN</span>
 
       <!-- Master Admin Workspace Controls -->
@@ -4520,7 +4523,7 @@
           </select>
         </div>
         <button class="btn sm primary" id="btnOpenNewWsModal" title="Add New Business Account"
-          style="margin-top:14px; background:linear-gradient(135deg, #FAED26 0%, #F5E51B 100%); color:#46344E; font-weight:800; border:1px solid rgba(250,237,38,0.85); border-radius:9999px; box-shadow:0 2px 8px rgba(250,237,38,0.35)">+ New Tenant</button>
+          style="margin-top:14px; background:linear-gradient(135deg, #8458B3 0%, #6E429E 100%); color:#FFFFFF; font-weight:800; border:1px solid rgba(132,88,179,0.85); border-radius:9999px; box-shadow:0 2px 8px rgba(132,88,179,0.35)">+ New Tenant</button>
       </div>
 
       <!-- Tenant Subscription Controls -->
@@ -5093,7 +5096,7 @@
                 <div class="card-head-row">
                   <h3 class="donezo-card-title">Message Traffic &amp; Volume</h3>
                   <span
-                    style="font-size:11.5px; font-weight:700; color:#46344E; background:rgba(250,237,38,0.25); border:1px solid rgba(250,237,38,0.4); padding:2px 8px; border-radius:9999px">Last
+                    style="font-size:11.5px; font-weight:700; color:#8458B3; background:rgba(132,88,179,0.12); border:1px solid rgba(208,189,244,0.4); padding:2px 8px; border-radius:9999px">Last
                     7 Days</span>
                 </div>
                 <div class="analytics-chart-container">
@@ -5256,7 +5259,7 @@
                 </div>
                 <div class="team-members-list" id="donezoCustomerInquiriesList">
                   <div style="padding:28px 14px; text-align:center; color:var(--ink3)">
-                    <div style="width:38px; height:38px; margin:0 auto 10px; border-radius:50%; background:rgba(250,237,38,0.22); display:grid; place-items:center; color:#46344E">
+                    <div style="width:38px; height:38px; margin:0 auto 10px; border-radius:50%; background:rgba(132,88,179,0.15); display:grid; place-items:center; color:#8458B3">
                       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
                     </div>
                     <div style="font-weight:700; color:var(--ink); font-size:13.5px; margin-bottom:4px">No Customer Inquiries Yet</div>
@@ -5544,12 +5547,13 @@
               </div>
               <p class="hint">Direct 24/7 AI conversation on your Facebook Page.</p>
 
-              <!-- 1-Click Fast Connect Banner -->
-              <div class="fb-oauth-box" style="background:var(--surface2); border:1px solid rgba(250,237,38,0.28); border-radius:14px; padding:16px; margin:14px 0; display:flex; flex-direction:column; gap:10px">
+              <!-- Option 1: 1-Click Fast Connect Banner -->
+              <div class="fb-oauth-box" style="background:var(--surface2); border:1px solid rgba(132,88,179,0.35); border-radius:14px; padding:16px; margin:14px 0 10px 0; display:flex; flex-direction:column; gap:10px">
                 <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px">
                   <div style="display:flex; align-items:center; gap:8px">
                     <span class="status-dot gray" id="fbOauthStatusDot"></span>
                     <span id="fbOauthStatusTxt" style="font-size:12px; font-weight:700; color:var(--ink)">Not Connected</span>
+                    <span class="badge" style="background:rgba(132,88,179,0.18); color:var(--ink); font-size:10.5px; font-weight:800; border:1px solid rgba(208,189,244,0.4)">OPTION 1: 1-CLICK META CONNECT</span>
                   </div>
                   <span id="fbOauthPageNameTxt" style="font-size:11.5px; color:var(--ink); font-weight:700"></span>
                 </div>
@@ -5558,13 +5562,45 @@
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
                     <span id="btnFbOAuthTxt">Connect Facebook Page</span>
                   </button>
-                  <span style="font-size:11.5px; color:var(--ink3)">1-Click Official Meta Connect &bull; Zero technical setup</span>
+                  <span style="font-size:11.5px; color:var(--ink3)">Zero developer setup &bull; Auto-subscribes webhooks</span>
                 </div>
               </div>
 
-              <!-- Manual Configuration Toggle -->
+              <!-- Option 2: 30-Second Task Access (Recommended Alternative for Non-Technical Clients) -->
+              <div style="background:var(--surface2); border:1px solid var(--line); border-radius:14px; padding:16px; margin:10px 0; display:flex; flex-direction:column; gap:10px">
+                <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px">
+                  <div style="display:flex; align-items:center; gap:8px">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+                    <span style="font-size:12.5px; font-weight:700; color:var(--ink)">Option 2: 30-Second Page Invite (Task Access)</span>
+                  </div>
+                  <span class="badge" style="background:rgba(160,210,235,0.22); color:var(--ink); border:1px solid rgba(160,210,235,0.45); font-size:10px; font-weight:800; padding:2px 7px">RECOMMENDED FOR CLIENTS</span>
+                </div>
+                <p style="margin:0; font-size:12px; color:var(--ink2); line-height:1.5">
+                  Best for non-technical clinic, salon, or store owners. You do not need to touch Meta Developer consoles, tokens, or webhook URLs. Simply invite our agency account to your page like a staff member:
+                </p>
+                <div style="background:var(--surface); border:1px solid var(--line); border-radius:10px; padding:12px 14px">
+                  <div style="font-weight:700; font-size:11.5px; color:var(--ink); margin-bottom:8px">Tenant Action (Takes 30 Seconds):</div>
+                  <ol style="margin:0; padding-left:18px; font-size:12px; color:var(--ink2); line-height:1.7">
+                    <li>Open your Facebook Page in a browser or Facebook app.</li>
+                    <li>Go to <strong>Settings &amp; Privacy</strong> &rarr; <strong>Settings</strong> &rarr; <strong>New Pages Experience</strong> &rarr; <strong>Page Access</strong>.</li>
+                    <li>Under <strong>People with Task Access</strong>, click <strong>Add New</strong>.</li>
+                    <li>Enter our agency management email:
+                      <div class="input-with-btn" style="max-width:380px; margin:6px 0">
+                        <input type="text" readonly id="fbTaskAccessEmailChannels" class="mono agency-email-val" value="admin@crowncoffee.com" style="font-size:12px">
+                        <button type="button" class="btn sm" onclick="copyId('fbTaskAccessEmailChannels')">Copy Email</button>
+                      </div>
+                    </li>
+                    <li>Toggle <strong>Messages</strong> access to <strong>ON</strong> and click <strong>Give Access</strong> (confirm with your password).</li>
+                  </ol>
+                </div>
+                <div style="font-size:11.5px; color:var(--ink3); line-height:1.5">
+                  <span>Once invited, inform Master Admin or support. Our system generates the permanent Page Access Token and activates your 24/7 AI bot in minutes.</span>
+                </div>
+              </div>
+
+              <!-- Option 3: Manual Configuration Toggle -->
               <details style="margin-top:10px" id="fbManualCredsDetails">
-                <summary style="font-size:12px; font-weight:600; color:var(--ink2); cursor:pointer; padding:6px 0">Or configure credentials manually (Advanced)</summary>
+                <summary style="font-size:12px; font-weight:600; color:var(--ink2); cursor:pointer; padding:6px 0">Option 3: Configure credentials manually (Advanced / Master Admin)</summary>
                 <div style="margin-top:10px">
                   <label class="f">Page Access Token (Permanent)</label>
                   <input type="password" data-b="channels.facebook.pageToken"
@@ -6301,23 +6337,35 @@
               </div>
 
               <div style="background:var(--surface2); border:1px solid var(--line); border-radius:10px; padding:12px 14px; margin-bottom:14px;">
-                <div style="font-weight:700; color:var(--ink); font-size:13px; margin-bottom:4px; display:flex; align-items:center; gap:6px;">
-                  Easiest Way to Connect (Takes 30 Seconds):
+                <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px; margin-bottom:6px">
+                  <div style="font-weight:700; color:var(--ink); font-size:13px; display:flex; align-items:center; gap:6px;">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+                    Easiest Way: 30-Second Page Invite (Task Access)
+                  </div>
+                  <span class="badge" style="background:rgba(160,210,235,0.22); color:var(--ink); border:1px solid rgba(160,210,235,0.45); font-size:10px; font-weight:800; padding:2px 7px">RECOMMENDED</span>
                 </div>
-                <p style="margin:0 0 8px 0; font-size:12.5px; color:var(--ink2); line-height:1.5;">
-                  You do <strong>not</strong> need to set up Meta Developer tools. Simply grant our system management account Task Access to your Facebook Page:
+                <p style="margin:0 0 8px 0; font-size:12px; color:var(--ink2); line-height:1.5;">
+                  You do <strong>not</strong> need to set up Meta Developer tools, tokens, or webhooks. Simply invite our agency account to your page like a staff member:
                 </p>
-                <ol style="margin:0; padding-left:18px; font-size:12px; color:var(--ink2); line-height:1.6;">
-                  <li>Open your Facebook Page &rarr; <strong>Settings</strong> &rarr; <strong>Page Access</strong> (New Pages Experience).</li>
-                  <li>Click <strong>"Add Person with Task Access"</strong> and add our agency manager account with <strong>Messages</strong> enabled.</li>
-                  <li>Our technical team connects and activates your 24/7 AI chatbot within 10 minutes!</li>
+                <ol style="margin:0; padding-left:18px; font-size:12px; color:var(--ink2); line-height:1.7;">
+                  <li>Open your Facebook Page &rarr; <strong>Settings &amp; Privacy</strong> &rarr; <strong>Settings</strong> &rarr; <strong>New Pages Experience</strong> &rarr; <strong>Page Access</strong>.</li>
+                  <li>Under <strong>People with Task Access</strong>, click <strong>Add New</strong>.</li>
+                  <li>Enter our agency management email:
+                    <div class="input-with-btn" style="max-width:380px; margin:6px 0">
+                      <input type="text" readonly id="fbTaskAccessEmailHub" class="mono agency-email-val" value="admin@crowncoffee.com" style="font-size:12px">
+                      <button type="button" class="btn sm" onclick="copyId('fbTaskAccessEmailHub')">Copy Email</button>
+                    </div>
+                  </li>
+                  <li>Toggle <strong>Messages</strong> access to <strong>ON</strong> and confirm with your password.</li>
                 </ol>
-                <div style="margin-top:12px; padding-top:10px; border-top:1px solid var(--line); display:flex; align-items:center; gap:8px; flex-wrap:wrap">
-                  <button type="button" class="btn primary sm" onclick="startFacebookOAuth()" style="font-weight:800; display:inline-flex; align-items:center; gap:6px">
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
-                    <span>1-Click Connect with Facebook</span>
-                  </button>
-                  <span style="font-size:11.5px; color:var(--ink3)">Or invite our manager account above</span>
+                <div style="margin-top:12px; padding-top:10px; border-top:1px solid var(--line); display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px">
+                  <div style="display:flex; align-items:center; gap:8px">
+                    <button type="button" class="btn primary sm" onclick="startFacebookOAuth()" style="font-weight:800; display:inline-flex; align-items:center; gap:6px">
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                      <span>Or 1-Click Connect with Facebook</span>
+                    </button>
+                  </div>
+                  <span style="font-size:11.5px; color:var(--ink3)">Automatic AI activation in minutes</span>
                 </div>
               </div>
 
@@ -7078,6 +7126,8 @@
         const r = await api('/api/me').then(r => r.json()).catch(() => ({ authed: false }));
         if (r.authed) {
           currentUser = r;
+          const agencyEmail = r.agency_email || 'admin@crowncoffee.com';
+          document.querySelectorAll('.agency-email-val').forEach(el => { if (el) el.value = agencyEmail; });
           const loginEl = document.getElementById('login');
           const appEl = document.getElementById('app');
           if (loginEl) loginEl.style.display = 'none';
@@ -7270,54 +7320,72 @@
       if (tab === 'fb') {
         body.innerHTML = `
           <div style="display:flex; flex-direction:column; gap:14px">
-            <div style="background:rgba(24,119,242,0.06); border:1px solid rgba(24,119,242,0.22); border-radius:8px; padding:12px 14px">
-              <div style="font-weight:800; color:#1877F2; margin-bottom:4px; font-size:13.5px"> Step 1: Create or Open Your Meta App</div>
-              <div style="color:var(--ink2)">Go to <a href="https://developers.facebook.com/apps" target="_blank" style="color:#1877F2; font-weight:700; text-decoration:underline">developers.facebook.com/apps</a>, sign in with your Facebook account, and select or create an App with type <strong>Business</strong>.</div>
+            <!-- Alternative 1: 30-Second Task Access (Recommended for Clients) -->
+            <div style="background:rgba(160,210,235,0.12); border:1px solid rgba(160,210,235,0.4); border-radius:10px; padding:14px 16px">
+              <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px; margin-bottom:6px">
+                <div style="font-weight:800; color:var(--ink); font-size:14px; display:flex; align-items:center; gap:6px">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+                  Alternative Option 1: 30-Second Page Invite (Task Access)
+                </div>
+                <span class="badge" style="background:rgba(160,210,235,0.3); color:var(--ink); font-weight:800; font-size:10.5px">RECOMMENDED FOR CLIENTS</span>
+              </div>
+              <p style="margin:0 0 10px 0; font-size:12.5px; color:var(--ink2); line-height:1.5">
+                Fastest and error-free for non-technical salon, clinic, or business owners. The client never touches Meta Developer consoles, API tokens, or webhooks.
+              </p>
+
+              <div style="background:var(--surface); border:1px solid var(--line); border-radius:8px; padding:10px 12px; margin-bottom:10px">
+                <div style="font-weight:700; font-size:12px; color:var(--ink); margin-bottom:4px">Tenant Action (Takes 30 Seconds):</div>
+                <ol style="margin:0; padding-left:18px; font-size:12px; color:var(--ink2); line-height:1.65">
+                  <li>Open your Facebook Page in a browser or Facebook mobile app.</li>
+                  <li>Go to <strong>Settings &amp; Privacy</strong> &rarr; <strong>Settings</strong> &rarr; <strong>New Pages Experience</strong> &rarr; <strong>Page Access</strong>.</li>
+                  <li>Under <strong>People with Task Access</strong>, click <strong>Add New</strong>.</li>
+                  <li>Search for our agency account or enter: <code class="agency-email-val" style="background:var(--surface2); padding:1px 5px; border-radius:4px; font-weight:700; color:var(--accent)">admin@crowncoffee.com</code></li>
+                  <li>Toggle <strong>Messages</strong> access to <strong>ON</strong> and confirm.</li>
+                </ol>
+              </div>
+
+              <div style="background:var(--surface); border:1px solid var(--line); border-radius:8px; padding:10px 12px">
+                <div style="font-weight:700; font-size:12px; color:var(--ink); margin-bottom:4px">Agency / Master Admin Action:</div>
+                <ul style="margin:0; padding-left:18px; font-size:12px; color:var(--ink2); line-height:1.65">
+                  <li>Your pre-configured server Meta App generates a permanent Page Access Token.</li>
+                  <li>Go to <strong>Tenants Directory</strong> &rarr; <strong>Inspect Client Bot</strong> &rarr; <strong>Connect Channels</strong>.</li>
+                  <li>Paste the token and click <strong>Test Facebook Ping</strong>.</li>
+                  <li>System automatically detects Page ID, registers webhooks, and activates AI immediately.</li>
+                </ul>
+              </div>
             </div>
 
-            <div style="background:var(--surface2); border:1px solid var(--line); border-radius:8px; padding:12px 14px">
-              <div style="font-weight:700; color:var(--ink); margin-bottom:4px; font-size:13.5px">⚙️ Step 2: Configure Webhook in Messenger</div>
-              <div style="color:var(--ink2)">In your App Dashboard, navigate to <strong>Messenger &gt; Webhooks</strong> (or Add Products &gt; Messenger):</div>
-              <ul style="margin:8px 0 0 18px; padding:0; line-height:1.7; color:var(--ink2)">
-                <li>Click <strong>Edit Callback URL</strong>.</li>
-                <li>Set <strong>Callback URL</strong> to: <code style="background:var(--surface); padding:2px 6px; border-radius:4px; font-weight:700; color:var(--accent); font-family:var(--font-mono)">${webhookUrl}</code></li>
-                <li>Set <strong>Verify Token</strong> to: <code style="background:var(--surface); padding:2px 6px; border-radius:4px; font-weight:700; color:var(--accent); font-family:var(--font-mono)">${verifyToken}</code></li>
-                <li>Click <strong>Verify and Save</strong>.</li>
-                <li>Under <strong>Subscription Fields</strong>, subscribe to <span style="background:#e0f2fe; color:#0369a1; padding:1px 6px; border-radius:4px; font-weight:700; font-size:11.5px">messages</span> and <span style="background:#e0f2fe; color:#0369a1; padding:1px 6px; border-radius:4px; font-weight:700; font-size:11.5px">messaging_postbacks</span>.</li>
-              </ul>
+            <!-- Alternative 2: 1-Click Meta Connect -->
+            <div style="background:rgba(24,119,242,0.06); border:1px solid rgba(24,119,242,0.22); border-radius:10px; padding:12px 14px">
+              <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px">
+                <div style="font-weight:700; color:#1877F2; font-size:13.5px">Option 2: 1-Click Meta Connect (Direct OAuth)</div>
+                <span class="badge" style="background:rgba(24,119,242,0.15); color:#1877F2; font-size:10px; font-weight:700">AUTOMATED</span>
+              </div>
+              <p style="margin:6px 0 0 0; font-size:12px; color:var(--ink2); line-height:1.5">
+                Click <strong>Connect Facebook Page</strong> in the Channels tab. Meta opens a popup asking you to select your page. Tokens and webhooks are linked automatically.
+              </p>
             </div>
 
-            <div style="background:var(--surface2); border:1px solid var(--line); border-radius:8px; padding:12px 14px">
-              <div style="font-weight:700; color:var(--ink); margin-bottom:4px; font-size:13.5px"> Step 3: Generate Page Access Token &amp; Copy App Secret</div>
-              <div style="color:var(--ink2)">Under <strong>Messenger &gt; API Settings</strong>:</div>
-              <ul style="margin:8px 0 0 18px; padding:0; line-height:1.7; color:var(--ink2)">
-                <li>Add or select your business <strong>Facebook Page</strong>.</li>
-                <li>Click <strong>Generate Token</strong> and copy the generated token.</li>
-                <li>Copy your <strong>Facebook Page ID</strong> (found in your Page's About / Settings tab).</li>
-                <li>Go to <em>App Settings &gt; Basic</em> and copy your <strong>App Secret</strong>.</li>
-              </ul>
-            </div>
+            <!-- Alternative 3: Manual Meta Developer Console -->
+            <div style="border-top:1px solid var(--line); padding-top:10px">
+              <div style="font-weight:700; color:var(--ink); font-size:13px; margin-bottom:10px">Option 3: Manual Developer Console Setup (Advanced / Self-Hosted)</div>
+              
+              <div style="display:flex; flex-direction:column; gap:10px">
+                <div style="background:var(--surface2); border:1px solid var(--line); border-radius:8px; padding:10px 12px">
+                  <div style="font-weight:700; color:var(--ink); font-size:12px; margin-bottom:2px">Step 1: Create Meta App</div>
+                  <div style="font-size:12px; color:var(--ink2)">Go to <a href="https://developers.facebook.com/apps" target="_blank" style="color:var(--accent); font-weight:600">developers.facebook.com/apps</a> &rarr; <strong>Create App</strong> &rarr; type <strong>Business</strong>. Add the <strong>Messenger</strong> product.</div>
+                </div>
 
-            <div style="background:rgba(16,185,129,0.06); border:1px solid rgba(16,185,129,0.25); border-radius:8px; padding:12px 14px">
-              <div style="font-weight:700; color:#059669; margin-bottom:4px; font-size:13.5px">Step 4: Paste into Crown Bot Dashboard</div>
-              <div style="color:var(--ink2)">Navigate to <strong>Channels</strong> tab in this dashboard:</div>
-              <ul style="margin:8px 0 0 18px; padding:0; line-height:1.7; color:var(--ink2)">
-                <li>Paste your <strong>Page Access Token</strong> and <strong>Page ID</strong>.</li>
-                <li>Paste your <strong>Meta App Secret</strong> (critical for verifying incoming webhooks).</li>
-                <li>Click <strong>Test Facebook Ping</strong> (this auto-subscribes your page to webhook events).</li>
-                <li>Click <strong>Save Facebook Settings</strong>. Your AI is now connected!</li>
-              </ul>
-            </div>
+                <div style="background:var(--surface2); border:1px solid var(--line); border-radius:8px; padding:10px 12px">
+                  <div style="font-weight:700; color:var(--ink); font-size:12px; margin-bottom:2px">Step 2: Configure Webhook</div>
+                  <div style="font-size:12px; color:var(--ink2)">Set Callback URL to <code style="background:var(--surface); padding:2px 5px; border-radius:4px; font-family:var(--font-mono); color:var(--accent)">${webhookUrl}</code> and Verify Token to <code style="background:var(--surface); padding:2px 5px; border-radius:4px; font-family:var(--font-mono); color:var(--accent)">${verifyToken}</code>. Subscribe to <code>messages</code> and <code>messaging_postbacks</code>.</div>
+                </div>
 
-            <div style="background:rgba(99,102,241,0.06); border:1px solid rgba(99,102,241,0.25); border-radius:8px; padding:12px 14px">
-              <div style="font-weight:700; color:var(--accent-light); margin-bottom:4px; font-size:13.5px"> Step 5: Switch App from "In Development" to "Live"</div>
-              <div style="color:var(--ink2)">In <a href="https://developers.facebook.com/apps" target="_blank" rel="noopener" style="color:var(--accent); font-weight:600">Meta Developer Portal</a> &gt; <em>App Settings &gt; Basic</em>:</div>
-              <ul style="margin:8px 0 0 18px; padding:0; line-height:1.7; color:var(--ink2)">
-                <li><strong>Privacy Policy URL:</strong> <code style="background:var(--surface); padding:2px 6px; border-radius:4px; font-weight:700; color:var(--accent); font-family:var(--font-mono)">${window.location.origin}/privacy</code> <button type="button" class="btn xs" style="padding:1px 6px; margin-left:6px" onclick="copyToClipboard(window.location.origin + '/privacy')">Copy</button></li>
-                <li><strong>User Data Deletion:</strong> Select <em>Data Deletion Instructions URL</em> and enter: <code style="background:var(--surface); padding:2px 6px; border-radius:4px; font-weight:700; color:var(--accent); font-family:var(--font-mono)">${window.location.origin}/data-deletion</code> <button type="button" class="btn xs" style="padding:1px 6px; margin-left:6px" onclick="copyToClipboard(window.location.origin + '/data-deletion')">Copy</button></li>
-                <li><strong>Category:</strong> Select <em>Business and Pages</em>.</li>
-                <li>Click <strong>Save changes</strong>, then switch the top toggle from <strong>In Development</strong> to <strong>Live</strong>.</li>
-              </ul>
+                <div style="background:var(--surface2); border:1px solid var(--line); border-radius:8px; padding:10px 12px">
+                  <div style="font-weight:700; color:var(--ink); font-size:12px; margin-bottom:2px">Step 3: Generate Token &amp; Ping</div>
+                  <div style="font-size:12px; color:var(--ink2)">Under <em>Messenger &gt; API Settings</em>, generate a Page Access Token. Paste it into Crown Bot <strong>Channels &gt; Facebook</strong> and click <strong>Test Facebook Ping</strong>.</div>
+                </div>
+              </div>
             </div>
           </div>
         `;
@@ -7411,7 +7479,7 @@
                 <button class="btn sm" onclick="copyToClipboard('${snippet.replace(/'/g, "\\'")}')" style="position:absolute; top:8px; right:8px; padding:3px 10px; font-size:11px">Copy Snippet</button>
               </div>
             </div>
-            <div style="background:rgba(250,237,38,0.14); border:1px solid rgba(250,237,38,0.35); border-radius:8px; padding:12px 14px">
+            <div style="background:rgba(132,88,179,0.12); border:1px solid rgba(208,189,244,0.35); border-radius:8px; padding:12px 14px">
               <div style="font-weight:700; color:var(--accent); margin-bottom:4px; font-size:13px">Direct Online Chat Link</div>
               <div style="color:var(--ink2); font-size:12px">You can also share direct chat with patients or customers: <a href="${origin}/chat?ws=${wsId}" target="_blank" style="color:var(--accent); font-weight:600; text-decoration:underline">${origin}/chat?ws=${wsId}</a></div>
             </div>
@@ -9428,7 +9496,7 @@ Thank you for partnering with Crown Operations!`;
         } else {
           donezoList.innerHTML = `
             <div style="padding:28px 14px; text-align:center; color:var(--ink3)">
-              <div style="width:38px; height:38px; margin:0 auto 10px; border-radius:50%; background:rgba(250,237,38,0.22); display:grid; place-items:center; color:var(--accent)">
+              <div style="width:38px; height:38px; margin:0 auto 10px; border-radius:50%; background:rgba(132,88,179,0.15); display:grid; place-items:center; color:var(--accent)">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
               </div>
               <div style="font-weight:700; color:var(--ink); font-size:13.5px; margin-bottom:4px">No Customer Inquiries Yet</div>
