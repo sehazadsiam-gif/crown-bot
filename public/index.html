@@ -3083,12 +3083,49 @@
     }
 
     .brand-glyph {
-      width: 34px;
-      height: 34px;
-      border-radius: 10px;
-      background: rgba(17, 75, 50, 0.1);
+      width: 36px;
+      height: 36px;
+      border-radius: 11px;
+      background: linear-gradient(135deg, rgba(73, 77, 95, 0.4), rgba(20, 21, 27, 0.85));
+      border: 1px solid rgba(208, 189, 244, 0.4);
       display: grid;
       place-items: center;
+      box-shadow: 0 4px 14px rgba(132, 88, 179, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    .brand:hover .brand-glyph {
+      transform: translateY(-1.5px) scale(1.06);
+      box-shadow: 0 6px 20px rgba(132, 88, 179, 0.5), 0 0 16px rgba(160, 210, 235, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.55);
+      border-color: rgba(160, 210, 235, 0.6);
+    }
+
+    .login-brand-emblem {
+      width: 58px;
+      height: 58px;
+      border-radius: 18px;
+      background: linear-gradient(135deg, rgba(73, 77, 95, 0.5), rgba(20, 21, 27, 0.9));
+      border: 1.5px solid rgba(208, 189, 244, 0.45);
+      display: grid;
+      place-items: center;
+      box-shadow: 0 8px 24px rgba(132, 88, 179, 0.45), 0 0 20px rgba(160, 210, 235, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+      margin: 0 auto 16px auto;
+      animation: crownPulse 3s ease-in-out infinite alternate;
+      cursor: pointer;
+    }
+
+    @keyframes crownPulse {
+      0% {
+        box-shadow: 0 8px 24px rgba(132, 88, 179, 0.45), 0 0 18px rgba(160, 210, 235, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+      }
+      100% {
+        box-shadow: 0 10px 30px rgba(132, 88, 179, 0.65), 0 0 28px rgba(160, 210, 235, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+        transform: translateY(-2px);
+      }
     }
 
     .brand-text {
@@ -3107,10 +3144,26 @@
       border-radius: 50%;
       flex-shrink: 0;
     }
-    .status-dot.green { background: #10B981; box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.18); }
-    .status-dot.amber { background: #F59E0B; box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.18); }
-    .status-dot.gray  { background: #94A3B8; box-shadow: 0 0 0 3px rgba(148, 163, 184, 0.18); }
-    .status-dot.red   { background: #EF4444; box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.18); }
+
+    .status-dot.green {
+      background: #10B981;
+      box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.18);
+    }
+
+    .status-dot.amber {
+      background: #F59E0B;
+      box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.18);
+    }
+
+    .status-dot.gray {
+      background: #94A3B8;
+      box-shadow: 0 0 0 3px rgba(148, 163, 184, 0.18);
+    }
+
+    .status-dot.red {
+      background: #EF4444;
+      box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.18);
+    }
 
     /* Dashboard Live Bot Readiness Gate Card */
     .dash-gate-card {
@@ -3126,10 +3179,12 @@
       flex-wrap: wrap;
       box-shadow: 0 4px 14px rgba(0, 0, 0, 0.03);
     }
+
     .dash-gate-left {
       flex: 1;
       min-width: 250px;
     }
+
     .dash-gate-status-pill {
       display: inline-flex;
       align-items: center;
@@ -3144,6 +3199,7 @@
       border: 1px solid var(--line);
       margin-bottom: 8px;
     }
+
     .dash-gate-title {
       margin: 0;
       font-size: 16px;
@@ -3151,12 +3207,14 @@
       letter-spacing: -0.01em;
       color: var(--ink);
     }
+
     .dash-gate-desc {
       margin: 3px 0 0;
       font-size: 13px;
       color: var(--ink2);
       line-height: 1.45;
     }
+
     .dash-gate-right {
       display: flex;
       align-items: center;
@@ -3173,6 +3231,7 @@
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
       position: relative;
     }
+
     .checklist-header {
       display: flex;
       align-items: center;
@@ -3180,11 +3239,13 @@
       flex-wrap: wrap;
       gap: 12px;
     }
+
     .checklist-title-area {
       display: flex;
       align-items: center;
       gap: 12px;
     }
+
     .checklist-icon-badge {
       width: 40px;
       height: 40px;
@@ -3195,6 +3256,7 @@
       font-size: 20px;
       flex-shrink: 0;
     }
+
     .checklist-title {
       margin: 0;
       font-size: 16px;
@@ -3202,16 +3264,19 @@
       letter-spacing: -0.01em;
       color: var(--ink);
     }
+
     .checklist-sub {
       margin: 2px 0 0;
       font-size: 12.5px;
       color: var(--ink3);
     }
+
     .checklist-right {
       display: flex;
       align-items: center;
       gap: 10px;
     }
+
     .checklist-progress-bar-wrap {
       width: 120px;
       height: 8px;
@@ -3220,18 +3285,21 @@
       overflow: hidden;
       border: 1px solid var(--line);
     }
+
     .checklist-progress-fill {
       height: 100%;
       background: linear-gradient(90deg, #10B981, #059669);
       border-radius: 9999px;
       transition: width 0.35s ease;
     }
+
     .checklist-pct-txt {
       font-size: 13px;
       font-weight: 800;
       color: #10B981;
       min-width: 38px;
     }
+
     .checklist-toggle-btn {
       background: var(--surface2);
       border: 1px solid var(--line);
@@ -3242,18 +3310,26 @@
       border-radius: 6px;
       cursor: pointer;
     }
+
     .checklist-steps-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
       gap: 12px;
       margin-top: 16px;
     }
+
     @media (max-width: 900px) {
-      .checklist-steps-grid { grid-template-columns: repeat(2, 1fr); }
+      .checklist-steps-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
     }
+
     @media (max-width: 560px) {
-      .checklist-steps-grid { grid-template-columns: 1fr; }
+      .checklist-steps-grid {
+        grid-template-columns: 1fr;
+      }
     }
+
     .checklist-step {
       background: var(--surface2);
       border: 1px solid var(--line);
@@ -3265,10 +3341,12 @@
       gap: 10px;
       transition: all 0.2s ease;
     }
+
     .checklist-step:hover {
       border-color: #10B981;
       transform: translateY(-1px);
     }
+
     .step-check {
       width: 26px;
       height: 26px;
@@ -3279,19 +3357,23 @@
       font-weight: 800;
       flex-shrink: 0;
     }
+
     .step-check.done {
       background: #10B981;
       color: #fff;
     }
+
     .step-check.todo {
       background: var(--surface);
       color: var(--ink3);
       border: 1.5px solid var(--line);
     }
+
     .step-info {
       flex: 1;
       min-width: 0;
     }
+
     .step-label {
       font-size: 12.5px;
       font-weight: 700;
@@ -3300,6 +3382,7 @@
       overflow: hidden;
       text-overflow: ellipsis;
     }
+
     .step-desc {
       font-size: 11px;
       color: var(--ink3);
@@ -3308,6 +3391,7 @@
       text-overflow: ellipsis;
       margin-top: 2px;
     }
+
     .step-arrow {
       font-size: 14px;
       color: var(--ink3);
@@ -3333,11 +3417,13 @@
       cursor: pointer;
       transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
     }
+
     .floating-test-bot-btn:hover {
       transform: translateY(-2px) scale(1.02);
       box-shadow: 0 14px 30px -4px rgba(25, 26, 33, 0.65);
       border-color: #D0BDF4;
     }
+
     .sim-pulse-dot {
       width: 8px;
       height: 8px;
@@ -3346,10 +3432,19 @@
       box-shadow: 0 0 0 0 rgba(208, 189, 244, 0.7);
       animation: simPulse 2s infinite;
     }
+
     @keyframes simPulse {
-      0% { box-shadow: 0 0 0 0 rgba(208, 189, 244, 0.7); }
-      70% { box-shadow: 0 0 0 7px rgba(208, 189, 244, 0); }
-      100% { box-shadow: 0 0 0 0 rgba(208, 189, 244, 0); }
+      0% {
+        box-shadow: 0 0 0 0 rgba(208, 189, 244, 0.7);
+      }
+
+      70% {
+        box-shadow: 0 0 0 7px rgba(208, 189, 244, 0);
+      }
+
+      100% {
+        box-shadow: 0 0 0 0 rgba(208, 189, 244, 0);
+      }
     }
 
     /* Bot Simulator Drawer */
@@ -3368,9 +3463,11 @@
       transition: right 0.32s cubic-bezier(0.16, 1, 0.3, 1);
       border-left: 1px solid var(--line);
     }
+
     .bot-sim-drawer.open {
       right: 0;
     }
+
     .sim-header {
       padding: 16px 18px;
       background: #494D5F;
@@ -3380,11 +3477,13 @@
       justify-content: space-between;
       border-bottom: 1px solid rgba(208, 189, 244, 0.2);
     }
+
     .sim-bot-meta {
       display: flex;
       align-items: center;
       gap: 10px;
     }
+
     .sim-avatar {
       width: 36px;
       height: 36px;
@@ -3396,11 +3495,13 @@
       display: grid;
       place-items: center;
     }
+
     .sim-name {
       font-size: 14px;
       font-weight: 700;
       color: #fff;
     }
+
     .sim-status {
       font-size: 11px;
       color: rgba(255, 255, 255, 0.85);
@@ -3409,17 +3510,20 @@
       gap: 5px;
       margin-top: 1px;
     }
+
     .sim-status-dot {
       width: 6px;
       height: 6px;
       border-radius: 50%;
       background: #34D399;
     }
+
     .sim-actions {
       display: flex;
       align-items: center;
       gap: 6px;
     }
+
     .sim-icon-btn {
       background: rgba(255, 255, 255, 0.15);
       border: none;
@@ -3433,9 +3537,11 @@
       font-size: 16px;
       transition: background 0.15s;
     }
+
     .sim-icon-btn:hover {
       background: rgba(255, 255, 255, 0.28);
     }
+
     .sim-quick-chips {
       padding: 10px 14px;
       background: var(--surface2);
@@ -3446,7 +3552,11 @@
       white-space: nowrap;
       scrollbar-width: none;
     }
-    .sim-quick-chips::-webkit-scrollbar { display: none; }
+
+    .sim-quick-chips::-webkit-scrollbar {
+      display: none;
+    }
+
     .sim-chip {
       background: var(--surface);
       border: 1px solid var(--line);
@@ -3459,11 +3569,13 @@
       transition: all 0.15s;
       flex-shrink: 0;
     }
+
     .sim-chip:hover {
       background: #8458B3;
       color: #FFFFFF;
       border-color: #8458B3;
     }
+
     .sim-messages-wrap {
       flex: 1;
       overflow-y: auto;
@@ -3473,6 +3585,7 @@
       gap: 10px;
       background: var(--surface);
     }
+
     .sim-bubble {
       max-width: 82%;
       padding: 9px 13px;
@@ -3481,6 +3594,7 @@
       line-height: 1.45;
       word-break: break-word;
     }
+
     .sim-bubble.bot {
       background: var(--surface2);
       color: var(--ink);
@@ -3488,6 +3602,7 @@
       border-bottom-left-radius: 3px;
       border: 1px solid var(--line);
     }
+
     .sim-bubble.user {
       background: #8458B3;
       color: #FFFFFF;
@@ -3495,6 +3610,7 @@
       border-bottom-right-radius: 3px;
       border: 1px solid rgba(208, 189, 244, 0.35);
     }
+
     .sim-typing-bubble {
       display: none;
       align-self: flex-start;
@@ -3506,9 +3622,11 @@
       gap: 4px;
       margin: 0 14px 6px;
     }
+
     .sim-typing-bubble.active {
       display: inline-flex;
     }
+
     .sim-dot {
       width: 6px;
       height: 6px;
@@ -3516,12 +3634,30 @@
       background: var(--ink3);
       animation: simBlink 1.4s infinite;
     }
-    .sim-dot:nth-child(2) { animation-delay: 0.2s; }
-    .sim-dot:nth-child(3) { animation-delay: 0.4s; }
-    @keyframes simBlink {
-      0%, 80%, 100% { opacity: 0.3; transform: translateY(0); }
-      40% { opacity: 1; transform: translateY(-2px); }
+
+    .sim-dot:nth-child(2) {
+      animation-delay: 0.2s;
     }
+
+    .sim-dot:nth-child(3) {
+      animation-delay: 0.4s;
+    }
+
+    @keyframes simBlink {
+
+      0%,
+      80%,
+      100% {
+        opacity: 0.3;
+        transform: translateY(0);
+      }
+
+      40% {
+        opacity: 1;
+        transform: translateY(-2px);
+      }
+    }
+
     .sim-input-row {
       padding: 12px 14px;
       background: var(--surface2);
@@ -3530,6 +3666,7 @@
       gap: 8px;
       align-items: center;
     }
+
     .sim-input-row input {
       flex: 1;
       padding: 9px 14px;
@@ -3539,6 +3676,7 @@
       font-size: 13px;
       color: var(--ink);
     }
+
     .sim-input-row button {
       width: 36px;
       height: 36px;
@@ -3552,6 +3690,7 @@
       flex-shrink: 0;
       transition: all 0.15s;
     }
+
     .sim-input-row button:hover {
       background: #986DC7;
       border-color: #D0BDF4;
@@ -3566,15 +3705,20 @@
       border-radius: 20px;
       padding: 28px;
     }
+
     .pricing-plans-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 16px;
       margin: 22px 0;
     }
+
     @media (max-width: 760px) {
-      .pricing-plans-grid { grid-template-columns: 1fr; }
+      .pricing-plans-grid {
+        grid-template-columns: 1fr;
+      }
     }
+
     .plan-card {
       border: 1px solid var(--line);
       border-radius: 14px;
@@ -3587,15 +3731,18 @@
       flex-direction: column;
       justify-content: space-between;
     }
+
     .plan-card:hover {
       border-color: #8458B3;
       transform: translateY(-2px);
     }
+
     .plan-card.active {
       border: 2px solid #8458B3;
       background: var(--surface);
       box-shadow: 0 10px 28px rgba(132, 88, 179, 0.25);
     }
+
     .plan-badge {
       position: absolute;
       top: -11px;
@@ -3610,25 +3757,30 @@
       letter-spacing: 0.6px;
       white-space: nowrap;
     }
+
     .plan-head {
       margin-bottom: 14px;
     }
+
     .plan-name {
       font-size: 15px;
       font-weight: 800;
       color: var(--ink);
     }
+
     .plan-price {
       font-size: 26px;
       font-weight: 900;
       color: var(--accent);
       margin-top: 6px;
     }
+
     .plan-price span {
       font-size: 13px;
       font-weight: 600;
       color: var(--ink3);
     }
+
     .plan-features {
       list-style: none;
       padding: 0;
@@ -3637,9 +3789,11 @@
       color: var(--ink2);
       line-height: 1.7;
     }
+
     .plan-features li {
       margin-bottom: 5px;
     }
+
     .plan-select-btn {
       width: 100%;
       font-weight: 700;
@@ -3653,12 +3807,14 @@
       padding: 20px;
       margin-top: 10px;
     }
+
     .payment-method-tabs {
       display: flex;
       gap: 8px;
       margin-bottom: 14px;
       flex-wrap: wrap;
     }
+
     .pay-method-btn {
       padding: 8px 16px;
       border: 1px solid var(--line);
@@ -3670,11 +3826,13 @@
       color: var(--ink2);
       transition: all 0.15s;
     }
+
     .pay-method-btn.active {
       background: #8458B3;
       color: #FFFFFF;
       border-color: #8458B3;
     }
+
     .payment-instructions-box {
       background: var(--surface);
       border: 1px solid var(--line);
@@ -3692,6 +3850,7 @@
       margin-top: 22px;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
     }
+
     .digest-header {
       display: flex;
       align-items: center;
@@ -3700,14 +3859,19 @@
       gap: 12px;
       margin-bottom: 16px;
     }
+
     .digest-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
       gap: 12px;
     }
+
     @media (max-width: 768px) {
-      .digest-grid { grid-template-columns: repeat(2, 1fr); }
+      .digest-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
     }
+
     .digest-metric {
       background: var(--surface2);
       border: 1px solid var(--line);
@@ -3715,11 +3879,13 @@
       padding: 14px 12px;
       text-align: center;
     }
+
     .d-val {
       font-size: 22px;
       font-weight: 800;
       color: var(--accent);
     }
+
     .d-lbl {
       font-size: 11.5px;
       color: var(--ink3);
@@ -3735,6 +3901,7 @@
       background: #10B981;
       display: inline-block;
     }
+
     .handover-dot.paused {
       background: #F59E0B;
     }
@@ -3744,7 +3911,8 @@
        ========================================================================== */
 
     /* Global Viewport & Container Baseline */
-    html, body {
+    html,
+    body {
       max-width: 100vw;
       overflow-x: hidden;
       -webkit-tap-highlight-color: transparent;
@@ -3782,7 +3950,9 @@
       flex-shrink: 0;
       transition: all 0.2s;
     }
-    .mobile-menu-btn:hover, .mobile-menu-btn:active {
+
+    .mobile-menu-btn:hover,
+    .mobile-menu-btn:active {
       background: var(--surface2);
       transform: scale(1.04);
     }
@@ -3800,6 +3970,7 @@
       transition: opacity 0.25s ease;
       pointer-events: none;
     }
+
     .nav-backdrop.active {
       opacity: 1;
       pointer-events: auto;
@@ -3843,17 +4014,21 @@
       min-height: 48px;
       user-select: none;
     }
+
     .mobile-bottom-btn svg {
       width: 19px;
       height: 19px;
       transition: transform 0.15s;
     }
+
     .mobile-bottom-btn.active {
       color: #8458B3;
     }
+
     :root[data-theme="dark"] .mobile-bottom-btn.active {
       color: #D0BDF4;
     }
+
     .mobile-bottom-btn.active svg {
       transform: scale(1.1);
     }
@@ -3873,9 +4048,11 @@
       .mobile-menu-btn {
         display: grid !important;
       }
+
       .nav-backdrop {
         display: block;
       }
+
       .mobile-bottom-nav {
         display: flex !important;
       }
@@ -3889,13 +4066,16 @@
       .brand {
         gap: 8px;
       }
+
       .brand-glyph {
         width: 32px;
         height: 32px;
       }
+
       #brandTitleTxt {
         font-size: 15px !important;
       }
+
       #brandSubTxt {
         display: none;
       }
@@ -3904,12 +4084,15 @@
       .donezo-search-pill {
         display: none !important;
       }
+
       .mobile-search-btn {
         display: grid !important;
       }
+
       #masterWsControls {
         display: none !important;
       }
+
       #masterAdminBadge {
         display: none !important;
       }
@@ -3919,6 +4102,7 @@
         background: transparent;
         border: none;
       }
+
       .donezo-user-chip .user-meta {
         display: none;
       }
@@ -3927,6 +4111,7 @@
         padding: 6px 10px;
         font-size: 11px;
       }
+
       #btnHeaderUpgrade span {
         font-size: 11px;
       }
@@ -3948,9 +4133,11 @@
         padding: 16px 14px 70px !important;
         border-right: 1px solid var(--line) !important;
       }
+
       nav.open {
         left: 0 !important;
       }
+
       .mobile-nav-header {
         display: flex !important;
       }
@@ -3962,6 +4149,7 @@
         margin-bottom: 5px;
         border-radius: 10px;
       }
+
       nav button svg {
         width: 18px;
         height: 18px;
@@ -3981,6 +4169,7 @@
         gap: 12px;
         margin-bottom: 16px;
       }
+
       .phead .row {
         width: 100%;
         justify-content: flex-start;
@@ -4001,15 +4190,19 @@
         gap: 14px;
         margin-bottom: 18px;
       }
+
       .donezo-title {
         font-size: 22px;
       }
+
       .donezo-actions {
         width: 100%;
         flex-wrap: wrap;
         gap: 8px;
       }
-      .donezo-actions button, .donezo-actions .btn {
+
+      .donezo-actions button,
+      .donezo-actions .btn {
         flex: 1;
         justify-content: center;
         text-align: center;
@@ -4021,6 +4214,7 @@
         gap: 12px !important;
         margin-bottom: 18px;
       }
+
       .donezo-kpi-card {
         padding: 18px 16px;
         min-height: auto;
@@ -4028,11 +4222,13 @@
       }
 
       /* Middle and Bottom Bento Grids */
-      .donezo-grid-middle, .donezo-grid-bottom {
+      .donezo-grid-middle,
+      .donezo-grid-bottom {
         grid-template-columns: 1fr !important;
         gap: 14px !important;
         margin-bottom: 18px;
       }
+
       .donezo-card {
         padding: 18px 16px;
         border-radius: 16px;
@@ -4043,19 +4239,23 @@
         padding: 16px 14px;
         border-radius: 16px;
       }
+
       .checklist-header {
         flex-direction: column;
         align-items: flex-start;
         gap: 10px;
       }
+
       .checklist-right {
         width: 100%;
         justify-content: space-between;
       }
+
       .checklist-steps-grid {
         grid-template-columns: 1fr !important;
         gap: 10px !important;
       }
+
       .checklist-step {
         padding: 12px 14px;
       }
@@ -4065,21 +4265,26 @@
         padding: 16px 14px;
         border-radius: 16px;
       }
+
       .digest-header {
         flex-direction: column;
         align-items: flex-start;
         gap: 10px;
       }
+
       .digest-grid {
         grid-template-columns: 1fr 1fr !important;
         gap: 10px !important;
       }
+
       .digest-metric {
         padding: 14px 10px;
       }
 
       /* Form Grids */
-      .grid.g2, .grid.g3, .grid.g4 {
+      .grid.g2,
+      .grid.g3,
+      .grid.g4 {
         grid-template-columns: 1fr !important;
         gap: 12px !important;
       }
@@ -4104,6 +4309,7 @@
         right: -100vw !important;
         border-left: none !important;
       }
+
       .bot-sim-drawer.open {
         right: 0 !important;
       }
@@ -4121,7 +4327,8 @@
         display: block;
         max-height: calc(100vh - 240px);
       }
-      .inbox > div:nth-child(2) {
+
+      .inbox>div:nth-child(2) {
         display: none;
       }
 
@@ -4129,14 +4336,17 @@
       .inbox.chat-view-active .convlist {
         display: none !important;
       }
-      .inbox.chat-view-active > div:nth-child(2) {
+
+      .inbox.chat-view-active>div:nth-child(2) {
         display: block !important;
       }
+
       .inbox.chat-view-active .chat {
         display: flex;
         flex-direction: column;
         height: calc(100vh - 290px);
       }
+
       .inbox.chat-view-active .mobile-back-to-convs-btn {
         display: inline-flex !important;
       }
@@ -4149,31 +4359,40 @@
       .wrap {
         max-width: 100%;
       }
+
       nav {
         width: 200px;
         padding: 16px 8px;
       }
+
       nav button {
         padding: 8px 10px;
         font-size: 12.5px;
       }
+
       main {
         padding: 22px 24px 80px;
       }
+
       .donezo-kpi-grid {
         grid-template-columns: repeat(2, 1fr) !important;
         gap: 14px !important;
       }
+
       .checklist-steps-grid {
         grid-template-columns: repeat(2, 1fr) !important;
       }
-      .donezo-grid-middle, .donezo-grid-bottom {
+
+      .donezo-grid-middle,
+      .donezo-grid-bottom {
         grid-template-columns: 1fr !important;
       }
+
       .donezo-search-pill {
         min-width: 180px;
         max-width: 260px;
       }
+
       .inbox {
         grid-template-columns: 260px 1fr !important;
       }
@@ -4186,15 +4405,19 @@
       .wrap {
         max-width: 1440px;
       }
+
       nav {
         width: 230px;
       }
+
       .donezo-kpi-grid {
         grid-template-columns: repeat(4, 1fr);
       }
+
       .checklist-steps-grid {
         grid-template-columns: repeat(4, 1fr);
       }
+
       .inbox {
         grid-template-columns: 320px 1fr;
       }
@@ -4208,62 +4431,79 @@
         max-width: 1840px;
         padding: 0 32px;
       }
+
       body {
         font-size: 14.5px;
       }
+
       header {
         padding: 14px 32px;
         min-height: 68px;
       }
+
       #brandTitleTxt {
         font-size: 21px !important;
       }
+
       .brand-glyph {
         width: 42px;
         height: 42px;
       }
+
       .brand-glyph svg {
         width: 24px;
         height: 24px;
       }
+
       nav {
         width: 255px;
         padding: 24px 14px;
       }
+
       nav button {
         padding: 11px 14px;
         font-size: 14px;
         margin-bottom: 6px;
       }
+
       nav button svg {
         width: 18px;
         height: 18px;
       }
+
       main {
         padding: 32px 42px 90px;
       }
+
       .donezo-title {
         font-size: 32px;
       }
+
       .donezo-kpi-card {
         padding: 26px 28px;
         min-height: 175px;
       }
+
       .donezo-kpi-val {
         font-size: 32px;
       }
+
       .donezo-card {
         padding: 26px 28px;
       }
+
       .donezo-card-title {
         font-size: 17px;
       }
+
       .inbox {
         grid-template-columns: 360px 1fr;
       }
+
       .convlist {
         max-height: 700px;
       }
+
       .floating-test-bot-btn {
         padding: 13px 22px;
         font-size: 15px;
@@ -4275,26 +4515,33 @@
         max-width: 2400px;
         padding: 0 48px;
       }
+
       body {
         font-size: 16px;
       }
+
       header {
         padding: 18px 48px;
         min-height: 76px;
       }
+
       nav {
         width: 290px;
       }
+
       nav button {
         padding: 13px 16px;
         font-size: 15px;
       }
+
       .donezo-title {
         font-size: 38px;
       }
+
       .donezo-kpi-val {
         font-size: 38px;
       }
+
       .donezo-kpi-grid {
         gap: 24px;
       }
@@ -4315,7 +4562,8 @@
         <div class="login-showcase" id="loginShowcase">
 
           <!-- Particle mesh canvas -->
-          <canvas id="showcaseCanvas" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0"></canvas>
+          <canvas id="showcaseCanvas"
+            style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0"></canvas>
 
           <!-- Glowing orbs -->
           <div class="sc-orb sc-orb1"></div>
@@ -4325,14 +4573,26 @@
 
           <!-- Bottom Content -->
           <div class="login-showcase-content">
-            <div class="login-showcase-badge">
-              <span class="pulse-dot"></span>
-              <span>Live AI Operations</span>
+            <div style="display:inline-flex; align-items:center; gap:10px; margin-bottom:12px">
+              <div class="brand-glyph" style="width:38px; height:38px; border-radius:12px; box-shadow:0 6px 20px rgba(132,88,179,0.5), 0 0 15px rgba(160,210,235,0.4)">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                  <path d="M3 17.5L4.5 7.5L8.5 12L12 3.5L15.5 12L19.5 7.5L21 17.5H3Z" fill="url(#headerCrownGrad)"/>
+                  <rect x="2.5" y="17.2" width="19" height="3.2" rx="1.6" fill="url(#headerCrownGrad)"/>
+                  <circle cx="12" cy="3.5" r="1.3" fill="#A0D2EB"/>
+                  <circle cx="4.5" cy="7.5" r="1.1" fill="#D0BDF4"/>
+                  <circle cx="19.5" cy="7.5" r="1.1" fill="#D0BDF4"/>
+                </svg>
+              </div>
+              <div class="login-showcase-badge" style="margin-bottom:0">
+                <span class="pulse-dot"></span>
+                <span>Live AI Operations</span>
+              </div>
             </div>
             <h2 class="login-showcase-tagline" id="scTypewriter"></h2>
             <p class="login-showcase-sub">Powered by Gemini</p>
             <div style="margin-top:14px">
-              <button type="button" onclick="openSocialGuideModal()" style="background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.3); border-radius:9999px; color:#fff; padding:6px 14px; font-size:12px; font-weight:600; cursor:pointer; backdrop-filter:blur(8px); display:inline-flex; align-items:center; gap:6px">
+              <button type="button" onclick="openSocialGuideModal()"
+                style="background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.3); border-radius:9999px; color:#fff; padding:6px 14px; font-size:12px; font-weight:600; cursor:pointer; backdrop-filter:blur(8px); display:inline-flex; align-items:center; gap:6px">
                 <span> Social Channels Setup Guide</span>
               </button>
             </div>
@@ -4343,6 +4603,36 @@
         <div class="login-form-pane">
           <!-- Sign In View -->
           <form id="loginForm" class="auth-form" onsubmit="return false;">
+            <div class="login-brand-emblem" title="Crown AI Operations">
+              <svg width="34" height="34" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <linearGradient id="emblemCrownGrad" x1="2" y1="3" x2="22" y2="21" gradientUnits="userSpaceOnUse">
+                    <stop offset="0%" stop-color="#A0D2EB"/>
+                    <stop offset="45%" stop-color="#D0BDF4"/>
+                    <stop offset="100%" stop-color="#8458B3"/>
+                  </linearGradient>
+                  <linearGradient id="emblemHighlight" x1="4" y1="4" x2="16" y2="16" gradientUnits="userSpaceOnUse">
+                    <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.85"/>
+                    <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0.1"/>
+                  </linearGradient>
+                  <filter id="emblemCrownGlow" x="-30%" y="-30%" width="160%" height="160%">
+                    <feDropShadow dx="0" dy="1.5" stdDeviation="2" flood-color="#8458B3" flood-opacity="0.55"/>
+                    <feDropShadow dx="0" dy="0" stdDeviation="3.5" flood-color="#A0D2EB" flood-opacity="0.4"/>
+                  </filter>
+                </defs>
+                <path d="M3 17.5L4.5 7.5L8.5 12L12 3.5L15.5 12L19.5 7.5L21 17.5H3Z" fill="url(#emblemCrownGrad)" filter="url(#emblemCrownGlow)"/>
+                <path d="M4.5 7.5L8.5 12L12 3.5L8 16H4.5L4.5 7.5Z" fill="url(#emblemHighlight)"/>
+                <rect x="2.5" y="17.2" width="19" height="3.2" rx="1.6" fill="url(#emblemCrownGrad)"/>
+                <rect x="3.5" y="18" width="17" height="1.6" rx="0.8" fill="#1F2129" fill-opacity="0.75"/>
+                <circle cx="6" cy="18.8" r="0.75" fill="#A0D2EB"/>
+                <circle cx="12" cy="18.8" r="0.9" fill="#FFFFFF"/>
+                <circle cx="18" cy="18.8" r="0.75" fill="#A0D2EB"/>
+                <path d="M12 8L12.7 10.3L15 11L12.7 11.7L12 14L11.3 11.7L9 11L11.3 10.3L12 8Z" fill="#FFFFFF"/>
+                <circle cx="12" cy="3.5" r="1.3" fill="#A0D2EB" stroke="#FFFFFF" stroke-width="0.7"/>
+                <circle cx="4.5" cy="7.5" r="1.1" fill="#D0BDF4" stroke="#FFFFFF" stroke-width="0.6"/>
+                <circle cx="19.5" cy="7.5" r="1.1" fill="#D0BDF4" stroke="#FFFFFF" stroke-width="0.6"/>
+              </svg>
+            </div>
             <h1 class="user-login-title">User Login</h1>
 
             <div class="input-pill-wrap">
@@ -4384,9 +4674,15 @@
               <a href="#" onclick="switchPortalTab('register'); return false;">Create Your Account &rarr;</a>
             </div>
 
-            <div class="user-login-guide" style="margin-top:14px; padding-top:12px; border-top:1px dashed rgba(0,0,0,0.1); text-align:center">
-              <a href="#" onclick="openSocialGuideModal(); return false;" style="font-size:12px; font-weight:700; color:#46344E; text-decoration:none; display:inline-flex; align-items:center; gap:5px">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            <div class="user-login-guide"
+              style="margin-top:14px; padding-top:12px; border-top:1px dashed rgba(0,0,0,0.1); text-align:center">
+              <a href="#" onclick="openSocialGuideModal(); return false;"
+                style="font-size:12px; font-weight:700; color:#46344E; text-decoration:none; display:inline-flex; align-items:center; gap:5px">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <circle cx="12" cy="12" r="10" />
+                  <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+                  <line x1="12" y1="17" x2="12.01" y2="17" />
+                </svg>
                 <span>How to Connect Messenger, Insta &amp; WhatsApp</span>
               </a>
             </div>
@@ -4394,6 +4690,21 @@
 
           <!-- Sign Up View -->
           <form id="signupForm" class="auth-form" onsubmit="return false;" style="display:none">
+            <div class="login-brand-emblem" title="Crown AI Operations">
+              <svg width="34" height="34" viewBox="0 0 24 24" fill="none">
+                <path d="M3 17.5L4.5 7.5L8.5 12L12 3.5L15.5 12L19.5 7.5L21 17.5H3Z" fill="url(#emblemCrownGrad)" filter="url(#emblemCrownGlow)"/>
+                <path d="M4.5 7.5L8.5 12L12 3.5L8 16H4.5L4.5 7.5Z" fill="url(#emblemHighlight)"/>
+                <rect x="2.5" y="17.2" width="19" height="3.2" rx="1.6" fill="url(#emblemCrownGrad)"/>
+                <rect x="3.5" y="18" width="17" height="1.6" rx="0.8" fill="#1F2129" fill-opacity="0.75"/>
+                <circle cx="6" cy="18.8" r="0.75" fill="#A0D2EB"/>
+                <circle cx="12" cy="18.8" r="0.9" fill="#FFFFFF"/>
+                <circle cx="18" cy="18.8" r="0.75" fill="#A0D2EB"/>
+                <path d="M12 8L12.7 10.3L15 11L12.7 11.7L12 14L11.3 11.7L9 11L11.3 10.3L12 8Z" fill="#FFFFFF"/>
+                <circle cx="12" cy="3.5" r="1.3" fill="#A0D2EB" stroke="#FFFFFF" stroke-width="0.7"/>
+                <circle cx="4.5" cy="7.5" r="1.1" fill="#D0BDF4" stroke="#FFFFFF" stroke-width="0.6"/>
+                <circle cx="19.5" cy="7.5" r="1.1" fill="#D0BDF4" stroke="#FFFFFF" stroke-width="0.6"/>
+              </svg>
+            </div>
             <h1 class="user-login-title" style="margin-bottom:18px">Create Account</h1>
 
             <div class="input-pill-wrap">
@@ -4465,9 +4776,15 @@
               <a href="#" onclick="switchPortalTab('signin'); return false;">&larr; Back to Login</a>
             </div>
 
-            <div class="user-login-guide" style="margin-top:14px; padding-top:12px; border-top:1px dashed rgba(0,0,0,0.1); text-align:center">
-              <a href="#" onclick="openSocialGuideModal(); return false;" style="font-size:12px; font-weight:700; color:#46344E; text-decoration:none; display:inline-flex; align-items:center; gap:5px">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            <div class="user-login-guide"
+              style="margin-top:14px; padding-top:12px; border-top:1px dashed rgba(0,0,0,0.1); text-align:center">
+              <a href="#" onclick="openSocialGuideModal(); return false;"
+                style="font-size:12px; font-weight:700; color:#46344E; text-decoration:none; display:inline-flex; align-items:center; gap:5px">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <circle cx="12" cy="12" r="10" />
+                  <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+                  <line x1="12" y1="17" x2="12.01" y2="17" />
+                </svg>
                 <span>How to Connect Messenger, Insta &amp; WhatsApp</span>
               </a>
             </div>
@@ -4482,8 +4799,10 @@
   <div id="app" style="display:none">
     <header>
       <!-- Mobile Menu Toggle Button (Hamburger) -->
-      <button class="mobile-menu-btn" id="mobileMenuBtn" type="button" onclick="toggleMobileNav()" title="Open Navigation Menu" aria-label="Toggle navigation menu">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+      <button class="mobile-menu-btn" id="mobileMenuBtn" type="button" onclick="toggleMobileNav()"
+        title="Open Navigation Menu" aria-label="Toggle navigation menu">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+          stroke-linecap="round" stroke-linejoin="round">
           <line x1="3" y1="12" x2="21" y2="12"></line>
           <line x1="3" y1="6" x2="21" y2="6"></line>
           <line x1="3" y1="18" x2="21" y2="18"></line>
@@ -4492,12 +4811,33 @@
 
       <div class="brand" onclick="switchTab(currentUser?.role==='master_admin'?'tenants':'dash')"
         style="cursor:pointer">
-        <div class="brand-glyph"
-          style="background:rgba(132,88,179,0.2); border:1px solid rgba(208,189,244,0.4); width:36px; height:36px; border-radius:10px; display:grid; place-items:center">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.5"
-            stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2z" />
-            <path d="M8 12a4 4 0 0 0 8 0" />
+        <div class="brand-glyph" title="Crown Bot AI">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="headerCrownGrad" x1="2" y1="3" x2="22" y2="21" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stop-color="#A0D2EB"/>
+                <stop offset="45%" stop-color="#D0BDF4"/>
+                <stop offset="100%" stop-color="#8458B3"/>
+              </linearGradient>
+              <linearGradient id="crownHighlight" x1="4" y1="4" x2="16" y2="16" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.8"/>
+                <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0.05"/>
+              </linearGradient>
+              <filter id="crownShine" x="-20%" y="-20%" width="140%" height="140%">
+                <feDropShadow dx="0" dy="1" stdDeviation="1.5" flood-color="#8458B3" flood-opacity="0.5"/>
+              </filter>
+            </defs>
+            <path d="M3 17.5L4.5 7.5L8.5 12L12 3.5L15.5 12L19.5 7.5L21 17.5H3Z" fill="url(#headerCrownGrad)" filter="url(#crownShine)"/>
+            <path d="M4.5 7.5L8.5 12L12 3.5L8 16H4.5L4.5 7.5Z" fill="url(#crownHighlight)"/>
+            <rect x="2.5" y="17.2" width="19" height="3.2" rx="1.6" fill="url(#headerCrownGrad)"/>
+            <rect x="3.5" y="18" width="17" height="1.6" rx="0.8" fill="#1F2129" fill-opacity="0.7"/>
+            <circle cx="6" cy="18.8" r="0.75" fill="#A0D2EB"/>
+            <circle cx="12" cy="18.8" r="0.9" fill="#FFFFFF"/>
+            <circle cx="18" cy="18.8" r="0.75" fill="#A0D2EB"/>
+            <path d="M12 8L12.7 10.3L15 11L12.7 11.7L12 14L11.3 11.7L9 11L11.3 10.3L12 8Z" fill="#FFFFFF"/>
+            <circle cx="12" cy="3.5" r="1.3" fill="#A0D2EB" stroke="#FFFFFF" stroke-width="0.7"/>
+            <circle cx="4.5" cy="7.5" r="1.1" fill="#D0BDF4" stroke="#FFFFFF" stroke-width="0.6"/>
+            <circle cx="19.5" cy="7.5" r="1.1" fill="#D0BDF4" stroke="#FFFFFF" stroke-width="0.6"/>
           </svg>
         </div>
         <div>
@@ -4523,7 +4863,8 @@
           </select>
         </div>
         <button class="btn sm primary" id="btnOpenNewWsModal" title="Add New Business Account"
-          style="margin-top:14px; background:linear-gradient(135deg, #8458B3 0%, #6E429E 100%); color:#FFFFFF; font-weight:800; border:1px solid rgba(132,88,179,0.85); border-radius:9999px; box-shadow:0 2px 8px rgba(132,88,179,0.35)">+ New Tenant</button>
+          style="margin-top:14px; background:linear-gradient(135deg, #8458B3 0%, #6E429E 100%); color:#FFFFFF; font-weight:800; border:1px solid rgba(132,88,179,0.85); border-radius:9999px; box-shadow:0 2px 8px rgba(132,88,179,0.35)">+
+          New Tenant</button>
       </div>
 
       <!-- Tenant Subscription Controls -->
@@ -4545,7 +4886,8 @@
       </div>
 
       <!-- Mobile Search Icon Button -->
-      <button class="donezo-circle-btn mobile-search-btn" type="button" onclick="openCmd()" title="Search (Cmd+F)" style="display:none">
+      <button class="donezo-circle-btn mobile-search-btn" type="button" onclick="openCmd()" title="Search (Cmd+F)"
+        style="display:none">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <circle cx="11" cy="11" r="8" />
           <line x1="21" y1="21" x2="16.65" y2="16.65" />
@@ -4615,11 +4957,22 @@
     <div class="wrap">
       <nav id="nav">
         <!-- Mobile Drawer Header -->
-        <div class="mobile-nav-header" style="display:none; align-items:center; justify-content:space-between; padding:4px 6px 14px; border-bottom:1px solid var(--line); margin-bottom:12px">
+        <div class="mobile-nav-header"
+          style="display:none; align-items:center; justify-content:space-between; padding:4px 6px 14px; border-bottom:1px solid var(--line); margin-bottom:12px">
           <div style="display:flex; align-items:center; gap:8px">
+            <div class="brand-glyph" style="width:28px; height:28px; border-radius:8px">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none">
+                <path d="M3 17.5L4.5 7.5L8.5 12L12 3.5L15.5 12L19.5 7.5L21 17.5H3Z" fill="url(#headerCrownGrad)"/>
+                <rect x="2.5" y="17.2" width="19" height="3.2" rx="1.6" fill="url(#headerCrownGrad)"/>
+                <circle cx="12" cy="3.5" r="1.3" fill="#A0D2EB"/>
+                <circle cx="4.5" cy="7.5" r="1.1" fill="#D0BDF4"/>
+                <circle cx="19.5" cy="7.5" r="1.1" fill="#D0BDF4"/>
+              </svg>
+            </div>
             <span style="font-weight:800; font-size:14px; color:var(--ink)">Crown Bot Menu</span>
           </div>
-          <button type="button" class="btn sm ghost" onclick="closeMobileNav()" style="padding:4px 10px; border-radius:9999px; font-weight:700" title="Close Menu">✕</button>
+          <button type="button" class="btn sm ghost" onclick="closeMobileNav()"
+            style="padding:4px 10px; border-radius:9999px; font-weight:700" title="Close Menu">✕</button>
         </div>
 
         <div class="navlabel">NAVIGATION</div>
@@ -4696,7 +5049,9 @@
             <path d="M10 17h4" />
           </svg>
           Account &amp; Renewal
-          <span id="tenantPassActionDot" style="display:none; width:8px; height:8px; background:var(--warn); border-radius:50%; margin-left:auto;" title="Action Required: Change Password"></span>
+          <span id="tenantPassActionDot"
+            style="display:none; width:8px; height:8px; background:var(--warn); border-radius:50%; margin-left:auto;"
+            title="Action Required: Change Password"></span>
         </button>
 
         <!-- Master Admin Only Section -->
@@ -4739,7 +5094,10 @@
         <div id="masterInspectingBanner"
           style="display:none; background:linear-gradient(90deg, rgba(124,58,237,0.15), rgba(79,70,229,0.15)); border:1px solid rgba(124,58,237,0.35); border-radius:var(--radius-sm); padding:10px 16px; margin-bottom:18px; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap">
           <div style="display:flex; align-items:center; gap:8px">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8" />
+              <line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </svg>
             <span style="font-size:13px; color:var(--ink)">Currently Configuring Client Bot: <strong
                 id="inspectingWsNameTxt" style="color:var(--ink); font-weight:700">CC</strong> (#<span
                 id="inspectingWsIdTxt">1</span>)</span>
@@ -4774,7 +5132,8 @@
                 and send monthly renewal invoices.</p>
             </div>
             <div class="row">
-              <button class="btn sm" onclick="openMessageGuidelinesModal()" title="View and copy message guidelines for tenants" style="font-weight:700;">Message Templates</button>
+              <button class="btn sm" onclick="openMessageGuidelinesModal()"
+                title="View and copy message guidelines for tenants" style="font-weight:700;">Message Templates</button>
               <button class="btn sm" onclick="triggerManualBackup()" id="btnManualBackup"
                 title="Trigger instant SQLite database backup snapshot">Backup Database</button>
               <button class="btn primary sm" onclick="openNewTenantModal()">+ Create New Tenant</button>
@@ -4837,17 +5196,21 @@
 
           <!-- Master Upgrade Requests & TrxID Audit Card -->
           <div class="card" style="padding:0; overflow:hidden; margin-top:20px;">
-            <div style="padding:14px 18px; border-bottom:1px solid var(--line); display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px">
+            <div
+              style="padding:14px 18px; border-bottom:1px solid var(--line); display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px">
               <div>
                 <h3 style="margin:0; font-size:15px; display:flex; align-items:center; gap:8px;">
                   <span>Upgrade Requests &amp; Payment Audit</span>
-                  <span class="badge" id="mstUpgradeReqCount" style="background:var(--accent-soft); color:var(--accent); font-size:11px;">0</span>
+                  <span class="badge" id="mstUpgradeReqCount"
+                    style="background:var(--accent-soft); color:var(--accent); font-size:11px;">0</span>
                 </h3>
                 <p style="margin:2px 0 0; font-size:11.5px; color:var(--ink3);">
-                  Real-time bKash, Nagad &amp; Rocket subscriber verification logs (bKash: 01771784474 · auto platform fee: ৳20/৳500 included)
+                  Real-time bKash, Nagad &amp; Rocket subscriber verification logs (bKash: 01771784474 · auto platform
+                  fee: ৳20/৳500 included)
                 </p>
               </div>
-              <button class="btn sm ghost" onclick="loadMasterUpgradeRequests()" title="Refresh upgrade requests">Refresh</button>
+              <button class="btn sm ghost" onclick="loadMasterUpgradeRequests()"
+                title="Refresh upgrade requests">Refresh</button>
             </div>
             <div class="table-wrap" style="border:none; border-radius:0">
               <table class="clean-table">
@@ -4864,7 +5227,8 @@
                 </thead>
                 <tbody id="masterUpgradeRequestsTbody">
                   <tr>
-                    <td colspan="7" style="text-align:center; padding:20px; color:var(--ink3)">Loading payment requests…</td>
+                    <td colspan="7" style="text-align:center; padding:20px; color:var(--ink3)">Loading payment requests…
+                    </td>
                   </tr>
                 </tbody>
               </table>
@@ -4886,8 +5250,8 @@
                 <button class="donezo-btn-secondary" onclick="openSocialGuideModal()"
                   title="View Step-by-Step Connection Guide for Messenger, Instagram & WhatsApp">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
-                    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+                    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+                    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
                   </svg>
                   <span>Channels Guide</span>
                 </button>
@@ -4917,7 +5281,8 @@
                 </div>
                 <h3 class="dash-gate-title" id="dashGateTitle">Mandatory Bot Training Required</h3>
                 <p class="dash-gate-desc" id="dashGateDesc">
-                  To ensure quality responses, your bot cannot be enabled for live auto-reply until all 4 training steps below are completed.
+                  To ensure quality responses, your bot cannot be enabled for live auto-reply until all 4 training steps
+                  below are completed.
                 </p>
               </div>
               <div class="dash-gate-right">
@@ -4932,14 +5297,16 @@
               <div class="checklist-header">
                 <div class="checklist-title-area">
                   <div class="checklist-icon-badge">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-                      <path d="M9 11l3 3L22 4"/>
-                      <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                      stroke-width="2.2">
+                      <path d="M9 11l3 3L22 4" />
+                      <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
                     </svg>
                   </div>
                   <div>
                     <h3 class="checklist-title" id="checklistTitle">Training Progress: 0% Complete</h3>
-                    <p class="checklist-sub">Complete these 4 quick milestones to activate your bot for live 24/7 customer auto-reply.</p>
+                    <p class="checklist-sub">Complete these 4 quick milestones to activate your bot for live 24/7
+                      customer auto-reply.</p>
                   </div>
                 </div>
                 <div class="checklist-right">
@@ -4947,7 +5314,8 @@
                     <div class="checklist-progress-fill" id="checklistProgressFill" style="width: 0%"></div>
                   </div>
                   <span class="checklist-pct-txt" id="checklistPctTxt">0%</span>
-                  <button class="checklist-toggle-btn" onclick="toggleLaunchChecklist()" id="btnToggleChecklist" title="Minimize/Maximize">Hide</button>
+                  <button class="checklist-toggle-btn" onclick="toggleLaunchChecklist()" id="btnToggleChecklist"
+                    title="Minimize/Maximize">Hide</button>
                 </div>
               </div>
               <div class="checklist-steps-grid" id="checklistStepsGrid">
@@ -5018,7 +5386,8 @@
               </div>
 
               <!-- 2. Customer Orders -->
-              <div class="donezo-kpi-card" onclick="switchTab('orders')" title="Click to view Customer Orders & Inquiries bucket">
+              <div class="donezo-kpi-card" onclick="switchTab('orders')"
+                title="Click to view Customer Orders & Inquiries bucket">
                 <div class="kpi-top">
                   <span class="kpi-label" id="kpiLabelOrders">Appointments &amp; Inquiries</span>
                   <div class="kpi-arrow-circle">
@@ -5161,8 +5530,10 @@
                 <div class="reminder-content" style="margin:12px 0 16px">
                   <div class="reminder-subject" style="font-size:16px; font-weight:800; color:var(--ink)">Gemini 2.5
                     Flash Agent</div>
-                  <div class="reminder-time" id="dashAiRuntimeDesc" style="font-size:12.5px; color:var(--ink2); margin-top:4px">
-                    Autonomous appointment scheduling, treatment pricing knowledge &amp; real-time Bangla/English sentiment detection.
+                  <div class="reminder-time" id="dashAiRuntimeDesc"
+                    style="font-size:12.5px; color:var(--ink2); margin-top:4px">
+                    Autonomous appointment scheduling, treatment pricing knowledge &amp; real-time Bangla/English
+                    sentiment detection.
                   </div>
                   <div style="margin-top:10px; display:flex; align-items:center; gap:8px">
                     <span
@@ -5259,12 +5630,19 @@
                 </div>
                 <div class="team-members-list" id="donezoCustomerInquiriesList">
                   <div style="padding:28px 14px; text-align:center; color:var(--ink3)">
-                    <div style="width:38px; height:38px; margin:0 auto 10px; border-radius:50%; background:rgba(132,88,179,0.15); display:grid; place-items:center; color:#8458B3">
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                    <div
+                      style="width:38px; height:38px; margin:0 auto 10px; border-radius:50%; background:rgba(132,88,179,0.15); display:grid; place-items:center; color:#8458B3">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                      </svg>
                     </div>
-                    <div style="font-weight:700; color:var(--ink); font-size:13.5px; margin-bottom:4px">No Customer Inquiries Yet</div>
-                    <div style="font-size:11.5px; line-height:1.45; margin-bottom:12px; color:var(--ink2)">Incoming messages from Messenger, Instagram, WhatsApp, or Web Widget will appear here live.</div>
-                    <button class="btn sm" onclick="switchTab('channels')" style="border-radius:9999px; font-size:11px; padding:4px 12px">Connect Channels &rarr;</button>
+                    <div style="font-weight:700; color:var(--ink); font-size:13.5px; margin-bottom:4px">No Customer
+                      Inquiries Yet</div>
+                    <div style="font-size:11.5px; line-height:1.45; margin-bottom:12px; color:var(--ink2)">Incoming
+                      messages from Messenger, Instagram, WhatsApp, or Web Widget will appear here live.</div>
+                    <button class="btn sm" onclick="switchTab('channels')"
+                      style="border-radius:9999px; font-size:11px; padding:4px 12px">Connect Channels &rarr;</button>
                   </div>
                 </div>
               </div>
@@ -5342,15 +5720,23 @@
             <div class="weekly-digest-card" id="weeklyDigestCard">
               <div class="digest-header">
                 <div style="display:flex; align-items:center; gap:10px">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="12" width="4" height="8" rx="1"/><rect x="10" y="7" width="4" height="13" rx="1"/><rect x="17" y="3" width="4" height="17" rx="1"/></svg>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="12" width="4" height="8" rx="1" />
+                    <rect x="10" y="7" width="4" height="13" rx="1" />
+                    <rect x="17" y="3" width="4" height="17" rx="1" />
+                  </svg>
                   <div>
-                    <h4 style="margin:0; font-size:15px; font-weight:800; color:var(--ink)">Weekly Performance Digest</h4>
-                    <p style="margin:2px 0 0; font-size:12px; color:var(--ink3)">7-Day Autonomous Operations &amp; Value Delivery Report</p>
+                    <h4 style="margin:0; font-size:15px; font-weight:800; color:var(--ink)">Weekly Performance Digest
+                    </h4>
+                    <p style="margin:2px 0 0; font-size:12px; color:var(--ink3)">7-Day Autonomous Operations &amp; Value
+                      Delivery Report</p>
                   </div>
                 </div>
                 <div style="display:flex; gap:8px; flex-wrap:wrap">
-                  <button class="btn sm ghost" onclick="copyWeeklyDigestForWhatsApp()" title="Copy formatted WhatsApp summary with emojis">Copy for WhatsApp</button>
-                  <button class="btn sm" onclick="emailWeeklyDigestToOwner()" title="Send digest to owner email">Email to Owner</button>
+                  <button class="btn sm ghost" onclick="copyWeeklyDigestForWhatsApp()"
+                    title="Copy formatted WhatsApp summary with emojis">Copy for WhatsApp</button>
+                  <button class="btn sm" onclick="emailWeeklyDigestToOwner()" title="Send digest to owner email">Email
+                    to Owner</button>
                 </div>
               </div>
               <div class="digest-grid">
@@ -5484,7 +5870,8 @@
               <p>Configure Facebook Messenger, Instagram Direct, WhatsApp Cloud API, and TikTok Business Messaging.</p>
             </div>
             <div>
-              <button class="btn sm" onclick="openSocialGuideModal()" style="display:inline-flex; align-items:center; gap:6px">
+              <button class="btn sm" onclick="openSocialGuideModal()"
+                style="display:inline-flex; align-items:center; gap:6px">
                 <span>Connection Guide</span>
               </button>
             </div>
@@ -5548,59 +5935,86 @@
               <p class="hint">Direct 24/7 AI conversation on your Facebook Page.</p>
 
               <!-- Option 1: 1-Click Fast Connect Banner -->
-              <div class="fb-oauth-box" style="background:var(--surface2); border:1px solid rgba(132,88,179,0.35); border-radius:14px; padding:16px; margin:14px 0 10px 0; display:flex; flex-direction:column; gap:10px">
+              <div class="fb-oauth-box"
+                style="background:var(--surface2); border:1px solid rgba(132,88,179,0.35); border-radius:14px; padding:16px; margin:14px 0 10px 0; display:flex; flex-direction:column; gap:10px">
                 <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px">
                   <div style="display:flex; align-items:center; gap:8px">
                     <span class="status-dot gray" id="fbOauthStatusDot"></span>
-                    <span id="fbOauthStatusTxt" style="font-size:12px; font-weight:700; color:var(--ink)">Not Connected</span>
-                    <span class="badge" style="background:rgba(132,88,179,0.18); color:var(--ink); font-size:10.5px; font-weight:800; border:1px solid rgba(208,189,244,0.4)">OPTION 1: 1-CLICK META CONNECT</span>
+                    <span id="fbOauthStatusTxt" style="font-size:12px; font-weight:700; color:var(--ink)">Not
+                      Connected</span>
+                    <span class="badge"
+                      style="background:rgba(132,88,179,0.18); color:var(--ink); font-size:10.5px; font-weight:800; border:1px solid rgba(208,189,244,0.4)">OPTION
+                      1: 1-CLICK META CONNECT</span>
                   </div>
                   <span id="fbOauthPageNameTxt" style="font-size:11.5px; color:var(--ink); font-weight:700"></span>
                 </div>
                 <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap">
-                  <button type="button" class="btn primary sm" id="btnFbOAuth" onclick="startFacebookOAuth()" style="display:inline-flex; align-items:center; gap:7px; font-weight:800">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                  <button type="button" class="btn primary sm" id="btnFbOAuth" onclick="startFacebookOAuth()"
+                    style="display:inline-flex; align-items:center; gap:7px; font-weight:800">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                      <path
+                        d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+                    </svg>
                     <span id="btnFbOAuthTxt">Connect Facebook Page</span>
                   </button>
-                  <span style="font-size:11.5px; color:var(--ink3)">Zero developer setup &bull; Auto-subscribes webhooks</span>
+                  <span style="font-size:11.5px; color:var(--ink3)">Zero developer setup &bull; Auto-subscribes
+                    webhooks</span>
                 </div>
               </div>
 
               <!-- Option 2: 30-Second Task Access (Recommended Alternative for Non-Technical Clients) -->
-              <div style="background:var(--surface2); border:1px solid var(--line); border-radius:14px; padding:16px; margin:10px 0; display:flex; flex-direction:column; gap:10px">
+              <div
+                style="background:var(--surface2); border:1px solid var(--line); border-radius:14px; padding:16px; margin:10px 0; display:flex; flex-direction:column; gap:10px">
                 <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px">
                   <div style="display:flex; align-items:center; gap:8px">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
-                    <span style="font-size:12.5px; font-weight:700; color:var(--ink)">Option 2: 30-Second Page Invite (Task Access)</span>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                      <circle cx="9" cy="7" r="4" />
+                      <line x1="19" y1="8" x2="19" y2="14" />
+                      <line x1="22" y1="11" x2="16" y2="11" />
+                    </svg>
+                    <span style="font-size:12.5px; font-weight:700; color:var(--ink)">Option 2: 30-Second Page Invite
+                      (Task Access)</span>
                   </div>
-                  <span class="badge" style="background:rgba(160,210,235,0.22); color:var(--ink); border:1px solid rgba(160,210,235,0.45); font-size:10px; font-weight:800; padding:2px 7px">RECOMMENDED FOR CLIENTS</span>
+                  <span class="badge"
+                    style="background:rgba(160,210,235,0.22); color:var(--ink); border:1px solid rgba(160,210,235,0.45); font-size:10px; font-weight:800; padding:2px 7px">RECOMMENDED
+                    FOR CLIENTS</span>
                 </div>
                 <p style="margin:0; font-size:12px; color:var(--ink2); line-height:1.5">
-                  Best for non-technical clinic, salon, or store owners. You do not need to touch Meta Developer consoles, tokens, or webhook URLs. Simply invite our agency account to your page like a staff member:
+                  Best for non-technical clinic, salon, or store owners. You do not need to touch Meta Developer
+                  consoles, tokens, or webhook URLs. Simply invite our agency account to your page like a staff member:
                 </p>
-                <div style="background:var(--surface); border:1px solid var(--line); border-radius:10px; padding:12px 14px">
-                  <div style="font-weight:700; font-size:11.5px; color:var(--ink); margin-bottom:8px">Tenant Action (Takes 30 Seconds):</div>
+                <div
+                  style="background:var(--surface); border:1px solid var(--line); border-radius:10px; padding:12px 14px">
+                  <div style="font-weight:700; font-size:11.5px; color:var(--ink); margin-bottom:8px">Tenant Action
+                    (Takes 30 Seconds):</div>
                   <ol style="margin:0; padding-left:18px; font-size:12px; color:var(--ink2); line-height:1.7">
                     <li>Open your Facebook Page in a browser or Facebook app.</li>
-                    <li>Go to <strong>Settings &amp; Privacy</strong> &rarr; <strong>Settings</strong> &rarr; <strong>New Pages Experience</strong> &rarr; <strong>Page Access</strong>.</li>
+                    <li>Go to <strong>Settings &amp; Privacy</strong> &rarr; <strong>Settings</strong> &rarr;
+                      <strong>New Pages Experience</strong> &rarr; <strong>Page Access</strong>.</li>
                     <li>Under <strong>People with Task Access</strong>, click <strong>Add New</strong>.</li>
                     <li>Enter our agency management email:
                       <div class="input-with-btn" style="max-width:380px; margin:6px 0">
-                        <input type="text" readonly id="fbTaskAccessEmailChannels" class="mono agency-email-val" value="admin@crowncoffee.com" style="font-size:12px">
-                        <button type="button" class="btn sm" onclick="copyId('fbTaskAccessEmailChannels')">Copy Email</button>
+                        <input type="text" readonly id="fbTaskAccessEmailChannels" class="mono agency-email-val"
+                          value="admin@crowncoffee.com" style="font-size:12px">
+                        <button type="button" class="btn sm" onclick="copyId('fbTaskAccessEmailChannels')">Copy
+                          Email</button>
                       </div>
                     </li>
-                    <li>Toggle <strong>Messages</strong> access to <strong>ON</strong> and click <strong>Give Access</strong> (confirm with your password).</li>
+                    <li>Toggle <strong>Messages</strong> access to <strong>ON</strong> and click <strong>Give
+                        Access</strong> (confirm with your password).</li>
                   </ol>
                 </div>
                 <div style="font-size:11.5px; color:var(--ink3); line-height:1.5">
-                  <span>Once invited, inform Master Admin or support. Our system generates the permanent Page Access Token and activates your 24/7 AI bot in minutes.</span>
+                  <span>Once invited, inform Master Admin or support. Our system generates the permanent Page Access
+                    Token and activates your 24/7 AI bot in minutes.</span>
                 </div>
               </div>
 
               <!-- Option 3: Manual Configuration Toggle -->
               <details style="margin-top:10px" id="fbManualCredsDetails">
-                <summary style="font-size:12px; font-weight:600; color:var(--ink2); cursor:pointer; padding:6px 0">Option 3: Configure credentials manually (Advanced / Master Admin)</summary>
+                <summary style="font-size:12px; font-weight:600; color:var(--ink2); cursor:pointer; padding:6px 0">
+                  Option 3: Configure credentials manually (Advanced / Master Admin)</summary>
                 <div style="margin-top:10px">
                   <label class="f">Page Access Token (Permanent)</label>
                   <input type="password" data-b="channels.facebook.pageToken"
@@ -5629,7 +6043,8 @@
                   <div style="margin-top:12px">
                     <label class="f">Verify Token</label>
                     <div class="input-with-btn">
-                      <input type="text" data-b="channels.facebook.verifyToken" placeholder="botcrowncoffee" class="mono">
+                      <input type="text" data-b="channels.facebook.verifyToken" placeholder="botcrowncoffee"
+                        class="mono">
                       <button class="btn sm" onclick="copyVal('channels.facebook.verifyToken')">Copy</button>
                     </div>
                   </div>
@@ -5643,30 +6058,50 @@
               </details>
 
               <!-- Diagnostic & Troubleshooting Guide -->
-              <div style="margin-top:16px; padding:12px 14px; background:var(--surface2); border:1px solid var(--line); border-radius:10px; font-size:12px; color:var(--ink2)">
-                <div style="font-weight:700; color:var(--ink); margin-bottom:6px; display:flex; align-items:center; gap:6px">
+              <div
+                style="margin-top:16px; padding:12px 14px; background:var(--surface2); border:1px solid var(--line); border-radius:10px; font-size:12px; color:var(--ink2)">
+                <div
+                  style="font-weight:700; color:var(--ink); margin-bottom:6px; display:flex; align-items:center; gap:6px">
                   <span style="font-weight:700">Tip:</span> Connected but Facebook not replying? Check these 3 steps:
                 </div>
                 <ul style="margin:0; padding-left:18px; line-height:1.6">
-                  <li><strong>Page ID Mismatch:</strong> The Page ID above must be your <em>Facebook Page ID</em> (e.g. <code>836405562898639</code>), NOT your Meta App ID. Clicking <strong>Test Facebook Ping</strong> will automatically detect and save the right Page ID for you.</li>
-                  <li><strong>Webhook Page Subscription:</strong> In <a href="https://developers.facebook.com/apps" target="_blank" rel="noopener" style="color:var(--accent); font-weight:600">Meta Developer Portal</a> &rarr; <em>Messenger</em> &rarr; <em>Webhooks</em>, verify your Page is subscribed to <code>messages</code> and <code>messaging_postbacks</code>. Our Ping button attempts to subscribe it automatically.</li>
-                  <li><strong>Meta App Development Mode vs Live Mode:</strong> If your Meta App is still in <em>Development Mode</em>, Meta only delivers webhook messages sent from App Admins, Developers, or Testers.
-                    <div style="margin-top:8px; padding:10px 12px; background:var(--surface); border:1px solid var(--line); border-radius:8px">
-                      <div style="font-weight:700; color:var(--ink); margin-bottom:6px; display:flex; align-items:center; gap:6px">
+                  <li><strong>Page ID Mismatch:</strong> The Page ID above must be your <em>Facebook Page ID</em> (e.g.
+                    <code>836405562898639</code>), NOT your Meta App ID. Clicking <strong>Test Facebook Ping</strong>
+                    will automatically detect and save the right Page ID for you.</li>
+                  <li><strong>Webhook Page Subscription:</strong> In <a href="https://developers.facebook.com/apps"
+                      target="_blank" rel="noopener" style="color:var(--accent); font-weight:600">Meta Developer
+                      Portal</a> &rarr; <em>Messenger</em> &rarr; <em>Webhooks</em>, verify your Page is subscribed to
+                    <code>messages</code> and <code>messaging_postbacks</code>. Our Ping button attempts to subscribe it
+                    automatically.</li>
+                  <li><strong>Meta App Development Mode vs Live Mode:</strong> If your Meta App is still in
+                    <em>Development Mode</em>, Meta only delivers webhook messages sent from App Admins, Developers, or
+                    Testers.
+                    <div
+                      style="margin-top:8px; padding:10px 12px; background:var(--surface); border:1px solid var(--line); border-radius:8px">
+                      <div
+                        style="font-weight:700; color:var(--ink); margin-bottom:6px; display:flex; align-items:center; gap:6px">
                         <span style="font-weight:700">Option B:</span> Switch App to Live Mode in Meta Settings
                       </div>
                       <div style="display:flex; flex-direction:column; gap:6px; font-size:11.5px">
-                        <div style="display:flex; align-items:center; justify-content:space-between; gap:6px; background:var(--surface2); padding:5px 8px; border-radius:6px">
-                          <span><strong>Privacy Policy URL:</strong> <code style="color:var(--accent); font-weight:700" id="livePrivacyUrlDisplay">https://bot.ccadmin.online/privacy</code></span>
-                          <button type="button" class="btn xs" style="padding:2px 8px; font-size:11px" onclick="copyToClipboard(window.location.origin + '/privacy')">Copy</button>
+                        <div
+                          style="display:flex; align-items:center; justify-content:space-between; gap:6px; background:var(--surface2); padding:5px 8px; border-radius:6px">
+                          <span><strong>Privacy Policy URL:</strong> <code style="color:var(--accent); font-weight:700"
+                              id="livePrivacyUrlDisplay">https://bot.ccadmin.online/privacy</code></span>
+                          <button type="button" class="btn xs" style="padding:2px 8px; font-size:11px"
+                            onclick="copyToClipboard(window.location.origin + '/privacy')">Copy</button>
                         </div>
-                        <div style="display:flex; align-items:center; justify-content:space-between; gap:6px; background:var(--surface2); padding:5px 8px; border-radius:6px">
-                          <span><strong>Data Deletion URL:</strong> <code style="color:var(--accent); font-weight:700" id="liveDeletionUrlDisplay">https://bot.ccadmin.online/data-deletion</code></span>
-                          <button type="button" class="btn xs" style="padding:2px 8px; font-size:11px" onclick="copyToClipboard(window.location.origin + '/data-deletion')">Copy</button>
+                        <div
+                          style="display:flex; align-items:center; justify-content:space-between; gap:6px; background:var(--surface2); padding:5px 8px; border-radius:6px">
+                          <span><strong>Data Deletion URL:</strong> <code style="color:var(--accent); font-weight:700"
+                              id="liveDeletionUrlDisplay">https://bot.ccadmin.online/data-deletion</code></span>
+                          <button type="button" class="btn xs" style="padding:2px 8px; font-size:11px"
+                            onclick="copyToClipboard(window.location.origin + '/data-deletion')">Copy</button>
                         </div>
                       </div>
                       <div style="margin-top:6px; font-size:11px; color:var(--ink3)">
-                        Paste both into Meta Developer Portal &rarr; <em>App Settings &gt; Basic</em>, set Category to <em>Business and Pages</em>, save, then switch the toggle at top from <strong>In Development</strong> to <strong>Live</strong>.
+                        Paste both into Meta Developer Portal &rarr; <em>App Settings &gt; Basic</em>, set Category to
+                        <em>Business and Pages</em>, save, then switch the toggle at top from <strong>In
+                          Development</strong> to <strong>Live</strong>.
                       </div>
                     </div>
                   </li>
@@ -5867,17 +6302,25 @@
             <div class="convlist" id="convList"></div>
             <div>
               <!-- Handover Control Bar -->
-              <div class="handover-control-bar" id="handoverControlBar" style="display:flex; align-items:center; justify-content:space-between; padding:9px 14px; background:var(--surface2); border:1px solid var(--line); border-radius:10px; margin-bottom:10px; gap:8px; flex-wrap:wrap">
+              <div class="handover-control-bar" id="handoverControlBar"
+                style="display:flex; align-items:center; justify-content:space-between; padding:9px 14px; background:var(--surface2); border:1px solid var(--line); border-radius:10px; margin-bottom:10px; gap:8px; flex-wrap:wrap">
                 <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap">
-                  <button type="button" class="btn sm ghost mobile-back-to-convs-btn" id="mobileBackToConvList" onclick="mobileExitThread()" title="Back to conversations list" style="display:none; padding:4px 9px; font-size:11.5px; font-weight:700">
+                  <button type="button" class="btn sm ghost mobile-back-to-convs-btn" id="mobileBackToConvList"
+                    onclick="mobileExitThread()" title="Back to conversations list"
+                    style="display:none; padding:4px 9px; font-size:11.5px; font-weight:700">
                     ← Back
                   </button>
                   <span class="handover-dot" id="handoverDot"></span>
-                  <span id="handoverStatusTxt" style="font-size:12px; font-weight:700; color:var(--ink)">AI Autonomous Bot Active</span>
+                  <span id="handoverStatusTxt" style="font-size:12px; font-weight:700; color:var(--ink)">AI Autonomous
+                    Bot Active</span>
                 </div>
                 <div style="display:flex; gap:8px; margin-left:auto">
-                  <button class="btn sm" id="btnPauseBot" onclick="toggleHandoverPause(60)" disabled style="font-size:11.5px; padding:4px 10px" title="Pause AI for 1 hour so receptionist can reply manually">⏸ Pause AI (1 hr)</button>
-                  <button class="btn sm ghost" id="btnResumeBot" onclick="resumeHandoverBot()" style="display:none; font-size:11.5px; padding:4px 10px" title="Resume autonomous AI replies">▶ Resume AI</button>
+                  <button class="btn sm" id="btnPauseBot" onclick="toggleHandoverPause(60)" disabled
+                    style="font-size:11.5px; padding:4px 10px"
+                    title="Pause AI for 1 hour so receptionist can reply manually">⏸ Pause AI (1 hr)</button>
+                  <button class="btn sm ghost" id="btnResumeBot" onclick="resumeHandoverBot()"
+                    style="display:none; font-size:11.5px; padding:4px 10px" title="Resume autonomous AI replies">▶
+                    Resume AI</button>
                 </div>
               </div>
 
@@ -5908,7 +6351,8 @@
           </div>
           <div class="card">
             <div class="grid g2">
-              <div><label class="f" id="lblBizName">Clinic / Business Name</label><input type="text" data-b="cafe.name"></div>
+              <div><label class="f" id="lblBizName">Clinic / Business Name</label><input type="text" data-b="cafe.name">
+              </div>
               <div><label class="f">Hotline Phone</label><input type="text" data-b="cafe.phone"></div>
               <div><label class="f">Area / Landmark</label><input type="text" data-b="cafe.area"></div>
               <div><label class="f">Exact Street Address</label><input type="text" data-b="cafe.address"></div>
@@ -5941,10 +6385,12 @@
             <div class="grid g2">
               <div><label class="f">Wi-Fi &amp; Work Policy</label><input type="text" data-b="cafe.wifi"></div>
               <div><label class="f">Parking Details</label><input type="text" data-b="cafe.parking"></div>
-              <div><label class="f" id="lblSeating">Seating &amp; Premises</label><input type="text" data-b="cafe.seating"></div>
+              <div><label class="f" id="lblSeating">Seating &amp; Premises</label><input type="text"
+                  data-b="cafe.seating"></div>
               <div><label class="f">Accepted Payment Methods</label><input type="text" data-b="cafe.payments"></div>
               <div><label class="f">Service Modes</label><input type="text" data-b="cafe.service"></div>
-              <div><label class="f" id="lblDeliveryApps">Online / Patient Platforms</label><input type="text" data-b="cafe.apps"></div>
+              <div><label class="f" id="lblDeliveryApps">Online / Patient Platforms</label><input type="text"
+                  data-b="cafe.apps"></div>
             </div>
             <div style="margin-top:14px">
               <label class="f">Special Notes &amp; Policies</label>
@@ -5954,14 +6400,17 @@
 
           <!-- OWNER INSTANT ALERTS CARD -->
           <div class="card" style="border-left: 3px solid var(--accent); margin-top: 18px;">
-            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px; flex-wrap:wrap; gap:10px;">
+            <div
+              style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px; flex-wrap:wrap; gap:10px;">
               <div>
                 <h3 style="display:flex; align-items:center; gap:8px; margin:0 0 4px 0;">
                   Instant Owner Booking &amp; Lead Alerts
                 </h3>
-                <p class="hint" style="margin:0;">Get notified immediately on WhatsApp, Telegram, or Email whenever a patient/customer requests an appointment or asks for pricing.</p>
+                <p class="hint" style="margin:0;">Get notified immediately on WhatsApp, Telegram, or Email whenever a
+                  patient/customer requests an appointment or asks for pricing.</p>
               </div>
-              <button class="btn sm" type="button" onclick="testOwnerAlert()" id="btnTestOwnerAlert" style="align-self:center;">
+              <button class="btn sm" type="button" onclick="testOwnerAlert()" id="btnTestOwnerAlert"
+                style="align-self:center;">
                 Send Test Alert
               </button>
             </div>
@@ -5970,22 +6419,27 @@
               <div>
                 <label class="f">Notification Phone / WhatsApp</label>
                 <input type="text" data-b="alerts.phone" placeholder="e.g. 01712345678 or +8801712345678">
-                <p class="hint" style="margin-top:4px; font-size:11px;">Target phone for WhatsApp notifications &amp; quick message forwarding.</p>
+                <p class="hint" style="margin-top:4px; font-size:11px;">Target phone for WhatsApp notifications &amp;
+                  quick message forwarding.</p>
               </div>
               <div>
                 <label class="f">Alert Email Address</label>
                 <input type="email" data-b="alerts.email" placeholder="e.g. doctor@clinic.com or owner@company.com">
-                <p class="hint" style="margin-top:4px; font-size:11px;">Receives detailed booking confirmations and customer summary emails.</p>
+                <p class="hint" style="margin-top:4px; font-size:11px;">Receives detailed booking confirmations and
+                  customer summary emails.</p>
               </div>
               <div>
                 <label class="f">Telegram Bot Token (Optional)</label>
-                <input type="text" data-b="alerts.telegramBotToken" placeholder="e.g. 7123456789:ABCdefGhIJKlmNoPQRstuVWXyz">
-                <p class="hint" style="margin-top:4px; font-size:11px;">Token from @BotFather for free, unlimited 0-second instant push notifications.</p>
+                <input type="text" data-b="alerts.telegramBotToken"
+                  placeholder="e.g. 7123456789:ABCdefGhIJKlmNoPQRstuVWXyz">
+                <p class="hint" style="margin-top:4px; font-size:11px;">Token from @BotFather for free, unlimited
+                  0-second instant push notifications.</p>
               </div>
               <div>
                 <label class="f">Telegram Chat ID (Optional)</label>
                 <input type="text" data-b="alerts.telegramChatId" placeholder="e.g. 987654321 or -100123456789">
-                <p class="hint" style="margin-top:4px; font-size:11px;">Personal chat ID or group chat ID for team alerts (get via @userinfobot).</p>
+                <p class="hint" style="margin-top:4px; font-size:11px;">Personal chat ID or group chat ID for team
+                  alerts (get via @userinfobot).</p>
               </div>
             </div>
             <div id="testAlertResultMsg" style="margin-top:10px; font-size:12px; display:none;"></div>
@@ -5997,7 +6451,8 @@
           <div class="phead">
             <div>
               <h2 id="catalogPanelTitle">Treatments &amp; Services</h2>
-              <p id="catalogPanelSub">Organize clinical treatments across categories. Instantly adjust pricing, consultation fees, and availability.</p>
+              <p id="catalogPanelSub">Organize clinical treatments across categories. Instantly adjust pricing,
+                consultation fees, and availability.</p>
             </div>
             <div class="row">
               <button class="btn primary sm" id="addCat">+ Add Category</button>
@@ -6026,12 +6481,14 @@
           <div class="phead">
             <div>
               <h2 id="faqPanelTitle">Verified FAQs</h2>
-              <p id="faqPanelSub">Standardized answers for appointments, doctor consultations, treatments, clinic hours, and pricing.</p>
+              <p id="faqPanelSub">Standardized answers for appointments, doctor consultations, treatments, clinic hours,
+                and pricing.</p>
               <div style="display:flex; gap:8px; margin-top:8px">
                 <button class="btn sm"
                   onclick="openOnboardingModal({ businessName: S?.business?.name || S?.cafe?.name || '', businessType: S?.business?.type || S?.cafe?.type || '', services: Array.isArray(S?.business?.services) ? S.business.services.join(', ') : (S?.business?.services || '') })">AI
                   FAQ Wizard</button>
-                <button class="btn sm ghost" onclick="quickSeedIndustryPresets()" title="Load industry tailored FAQs and treatments">Apply Industry Presets</button>
+                <button class="btn sm ghost" onclick="quickSeedIndustryPresets()"
+                  title="Load industry tailored FAQs and treatments">Apply Industry Presets</button>
                 <button class="btn primary sm" id="addFaq">+ Add FAQ</button>
               </div>
               <div class="card">
@@ -6196,11 +6653,19 @@
           <div class="phead" style="margin-bottom:18px;">
             <div>
               <div style="display:flex; align-items:center; gap:8px;">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="14" x="3" y="6" rx="2"/><path d="M8 2v4"/><path d="M16 2v4"/><circle cx="9" cy="13" r="1.5" fill="currentColor"/><circle cx="15" cy="13" r="1.5" fill="currentColor"/><path d="M10 17h4"/></svg>
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect width="18" height="14" x="3" y="6" rx="2" />
+                  <path d="M8 2v4" />
+                  <path d="M16 2v4" />
+                  <circle cx="9" cy="13" r="1.5" fill="currentColor" />
+                  <circle cx="15" cy="13" r="1.5" fill="currentColor" />
+                  <path d="M10 17h4" />
+                </svg>
                 <h2 style="margin:0;">My Chatbot &amp; Account Master Hub</h2>
               </div>
               <p style="margin:4px 0 0; color:var(--ink2); font-size:13px;">
-                Complete operations blueprint: security credentials, 24/7 web access links, social channels, and billing.
+                Complete operations blueprint: security credentials, 24/7 web access links, social channels, and
+                billing.
               </p>
             </div>
             <div style="display:flex; gap:8px; align-items:center;">
@@ -6211,25 +6676,34 @@
           </div>
 
           <!-- Mandatory Password & Security Alert Banner -->
-          <div id="hubSecurityAlertBanner" style="display:none; background:linear-gradient(135deg, rgba(239,68,68,0.12), rgba(220,38,38,0.06)); border:1.5px solid #ef4444; border-radius:12px; padding:14px 18px; margin-bottom:20px;">
+          <div id="hubSecurityAlertBanner"
+            style="display:none; background:linear-gradient(135deg, rgba(239,68,68,0.12), rgba(220,38,38,0.06)); border:1.5px solid #ef4444; border-radius:12px; padding:14px 18px; margin-bottom:20px;">
             <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px;">
               <div style="display:flex; align-items:center; gap:10px;">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" />
+                  <line x1="12" y1="9" x2="12" y2="13" />
+                  <line x1="12" y1="17" x2="12.01" y2="17" />
+                </svg>
                 <div>
-                  <strong style="color:#b91c1c; font-size:14px;">Mandatory Security Action: Change Default Password</strong>
+                  <strong style="color:#b91c1c; font-size:14px;">Mandatory Security Action: Change Default
+                    Password</strong>
                   <div style="font-size:12.5px; color:var(--ink2); margin-top:2px;">
-                    You are currently using the default system password. Please update your password below to ensure your chatbot and client data are secure.
+                    You are currently using the default system password. Please update your password below to ensure
+                    your chatbot and client data are secure.
                   </div>
                 </div>
               </div>
-              <span class="badge" style="background:#ef4444; color:#fff; font-weight:800; font-size:11px;">ACTION REQUIRED</span>
+              <span class="badge" style="background:#ef4444; color:#fff; font-weight:800; font-size:11px;">ACTION
+                REQUIRED</span>
             </div>
           </div>
 
           <!-- Top Overview Stats -->
           <div class="grid g4" style="margin-bottom:20px;">
             <div class="stat-card">
-              <div class="v" id="hubStatPlan" style="color:var(--accent); font-size:18px; text-transform:uppercase;">Pro</div>
+              <div class="v" id="hubStatPlan" style="color:var(--accent); font-size:18px; text-transform:uppercase;">Pro
+              </div>
               <div class="k">Active Plan</div>
               <div class="subtext" id="hubStatStatus">Active 30 Days</div>
             </div>
@@ -6254,9 +6728,13 @@
           <div class="grid g2" style="margin-bottom:20px;">
             <!-- Card 1: Account Security & Mandatory Password Update -->
             <div class="card" style="border:1px solid var(--line);">
-              <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; border-bottom:1px solid var(--line); padding-bottom:10px;">
+              <div
+                style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; border-bottom:1px solid var(--line); padding-bottom:10px;">
                 <div style="display:flex; align-items:center; gap:8px;">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                  </svg>
                   <h3 style="margin:0; font-size:15px;">Account Security &amp; Login</h3>
                 </div>
                 <span id="hubPassStatusBadge" class="badge" style="font-size:11px; font-weight:700;">Secure</span>
@@ -6273,11 +6751,13 @@
                 <div class="grid g2" style="margin-bottom:12px;">
                   <div>
                     <label class="f">New Password (Min 6 chars)</label>
-                    <input type="password" id="hubNewPassIn" placeholder="••••••••" style="font-size:13px;" minlength="6">
+                    <input type="password" id="hubNewPassIn" placeholder="••••••••" style="font-size:13px;"
+                      minlength="6">
                   </div>
                   <div>
                     <label class="f">Confirm New Password</label>
-                    <input type="password" id="hubConfirmPassIn" placeholder="••••••••" style="font-size:13px;" minlength="6">
+                    <input type="password" id="hubConfirmPassIn" placeholder="••••••••" style="font-size:13px;"
+                      minlength="6">
                   </div>
                 </div>
                 <div id="hubPassErr" style="font-size:12px; margin-bottom:10px; display:none;"></div>
@@ -6291,13 +6771,21 @@
             </div>
 
             <!-- Card 2: Dedicated Live Customer Webchat & Floating Widget -->
-            <div class="card" style="border:1px solid rgba(59,130,246,0.3); background:linear-gradient(135deg, rgba(59,130,246,0.04), rgba(99,102,241,0.02));">
-              <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; border-bottom:1px solid var(--line); padding-bottom:10px;">
+            <div class="card"
+              style="border:1px solid rgba(59,130,246,0.3); background:linear-gradient(135deg, rgba(59,130,246,0.04), rgba(99,102,241,0.02));">
+              <div
+                style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; border-bottom:1px solid var(--line); padding-bottom:10px;">
                 <div style="display:flex; align-items:center; gap:8px;">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10" />
+                    <line x1="2" y1="12" x2="22" y2="12" />
+                    <path
+                      d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+                  </svg>
                   <h3 style="margin:0; font-size:15px;">Live Webchat &amp; Website Widget</h3>
                 </div>
-                <span class="badge" style="background:#2563eb; color:#fff; font-size:11px; font-weight:700;">Live 24/7</span>
+                <span class="badge" style="background:#2563eb; color:#fff; font-size:11px; font-weight:700;">Live
+                  24/7</span>
               </div>
               <p class="hint" style="margin-bottom:14px;">
                 Your customers can talk to your AI assistant without needing Facebook or Instagram.
@@ -6310,7 +6798,8 @@
                   <button type="button" class="btn sm primary" onclick="openHubWebUrl()">Open Chat</button>
                   <button type="button" class="btn sm" onclick="copyId('hubWebUrl')">Copy</button>
                 </div>
-                <p class="hint" style="margin-top:4px;">Paste this link in your Instagram Bio, Facebook About section, or SMS campaigns.</p>
+                <p class="hint" style="margin-top:4px;">Paste this link in your Instagram Bio, Facebook About section,
+                  or SMS campaigns.</p>
               </div>
 
               <div>
@@ -6319,7 +6808,8 @@
                   <input type="text" readonly id="hubWidgetCode" class="mono" style="font-size:11.5px;">
                   <button type="button" class="btn sm" onclick="copyId('hubWidgetCode')">Copy Script</button>
                 </div>
-                <p class="hint" style="margin-top:4px;">Paste into any WordPress, Shopify, or HTML website right before <code>&lt;/body&gt;</code>.</p>
+                <p class="hint" style="margin-top:4px;">Paste into any WordPress, Shopify, or HTML website right before
+                  <code>&lt;/body&gt;</code>.</p>
               </div>
             </div>
           </div>
@@ -6328,40 +6818,63 @@
           <div class="grid g2" style="margin-bottom:20px;">
             <!-- Card 3: Easiest Facebook Page Connection Guide -->
             <div class="card" style="border:1px solid var(--line);">
-              <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; border-bottom:1px solid var(--line); padding-bottom:10px;">
+              <div
+                style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; border-bottom:1px solid var(--line); padding-bottom:10px;">
                 <div style="display:flex; align-items:center; gap:8px;">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+                    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+                  </svg>
                   <h3 style="margin:0; font-size:15px;">Facebook &amp; Social Channels</h3>
                 </div>
                 <span id="hubMetaStatusBadge" class="badge" style="font-size:11px; font-weight:700;">Checking…</span>
               </div>
 
-              <div style="background:var(--surface2); border:1px solid var(--line); border-radius:10px; padding:12px 14px; margin-bottom:14px;">
-                <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px; margin-bottom:6px">
-                  <div style="font-weight:700; color:var(--ink); font-size:13px; display:flex; align-items:center; gap:6px;">
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+              <div
+                style="background:var(--surface2); border:1px solid var(--line); border-radius:10px; padding:12px 14px; margin-bottom:14px;">
+                <div
+                  style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px; margin-bottom:6px">
+                  <div
+                    style="font-weight:700; color:var(--ink); font-size:13px; display:flex; align-items:center; gap:6px;">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                      <circle cx="9" cy="7" r="4" />
+                      <line x1="19" y1="8" x2="19" y2="14" />
+                      <line x1="22" y1="11" x2="16" y2="11" />
+                    </svg>
                     Easiest Way: 30-Second Page Invite (Task Access)
                   </div>
-                  <span class="badge" style="background:rgba(160,210,235,0.22); color:var(--ink); border:1px solid rgba(160,210,235,0.45); font-size:10px; font-weight:800; padding:2px 7px">RECOMMENDED</span>
+                  <span class="badge"
+                    style="background:rgba(160,210,235,0.22); color:var(--ink); border:1px solid rgba(160,210,235,0.45); font-size:10px; font-weight:800; padding:2px 7px">RECOMMENDED</span>
                 </div>
                 <p style="margin:0 0 8px 0; font-size:12px; color:var(--ink2); line-height:1.5;">
-                  You do <strong>not</strong> need to set up Meta Developer tools, tokens, or webhooks. Simply invite our agency account to your page like a staff member:
+                  You do <strong>not</strong> need to set up Meta Developer tools, tokens, or webhooks. Simply invite
+                  our agency account to your page like a staff member:
                 </p>
                 <ol style="margin:0; padding-left:18px; font-size:12px; color:var(--ink2); line-height:1.7;">
-                  <li>Open your Facebook Page &rarr; <strong>Settings &amp; Privacy</strong> &rarr; <strong>Settings</strong> &rarr; <strong>New Pages Experience</strong> &rarr; <strong>Page Access</strong>.</li>
+                  <li>Open your Facebook Page &rarr; <strong>Settings &amp; Privacy</strong> &rarr;
+                    <strong>Settings</strong> &rarr; <strong>New Pages Experience</strong> &rarr; <strong>Page
+                      Access</strong>.</li>
                   <li>Under <strong>People with Task Access</strong>, click <strong>Add New</strong>.</li>
                   <li>Enter our agency management email:
                     <div class="input-with-btn" style="max-width:380px; margin:6px 0">
-                      <input type="text" readonly id="fbTaskAccessEmailHub" class="mono agency-email-val" value="admin@crowncoffee.com" style="font-size:12px">
+                      <input type="text" readonly id="fbTaskAccessEmailHub" class="mono agency-email-val"
+                        value="admin@crowncoffee.com" style="font-size:12px">
                       <button type="button" class="btn sm" onclick="copyId('fbTaskAccessEmailHub')">Copy Email</button>
                     </div>
                   </li>
-                  <li>Toggle <strong>Messages</strong> access to <strong>ON</strong> and confirm with your password.</li>
+                  <li>Toggle <strong>Messages</strong> access to <strong>ON</strong> and confirm with your password.
+                  </li>
                 </ol>
-                <div style="margin-top:12px; padding-top:10px; border-top:1px solid var(--line); display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px">
+                <div
+                  style="margin-top:12px; padding-top:10px; border-top:1px solid var(--line); display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px">
                   <div style="display:flex; align-items:center; gap:8px">
-                    <button type="button" class="btn primary sm" onclick="startFacebookOAuth()" style="font-weight:800; display:inline-flex; align-items:center; gap:6px">
-                      <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                    <button type="button" class="btn primary sm" onclick="startFacebookOAuth()"
+                      style="font-weight:800; display:inline-flex; align-items:center; gap:6px">
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
+                        <path
+                          d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+                      </svg>
                       <span>Or 1-Click Connect with Facebook</span>
                     </button>
                   </div>
@@ -6372,17 +6885,23 @@
               <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
                 <span style="font-size:12px; color:var(--ink3);">Have your own Meta Token?</span>
                 <div style="display:flex; gap:6px;">
-                  <button type="button" class="btn sm ghost" onclick="openSocialGuideModal('fb')">Self-Serve Guide</button>
-                  <button type="button" class="btn sm" onclick="switchTab('channels')">Configure Channels &rarr;</button>
+                  <button type="button" class="btn sm ghost" onclick="openSocialGuideModal('fb')">Self-Serve
+                    Guide</button>
+                  <button type="button" class="btn sm" onclick="switchTab('channels')">Configure Channels
+                    &rarr;</button>
                 </div>
               </div>
             </div>
 
             <!-- Card 4: Subscription Plan & Payment Info (bKash) -->
             <div class="card" style="border:1px solid var(--line);">
-              <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; border-bottom:1px solid var(--line); padding-bottom:10px;">
+              <div
+                style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; border-bottom:1px solid var(--line); padding-bottom:10px;">
                 <div style="display:flex; align-items:center; gap:8px;">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="2" y="5" width="20" height="14" rx="2" />
+                    <line x1="2" y1="10" x2="22" y2="10" />
+                  </svg>
                   <h3 style="margin:0; font-size:15px;">Subscription &amp; Payment Details</h3>
                 </div>
                 <button type="button" class="btn sm primary" onclick="openUpgradeModal()" style="font-weight:700;">
@@ -6393,18 +6912,22 @@
               <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:14px;">
                 <div style="background:var(--surface2); padding:10px 12px; border-radius:8px;">
                   <div style="font-size:11px; color:var(--ink3);">CURRENT PACKAGE</div>
-                  <div id="hubSubPlanName" style="font-weight:800; font-size:14px; color:var(--ink); margin-top:2px;">Pro Plan</div>
+                  <div id="hubSubPlanName" style="font-weight:800; font-size:14px; color:var(--ink); margin-top:2px;">
+                    Pro Plan</div>
                   <div id="hubSubFee" style="font-size:12px; color:var(--ink2);">BDT 2,080 / month</div>
                 </div>
                 <div style="background:var(--surface2); padding:10px 12px; border-radius:8px;">
                   <div style="font-size:11px; color:var(--ink3);">REMAINING TIME</div>
-                  <div id="hubSubDaysLeft" style="font-weight:800; font-size:14px; color:var(--good); margin-top:2px;">30 Days</div>
+                  <div id="hubSubDaysLeft" style="font-weight:800; font-size:14px; color:var(--good); margin-top:2px;">
+                    30 Days</div>
                   <div id="hubSubExpiry" style="font-size:11px; color:var(--ink3);">Until Next Cycle</div>
                 </div>
               </div>
 
-              <div style="background:rgba(236,72,153,0.06); border:1px solid rgba(236,72,153,0.22); border-radius:10px; padding:12px 14px;">
-                <div style="font-weight:700; color:#db2777; font-size:12.5px; margin-bottom:4px; display:flex; align-items:center; gap:6px;">
+              <div
+                style="background:rgba(236,72,153,0.06); border:1px solid rgba(236,72,153,0.22); border-radius:10px; padding:12px 14px;">
+                <div
+                  style="font-weight:700; color:#db2777; font-size:12.5px; margin-bottom:4px; display:flex; align-items:center; gap:6px;">
                   Official bKash Renewal Account:
                 </div>
                 <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:6px;">
@@ -6412,10 +6935,12 @@
                     <span class="mono" style="font-size:15px; font-weight:800; color:var(--ink);">01771784474</span>
                     <span style="font-size:12px; color:var(--ink2);"> (Personal / Send Money)</span>
                   </div>
-                  <button type="button" class="btn sm ghost" style="padding:2px 8px; font-size:11px;" onclick="copyToClipboard('01771784474')">Copy Number</button>
+                  <button type="button" class="btn sm ghost" style="padding:2px 8px; font-size:11px;"
+                    onclick="copyToClipboard('01771784474')">Copy Number</button>
                 </div>
                 <div style="font-size:11.5px; color:var(--ink3); margin-top:6px; line-height:1.4;">
-                  Standard Platform Fee: ৳20 per ৳500 auto-included. After payment, enter your TrxID in the Upgrade Modal for <strong>instant 30-day reactivation</strong>.
+                  Standard Platform Fee: ৳20 per ৳500 auto-included. After payment, enter your TrxID in the Upgrade
+                  Modal for <strong>instant 30-day reactivation</strong>.
                 </div>
               </div>
             </div>
@@ -6423,22 +6948,35 @@
 
           <!-- Section 5: Human Handover & Emergency Bot Control -->
           <div class="card" style="border:1px solid var(--line);">
-            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; flex-wrap:wrap; gap:8px;">
+            <div
+              style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; flex-wrap:wrap; gap:8px;">
               <div style="display:flex; align-items:center; gap:8px;">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                  <circle cx="9" cy="7" r="4" />
+                  <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+                  <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                </svg>
                 <h3 style="margin:0; font-size:15px;">Autonomous AI &amp; Human Handover Protection</h3>
               </div>
               <div style="display:flex; align-items:center; gap:10px;">
-                <span id="hubBotStatusTxt" style="font-size:12px; font-weight:700; color:var(--good);">● Bot Active</span>
-                <button type="button" class="btn sm" id="btnHubToggleBot" onclick="toggleHubBotState()">Pause Bot</button>
+                <span id="hubBotStatusTxt" style="font-size:12px; font-weight:700; color:var(--good);">● Bot
+                  Active</span>
+                <button type="button" class="btn sm" id="btnHubToggleBot" onclick="toggleHubBotState()">Pause
+                  Bot</button>
               </div>
             </div>
             <p style="margin:0 0 10px 0; font-size:12.5px; color:var(--ink2); line-height:1.6;">
-              <strong>How Human Handover Works:</strong> Whenever your human receptionist or doctor replies to a patient or customer directly inside Facebook Messenger, Instagram, or the CCBot Live Inbox, our platform <strong>automatically pauses AI replies for 30 minutes</strong> on that conversation. This guarantees that your staff always has 100% priority and the AI never sends conflicting replies.
+              <strong>How Human Handover Works:</strong> Whenever your human receptionist or doctor replies to a patient
+              or customer directly inside Facebook Messenger, Instagram, or the CCBot Live Inbox, our platform
+              <strong>automatically pauses AI replies for 30 minutes</strong> on that conversation. This guarantees that
+              your staff always has 100% priority and the AI never sends conflicting replies.
             </p>
-            <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid var(--line); padding-top:10px; font-size:12px; color:var(--ink3); flex-wrap:wrap; gap:6px;">
+            <div
+              style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid var(--line); padding-top:10px; font-size:12px; color:var(--ink3); flex-wrap:wrap; gap:6px;">
               <span>Need custom persona fine-tuning or emergency technical support?</span>
-              <span>Email: <a href="mailto:admin@ccadmin.online" style="color:var(--accent); font-weight:700;">admin@ccadmin.online</a></span>
+              <span>Email: <a href="mailto:admin@ccadmin.online"
+                  style="color:var(--accent); font-weight:700;">admin@ccadmin.online</a></span>
             </div>
           </div>
         </section>
@@ -6447,7 +6985,8 @@
 
     <!-- Mobile Bottom Navigation Bar (Smartphones & Small Tablets) -->
     <nav class="mobile-bottom-nav" id="mobileBottomNav" aria-label="Mobile Navigation">
-      <button type="button" class="mobile-bottom-btn active" data-bottom-p="dash" onclick="switchTab('dash')" title="Dashboard">
+      <button type="button" class="mobile-bottom-btn active" data-bottom-p="dash" onclick="switchTab('dash')"
+        title="Dashboard">
         <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
           <rect width="7" height="9" x="3" y="3" rx="1" />
           <rect width="7" height="5" x="14" y="3" rx="1" />
@@ -6466,7 +7005,8 @@
         <span>Inbox</span>
       </button>
 
-      <button type="button" class="mobile-bottom-btn" data-bottom-p="orders" onclick="switchTab('orders')" title="Appointments & Orders">
+      <button type="button" class="mobile-bottom-btn" data-bottom-p="orders" onclick="switchTab('orders')"
+        title="Appointments & Orders">
         <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z" />
           <path d="M3 6h18" />
@@ -6475,7 +7015,8 @@
         <span>Bookings</span>
       </button>
 
-      <button type="button" class="mobile-bottom-btn" data-bottom-p="menu" onclick="switchTab('menu')" title="Catalog & Services">
+      <button type="button" class="mobile-bottom-btn" data-bottom-p="menu" onclick="switchTab('menu')"
+        title="Catalog & Services">
         <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
           <rect width="18" height="18" x="3" y="3" rx="2" />
           <path d="M3 9h18" />
@@ -6484,7 +7025,8 @@
         <span>Catalog</span>
       </button>
 
-      <button type="button" class="mobile-bottom-btn" onclick="toggleMobileNav()" id="btnMobileMore" title="More Options">
+      <button type="button" class="mobile-bottom-btn" onclick="toggleMobileNav()" id="btnMobileMore"
+        title="More Options">
         <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
           <line x1="3" y1="12" x2="21" y2="12" />
           <line x1="3" y1="6" x2="21" y2="6" />
@@ -6678,12 +7220,14 @@
         <div>
           <div class="logo-badge" style="width:34px; height:34px; font-size:13px; margin-bottom:10px">CC</div>
           <h3 style="margin:0 0 4px">Welcome to Your Operations Hub</h3>
-          <p class="hint" style="margin:0">Please set your personal email address and choose a secure password before continuing.</p>
+          <p class="hint" style="margin:0">Please set your personal email address and choose a secure password before
+            continuing.</p>
         </div>
         <button class="btn sm ghost" id="flCloseBtn" onclick="dismissFirstLoginModal()">Close</button>
       </div>
 
-      <div id="flMandatoryNotice" style="display:none; background:rgba(239,68,68,0.08); border:1px solid rgba(239,68,68,0.3); border-radius:6px; padding:8px 12px; margin-bottom:12px; font-size:12px; color:#b91c1c; font-weight:700;">
+      <div id="flMandatoryNotice"
+        style="display:none; background:rgba(239,68,68,0.08); border:1px solid rgba(239,68,68,0.3); border-radius:6px; padding:8px 12px; margin-bottom:12px; font-size:12px; color:#b91c1c; font-weight:700;">
         Mandatory Security Setup: You must set your permanent password before accessing your chatbot dashboard.
       </div>
 
@@ -6694,13 +7238,15 @@
       <input type="password" id="flPassIn" placeholder="••••••••" style="margin-bottom:12px" required minlength="6">
 
       <label class="f">Confirm Password</label>
-      <input type="password" id="flConfirmPassIn" placeholder="••••••••" style="margin-bottom:18px" required minlength="6">
+      <input type="password" id="flConfirmPassIn" placeholder="••••••••" style="margin-bottom:18px" required
+        minlength="6">
 
       <div id="flErr" style="color:var(--danger); font-size:12.5px; margin-bottom:10px"></div>
 
       <div style="display:flex; gap:8px">
         <button class="btn sm ghost" id="flDismissBtn" onclick="dismissFirstLoginModal()">Dismiss</button>
-        <button class="btn primary sm" id="btnSubmitFirstLogin" style="flex:1; justify-content:center; font-weight:700;">
+        <button class="btn primary sm" id="btnSubmitFirstLogin"
+          style="flex:1; justify-content:center; font-weight:700;">
           Save &amp; Enter Dashboard
         </button>
       </div>
@@ -6710,39 +7256,50 @@
   <!-- Master Admin: Message Guidelines & Dispatch Hub Modal -->
   <div id="messageGuidelinesModal" class="modal-backdrop">
     <div class="modal-card" style="max-width:760px; max-height:92vh; display:flex; flex-direction:column;">
-      <div style="display:flex; align-items:flex-start; justify-content:space-between; border-bottom:1px solid var(--line); padding-bottom:12px; margin-bottom:14px;">
+      <div
+        style="display:flex; align-items:flex-start; justify-content:space-between; border-bottom:1px solid var(--line); padding-bottom:12px; margin-bottom:14px;">
         <div>
           <div style="display:flex; align-items:center; gap:8px;">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" />
+              <rect x="8" y="2" width="8" height="4" rx="1" ry="1" />
+            </svg>
             <h3 style="margin:0; font-size:18px; font-weight:800;">Tenant Communication &amp; Message Guidelines</h3>
           </div>
           <p style="margin:4px 0 0; font-size:12.5px; color:var(--ink2);">
             Pre-formatted messages for WhatsApp, Messenger, or Email with 1-click client personalization.
           </p>
         </div>
-        <button class="btn sm ghost" type="button" onclick="closeMessageGuidelinesModal()" style="border-radius:9999px; padding:4px 10px;">✕ Close</button>
+        <button class="btn sm ghost" type="button" onclick="closeMessageGuidelinesModal()"
+          style="border-radius:9999px; padding:4px 10px;">✕ Close</button>
       </div>
 
       <!-- Select Tenant Dropdown for Dynamic Autofill -->
-      <div style="background:var(--surface2); padding:10px 14px; border-radius:10px; margin-bottom:14px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px;">
+      <div
+        style="background:var(--surface2); padding:10px 14px; border-radius:10px; margin-bottom:14px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px;">
         <div style="display:flex; align-items:center; gap:8px;">
           <span style="font-size:13px; font-weight:700; color:var(--ink);">Select Client Account:</span>
-          <select id="msgGuideTenantSelect" onchange="onMsgGuideTenantChanged()" style="padding:4px 10px; font-size:13px; font-weight:600; border-radius:6px; border:1px solid var(--line); background:var(--bg); color:var(--ink);">
+          <select id="msgGuideTenantSelect" onchange="onMsgGuideTenantChanged()"
+            style="padding:4px 10px; font-size:13px; font-weight:600; border-radius:6px; border:1px solid var(--line); background:var(--bg); color:var(--ink);">
             <option value="generic">-- Generic / Blank Template --</option>
           </select>
         </div>
-        <span id="msgGuideTenantMeta" style="font-size:11.5px; color:var(--ink3);">Select a client to auto-fill placeholders</span>
+        <span id="msgGuideTenantMeta" style="font-size:11.5px; color:var(--ink3);">Select a client to auto-fill
+          placeholders</span>
       </div>
 
       <!-- Template Tabs -->
       <div class="payment-method-tabs" style="margin-bottom:12px;">
-        <button type="button" class="pay-method-btn active" id="msgTabBtnOnboarding" onclick="switchMsgTemplateTab('onboarding')">
+        <button type="button" class="pay-method-btn active" id="msgTabBtnOnboarding"
+          onclick="switchMsgTemplateTab('onboarding')">
           1. Onboarding &amp; Login
         </button>
-        <button type="button" class="pay-method-btn" id="msgTabBtnPageAccess" onclick="switchMsgTemplateTab('page_access')">
+        <button type="button" class="pay-method-btn" id="msgTabBtnPageAccess"
+          onclick="switchMsgTemplateTab('page_access')">
           2. Facebook Page Access
         </button>
-        <button type="button" class="pay-method-btn" id="msgTabBtnOperating" onclick="switchMsgTemplateTab('operating')">
+        <button type="button" class="pay-method-btn" id="msgTabBtnOperating"
+          onclick="switchMsgTemplateTab('operating')">
           ⚙️ 3. Operating Guidelines
         </button>
         <button type="button" class="pay-method-btn" id="msgTabBtnRenewal" onclick="switchMsgTemplateTab('renewal')">
@@ -6752,15 +7309,18 @@
 
       <!-- Message Content Preview Box -->
       <div style="flex:1; overflow-y:auto; margin-bottom:14px;">
-        <textarea id="msgPreviewArea" readonly style="width:100%; height:260px; font-family:var(--font-mono); font-size:12.5px; line-height:1.6; padding:14px; border-radius:8px; border:1px solid var(--line); background:var(--bg); color:var(--ink); resize:vertical;"></textarea>
+        <textarea id="msgPreviewArea" readonly
+          style="width:100%; height:260px; font-family:var(--font-mono); font-size:12.5px; line-height:1.6; padding:14px; border-radius:8px; border:1px solid var(--line); background:var(--bg); color:var(--ink); resize:vertical;"></textarea>
       </div>
 
       <!-- Footer with Copy Button -->
-      <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid var(--line); padding-top:12px;">
+      <div
+        style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid var(--line); padding-top:12px;">
         <span id="msgCopyStatus" style="font-size:12px; color:var(--good); font-weight:700;"></span>
         <div style="display:flex; gap:8px;">
           <button type="button" class="btn sm ghost" onclick="closeMessageGuidelinesModal()">Close</button>
-          <button type="button" class="btn primary sm" id="btnCopyMsgText" onclick="copyCurrentMsgTemplate()" style="font-weight:700; padding:6px 18px;">
+          <button type="button" class="btn primary sm" id="btnCopyMsgText" onclick="copyCurrentMsgTemplate()"
+            style="font-weight:700; padding:6px 18px;">
             Copy to Clipboard
           </button>
         </div>
@@ -6850,49 +7410,73 @@
 
   <!-- Social Channels Integration Guide Modal -->
   <div id="socialGuideModal" class="modal-backdrop">
-    <div class="modal-card" style="max-width:780px; max-height:90vh; display:flex; flex-direction:column; padding:24px 28px">
-      <div style="display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:14px; border-bottom:1px solid var(--line); padding-bottom:12px">
+    <div class="modal-card"
+      style="max-width:780px; max-height:90vh; display:flex; flex-direction:column; padding:24px 28px">
+      <div
+        style="display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:14px; border-bottom:1px solid var(--line); padding-bottom:12px">
         <div>
           <div style="display:flex; align-items:center; gap:8px">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
-            <h2 style="margin:0; font-size:20px; font-weight:800; color:var(--ink)">Social Channels Connection Guide</h2>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+              <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+            </svg>
+            <h2 style="margin:0; font-size:20px; font-weight:800; color:var(--ink)">Social Channels Connection Guide
+            </h2>
           </div>
           <p style="margin:4px 0 0; font-size:13px; color:var(--ink2)">
             Follow these step-by-step guidelines to connect your Facebook Page, Instagram Direct, and WhatsApp.
           </p>
         </div>
-        <button class="btn sm ghost" onclick="closeSocialGuideModal()" style="border-radius:9999px; padding:4px 12px; font-weight:700">✕ Close</button>
+        <button class="btn sm ghost" onclick="closeSocialGuideModal()"
+          style="border-radius:9999px; padding:4px 12px; font-weight:700">✕ Close</button>
       </div>
 
       <!-- Quick Webhook Copy Strip -->
-      <div style="background:var(--surface2); border:1px solid var(--line); border-radius:var(--radius-sm); padding:10px 14px; margin-bottom:16px; display:flex; flex-wrap:wrap; gap:12px; align-items:center; justify-content:space-between">
+      <div
+        style="background:var(--surface2); border:1px solid var(--line); border-radius:var(--radius-sm); padding:10px 14px; margin-bottom:16px; display:flex; flex-wrap:wrap; gap:12px; align-items:center; justify-content:space-between">
         <div style="display:flex; align-items:center; gap:8px; flex:1; min-width:260px">
-          <span style="font-size:11px; font-weight:800; color:var(--ink3); text-transform:uppercase; letter-spacing:0.5px">Meta Webhook URL:</span>
-          <code style="font-size:12px; background:var(--surface); padding:3px 8px; border-radius:4px; border:1px solid var(--line); color:var(--accent); font-family:var(--font-mono)">https://bot.ccadmin.online/webhook/meta</code>
-          <button class="btn sm" onclick="copyToClipboard('https://bot.ccadmin.online/webhook/meta')" style="padding:2px 8px; font-size:11px">Copy</button>
+          <span
+            style="font-size:11px; font-weight:800; color:var(--ink3); text-transform:uppercase; letter-spacing:0.5px">Meta
+            Webhook URL:</span>
+          <code
+            style="font-size:12px; background:var(--surface); padding:3px 8px; border-radius:4px; border:1px solid var(--line); color:var(--accent); font-family:var(--font-mono)">https://bot.ccadmin.online/webhook/meta</code>
+          <button class="btn sm" onclick="copyToClipboard('https://bot.ccadmin.online/webhook/meta')"
+            style="padding:2px 8px; font-size:11px">Copy</button>
         </div>
         <div style="display:flex; align-items:center; gap:8px">
-          <span style="font-size:11px; font-weight:800; color:var(--ink3); text-transform:uppercase; letter-spacing:0.5px">Verify Token:</span>
-          <code style="font-size:12px; background:var(--surface); padding:3px 8px; border-radius:4px; border:1px solid var(--line); color:var(--accent); font-family:var(--font-mono)">botcrowncoffee</code>
-          <button class="btn sm" onclick="copyToClipboard('botcrowncoffee')" style="padding:2px 8px; font-size:11px">Copy</button>
+          <span
+            style="font-size:11px; font-weight:800; color:var(--ink3); text-transform:uppercase; letter-spacing:0.5px">Verify
+            Token:</span>
+          <code
+            style="font-size:12px; background:var(--surface); padding:3px 8px; border-radius:4px; border:1px solid var(--line); color:var(--accent); font-family:var(--font-mono)">botcrowncoffee</code>
+          <button class="btn sm" onclick="copyToClipboard('botcrowncoffee')"
+            style="padding:2px 8px; font-size:11px">Copy</button>
         </div>
       </div>
 
       <!-- Guide Tabs -->
-      <div style="display:flex; gap:6px; border-bottom:1px solid var(--line); padding-bottom:8px; margin-bottom:16px; flex-wrap:wrap">
-        <button type="button" class="btn sm chip-btn selected" id="gTabBtnFb" onclick="switchGuideTab('fb')">Facebook Messenger</button>
-        <button type="button" class="btn sm chip-btn" id="gTabBtnIg" onclick="switchGuideTab('ig')">Instagram Direct</button>
-        <button type="button" class="btn sm chip-btn" id="gTabBtnWa" onclick="switchGuideTab('wa')">WhatsApp Cloud API</button>
-        <button type="button" class="btn sm chip-btn" id="gTabBtnWidget" onclick="switchGuideTab('widget')">Web Chat Widget</button>
+      <div
+        style="display:flex; gap:6px; border-bottom:1px solid var(--line); padding-bottom:8px; margin-bottom:16px; flex-wrap:wrap">
+        <button type="button" class="btn sm chip-btn selected" id="gTabBtnFb" onclick="switchGuideTab('fb')">Facebook
+          Messenger</button>
+        <button type="button" class="btn sm chip-btn" id="gTabBtnIg" onclick="switchGuideTab('ig')">Instagram
+          Direct</button>
+        <button type="button" class="btn sm chip-btn" id="gTabBtnWa" onclick="switchGuideTab('wa')">WhatsApp Cloud
+          API</button>
+        <button type="button" class="btn sm chip-btn" id="gTabBtnWidget" onclick="switchGuideTab('widget')">Web Chat
+          Widget</button>
       </div>
 
       <!-- Guide Tab Body Content -->
-      <div id="guideTabBody" style="overflow-y:auto; flex:1; padding-right:8px; font-size:13px; line-height:1.6; color:var(--ink)">
+      <div id="guideTabBody"
+        style="overflow-y:auto; flex:1; padding-right:8px; font-size:13px; line-height:1.6; color:var(--ink)">
         <!-- Dynamic content injected by JS switchGuideTab -->
       </div>
 
-      <div style="margin-top:16px; padding-top:12px; border-top:1px solid var(--line); display:flex; justify-content:space-between; align-items:center">
-        <span style="font-size:11.5px; color:var(--ink3)">Tokens are securely encrypted in our database and take effect immediately.</span>
+      <div
+        style="margin-top:16px; padding-top:12px; border-top:1px solid var(--line); display:flex; justify-content:space-between; align-items:center">
+        <span style="font-size:11.5px; color:var(--ink3)">Tokens are securely encrypted in our database and take effect
+          immediately.</span>
         <button class="btn sm primary" onclick="closeSocialGuideModal()">Got It, Back to Dashboard</button>
       </div>
     </div>
@@ -6901,17 +7485,22 @@
   <!-- Commercial Upgrade Modal (bKash / Nagad / Card) -->
   <div id="upgradeModal" class="modal-backdrop" style="display:none;">
     <div class="modal-card upgrade-modal-card">
-      <div style="display:flex; align-items:flex-start; justify-content:space-between; border-bottom:1px solid var(--line); padding-bottom:14px;">
+      <div
+        style="display:flex; align-items:flex-start; justify-content:space-between; border-bottom:1px solid var(--line); padding-bottom:14px;">
         <div>
           <div style="display:flex; align-items:center; gap:8px;">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10" />
+              <path d="m9 12 2 2 4-4" />
+            </svg>
             <h2 style="margin:0; font-size:22px; font-weight:800; color:var(--ink);">Upgrade Your CCBot Plan</h2>
           </div>
           <p style="margin:4px 0 0; font-size:13px; color:var(--ink2);">
             Unlock multi-channel Meta AI, remove "Powered by CCBot" branding, and enable instant booking notifications.
           </p>
         </div>
-        <button class="btn sm ghost" onclick="closeUpgradeModal()" style="border-radius:9999px; padding:4px 12px; font-weight:700;">✕ Close</button>
+        <button class="btn sm ghost" onclick="closeUpgradeModal()"
+          style="border-radius:9999px; padding:4px 12px; font-weight:700;">✕ Close</button>
       </div>
 
       <!-- Pricing Plans Grid -->
@@ -6921,7 +7510,8 @@
           <div class="plan-head">
             <div class="plan-name">Starter</div>
             <div class="plan-price">৳500 <span>/ mo (+৳20 fee)</span></div>
-            <p style="font-size:11.5px; color:var(--ink3); margin:4px 0 0;">Ideal for single-page clinics &amp; boutique businesses</p>
+            <p style="font-size:11.5px; color:var(--ink3); margin:4px 0 0;">Ideal for single-page clinics &amp; boutique
+              businesses</p>
           </div>
           <ul class="plan-features">
             <li>1 Facebook Page Connected</li>
@@ -6939,7 +7529,8 @@
           <div class="plan-head">
             <div class="plan-name">Pro</div>
             <div class="plan-price">৳2,000 <span>/ mo (+৳80 fee)</span></div>
-            <p style="font-size:11.5px; color:var(--ink3); margin:4px 0 0;">For high-volume doctors, salons &amp; growing practices</p>
+            <p style="font-size:11.5px; color:var(--ink3); margin:4px 0 0;">For high-volume doctors, salons &amp;
+              growing practices</p>
           </div>
           <ul class="plan-features">
             <li><strong>FB + Instagram + WhatsApp + Web Widget</strong></li>
@@ -6957,7 +7548,8 @@
           <div class="plan-head">
             <div class="plan-name">Enterprise</div>
             <div class="plan-price">৳3,000 <span>/ mo (+৳120 fee)</span></div>
-            <p style="font-size:11.5px; color:var(--ink3); margin:4px 0 0;">Dedicated support &amp; custom persona fine-tuning</p>
+            <p style="font-size:11.5px; color:var(--ink3); margin:4px 0 0;">Dedicated support &amp; custom persona
+              fine-tuning</p>
           </div>
           <ul class="plan-features">
             <li><strong>Unlimited AI Conversations</strong></li>
@@ -6972,7 +7564,8 @@
 
       <!-- Payment & Checkout Section -->
       <div class="upgrade-payment-section">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:8px;">
+        <div
+          style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:8px;">
           <h4 style="margin:0; font-size:14px; font-weight:700; color:var(--ink);">
             Step 2: Complete Payment via Mobile Financial Services
           </h4>
@@ -6998,31 +7591,40 @@
         </div>
 
         <!-- Payment Instructions Box -->
-        <div style="background:var(--surface); border:1px solid var(--line); border-radius:10px; padding:14px; margin-bottom:16px;">
+        <div
+          style="background:var(--surface); border:1px solid var(--line); border-radius:10px; padding:14px; margin-bottom:16px;">
           <div id="paymentInstructionsContent" style="font-size:13px; line-height:1.6; color:var(--ink);">
             <p style="margin:0 0 6px 0;"><strong>How to Pay with bKash:</strong></p>
             <ol style="margin:0; padding-left:20px; font-size:12.5px; color:var(--ink2);">
               <li>Open your bKash app or dial *247# and choose <strong>Send Money</strong>.</li>
-              <li>Enter CCBot bKash Number: <strong style="color:var(--accent); font-family:var(--font-mono); font-size:14px;">01771784474</strong> (Personal)</li>
-              <li>Enter exact total amount: <strong id="instructionAmountTxt">৳2,080</strong> <span id="instructionFeeBreakdown" style="font-size:11.5px; color:var(--ink3);">(Base ৳2,000 + ৳80 Platform Fee)</span></li>
+              <li>Enter CCBot bKash Number: <strong
+                  style="color:var(--accent); font-family:var(--font-mono); font-size:14px;">01771784474</strong>
+                (Personal)</li>
+              <li>Enter exact total amount: <strong id="instructionAmountTxt">৳2,080</strong> <span
+                  id="instructionFeeBreakdown" style="font-size:11.5px; color:var(--ink3);">(Base ৳2,000 + ৳80 Platform
+                  Fee)</span></li>
               <li>Enter Reference: <strong id="instructionRefTxt">ClinicBot</strong></li>
-              <li>Confirm with PIN, then enter your sender mobile number and the <strong>TrxID</strong> below for <strong>instant 30-day activation</strong>.</li>
+              <li>Confirm with PIN, then enter your sender mobile number and the <strong>TrxID</strong> below for
+                <strong>instant 30-day activation</strong>.</li>
             </ol>
           </div>
         </div>
 
         <!-- Submission Form -->
-        <form onsubmit="submitUpgradeRequest(event)" style="display:grid; grid-template-columns:1fr 1fr auto; gap:12px; align-items:flex-end;">
+        <form onsubmit="submitUpgradeRequest(event)"
+          style="display:grid; grid-template-columns:1fr 1fr auto; gap:12px; align-items:flex-end;">
           <div>
             <label class="f" style="font-size:12px;">Your Sender Mobile Number</label>
             <input type="text" id="upgradeSenderPhone" placeholder="017XXXXXXXX" required style="font-size:13px;">
           </div>
           <div>
             <label class="f" style="font-size:12px;">Transaction ID (TrxID)</label>
-            <input type="text" id="upgradeTrxId" placeholder="e.g. 9J29X0KA7" required style="font-size:13px; font-family:var(--font-mono); text-transform:uppercase;">
+            <input type="text" id="upgradeTrxId" placeholder="e.g. 9J29X0KA7" required
+              style="font-size:13px; font-family:var(--font-mono); text-transform:uppercase;">
           </div>
           <div>
-            <button type="submit" class="btn primary" id="btnSubmitUpgrade" style="height:38px; padding:0 20px; font-weight:700;">
+            <button type="submit" class="btn primary" id="btnSubmitUpgrade"
+              style="height:38px; padding:0 20px; font-weight:700;">
               Confirm Upgrade
             </button>
           </div>
@@ -7033,7 +7635,8 @@
   </div>
 
   <!-- Floating Sticky Button: Test My Bot Live -->
-  <button id="floatingTestBotBtn" class="floating-test-bot-btn" type="button" onclick="toggleBotSimulator()" title="Test Your Bot Live">
+  <button id="floatingTestBotBtn" class="floating-test-bot-btn" type="button" onclick="toggleBotSimulator()"
+    title="Test Your Bot Live">
     <span class="sim-pulse-dot"></span>
     <span>Test Bot Live</span>
   </button>
@@ -7060,8 +7663,10 @@
     <!-- Quick Prompt Testing Chips -->
     <div class="sim-quick-chips">
       <button type="button" class="sim-chip" onclick="simSendChip('Treatment Pricing &amp; Packages')">Pricing</button>
-      <button type="button" class="sim-chip" onclick="simSendChip('Can I book an appointment for tomorrow?')">Book Visit</button>
-      <button type="button" class="sim-chip" onclick="simSendChip('What are your opening hours and off days?')">Hours</button>
+      <button type="button" class="sim-chip" onclick="simSendChip('Can I book an appointment for tomorrow?')">Book
+        Visit</button>
+      <button type="button" class="sim-chip"
+        onclick="simSendChip('What are your opening hours and off days?')">Hours</button>
       <button type="button" class="sim-chip" onclick="simSendChip('Where is your clinic located?')">Location</button>
       <button type="button" class="sim-chip" onclick="simSendChip('Root canal er cost koto?')">Banglish Ask</button>
     </div>
@@ -7080,7 +7685,8 @@
 
     <!-- Input Box & Send Button -->
     <form class="sim-input-row" onsubmit="simSubmitMessage(event)">
-      <input type="text" id="simUserInput" placeholder="Ask anything in English, Bengali, or Banglish…" autocomplete="off">
+      <input type="text" id="simUserInput" placeholder="Ask anything in English, Bengali, or Banglish…"
+        autocomplete="off">
       <button type="submit" title="Send message">➤</button>
     </form>
   </div>
@@ -7876,9 +8482,9 @@
 
         const isAppt = o.kind === 'appointment' || (o.details && /appointment|booking|consult|scaling|root canal|dental|doctor|clinic/i.test(o.details));
         const isInq = o.kind === 'inquiry';
-        const kindBadge = isAppt 
+        const kindBadge = isAppt
           ? `<span class="pill" style="font-size:10px; padding:2px 7px; background:rgba(99, 102, 241, 0.15); color:#6366f1; font-weight:700; border:1px solid rgba(99, 102, 241, 0.3)"> APPOINTMENT</span>`
-          : (isInq 
+          : (isInq
             ? `<span class="pill" style="font-size:10px; padding:2px 7px; background:rgba(245, 158, 11, 0.15); color:#d97706; font-weight:700; border:1px solid rgba(245, 158, 11, 0.3)"> INQUIRY</span>`
             : `<span class="pill" style="font-size:10px; padding:2px 7px; background:rgba(16, 185, 129, 0.15); color:#059669; font-weight:700; border:1px solid rgba(16, 185, 129, 0.3)">️ ORDER</span>`);
 
@@ -9746,25 +10352,25 @@ Thank you for partnering with Crown Operations!`;
         if (msg) msg.textContent = 'AI is structuring menu…';
         try {
           const r = await api('/api/import-menu', { method: 'POST', body: JSON.stringify({ text }) });
-        const d = await r.json();
-        if (!r.ok) throw new Error(d.error || 'Failed');
-        const rows = d.rows || [];
-        if (!rows.length) { msg.textContent = 'No items found.'; return; }
-        const byCat = {};
-        rows.forEach(x => {
-          const c = x.category || 'General';
-          byCat[c] = byCat[c] || [];
-          byCat[c].push({ id: uid(), name: x.name, desc: x.desc || '', price: x.price ?? null, available: true });
-        });
-        Object.entries(byCat).forEach(([name, items]) => S.menu.push({ id: uid(), name, items }));
-        save();
-        renderMenu();
-        msg.textContent = `Parsed and added ${rows.length} items.`;
-        document.getElementById('importBox').value = '';
-      } catch (e) {
-        msg.textContent = e.message || 'Could not parse text.';
-      }
-    };
+          const d = await r.json();
+          if (!r.ok) throw new Error(d.error || 'Failed');
+          const rows = d.rows || [];
+          if (!rows.length) { msg.textContent = 'No items found.'; return; }
+          const byCat = {};
+          rows.forEach(x => {
+            const c = x.category || 'General';
+            byCat[c] = byCat[c] || [];
+            byCat[c].push({ id: uid(), name: x.name, desc: x.desc || '', price: x.price ?? null, available: true });
+          });
+          Object.entries(byCat).forEach(([name, items]) => S.menu.push({ id: uid(), name, items }));
+          save();
+          renderMenu();
+          msg.textContent = `Parsed and added ${rows.length} items.`;
+          document.getElementById('importBox').value = '';
+        } catch (e) {
+          msg.textContent = e.message || 'Could not parse text.';
+        }
+      };
     }
 
     /* ---------- FAQ MANAGEMENT ---------- */
@@ -10154,7 +10760,7 @@ Thank you for partnering with Crown Operations!`;
       switchTab('inbox');
       selConv = +convId;
       document.querySelectorAll('#convList .conv').forEach(c => c.classList.toggle('sel', +c.dataset.cid === selConv));
-      
+
       const log = document.getElementById('threadLog');
       if (log) log.innerHTML = '<div class="empty" style="text-align:center;padding:32px;opacity:0.5">Loading conversation…</div>';
 
@@ -10506,7 +11112,7 @@ ${errData.message}`);
         try {
           const r = await api('/api/tenant/readiness');
           if (r.ok) S.readiness = await r.json();
-        } catch {}
+        } catch { }
       }
 
       const rd = S.readiness;
@@ -10876,7 +11482,7 @@ ${errData.message}`);
               const rData = await tr.json();
               if (S) S.readiness = rData;
             }
-          } catch {}
+          } catch { }
           updateLaunchChecklist();
         } else {
           simAppendBubble('bot', data?.error || data?.message || "I'm your assistant! How else may I assist with our treatments, hours, or appointments?");
@@ -11408,90 +12014,90 @@ ${focusScript}
 
   <!-- ── Animated Showcase Panel ── -->
   <script>
-  (function () {
-    /* ── Only run while login is visible ── */
-    const loginEl = document.getElementById('login');
-    if (!loginEl) return;
+    (function () {
+      /* ── Only run while login is visible ── */
+      const loginEl = document.getElementById('login');
+      if (!loginEl) return;
 
-    /* ══════════════ 1. PARTICLE MESH CANVAS ══════════════ */
-    const cvs = document.getElementById('showcaseCanvas');
-    if (cvs) {
-      const cx = cvs.getContext('2d');
-      let cW, cH, pts = [];
-      const N = 55, CONN = 90;
+      /* ══════════════ 1. PARTICLE MESH CANVAS ══════════════ */
+      const cvs = document.getElementById('showcaseCanvas');
+      if (cvs) {
+        const cx = cvs.getContext('2d');
+        let cW, cH, pts = [];
+        const N = 55, CONN = 90;
 
-      function resizeCvs() {
-        const box = document.getElementById('loginShowcase');
-        if (!box) return;
-        cW = cvs.width  = box.offsetWidth;
-        cH = cvs.height = box.offsetHeight;
-      }
+        function resizeCvs() {
+          const box = document.getElementById('loginShowcase');
+          if (!box) return;
+          cW = cvs.width = box.offsetWidth;
+          cH = cvs.height = box.offsetHeight;
+        }
 
-      function mkPt() {
-        return {
-          x: Math.random() * cW, y: Math.random() * cH,
-          vx: (Math.random() - 0.5) * 0.4,
-          vy: (Math.random() - 0.5) * 0.4,
-          r: Math.random() * 1.8 + 0.5
-        };
-      }
+        function mkPt() {
+          return {
+            x: Math.random() * cW, y: Math.random() * cH,
+            vx: (Math.random() - 0.5) * 0.4,
+            vy: (Math.random() - 0.5) * 0.4,
+            r: Math.random() * 1.8 + 0.5
+          };
+        }
 
-      function drawMesh() {
-        if (!cW) return;
-        cx.clearRect(0, 0, cW, cH);
-        pts.forEach(p => {
-          p.x += p.vx; p.y += p.vy;
-          if (p.x < 0) p.x = cW; if (p.x > cW) p.x = 0;
-          if (p.y < 0) p.y = cH; if (p.y > cH) p.y = 0;
-          cx.beginPath();
-          cx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-          cx.fillStyle = 'rgba(148,163,184,0.55)';
-          cx.fill();
-        });
-        for (let i = 0; i < pts.length; i++) {
-          for (let j = i + 1; j < pts.length; j++) {
-            const dx = pts[i].x - pts[j].x, dy = pts[i].y - pts[j].y;
-            const d = Math.sqrt(dx*dx + dy*dy);
-            if (d < CONN) {
-              cx.beginPath();
-              cx.moveTo(pts[i].x, pts[i].y);
-              cx.lineTo(pts[j].x, pts[j].y);
-              cx.strokeStyle = `rgba(99,102,241,${(1 - d/CONN) * 0.22})`;
-              cx.lineWidth = 0.8;
-              cx.stroke();
+        function drawMesh() {
+          if (!cW) return;
+          cx.clearRect(0, 0, cW, cH);
+          pts.forEach(p => {
+            p.x += p.vx; p.y += p.vy;
+            if (p.x < 0) p.x = cW; if (p.x > cW) p.x = 0;
+            if (p.y < 0) p.y = cH; if (p.y > cH) p.y = 0;
+            cx.beginPath();
+            cx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+            cx.fillStyle = 'rgba(148,163,184,0.55)';
+            cx.fill();
+          });
+          for (let i = 0; i < pts.length; i++) {
+            for (let j = i + 1; j < pts.length; j++) {
+              const dx = pts[i].x - pts[j].x, dy = pts[i].y - pts[j].y;
+              const d = Math.sqrt(dx * dx + dy * dy);
+              if (d < CONN) {
+                cx.beginPath();
+                cx.moveTo(pts[i].x, pts[i].y);
+                cx.lineTo(pts[j].x, pts[j].y);
+                cx.strokeStyle = `rgba(99,102,241,${(1 - d / CONN) * 0.22})`;
+                cx.lineWidth = 0.8;
+                cx.stroke();
+              }
             }
           }
+          requestAnimationFrame(drawMesh);
         }
-        requestAnimationFrame(drawMesh);
+
+        resizeCvs();
+        pts = Array.from({ length: N }, mkPt);
+        drawMesh();
+        window.addEventListener('resize', () => { resizeCvs(); pts = Array.from({ length: N }, mkPt); });
       }
 
-      resizeCvs();
-      pts = Array.from({ length: N }, mkPt);
-      drawMesh();
-      window.addEventListener('resize', () => { resizeCvs(); pts = Array.from({ length: N }, mkPt); });
-    }
 
-
-    /* ══════════════ 3. TYPEWRITER HEADLINE ══════════════ */
-    const tw = document.getElementById('scTypewriter');
-    if (tw) {
-      const PHRASES = ['Your Adventure Awaits', 'AI That Never Sleeps', 'Instant Smart Replies', 'Omnichannel. Effortless.'];
-      let pi = 0, ci = 0, deleting = false;
-      function type() {
-        const phrase = PHRASES[pi % PHRASES.length];
-        if (!deleting) {
-          tw.innerHTML = phrase.slice(0, ++ci) + '<span class="sc-cursor"></span>';
-          if (ci >= phrase.length) { deleting = true; setTimeout(type, 1800); return; }
-          setTimeout(type, 70);
-        } else {
-          tw.innerHTML = phrase.slice(0, --ci) + '<span class="sc-cursor"></span>';
-          if (ci === 0) { deleting = false; pi++; setTimeout(type, 400); return; }
-          setTimeout(type, 38);
+      /* ══════════════ 3. TYPEWRITER HEADLINE ══════════════ */
+      const tw = document.getElementById('scTypewriter');
+      if (tw) {
+        const PHRASES = ['Your Adventure Awaits', 'AI That Never Sleeps', 'Instant Smart Replies', 'Omnichannel. Effortless.'];
+        let pi = 0, ci = 0, deleting = false;
+        function type() {
+          const phrase = PHRASES[pi % PHRASES.length];
+          if (!deleting) {
+            tw.innerHTML = phrase.slice(0, ++ci) + '<span class="sc-cursor"></span>';
+            if (ci >= phrase.length) { deleting = true; setTimeout(type, 1800); return; }
+            setTimeout(type, 70);
+          } else {
+            tw.innerHTML = phrase.slice(0, --ci) + '<span class="sc-cursor"></span>';
+            if (ci === 0) { deleting = false; pi++; setTimeout(type, 400); return; }
+            setTimeout(type, 38);
+          }
         }
+        type();
       }
-      type();
-    }
-  })();
+    })();
   </script>
 
   <!-- ── Cosmic Starfield Background ── -->
