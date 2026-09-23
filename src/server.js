@@ -171,7 +171,12 @@ function getAuthSession(req) {
     const s = readToken(authHeader.slice(7).trim());
     if (s) return s;
   }
-  // 2. Fall back to cookie
+  // 2. Query param for direct browser file downloads / links
+  if (req.query && req.query.token) {
+    const s = readToken(String(req.query.token).trim());
+    if (s) return s;
+  }
+  // 3. Fall back to cookie
   if (req.cookies && req.cookies.cc_session) {
     const s = readToken(req.cookies.cc_session);
     if (s) return s;
@@ -201,7 +206,7 @@ async function requireAuth(req, reply) {
 
 async function requireMasterAdmin(req, reply) {
   const s = getAuthSession(req);
-  if (!s || s.role !== 'master_admin') {
+  if (!s || (s.role !== 'master_admin' && !(s.role === 'tenant_admin' && s.workspace_id === 1))) {
     return reply.code(403).send({ error: 'forbidden: requires master admin privileges' });
   }
   req.session = s;
@@ -747,6 +752,72 @@ async function handleAdminBackup(req, reply) {
 }
 app.post('/api/admin/backup', { preHandler: requireMasterAdmin }, handleAdminBackup);
 app.post(`${BASE}/api/admin/backup`, { preHandler: requireMasterAdmin }, handleAdminBackup);
+
+// List Available Database Backups
+async function handleAdminBackupList(req, reply) {
+  try {
+    const { resolve: res } = await import('node:path');
+    const backupDir = res(process.cwd(), 'data/backups');
+    await mkdir(backupDir, { recursive: true });
+    const files = await readdir(backupDir);
+    const backups = [];
+    for (const f of files) {
+      if (!f.startsWith('crown-') || !f.endsWith('.db')) continue;
+      const fp = res(backupDir, f);
+      const s = await stat(fp).catch(() => null);
+      if (s) {
+        backups.push({
+          filename: f,
+          size: s.size,
+          mtime: new Date(s.mtimeMs).toISOString()
+        });
+      }
+    }
+    backups.sort((a, b) => new Date(b.mtime) - new Date(a.mtime));
+    return { ok: true, backups };
+  } catch (e) {
+    return reply.code(500).send({ error: e.message });
+  }
+}
+app.get('/api/admin/backup/list', { preHandler: requireMasterAdmin }, handleAdminBackupList);
+app.get(`${BASE}/api/admin/backup/list`, { preHandler: requireMasterAdmin }, handleAdminBackupList);
+
+// Direct SQLite DB Backup Download
+async function handleAdminBackupDownload(req, reply) {
+  try {
+    const { resolve: res, basename } = await import('node:path');
+    const backupDir = res(process.cwd(), 'data/backups');
+    await mkdir(backupDir, { recursive: true });
+
+    let reqFile = req.query?.file ? String(req.query.file).trim() : '';
+    if (reqFile) {
+      reqFile = basename(reqFile);
+      if (!reqFile.startsWith('crown-') || !reqFile.endsWith('.db')) {
+        return reply.code(400).send({ error: 'Invalid backup filename.' });
+      }
+    }
+
+    let targetPath = reqFile ? res(backupDir, reqFile) : null;
+    let targetExists = targetPath ? await stat(targetPath).catch(() => null) : null;
+
+    if (!targetExists) {
+      // If no file requested or file not found, generate a fresh snapshot
+      const fresh = await performBackup();
+      targetPath = fresh.file;
+      reqFile = fresh.filename;
+      targetExists = { size: fresh.size };
+    }
+
+    reply.header('Content-Type', 'application/x-sqlite3');
+    reply.header('Content-Disposition', `attachment; filename="${reqFile}"`);
+    reply.header('Content-Length', targetExists.size);
+    return reply.send(createReadStream(targetPath));
+  } catch (e) {
+    return reply.code(500).send({ error: e.message });
+  }
+}
+app.get('/api/admin/backup/download', { preHandler: requireMasterAdmin }, handleAdminBackupDownload);
+app.get(`${BASE}/api/admin/backup/download`, { preHandler: requireMasterAdmin }, handleAdminBackupDownload);
 
 async function handleMe(req) {
   const s = getAuthSession(req);
@@ -2207,22 +2278,54 @@ async function handleEvent(ev, log) {
 
 /* ───────────────────────── Backup Utility ───────────────────────── */
 async function performBackup() {
-  const { resolve: res } = await import('node:path');
+  const { resolve: res, basename } = await import('node:path');
   const dbPath = res(process.cwd(), 'data/crown.db');
   const backupDir = res(process.cwd(), 'data/backups');
   await mkdir(backupDir, { recursive: true });
-  const date = new Date().toISOString().slice(0, 10);
-  const dest = res(backupDir, `crown-${date}.db`);
-  await copyFile(dbPath, dest);
-  // Prune backups older than 7 days
+
+  const now = new Date();
+  const dateStr = now.toISOString().slice(0, 10);
+  const timeStr = now.toTimeString().slice(0, 8).replace(/:/g, '-');
+  const filename = `crown-${dateStr}_${timeStr}.db`;
+  const dest = res(backupDir, filename);
+
+  // Use SQLite online backup API to ensure WAL journal is safely checkpointed
+  try {
+    if (db && typeof db.backup === 'function') {
+      await db.backup(dest);
+    } else {
+      await copyFile(dbPath, dest);
+    }
+  } catch (err) {
+    app.log.warn(`[backup] db.backup failed (${err.message}), falling back to copyFile`);
+    await copyFile(dbPath, dest);
+  }
+
+  // Also maintain a canonical crown-latest.db for 1-click quick recovery
+  const latestDest = res(backupDir, 'crown-latest.db');
+  try {
+    await copyFile(dest, latestDest);
+  } catch {}
+
+  const s = await stat(dest);
+
+  // Prune backups older than 7 days (preserving crown-latest.db)
   const files = await readdir(backupDir);
   for (const f of files) {
-    if (!f.startsWith('crown-') || !f.endsWith('.db')) continue;
+    if (!f.startsWith('crown-') || !f.endsWith('.db') || f === 'crown-latest.db') continue;
     const fp = res(backupDir, f);
-    const s = await stat(fp).catch(() => null);
-    if (s && Date.now() - s.mtimeMs > 7 * 86400 * 1000) await rm(fp).catch(() => {});
+    const fileStat = await stat(fp).catch(() => null);
+    if (fileStat && Date.now() - fileStat.mtimeMs > 7 * 86400 * 1000) {
+      await rm(fp).catch(() => {});
+    }
   }
-  return { file: dest, timestamp: new Date().toISOString() };
+
+  return {
+    file: dest,
+    filename,
+    size: s.size,
+    timestamp: now.toISOString()
+  };
 }
 
 /* ───────────────────────── pages & assets ───────────────────────── */

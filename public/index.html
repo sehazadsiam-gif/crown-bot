@@ -6588,6 +6588,21 @@
             </div>
             <pre class="prompt mono" id="jsonOut"></pre>
           </div>
+          <div class="card" style="margin-top:20px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:12px;">
+              <div>
+                <h3 style="margin:0;">Database Backups &amp; Snapshots</h3>
+                <p style="margin:4px 0 0; color:var(--ink2); font-size:12.5px;">Download a complete SQLite database backup (.db) containing all tenants, chats, and configurations.</p>
+              </div>
+              <div class="row" style="gap:8px;">
+                <button class="btn sm primary" onclick="triggerManualBackup()" id="btnSetupBackup">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:6px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                  Backup &amp; Download DB
+                </button>
+              </div>
+            </div>
+            <div id="backupListContainer" style="margin-top:12px; font-size:13px; color:var(--ink2);"></div>
+          </div>
         </section>
 
         <!-- TENANT CHATBOT & ACCOUNT MASTER HUB -->
@@ -8851,21 +8866,105 @@
     window.emailCredentialsPrompt = emailCredentialsPrompt;
 
     async function triggerManualBackup() {
-      const btn = document.getElementById('btnManualBackup');
-      if (btn) { btn.disabled = true; btn.textContent = 'Backing up…'; }
+      const btns = [
+        document.getElementById('btnManualBackup'),
+        document.getElementById('btnSetupBackup')
+      ].filter(Boolean);
+      btns.forEach(b => { b.disabled = true; b.textContent = 'Backing up…'; });
       try {
         const res = await api('/api/admin/backup', { method: 'POST' });
-        if (res && res.ok) {
-          chip(`Database backup created: ${res.file} (${(res.size / 1024).toFixed(1)} KB)`);
-        } else {
-          alert(res?.error || 'Failed to create backup.');
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok || !data.ok) {
+          throw new Error(data?.error || `HTTP ${res.status}`);
+        }
+        const sizeKb = data.size ? `${(data.size / 1024).toFixed(1)} KB` : '';
+        chip(`Database backup created: ${data.filename || 'crown.db'} ${sizeKb ? '(' + sizeKb + ')' : ''}`);
+
+        // Trigger automatic file download of the backup snapshot
+        try {
+          const dlRes = await api(`/api/admin/backup/download?file=${encodeURIComponent(data.filename || '')}`);
+          if (dlRes.ok) {
+            const blob = await dlRes.blob();
+            const blobUrl = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = blobUrl;
+            a.download = data.filename || 'crown.db';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            setTimeout(() => window.URL.revokeObjectURL(blobUrl), 10000);
+            chip(`Backup downloaded: ${data.filename}`);
+          }
+        } catch (dlErr) {
+          console.warn('[backup] Automatic download error:', dlErr);
+        }
+
+        if (typeof loadBackupList === 'function') {
+          loadBackupList();
         }
       } catch (e) {
         alert('Backup failed: ' + e.message);
       } finally {
-        if (btn) { btn.disabled = false; btn.textContent = 'Backup Database'; }
+        btns.forEach(b => { b.disabled = false; b.textContent = 'Backup Database'; });
+        const btnSetup = document.getElementById('btnSetupBackup');
+        if (btnSetup) btnSetup.textContent = 'Backup & Download DB';
       }
     }
+    window.triggerManualBackup = triggerManualBackup;
+
+    async function loadBackupList() {
+      const container = document.getElementById('backupListContainer');
+      if (!container) return;
+      container.innerHTML = '<div style="color:var(--ink3); padding:10px 0;">Loading backup snapshots…</div>';
+      try {
+        const res = await api('/api/admin/backup/list');
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok || !data.ok || !Array.isArray(data.backups) || !data.backups.length) {
+          container.innerHTML = '<div style="color:var(--ink3); font-style:italic; padding:8px 0;">No backup files found on server yet. Click "Backup &amp; Download DB" to take an instant snapshot.</div>';
+          return;
+        }
+        let html = '<div style="display:flex; flex-direction:column; gap:8px; margin-top:8px;">';
+        data.backups.forEach(b => {
+          const sizeKb = (b.size / 1024).toFixed(1) + ' KB';
+          const dateStr = new Date(b.mtime).toLocaleString();
+          html += `
+            <div style="display:flex; justify-content:space-between; align-items:center; background:var(--surface2); border:1px solid var(--line); border-radius:8px; padding:10px 14px; gap:10px;">
+              <div style="min-width:0;">
+                <div style="font-weight:700; color:var(--ink); font-family:monospace; font-size:13px; word-break:break-all;">${b.filename}</div>
+                <div style="font-size:11.5px; color:var(--ink3); margin-top:2px;">${sizeKb} • ${dateStr}</div>
+              </div>
+              <button class="btn sm" onclick="downloadBackupFile('${b.filename}')" style="flex-shrink:0; padding:4px 12px; font-size:12px;">Download</button>
+            </div>
+          `;
+        });
+        html += '</div>';
+        container.innerHTML = html;
+      } catch (err) {
+        container.innerHTML = `<div style="color:var(--danger, #ff1d58); padding:8px 0;">Failed to load backup list: ${err.message}</div>`;
+      }
+    }
+    window.loadBackupList = loadBackupList;
+
+    async function downloadBackupFile(filename) {
+      try {
+        chip(`Downloading ${filename}…`);
+        const res = await api(`/api/admin/backup/download?file=${encodeURIComponent(filename)}`);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const blob = await res.blob();
+        const blobUrl = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = blobUrl;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        setTimeout(() => window.URL.revokeObjectURL(blobUrl), 10000);
+        chip(`Downloaded ${filename}`);
+      } catch (e) {
+        alert('Download failed: ' + e.message);
+      }
+    }
+    window.downloadBackupFile = downloadBackupFile;
 
 
     /* Master: Create New Tenant Modal */
@@ -9629,7 +9728,7 @@ Thank you for partnering with Crown Operations!`;
       if (tabId === 'tenants') loadMasterTenants();
       if (tabId === 'orders') loadOrders();
       if (tabId === 'inbox') loadInbox();
-      if (tabId === 'setup') loadHealth();
+      if (tabId === 'setup') { loadHealth(); if (typeof loadBackupList === 'function') loadBackupList(); }
       if (tabId === 'channels') { updateChannelUrls(); loadWebhookLogs(); }
       if (tabId === 'tenant-info') renderTenantChatbotHub();
       if (tabId === 'play') {
