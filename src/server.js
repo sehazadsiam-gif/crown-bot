@@ -1131,7 +1131,7 @@ function renderOAuthPopupResult({ success, title, message, pageId, pageName }) {
   <style>
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background: #2C1F32;
+      background: #080D1A;
       color: #FFFFFF;
       display: flex;
       align-items: center;
@@ -1142,14 +1142,14 @@ function renderOAuthPopupResult({ success, title, message, pageId, pageName }) {
       box-sizing: border-box;
     }
     .card {
-      background: #46344E;
-      border: 1px solid rgba(157, 141, 143, 0.28);
+      background: #121E36;
+      border: 1px solid rgba(0, 221, 255, 0.28);
       border-radius: 20px;
       padding: 32px 28px;
       max-width: 440px;
       width: 100%;
       text-align: center;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
     }
     .status-icon-wrap {
       width: 52px;
@@ -1159,34 +1159,34 @@ function renderOAuthPopupResult({ success, title, message, pageId, pageName }) {
       display: flex;
       align-items: center;
       justify-content: center;
-      background: ${success ? 'rgba(52, 211, 153, 0.15)' : 'rgba(248, 113, 113, 0.15)'};
-      color: ${success ? '#34D399' : '#F87171'};
+      background: ${success ? 'rgba(0, 221, 255, 0.15)' : 'rgba(255, 29, 88, 0.15)'};
+      color: ${success ? '#00DDFF' : '#FF1D58'};
     }
     h2 {
       margin: 0 0 10px 0;
       font-size: 18px;
-      color: ${success ? '#D0BDF4' : '#FFFFFF'};
+      color: ${success ? '#00DDFF' : '#FFFFFF'};
       font-weight: 800;
     }
     p {
       margin: 0 0 20px 0;
       font-size: 13.5px;
-      color: #E5EAF5;
+      color: #DCE8FA;
       line-height: 1.5;
     }
     .page-pill {
       display: inline-block;
-      background: #494D5F;
-      border: 1px solid rgba(208, 189, 244, 0.35);
+      background: #182949;
+      border: 1px solid rgba(0, 221, 255, 0.35);
       border-radius: 9999px;
       padding: 5px 14px;
       font-size: 12.5px;
       font-weight: 700;
-      color: #A0D2EB;
+      color: #00DDFF;
       margin-bottom: 20px;
     }
     button {
-      background: #8458B3;
+      background: #FF1D58;
       color: #FFFFFF;
       border: none;
       font-weight: 800;
@@ -1237,7 +1237,7 @@ function renderOAuthPageSelector({ wsId, state, pages }) {
   <style>
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background: #1F2129;
+      background: #080D1A;
       color: #FFFFFF;
       display: flex;
       align-items: center;
@@ -1248,24 +1248,24 @@ function renderOAuthPageSelector({ wsId, state, pages }) {
       box-sizing: border-box;
     }
     .card {
-      background: #494D5F;
-      border: 1px solid rgba(208, 189, 244, 0.28);
+      background: #121E36;
+      border: 1px solid rgba(0, 221, 255, 0.28);
       border-radius: 20px;
       padding: 28px 24px;
       max-width: 480px;
       width: 100%;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
     }
     h2 {
       margin: 0 0 6px 0;
       font-size: 18px;
-      color: #D0BDF4;
+      color: #00DDFF;
       font-weight: 800;
     }
     p {
       margin: 0 0 18px 0;
       font-size: 13px;
-      color: #E5EAF5;
+      color: #DCE8FA;
       line-height: 1.45;
     }
     .pages-list {
@@ -1280,16 +1280,16 @@ function renderOAuthPageSelector({ wsId, state, pages }) {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      background: #3A3E4E;
-      border: 1px solid rgba(208, 189, 244, 0.22);
+      background: #182949;
+      border: 1px solid rgba(0, 221, 255, 0.22);
       border-radius: 12px;
       padding: 12px 16px;
       cursor: pointer;
       transition: all 0.15s ease;
     }
     .page-item:hover {
-      border-color: #8458B3;
-      background: #2E313D;
+      border-color: #00DDFF;
+      background: #203762;
     }
     .page-name {
       font-weight: 700;
@@ -1298,11 +1298,11 @@ function renderOAuthPageSelector({ wsId, state, pages }) {
     }
     .page-category {
       font-size: 11.5px;
-      color: #A0D2EB;
+      color: #00DDFF;
       margin-top: 2px;
     }
     .btn-select {
-      background: #8458B3;
+      background: #FF1D58;
       color: #FFFFFF;
       border: none;
       font-weight: 800;
@@ -1313,8 +1313,8 @@ function renderOAuthPageSelector({ wsId, state, pages }) {
     }
     .btn-cancel {
       background: transparent;
-      color: #E5EAF5;
-      border: 1px solid rgba(208, 189, 244, 0.3);
+      color: #DCE8FA;
+      border: 1px solid rgba(0, 221, 255, 0.3);
       padding: 8px 18px;
       border-radius: 9999px;
       font-size: 12px;
@@ -1388,12 +1388,12 @@ async function handleFacebookOAuthStart(req, reply) {
   <meta charset="utf-8">
   <title>Meta App ID Required</title>
   <style>
-    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #1F2129; color: #FFFFFF; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; padding: 20px; box-sizing: border-box; }
-    .card { background: #494D5F; border: 1px solid rgba(208, 189, 244, 0.28); border-radius: 20px; padding: 32px 28px; max-width: 460px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
-    h2 { color: #D0BDF4; margin: 0 0 12px 0; font-size: 18px; font-weight: 800; }
-    p { color: #E5EAF5; line-height: 1.5; font-size: 13.5px; margin: 0 0 16px 0; }
-    code { background: #3A3E4E; padding: 2px 6px; border-radius: 4px; font-family: monospace; color: #A0D2EB; font-size: 12px; }
-    button { background: #8458B3; color: #FFFFFF; border: none; font-weight: 800; padding: 10px 22px; border-radius: 9999px; cursor: pointer; font-size: 13px; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #080D1A; color: #FFFFFF; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; padding: 20px; box-sizing: border-box; }
+    .card { background: #121E36; border: 1px solid rgba(0, 221, 255, 0.28); border-radius: 20px; padding: 32px 28px; max-width: 460px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+    h2 { color: #FFF685; margin: 0 0 12px 0; font-size: 18px; font-weight: 800; }
+    p { color: #DCE8FA; line-height: 1.5; font-size: 13.5px; margin: 0 0 16px 0; }
+    code { background: #182949; padding: 2px 6px; border-radius: 4px; font-family: monospace; color: #00DDFF; font-size: 12px; }
+    button { background: #0049B7; color: #FFFFFF; border: 1px solid rgba(0, 221, 255, 0.4); font-weight: 800; padding: 10px 22px; border-radius: 9999px; cursor: pointer; font-size: 13px; }
   </style>
 </head>
 <body>

@@ -18,7 +18,7 @@
     currentScript.getAttribute('data-tenant') ||
     currentScript.getAttribute('data-workspace-id')
   )) || '';
-  const primaryColor = (currentScript && currentScript.getAttribute('data-color')) || '#1A0B2E';
+  const primaryColor = (currentScript && currentScript.getAttribute('data-color')) || '#FF1D58';
 
   // Build chat URL
   const chatUrl = new URL(serverOrigin + '/chat.html');
@@ -43,9 +43,9 @@
       height: 58px;
       border-radius: 50%;
       background: ${primaryColor};
-      color: #FFB7A5;
-      border: 1.5px solid rgba(255, 183, 165, 0.45);
-      box-shadow: 0 8px 24px -4px rgba(26, 11, 46, 0.45), 0 0 16px -2px rgba(255, 183, 165, 0.4);
+      color: #FFFFFF;
+      border: 1.5px solid rgba(0, 221, 255, 0.45);
+      box-shadow: 0 8px 24px -4px rgba(255, 29, 88, 0.45), 0 0 16px -2px rgba(0, 221, 255, 0.4);
       cursor: pointer;
       display: flex;
       align-items: center;
@@ -54,7 +54,7 @@
     }
     .cc-chat-bubble-btn:hover {
       transform: scale(1.08);
-      box-shadow: 0 12px 30px -4px rgba(0, 0, 0, 0.45);
+      box-shadow: 0 12px 30px -4px rgba(0, 73, 183, 0.45);
     }
     .cc-chat-bubble-btn svg {
       width: 26px;
@@ -71,9 +71,9 @@
       height: 600px;
       max-height: calc(100vh - 120px);
       border-radius: 20px;
-      border: 1px solid rgba(0, 0, 0, 0.12);
-      box-shadow: 0 20px 48px -8px rgba(0, 0, 0, 0.35);
-      background: #0d121f;
+      border: 1px solid rgba(0, 221, 255, 0.2);
+      box-shadow: 0 20px 48px -8px rgba(0, 0, 0, 0.5);
+      background: #080D1A;
       overflow: hidden;
       display: none;
       opacity: 0;

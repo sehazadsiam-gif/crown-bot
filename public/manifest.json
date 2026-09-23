@@ -7,8 +7,8 @@
   "id": "/chatbotadmin/",
   "display": "standalone",
   "orientation": "any",
-  "background_color": "#0c0d10",
-  "theme_color": "#111318",
+  "background_color": "#080D1A",
+  "theme_color": "#0049B7",
   "categories": ["business", "productivity", "utilities"],
   "icons": [
     {
