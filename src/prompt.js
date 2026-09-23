@@ -90,10 +90,39 @@ export function buildPrompt(cfg, lang = 'en') {
     }
   }
 
-  const fq = (cfg.faqs || []).filter(f => f.q && f.a);
-  if (fq.length) {
-    L.push('', '## Business Knowledge & FAQs');
-    for (const f of fq) L.push(`Q: ${f.q}\nA: ${f.a}`);
+  // High-Priority Trained Business Knowledge & FAQs
+  const trainedItems = [];
+  if (Array.isArray(cfg.knowledge)) {
+    for (const k of cfg.knowledge) {
+      if (typeof k === 'string' && k.trim()) {
+        trainedItems.push(`- RULE/NOTE: ${k.trim()}`);
+      } else if (k && k.content) {
+        trainedItems.push(`- ${k.title ? `[${k.title}] ` : ''}${k.content}`);
+      } else if (k && k.q && k.a) {
+        trainedItems.push(`- Question: "${k.q}"\n  Verified Answer: "${k.a}"`);
+      }
+    }
+  }
+  if (Array.isArray(cfg.faqs)) {
+    for (const f of cfg.faqs) {
+      if (!f) continue;
+      if (f.content || f.text || f.rule) {
+        const title = f.title || f.topic || f.category || '';
+        const body = f.content || f.text || f.rule;
+        trainedItems.push(`- ${title ? `[${title}] ` : ''}${body}`);
+      } else if (f.q && f.a) {
+        trainedItems.push(`- Question: "${f.q}"\n  Verified Answer: "${f.a}"`);
+      }
+    }
+  }
+
+  if (trainedItems.length) {
+    L.push('', '## TRAINED BUSINESS KNOWLEDGE & GROUND TRUTH (CRITICAL PRIORITY)');
+    L.push('You have been explicitly trained with the following verified facts, instructions, policies, and Q&A from the business owner.');
+    L.push('MANDATE: Treat this knowledge as ABSOLUTE TRUTH. If a customer inquiry touches on any of these topics, you MUST reply accurately according to this trained knowledge and never contradict it.');
+    for (const item of trainedItems) {
+      L.push(item);
+    }
   }
 
   L.push('', '## Inquiries, Orders and Service Requests');

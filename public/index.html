@@ -4922,12 +4922,16 @@
           <span id="navCatalogLabel">Services &amp; Pricing</span>
         </button>
         <button data-p="faq" onclick="switchTab('faq')">
-          <svg viewBox="0 0 24 24">
-            <circle cx="12" cy="12" r="10" />
-            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
-            <line x1="12" x2="12.01" y1="17" y2="17" />
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2a5 5 0 0 1 5 5v1a5 5 0 0 1-5 5 5 5 0 0 1-5-5V7a5 5 0 0 1 5-5z" />
+            <path d="M19 12a7 7 0 0 1-14 0" />
+            <path d="M12 19v3" />
+            <path d="M8 22h8" />
           </svg>
-          Common FAQs
+          <span style="display:flex; align-items:center; justify-content:space-between; width:100%">
+            <span>Train Your Bot</span>
+            <span id="navTrainingBadge" style="font-size:10px; font-weight:700; padding:1px 6px; background:rgba(217,4,41,0.15); color:var(--accent); border-radius:10px; display:none;">0</span>
+          </span>
         </button>
 
         <div class="navlabel">ACCOUNT</div>
@@ -5229,12 +5233,12 @@
                   </div>
                   <span class="step-arrow">&rarr;</span>
                 </div>
-                <!-- Step 3: Common FAQs -->
+                <!-- Step 3: Train Your Bot -->
                 <div class="checklist-step" id="stepCommonFaqs" onclick="switchTab('faq')">
                   <div class="step-check todo" id="stepCheck3">3</div>
                   <div class="step-info">
-                    <div class="step-label">3. Questions &amp; FAQs</div>
-                    <div class="step-desc" id="stepDesc3">Add at least 3 questions &amp; answers</div>
+                    <div class="step-label">3. Train Your Bot</div>
+                    <div class="step-desc" id="stepDesc3">Add at least 3 business facts, policies or FAQs</div>
                   </div>
                   <span class="step-arrow">&rarr;</span>
                 </div>
@@ -6371,25 +6375,66 @@
           <div id="menuList"></div>
         </section>
 
-        <!-- FAQS PANEL -->
+        <!-- TRAIN YOUR BOT PANEL -->
         <section class="panel" data-p="faq">
-          <div class="phead">
-            <div>
-              <h2 id="faqPanelTitle">Verified FAQs</h2>
-              <p id="faqPanelSub">Standardized answers for appointments, doctor consultations, treatments, clinic hours,
-                and pricing.</p>
-              <div style="display:flex; gap:8px; margin-top:8px">
-                <button class="btn sm"
-                  onclick="openOnboardingModal({ businessName: S?.business?.name || S?.cafe?.name || '', businessType: S?.business?.type || S?.cafe?.type || '', services: Array.isArray(S?.business?.services) ? S.business.services.join(', ') : (S?.business?.services || '') })">AI
-                  FAQ Wizard</button>
-                <button class="btn sm ghost" onclick="quickSeedIndustryPresets()"
-                  title="Load industry tailored FAQs and treatments">Apply Industry Presets</button>
-                <button class="btn primary sm" id="addFaq">+ Add FAQ</button>
+          <div class="phead" style="margin-bottom:16px">
+            <div style="flex:1">
+              <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap">
+                <h2 id="faqPanelTitle" style="margin:0">Train Your Bot</h2>
+                <span id="trainingStatusPill" class="badge" style="background:rgba(16,185,129,0.15); color:#10b981; font-weight:600; font-size:12px; padding:4px 10px; border-radius:20px; border:1px solid rgba(16,185,129,0.3); display:inline-flex; align-items:center; gap:6px">
+                  <span style="width:7px; height:7px; border-radius:50%; background:#10b981; display:inline-block"></span>
+                  <span id="trainingItemCount">0 Knowledge Items Active</span>
+                </span>
               </div>
-              <div class="card">
-                <div id="faqList"></div>
-              </div>
+              <p id="faqPanelSub" style="margin-top:6px; color:var(--text-dim); font-size:13.5px; max-width:850px">
+                Teach your AI assistant verified business facts, delivery coverage, pricing notes, return policies, and FAQs. The bot uses this knowledge as absolute ground truth when replying to customers.
+              </p>
             </div>
+            <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center">
+              <button class="btn sm" onclick="openOnboardingModal({ businessName: S?.business?.name || S?.cafe?.name || '', businessType: S?.business?.type || S?.cafe?.type || '', services: Array.isArray(S?.business?.services) ? S.business.services.join(', ') : (S?.business?.services || '') })" style="display:flex; align-items:center; gap:6px">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3z"/></svg>
+                AI Training Wizard
+              </button>
+              <button class="btn sm ghost" onclick="quickSeedIndustryPresets()" title="Load industry tailored business facts & procedures">
+                Apply Industry Presets
+              </button>
+              <button class="btn sm ghost" onclick="openBotSimulator()" style="border-color:rgba(217,4,41,0.4); color:var(--accent)" title="Test your newly trained knowledge in the chat simulator">
+                Test in Simulator &rarr;
+              </button>
+            </div>
+          </div>
+
+          <!-- Quick Actions & Add Bar -->
+          <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:14px; flex-wrap:wrap">
+            <!-- Filter Pills -->
+            <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap" id="trainingFilterTabs">
+              <button type="button" class="btn sm ghost active" onclick="setTrainingFilter('all')" id="trainFilter-all" style="padding:4px 12px; font-size:12px">All Knowledge (<span id="countAll">0</span>)</button>
+              <button type="button" class="btn sm ghost" onclick="setTrainingFilter('qa')" id="trainFilter-qa" style="padding:4px 12px; font-size:12px">Q&amp;A / FAQs (<span id="countQA">0</span>)</button>
+              <button type="button" class="btn sm ghost" onclick="setTrainingFilter('rule')" id="trainFilter-rule" style="padding:4px 12px; font-size:12px">Policies &amp; Rules (<span id="countRule">0</span>)</button>
+            </div>
+
+            <!-- Add Buttons -->
+            <div style="display:flex; gap:8px">
+              <button class="btn sm" id="addRuleBtn" onclick="addTrainingRule()" style="background:rgba(255,255,255,0.06); border:1px solid var(--line); display:flex; align-items:center; gap:5px">
+                + Add Policy / Note
+              </button>
+              <button class="btn primary sm" id="addFaq" style="display:flex; align-items:center; gap:5px">
+                + Add Q&amp;A
+              </button>
+            </div>
+          </div>
+
+          <!-- Helper Banner / Instructions -->
+          <div style="background:rgba(217,4,41,0.06); border:1px solid rgba(217,4,41,0.2); border-radius:8px; padding:10px 14px; margin-bottom:14px; display:flex; align-items:center; justify-content:space-between; gap:12px; font-size:12.5px">
+            <div style="display:flex; align-items:center; gap:8px">
+              <span style="font-size:16px">🧠</span>
+              <span><strong>How Bot Training Works:</strong> Add exact customer questions or general business rules (e.g. <em>"Delivery outside Dhaka is 130 Tk"</em>, <em>"Doctor consultation is by serial only"</em>). Changes sync instantly to your live bot.</span>
+            </div>
+            <span id="trainingSaveIndicator" style="font-size:11px; color:#10b981; font-weight:600; white-space:nowrap; display:none">✓ Saved &amp; Synced</span>
+          </div>
+
+          <div class="card" style="padding:14px">
+            <div id="faqList"></div>
           </div>
         </section>
 
@@ -6949,7 +6994,7 @@
         <div class="cmd-item" data-act="inbox"><span>Open Customer Inbox</span><kbd>G I</kbd></div>
         <div class="cmd-item" data-act="channels"><span>Multi-Channel Settings</span><kbd>G C</kbd></div>
         <div class="cmd-item" data-act="menu"><span>Manage Menu &amp; Catalog</span><kbd>G M</kbd></div>
-        <div class="cmd-item" data-act="faq"><span>Manage Verified FAQs</span><kbd>G F</kbd></div>
+        <div class="cmd-item" data-act="faq"><span>Train Your Bot (Knowledge Base)</span><kbd>G F</kbd></div>
 
         <div class="cmd-item" data-act="theme"><span>Toggle Dark/Light Theme</span><kbd>T</kbd></div>
       </div>
@@ -9795,6 +9840,16 @@ Thank you for partnering with Crown Operations!`;
       const stOut = document.getElementById('stOutToday'); if (stOut) stOut.textContent = s.todayOut || 0;
       const stF = document.getElementById('stFlagged'); if (stF) stF.textContent = s.flagged || 0;
 
+      // Keep Train Your Bot badge in sync
+      if (S?.faqs && Array.isArray(S.faqs)) {
+        const validTrainedCount = S.faqs.filter(f => f && ((f.q && f.a) || f.content || f.text || f.rule)).length;
+        const elNavBadge = document.getElementById('navTrainingBadge');
+        if (elNavBadge) {
+          elNavBadge.textContent = validTrainedCount;
+          elNavBadge.style.display = validTrainedCount > 0 ? 'inline-block' : 'none';
+        }
+      }
+
       // Avg Response Time
       const rt = document.getElementById('stAvgResponse');
       if (rt) {
@@ -10146,7 +10201,7 @@ Thank you for partnering with Crown Operations!`;
       }
 
       if (!S.menu.length) {
-        w.innerHTML = '<div class="empty">No catalog categories yet. Click "+ Add Category" or "Apply Industry Presets" in Help &amp; FAQs to auto-load.</div>';
+        w.innerHTML = '<div class="empty">No catalog categories yet. Click "+ Add Category" or "Apply Industry Presets" in Train Your Bot to auto-load.</div>';
         return;
       }
       S.menu.forEach((cat, ci) => {
@@ -10271,68 +10326,187 @@ Thank you for partnering with Crown Operations!`;
       };
     }
 
-    /* ---------- FAQ MANAGEMENT ---------- */
+    /* ---------- TRAIN YOUR BOT & KNOWLEDGE MANAGEMENT ---------- */
+    let trainingFilter = 'all';
+    window.setTrainingFilter = function(f) {
+      trainingFilter = f;
+      document.querySelectorAll('#trainingFilterTabs button').forEach(b => {
+        b.classList.toggle('active', b.id === 'trainFilter-' + f);
+      });
+      renderFaq();
+    };
+
+    window.addTrainingRule = function() {
+      S.faqs = S.faqs || [];
+      S.faqs.unshift({
+        type: 'rule',
+        category: 'Policy',
+        title: '',
+        content: ''
+      });
+      save();
+      renderFaq();
+      flashTrainingSave();
+    };
+
+    function flashTrainingSave() {
+      const ind = document.getElementById('trainingSaveIndicator');
+      if (ind) {
+        ind.style.display = 'inline-block';
+        clearTimeout(window._trainSaveT);
+        window._trainSaveT = setTimeout(() => { ind.style.display = 'none'; }, 2500);
+      }
+    }
+
     function renderFaq() {
       const w = document.getElementById('faqList');
       if (!w || !S?.faqs) return;
       w.innerHTML = '';
 
-      const bType = (S?.business?.type || S?.business?.businessType || '').toLowerCase();
-      const isDentistry = bType.includes('dent') || bType.includes('dental') || bType.includes('smile');
-      const isHealth = bType.includes('clinic') || bType.includes('health') || bType.includes('doctor');
-      const isSalon = bType.includes('salon') || bType.includes('spa') || bType.includes('beauty');
-      const isLaw = bType.includes('law') || bType.includes('legal');
-      const isRealEstate = bType.includes('real estate') || bType.includes('property');
-      const isEcommerce = bType.includes('ecommerce') || bType.includes('clothing') || bType.includes('shop');
+      const items = S.faqs;
+      let countQA = 0;
+      let countRule = 0;
+      items.forEach(f => {
+        const isRule = f && (f.type === 'rule' || (f.content && !f.q));
+        if (isRule) countRule++;
+        else countQA++;
+      });
 
-      const faqTitle = document.getElementById('faqPanelTitle');
-      const faqSub = document.getElementById('faqPanelSub');
-      if (faqTitle) {
-        if (isDentistry) faqTitle.textContent = 'Clinic FAQs & Knowledge Base';
-        else if (isHealth) faqTitle.textContent = 'Medical Practice FAQs';
-        else if (isSalon) faqTitle.textContent = 'Salon & Spa Service FAQs';
-        else if (isLaw) faqTitle.textContent = 'Legal Chambers FAQs & Policies';
-        else if (isRealEstate) faqTitle.textContent = 'Real Estate & Property FAQs';
-        else if (isEcommerce) faqTitle.textContent = 'Store Delivery & Ordering FAQs';
-        else faqTitle.textContent = 'Verified Business FAQs & Knowledge Base';
-      }
-      if (faqSub) {
-        faqSub.textContent = 'Official responses used by the AI assistant before consulting LLM. Always treated as absolute facts.';
+      const countAll = items.length;
+      const validTrainedCount = items.filter(f => f && ((f.q && f.a) || f.content || f.text || f.rule)).length;
+
+      // Update counters in panel and nav
+      const elCountAll = document.getElementById('countAll');
+      const elCountQA = document.getElementById('countQA');
+      const elCountRule = document.getElementById('countRule');
+      const elItemCount = document.getElementById('trainingItemCount');
+      const elNavBadge = document.getElementById('navTrainingBadge');
+
+      if (elCountAll) elCountAll.textContent = countAll;
+      if (elCountQA) elCountQA.textContent = countQA;
+      if (elCountRule) elCountRule.textContent = countRule;
+      if (elItemCount) elItemCount.textContent = `${validTrainedCount} Active Knowledge Item${validTrainedCount === 1 ? '' : 's'}`;
+      if (elNavBadge) {
+        elNavBadge.textContent = validTrainedCount;
+        elNavBadge.style.display = validTrainedCount > 0 ? 'inline-block' : 'none';
       }
 
-      if (!S.faqs.length) {
-        w.innerHTML = '<div class="empty">No verified FAQs yet. Click "Apply Industry Presets" or "AI FAQ Wizard" above.</div>';
+      const filteredItems = items.map((f, i) => ({ ...f, _originalIndex: i })).filter(f => {
+        const isRule = f && (f.type === 'rule' || (f.content && !f.q));
+        if (trainingFilter === 'qa') return !isRule;
+        if (trainingFilter === 'rule') return isRule;
+        return true;
+      });
+
+      if (!filteredItems.length) {
+        w.innerHTML = `
+          <div class="empty" style="text-align:center; padding:32px 16px">
+            <div style="font-size:24px; margin-bottom:8px">🧠</div>
+            <div style="font-weight:600; font-size:14px; margin-bottom:4px">
+              ${trainingFilter === 'qa' ? 'No Q&A items yet' : trainingFilter === 'rule' ? 'No business policies or rules added yet' : 'Your bot has not been trained yet'}
+            </div>
+            <div style="color:var(--text-dim); font-size:12.5px; max-width:440px; margin:0 auto 16px auto">
+              Add customer questions, delivery guidelines, or store policies so your AI assistant answers accurately 24/7.
+            </div>
+            <div style="display:flex; justify-content:center; gap:8px">
+              <button class="btn sm" onclick="addTrainingRule()">+ Add Policy / Note</button>
+              <button class="btn primary sm" onclick="document.getElementById('addFaq').click()">+ Add Q&amp;A</button>
+            </div>
+          </div>
+        `;
         return;
       }
-      S.faqs.forEach((f, i) => {
-        const d = document.createElement('div');
-        d.className = 'faq';
-        d.innerHTML = `
-      <div class="row" style="margin-bottom:8px">
-        <input type="text" value="${esc(f.q)}" data-fq="${i}" placeholder="Customer Question" style="flex:1; font-weight:600">
-        <button class="btn ghost sm" data-fdel="${i}" title="Delete FAQ">Delete</button>
-      </div>
-      <textarea data-fa="${i}" placeholder="Official verified answer">${esc(f.a)}</textarea>`;
-        w.appendChild(d);
+
+      filteredItems.forEach(f => {
+        const i = f._originalIndex;
+        const isRule = f && (f.type === 'rule' || (f.content && !f.q));
+        const card = document.createElement('div');
+        card.className = 'knowledge-card';
+        card.style.cssText = 'background:var(--card-bg, rgba(255,255,255,0.02)); border:1px solid var(--line); border-radius:10px; padding:14px; margin-bottom:12px; transition:border-color 0.2s';
+
+        const catOptions = ['General', 'Delivery', 'Pricing', 'Policy', 'Booking', 'Product', 'Discounts']
+          .map(c => `<option value="${c}"${(f.category || 'General') === c ? ' selected' : ''}>${c}</option>`)
+          .join('');
+
+        if (isRule) {
+          card.innerHTML = `
+            <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; margin-bottom:10px; flex-wrap:wrap">
+              <div style="display:flex; align-items:center; gap:8px">
+                <span style="font-size:10.5px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; padding:2px 8px; border-radius:5px; background:rgba(245,158,11,0.15); color:#fbbf24; border:1px solid rgba(245,158,11,0.3)">
+                  📋 Policy / Rule
+                </span>
+                <select data-fcat="${i}" style="font-size:11.5px; padding:3px 8px; border-radius:6px; background:rgba(255,255,255,0.04); border:1px solid var(--line); color:var(--text); cursor:pointer">
+                  ${catOptions}
+                </select>
+              </div>
+              <button class="btn ghost sm" data-fdel="${i}" style="color:var(--text-dim); padding:2px 8px; font-size:11.5px" title="Delete Item">Delete</button>
+            </div>
+            <div>
+              <input type="text" value="${esc(f.title || '')}" data-ftitle="${i}" placeholder="Topic or Rule Title (e.g., Free Shipping Condition, Doctor Schedule, Exchange Policy)" style="width:100%; font-weight:600; font-size:13px; margin-bottom:8px; border-color:var(--line)">
+              <textarea data-fcontent="${i}" rows="2" placeholder="Policy details or business rule. The bot will follow this strictly when answering customers." style="width:100%; font-size:12.5px; border-color:var(--line)">${esc(f.content || f.text || f.rule || '')}</textarea>
+            </div>
+          `;
+        } else {
+          card.innerHTML = `
+            <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; margin-bottom:10px; flex-wrap:wrap">
+              <div style="display:flex; align-items:center; gap:8px">
+                <span style="font-size:10.5px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; padding:2px 8px; border-radius:5px; background:rgba(59,130,246,0.15); color:#60a5fa; border:1px solid rgba(59,130,246,0.3)">
+                  ❓ Question &amp; Answer
+                </span>
+                <select data-fcat="${i}" style="font-size:11.5px; padding:3px 8px; border-radius:6px; background:rgba(255,255,255,0.04); border:1px solid var(--line); color:var(--text); cursor:pointer">
+                  ${catOptions}
+                </select>
+              </div>
+              <button class="btn ghost sm" data-fdel="${i}" style="color:var(--text-dim); padding:2px 8px; font-size:11.5px" title="Delete FAQ">Delete</button>
+            </div>
+            <div>
+              <input type="text" value="${esc(f.q || '')}" data-fq="${i}" placeholder="Customer Question (e.g., Do you provide home delivery in Chittagong?)" style="width:100%; font-weight:600; font-size:13px; margin-bottom:8px; border-color:var(--line)">
+              <textarea data-fa="${i}" rows="2" placeholder="Verified official answer. The bot will provide this answer to customers." style="width:100%; font-size:12.5px; border-color:var(--line)">${esc(f.a || '')}</textarea>
+            </div>
+          `;
+        }
+
+        w.appendChild(card);
       });
     }
 
     document.getElementById('addFaq').onclick = () => {
       S.faqs = S.faqs || [];
-      S.faqs.push({ q: '', a: '' });
-      save(); renderFaq();
+      S.faqs.unshift({
+        type: 'qa',
+        category: 'General',
+        q: '',
+        a: ''
+      });
+      save();
+      renderFaq();
+      flashTrainingSave();
     };
 
     document.getElementById('faqList').addEventListener('input', e => {
       const t = e.target;
-      if (t.dataset.fq !== undefined) { S.faqs[+t.dataset.fq].q = t.value; save(); }
-      else if (t.dataset.fa !== undefined) { S.faqs[+t.dataset.fa].a = t.value; save(); }
+      if (t.dataset.fq !== undefined) { S.faqs[+t.dataset.fq].q = t.value; save(); flashTrainingSave(); }
+      else if (t.dataset.fa !== undefined) { S.faqs[+t.dataset.fa].a = t.value; save(); flashTrainingSave(); }
+      else if (t.dataset.ftitle !== undefined) { S.faqs[+t.dataset.ftitle].title = t.value; save(); flashTrainingSave(); }
+      else if (t.dataset.fcontent !== undefined) { S.faqs[+t.dataset.fcontent].content = t.value; save(); flashTrainingSave(); }
+    });
+
+    document.getElementById('faqList').addEventListener('change', e => {
+      const t = e.target;
+      if (t.dataset.fcat !== undefined) {
+        S.faqs[+t.dataset.fcat].category = t.value;
+        save();
+        flashTrainingSave();
+      }
     });
 
     document.getElementById('faqList').addEventListener('click', e => {
-      const b = e.target.closest('[data-fdel]'); if (!b) return;
+      const b = e.target.closest('[data-fdel]');
+      if (!b) return;
       S.faqs.splice(+b.dataset.fdel, 1);
-      save(); renderFaq();
+      save();
+      renderFaq();
+      flashTrainingSave();
     });
 
     /* ---------- HARD GUARDS & ESCALATIONS ---------- */
@@ -11058,12 +11232,12 @@ ${errData.message}`);
 
       const c3 = document.getElementById('stepCheck3');
       const d3 = document.getElementById('stepDesc3');
-      const fCount = rd?.faqCount || (Array.isArray(S.faqs) ? S.faqs.filter(f => f && f.q && f.a).length : 0);
+      const fCount = rd?.faqCount || (Array.isArray(S.faqs) ? S.faqs.filter(f => f && ((f.q && f.a) || f.content || f.text || f.rule)).length : 0);
       if (c3) {
         c3.className = 'step-check ' + (s3Done ? 'done' : 'todo');
         c3.textContent = s3Done ? '✓' : '3';
       }
-      if (d3) d3.textContent = s3Done ? `${fCount} FAQs configured` : `Add at least 3 questions & answers (${fCount}/3)`;
+      if (d3) d3.textContent = s3Done ? `${fCount} facts & FAQs learned` : `Add at least 3 business facts, policies or FAQs (${fCount}/3)`;
 
       const c4 = document.getElementById('stepCheck4');
       const d4 = document.getElementById('stepDesc4');

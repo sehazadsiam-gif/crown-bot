@@ -1848,7 +1848,7 @@ export function getWorkspaceConfig(workspaceId = 1) {
       if (!hasMenu && DEFAULT_CONFIG.menu?.length) {
         parsed.menu = structuredClone(DEFAULT_CONFIG.menu);
       }
-      if ((!parsed.faqs || !parsed.faqs.length) && DEFAULT_CONFIG.faqs?.length) {
+      if (parsed.faqs === undefined && DEFAULT_CONFIG.faqs?.length) {
         parsed.faqs = structuredClone(DEFAULT_CONFIG.faqs);
       }
       if (DEFAULT_CONFIG.cafe) {
@@ -3255,8 +3255,14 @@ export function getWorkspaceTrainingStatus(workspaceId) {
   }
   const servicesComplete = serviceCount >= 3;
 
-  // 3. FAQs count (minimum 3 questions & answers)
-  const faqCount = Array.isArray(cfg?.faqs) ? cfg.faqs.filter(f => f && f.q && f.a).length : 0;
+  // 3. Bot Training count (minimum 3 items: Q&A pairs or business knowledge rules)
+  let faqCount = 0;
+  if (Array.isArray(cfg?.faqs)) {
+    faqCount += cfg.faqs.filter(f => f && ((f.q && f.a) || f.content || f.text || f.rule)).length;
+  }
+  if (Array.isArray(cfg?.knowledge)) {
+    faqCount += cfg.knowledge.filter(k => k && (typeof k === 'string' ? k.trim() : (k.content || (k.q && k.a)))).length;
+  }
   const faqsComplete = faqCount >= 3;
 
   // 4. Owner Test Chat (conducted via Simulator drawer or test chat)
@@ -3287,7 +3293,7 @@ export function getWorkspaceTrainingStatus(workspaceId) {
       steps: [
         { key: 'profile', title: 'Business Profile', done: true },
         { key: 'services', title: 'Services / Catalog Items', done: true, current: serviceCount, required: 3 },
-        { key: 'faqs', title: 'Common Questions & Answers', done: true, current: faqCount, required: 3 },
+        { key: 'faqs', title: 'Train Your Bot (Knowledge & FAQs)', done: true, current: faqCount, required: 3 },
         { key: 'test', title: 'Test Chat Verification', done: true }
       ],
       missing: []
@@ -3297,7 +3303,7 @@ export function getWorkspaceTrainingStatus(workspaceId) {
   const steps = [
     { key: 'profile', title: 'Business Profile & Contact Info', done: profileComplete },
     { key: 'services', title: 'At Least 3 Services / Catalog Items', done: servicesComplete, current: serviceCount, required: 3 },
-    { key: 'faqs', title: 'At Least 3 Questions & Answers', done: faqsComplete, current: faqCount, required: 3 },
+    { key: 'faqs', title: 'Train Your Bot (At Least 3 Facts, Rules or FAQs)', done: faqsComplete, current: faqCount, required: 3 },
     { key: 'test', title: 'Send 1 Test Chat Message', done: hasTested }
   ];
 
