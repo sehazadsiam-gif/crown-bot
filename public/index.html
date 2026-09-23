@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en" data-theme="dark">
 
 <head>
   <meta charset="utf-8">
@@ -283,11 +283,12 @@
 
     /* Header */
     header {
+      position: relative;
       border-bottom: 1px solid var(--line);
       background: var(--surface-glass);
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
-      padding: 10px 24px;
+      padding: 12px 24px;
       display: flex;
       align-items: center;
       gap: 14px;
@@ -296,6 +297,18 @@
       top: 0;
       z-index: 40;
       transition: var(--transition);
+    }
+
+    header::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3.5px;
+      background: linear-gradient(90deg, #FF1D58 0%, #F75990 25%, #FFF685 50%, #00DDFF 75%, #0049B7 100%);
+      box-shadow: 0 0 12px rgba(0, 221, 255, 0.55);
+      z-index: 45;
     }
 
     .brand {
@@ -312,13 +325,13 @@
       width: 34px;
       height: 34px;
       border-radius: var(--radius-sm);
-      background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+      background: linear-gradient(135deg, #FF1D58 0%, #F75990 100%);
       color: #ffffff;
       display: grid;
       place-items: center;
       font-weight: 800;
       font-size: 14px;
-      box-shadow: 0 0 16px rgba(99, 102, 241, 0.4);
+      box-shadow: 0 0 16px rgba(255, 29, 88, 0.45);
       transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
@@ -364,7 +377,7 @@
       border-color: var(--accent);
       color: var(--ink);
       background: var(--surface3);
-      box-shadow: 0 0 14px rgba(99, 102, 241, 0.2);
+      box-shadow: 0 0 14px rgba(0, 221, 255, 0.25);
     }
 
     .cmd-trigger kbd {
@@ -476,10 +489,11 @@
     }
 
     nav button.active {
-      background: linear-gradient(90deg, rgba(99, 102, 241, 0.18) 0%, rgba(99, 102, 241, 0.04) 100%);
-      color: #818cf8;
+      background: linear-gradient(90deg, rgba(255, 29, 88, 0.22) 0%, rgba(0, 73, 183, 0.16) 100%);
+      color: #00DDFF;
       font-weight: 700;
       border-left: 3px solid var(--accent);
+      box-shadow: inset 0 0 14px rgba(255, 29, 88, 0.10);
     }
 
     nav button svg {
@@ -652,7 +666,7 @@
     textarea:focus {
       outline: none;
       border-color: var(--accent);
-      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.25);
+      box-shadow: 0 0 0 3px rgba(0, 221, 255, 0.25);
     }
 
     textarea {
@@ -826,9 +840,9 @@
 
     .chart-path {
       fill: url(#goldGradient);
-      stroke: #6366f1;
+      stroke: #00DDFF;
       stroke-width: 2.5;
-      filter: drop-shadow(0 2px 10px rgba(99, 102, 241, 0.45));
+      filter: drop-shadow(0 2px 10px rgba(0, 221, 255, 0.5));
       transition: d 0.4s ease;
     }
 
@@ -867,13 +881,13 @@
       left: 0;
       right: 0;
       height: 2px;
-      background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.4), transparent);
+      background: linear-gradient(90deg, transparent, rgba(0, 221, 255, 0.5), transparent);
     }
 
     .stat-card:hover {
       transform: translateY(-3px);
-      border-color: rgba(99, 102, 241, 0.4);
-      box-shadow: 0 12px 30px -4px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(99, 102, 241, 0.25);
+      border-color: rgba(0, 221, 255, 0.45);
+      box-shadow: 0 12px 30px -4px rgba(0, 73, 183, 0.4), 0 0 0 1px rgba(0, 221, 255, 0.25);
     }
 
     .stat-header {
@@ -1221,7 +1235,7 @@
     }
 
     .conv.sel {
-      background: linear-gradient(90deg, rgba(99, 102, 241, 0.16) 0%, rgba(99, 102, 241, 0.03) 100%);
+      background: linear-gradient(90deg, rgba(255, 29, 88, 0.20) 0%, rgba(0, 73, 183, 0.15) 100%);
       border-left: 3px solid var(--accent);
     }
 
@@ -1328,10 +1342,10 @@
 
     .msg.u {
       align-self: flex-end;
-      background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+      background: linear-gradient(135deg, #0049B7 0%, #00368C 100%);
       color: #ffffff;
       border-radius: 18px 18px 4px 18px;
-      box-shadow: 0 4px 14px rgba(99, 102, 241, 0.35);
+      box-shadow: 0 4px 14px rgba(0, 73, 183, 0.45);
     }
 
     .msg.b {
@@ -1367,7 +1381,7 @@
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.05em;
-      color: #818cf8;
+      color: #00DDFF;
     }
 
     /* Typing Indicator Wave */
@@ -1382,7 +1396,7 @@
       width: 6px;
       height: 6px;
       border-radius: 50%;
-      background: #818cf8;
+      background: #00DDFF;
       display: inline-block;
       animation: typingBounce 1.4s infinite ease-in-out both;
     }
@@ -1764,7 +1778,7 @@
     .cmd-item:hover,
     .cmd-item.selected {
       background: var(--accent-soft);
-      color: #818cf8;
+      color: #00DDFF;
       font-weight: 600;
     }
 
@@ -1819,8 +1833,8 @@
       background: linear-gradient(135deg,
           rgba(255, 255, 255, 0.32) 0%,
           rgba(255, 255, 255, 0.06) 40%,
-          rgba(99, 102, 241, 0.4) 75%,
-          rgba(255, 255, 255, 0.18) 100%);
+          rgba(0, 221, 255, 0.45) 75%,
+          rgba(255, 29, 88, 0.30) 100%);
       -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
       -webkit-mask-composite: xor;
       mask-composite: exclude;
@@ -1834,7 +1848,7 @@
       left: -50%;
       width: 200%;
       height: 200%;
-      background: radial-gradient(circle, rgba(99, 102, 241, 0.16) 0%, transparent 60%);
+      background: radial-gradient(circle, rgba(0, 221, 255, 0.18) 0%, transparent 60%);
       opacity: 0;
       transform: rotate(0deg);
       transition: opacity 0.4s ease, transform 0.8s ease;
@@ -1848,7 +1862,7 @@
       box-shadow:
         0 1px 0 0 rgba(255, 255, 255, 0.25) inset,
         0 6px 22px 0 rgba(0, 0, 0, 0.7),
-        0 0 16px 2px rgba(99, 102, 241, 0.3);
+        0 0 16px 2px rgba(0, 221, 255, 0.35);
       transform: translateY(-1px);
     }
 
@@ -1865,20 +1879,21 @@
     }
 
     .btn-dark-glass.primary {
-      background: linear-gradient(180deg, rgba(28, 24, 68, 0.94) 0%, rgba(14, 12, 38, 0.98) 100%);
-      border-color: rgba(99, 102, 241, 0.5);
-      color: #c7d2fe;
+      background: linear-gradient(180deg, #FF1D58 0%, #D80F42 100%);
+      border-color: rgba(255, 29, 88, 0.65);
+      color: #FFFFFF;
       box-shadow:
-        0 1px 0 0 rgba(99, 102, 241, 0.35) inset,
-        0 4px 20px 0 rgba(99, 102, 241, 0.4);
+        0 1px 0 0 rgba(255, 255, 255, 0.3) inset,
+        0 4px 20px 0 rgba(255, 29, 88, 0.45);
     }
 
     .btn-dark-glass.primary:hover {
-      color: #e0e7ff;
-      border-color: rgba(99, 102, 241, 0.8);
+      color: #FFFFFF;
+      background: linear-gradient(180deg, #F75990 0%, #FF1D58 100%);
+      border-color: rgba(247, 89, 144, 0.9);
       box-shadow:
-        0 1px 0 0 rgba(99, 102, 241, 0.55) inset,
-        0 0 24px 5px rgba(99, 102, 241, 0.45);
+        0 1px 0 0 rgba(255, 255, 255, 0.4) inset,
+        0 0 24px 5px rgba(255, 29, 88, 0.55);
     }
 
     /* ───────────────────────── Login & Registration Modal (Geometric Chevron UI) ───────────────────────── */
@@ -1959,10 +1974,45 @@
     /* Left Animated Showcase Panel */
     .login-showcase {
       flex: 1.05;
-      background: linear-gradient(155deg, #0049B7 0%, #091936 100%);
+      background: linear-gradient(160deg, #FF1D58 0%, #F75990 28%, #0049B7 72%, #080D1A 100%);
       position: relative;
       overflow: hidden;
       min-height: 480px;
+    }
+
+    .sc-orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(40px);
+      pointer-events: none;
+      z-index: 1;
+      opacity: 0.65;
+    }
+
+    .sc-orb1 {
+      width: 220px;
+      height: 220px;
+      top: -40px;
+      right: -30px;
+      background: #00DDFF;
+    }
+
+    .sc-orb2 {
+      width: 180px;
+      height: 180px;
+      bottom: 20px;
+      left: -30px;
+      background: #FFF685;
+      opacity: 0.45;
+    }
+
+    .sc-orb3 {
+      width: 260px;
+      height: 260px;
+      top: 35%;
+      left: 20%;
+      background: #F75990;
+      opacity: 0.5;
     }
 
     .login-showcase-content {
@@ -3088,17 +3138,18 @@
       width: 36px;
       height: 36px;
       border-radius: 10px;
-      background: #CC0000;
+      background: linear-gradient(135deg, #FF1D58 0%, #0049B7 100%);
+      border: 1px solid rgba(0, 221, 255, 0.45);
       display: grid;
       place-items: center;
-      box-shadow: 0 3px 10px rgba(204, 0, 0, 0.35);
+      box-shadow: 0 3px 12px rgba(255, 29, 88, 0.45), 0 0 10px rgba(0, 221, 255, 0.35);
       transition: all 0.2s ease;
       flex-shrink: 0;
     }
 
     .brand:hover .brand-glyph {
       transform: translateY(-1px) scale(1.05);
-      box-shadow: 0 5px 16px rgba(204, 0, 0, 0.5);
+      box-shadow: 0 5px 18px rgba(255, 29, 88, 0.6), 0 0 14px rgba(0, 221, 255, 0.5);
     }
 
     .brand-text {
@@ -5782,14 +5833,14 @@
 
           <!-- Public Web Chat & Dedicated Bot Subdomain -->
           <div class="card"
-            style="margin-bottom:20px; border:1px solid rgba(59,130,246,0.35); background:linear-gradient(135deg, rgba(59,130,246,0.06), rgba(99,102,241,0.04)); box-shadow:0 4px 20px rgba(0,0,0,0.03)">
+            style="margin-bottom:20px; border:1px solid rgba(0,221,255,0.35); background:linear-gradient(135deg, rgba(0,73,183,0.12), rgba(0,221,255,0.06)); box-shadow:0 4px 20px rgba(0,0,0,0.15)">
             <div class="channel-header">
               <div class="channel-title">
-                <div class="channel-badge-icon" style="background:#3b82f6; color:#fff; font-size:12px">Web</div>
+                <div class="channel-badge-icon" style="background:#0049B7; color:#fff; font-size:12px">Web</div>
                 Public AI Customer Webchat &amp; Subdomain
               </div>
               <span class="badge"
-                style="background:linear-gradient(135deg, #2563eb, #4f46e5); color:#fff; font-weight:700; padding:4px 10px; border-radius:12px; font-size:11px">Live
+                style="background:linear-gradient(135deg, #FF1D58, #0049B7); color:#fff; font-weight:700; padding:4px 10px; border-radius:12px; font-size:11px">Live
                 24/7 Web</span>
             </div>
             <p class="hint">Your customers can chat with your AI assistant directly through your dedicated bot subdomain
@@ -8443,7 +8494,7 @@
         const isAppt = o.kind === 'appointment' || (o.details && /appointment|booking|consult|scaling|root canal|dental|doctor|clinic/i.test(o.details));
         const isInq = o.kind === 'inquiry';
         const kindBadge = isAppt
-          ? `<span class="pill" style="font-size:10px; padding:2px 7px; background:rgba(99, 102, 241, 0.15); color:#6366f1; font-weight:700; border:1px solid rgba(99, 102, 241, 0.3)"> APPOINTMENT</span>`
+          ? `<span class="pill" style="font-size:10px; padding:2px 7px; background:rgba(255, 246, 133, 0.20); color:#FFF685; font-weight:700; border:1px solid rgba(255, 246, 133, 0.45)"> APPOINTMENT</span>`
           : (isInq
             ? `<span class="pill" style="font-size:10px; padding:2px 7px; background:rgba(245, 158, 11, 0.15); color:#d97706; font-weight:700; border:1px solid rgba(245, 158, 11, 0.3)"> INQUIRY</span>`
             : `<span class="pill" style="font-size:10px; padding:2px 7px; background:rgba(16, 185, 129, 0.15); color:#059669; font-weight:700; border:1px solid rgba(16, 185, 129, 0.3)">️ ORDER</span>`);
@@ -9766,7 +9817,7 @@ Thank you for partnering with Crown Operations!`;
     /* ---------- THEME SYSTEM ---------- */
     function toggleTheme() {
       const doc = document.documentElement;
-      const cur = doc.getAttribute('data-theme') || 'light';
+      const cur = doc.getAttribute('data-theme') || 'dark';
       const next = cur === 'dark' ? 'light' : 'dark';
       doc.setAttribute('data-theme', next);
       localStorage.setItem('cc_theme', next);
@@ -9780,7 +9831,7 @@ Thank you for partnering with Crown Operations!`;
     if (savedTheme) {
       document.documentElement.setAttribute('data-theme', savedTheme);
     } else {
-      document.documentElement.setAttribute('data-theme', 'light');
+      document.documentElement.setAttribute('data-theme', 'dark');
     }
 
     /* ---------- DONEZO EXECUTIVE DASHBOARD INTERACTIVITY ---------- */
@@ -11949,7 +12000,10 @@ _Powered by CCBot Autonomous AI_`;
       window.addEventListener('load', () => {
         const swPath = window.location.pathname.startsWith('/chatbotadmin') ? '/chatbotadmin/sw.js' : 'sw.js';
         navigator.serviceWorker.register(swPath, { scope: '/chatbotadmin/' })
-          .then(reg => console.log('ServiceWorker registered with scope:', reg.scope))
+          .then(reg => {
+            if (typeof reg.update === 'function') reg.update();
+            console.log('ServiceWorker registered with scope:', reg.scope);
+          })
           .catch(err => console.warn('ServiceWorker registration error:', err));
       });
     }
