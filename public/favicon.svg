@@ -1,84 +1,26 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
-  <defs>
-    <!-- Background Gradient (Deep Slate & Obsidian) -->
-    <linearGradient id="favBg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#2E313D"/>
-      <stop offset="50%" stop-color="#1F2129"/>
-      <stop offset="100%" stop-color="#14151B"/>
-    </linearGradient>
+  <!-- Red squircle background -->
+  <rect width="64" height="64" rx="14" fill="#CC0000"/>
 
-    <!-- Royal Cyber Crown Gradient (Sky Blue to Lilac to Royal Violet) -->
-    <linearGradient id="favCrownGrad" x1="10%" y1="0%" x2="90%" y2="100%">
-      <stop offset="0%" stop-color="#A0D2EB"/>
-      <stop offset="42%" stop-color="#D0BDF4"/>
-      <stop offset="100%" stop-color="#8458B3"/>
-    </linearGradient>
+  <!-- Chat bubble -->
+  <ellipse cx="32" cy="11" rx="9" ry="7" fill="#FFFFFF"/>
+  <polygon points="27,17 32,22 34,17" fill="#FFFFFF"/>
 
-    <!-- Specular Highlight Gradient -->
-    <linearGradient id="favSpecular" x1="0%" y1="0%" x2="100%" y2="50%">
-      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.95"/>
-      <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0.1"/>
-    </linearGradient>
+  <!-- CC text -->
+  <text x="32" y="42"
+    font-family="Arial Black, Arial, sans-serif"
+    font-weight="900"
+    font-size="20"
+    fill="#FFFFFF"
+    text-anchor="middle"
+    letter-spacing="-1">CC</text>
 
-    <!-- Neon Glow Filter -->
-    <filter id="favGlow" x="-25%" y="-25%" width="150%" height="150%">
-      <feGaussianBlur stdDeviation="2.2" result="blur"/>
-      <feMerge>
-        <feMergeNode in="blur"/>
-        <feMergeNode in="SourceGraphic"/>
-      </feMerge>
-    </filter>
-
-    <filter id="favSoftGlow" x="-20%" y="-20%" width="140%" height="140%">
-      <feGaussianBlur stdDeviation="1.2" result="blur"/>
-      <feMerge>
-        <feMergeNode in="blur"/>
-        <feMergeNode in="SourceGraphic"/>
-      </feMerge>
-    </filter>
-  </defs>
-
-  <!-- Squircle Base with Metallic Rim -->
-  <rect width="64" height="64" rx="16" fill="url(#favBg)"/>
-  <rect x="1" y="1" width="62" height="62" rx="15" fill="none" stroke="rgba(208, 189, 244, 0.28)" stroke-width="1.5"/>
-
-  <!-- Ambient Neon Aura behind the Crown -->
-  <circle cx="32" cy="34" r="18" fill="url(#favCrownGrad)" opacity="0.22" filter="url(#favGlow)"/>
-
-  <!-- Crown Silhouette Base Shadow Layer -->
-  <path d="M 12 45 L 16 19 L 25 30 L 32 10 L 39 30 L 48 19 L 52 45 Z"
-        fill="#14151B" opacity="0.4"/>
-
-  <!-- Main Faceted Royal Crown Body -->
-  <path d="M 12 44 L 16 19 L 25 29 L 32 11 L 39 29 L 48 19 L 52 44 Z"
-        fill="url(#favCrownGrad)"
-        filter="url(#favSoftGlow)"/>
-
-  <!-- Crisp Metallic Facet Highlights -->
-  <path d="M 16 19 L 25 29 L 32 11 Z" fill="url(#favSpecular)" opacity="0.45"/>
-  <path d="M 32 11 L 39 29 L 48 19 Z" fill="#8458B3" opacity="0.35"/>
-
-  <!-- Crown Base Band with Cyber Insets -->
-  <rect x="10" y="44" width="44" height="7.5" rx="3.5"
-        fill="url(#favCrownGrad)"
-        stroke="#FFFFFF" stroke-width="0.8"/>
-  <rect x="12" y="46" width="40" height="3.5" rx="1.7"
-        fill="#1F2129" opacity="0.85"/>
-
-  <!-- Inset Micro Diamonds on Band -->
-  <circle cx="18" cy="47.7" r="1.5" fill="#A0D2EB" filter="url(#favGlow)"/>
-  <circle cx="27" cy="47.7" r="1.3" fill="#FFFFFF"/>
-  <circle cx="32" cy="47.7" r="1.8" fill="#D0BDF4" filter="url(#favGlow)"/>
-  <circle cx="37" cy="47.7" r="1.3" fill="#FFFFFF"/>
-  <circle cx="46" cy="47.7" r="1.5" fill="#A0D2EB" filter="url(#favGlow)"/>
-
-  <!-- Center Floating AI Sparkle Diamond Star -->
-  <path d="M 32 23 L 34.2 29.5 L 40.5 32 L 34.2 34.5 L 32 41 L 29.8 34.5 L 23.5 32 L 29.8 29.5 Z"
-        fill="#FFFFFF"
-        filter="url(#favGlow)"/>
-
-  <!-- Peak Floating Jewels -->
-  <circle cx="32" cy="10" r="2.8" fill="#A0D2EB" stroke="#FFFFFF" stroke-width="1.2" filter="url(#favGlow)"/>
-  <circle cx="16" cy="18.5" r="2" fill="#D0BDF4" stroke="#FFFFFF" stroke-width="0.8"/>
-  <circle cx="48" cy="18.5" r="2" fill="#D0BDF4" stroke="#FFFFFF" stroke-width="0.8"/>
+  <!-- Chatbot label -->
+  <text x="32" y="58"
+    font-family="Arial, sans-serif"
+    font-weight="700"
+    font-size="9"
+    fill="#FFFFFF"
+    text-anchor="middle"
+    letter-spacing="0.5">Chatbot</text>
 </svg>
