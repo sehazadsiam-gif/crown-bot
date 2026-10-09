@@ -221,6 +221,15 @@ try {
   console.error('Migration warning (conversations.ai_paused_until):', e.message);
 }
 
+try {
+  const msgCols = db.pragma('table_info(messages)');
+  if (!msgCols.some(c => c.name === 'attachment_url')) {
+    db.exec('ALTER TABLE messages ADD COLUMN attachment_url TEXT');
+  }
+} catch (e) {
+  console.error('Migration warning (messages.attachment_url):', e.message);
+}
+
 const now = () => new Date().toISOString();
 
 /* ───────── config ───────── */
@@ -2165,9 +2174,9 @@ export const getMessages = (convId, limit = 60) =>
   db.prepare('SELECT * FROM messages WHERE conv_id = ? ORDER BY id DESC LIMIT ?')
     .all(convId, limit).reverse();
 
-export function addMessage(convId, direction, text, model = null, mid = null) {
-  db.prepare('INSERT OR IGNORE INTO messages (conv_id, direction, text, model, mid, created_at) VALUES (?,?,?,?,?,?)')
-    .run(convId, direction, text, model, mid, now());
+export function addMessage(convId, direction, text, model = null, mid = null, attachmentUrl = null) {
+  db.prepare('INSERT OR IGNORE INTO messages (conv_id, direction, text, model, mid, attachment_url, created_at) VALUES (?,?,?,?,?,?,?)')
+    .run(convId, direction, text, model, mid, attachmentUrl, now());
   db.prepare('UPDATE conversations SET last_msg_at = ? WHERE id = ?').run(now(), convId);
 }
 

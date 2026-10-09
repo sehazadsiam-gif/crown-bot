@@ -211,13 +211,28 @@ export function parseWebhook(body) {
         }
 
         for (const msg of val.messages || []) {
-          if (msg.type !== 'text' || !msg.text?.body) continue;
+          let text = '';
+          let mediaId = null;
+          let mimeType = null;
+
+          if (msg.type === 'text' && msg.text?.body) {
+            text = msg.text.body;
+          } else if (msg.type === 'image' && msg.image?.id) {
+            mediaId = msg.image.id;
+            mimeType = msg.image.mime_type || 'image/jpeg';
+            text = msg.image.caption || '';
+          } else {
+            continue;
+          }
+
           out.push({
             platform: 'whatsapp',
             recipientAccountId,
             senderId: msg.from,
             mid: msg.id,
-            text: msg.text.body,
+            text,
+            mediaId,
+            mimeType,
             contactName: contactMap.get(msg.from) || null,
             ts: msg.timestamp ? (+msg.timestamp * 1000) : Date.now()
           });
@@ -234,19 +249,102 @@ export function parseWebhook(body) {
     const entryId = entry.id;
     for (const ev of entry.messaging || []) {
       if (!ev.message || ev.message.is_echo) continue;
-      const text = ev.message.text;
-      if (!text) continue;
+      const text = ev.message.text || '';
+      let imageUrl = null;
+      let mimeType = 'image/jpeg';
+
+      if (Array.isArray(ev.message.attachments)) {
+        const imgAtt = ev.message.attachments.find(a => a.type === 'image' || a.type === 'share');
+        if (imgAtt?.payload?.url) {
+          imageUrl = imgAtt.payload.url;
+        }
+      }
+
+      if (!text && !imageUrl) continue;
+
       out.push({
         platform,
         recipientAccountId: ev.recipient?.id || entryId,
         senderId: ev.sender?.id,
         mid: ev.message.mid,
         text,
+        imageUrl,
+        mimeType,
         ts: ev.timestamp || Date.now()
       });
     }
   }
   return out;
+}
+
+/**
+ * Download WhatsApp media by media ID via Meta Graph API.
+ * Returns { buffer, base64, mimeType } or null.
+ */
+export async function fetchWhatsAppMedia(mediaId, token) {
+  if (!mediaId || !token) return null;
+  try {
+    const metaRes = await fetch(`https://graph.facebook.com/${GRAPH_VERSION}/${mediaId}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    if (!metaRes.ok) return null;
+    const metaData = await metaRes.json();
+    const downloadUrl = metaData.url;
+    if (!downloadUrl) return null;
+
+    const fileRes = await fetch(downloadUrl, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    if (!fileRes.ok) return null;
+    const arrayBuffer = await fileRes.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+    return {
+      buffer,
+      base64: buffer.toString('base64'),
+      mimeType: metaData.mime_type || 'image/jpeg'
+    };
+  } catch (err) {
+    console.error('Failed to fetch WhatsApp media:', err.message);
+    return null;
+  }
+}
+
+/**
+ * Download image from URL (used by Messenger & Instagram).
+ * Returns { buffer, base64, mimeType } or null.
+ */
+export async function fetchImageUrl(url, platform = 'facebook', token = '') {
+  if (!url) return null;
+  try {
+    const headers = { 'User-Agent': 'Mozilla/5.0 (compatible; CrownBot/1.0)' };
+    if (token && (platform === 'instagram' || platform === 'facebook')) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+    const res = await fetch(url, { headers });
+    if (!res.ok) {
+      if (headers['Authorization']) {
+        const retryRes = await fetch(url, { headers: { 'User-Agent': 'Mozilla/5.0 (compatible; CrownBot/1.0)' } });
+        if (retryRes.ok) {
+          const ab = await retryRes.arrayBuffer();
+          const buf = Buffer.from(ab);
+          const ct = retryRes.headers.get('content-type') || 'image/jpeg';
+          return { buffer: buf, base64: buf.toString('base64'), mimeType: ct.split(';')[0].trim() || 'image/jpeg' };
+        }
+      }
+      return null;
+    }
+    const ct = res.headers.get('content-type') || 'image/jpeg';
+    const arrayBuffer = await res.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+    return {
+      buffer,
+      base64: buffer.toString('base64'),
+      mimeType: ct.split(';')[0].trim() || 'image/jpeg'
+    };
+  } catch (err) {
+    console.error('Failed to fetch image URL:', err.message);
+    return null;
+  }
 }
 
 /**

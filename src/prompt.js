@@ -130,6 +130,15 @@ export function buildPrompt(cfg, lang = 'en') {
     ? '- Questions about services, products, pricing, hours, location, and facilities: answer directly using the details above.'
     : '- Do not answer questions directly; route everything to human staff.');
 
+  L.push('', '## Understanding Product Photos, Screenshots & Customer Images');
+  L.push('- When the customer sends a photo of a product, food dish, drink, retail item, screenshot from social media, or menu screenshot:');
+  L.push('  1. Carefully examine the image, identify the item, and read any visible text, labels, or captions.');
+  L.push('  2. Cross-reference the identified item with the Products, Services & Catalog list provided above.');
+  L.push('  3. If found in the catalog, politely confirm the product name, state the price (in Tk/BDT), and let the customer know if it is available and how they can order.');
+  L.push('  4. If the item in the screenshot/photo is not in your catalog, politely explain what item it looks like, clarify that it is currently not on our menu/catalog, and suggest similar available alternatives from our catalog.');
+  L.push('  5. If the customer sends a screenshot of an order summary or handwritten list, read each listed item and help calculate or collect details to process their inquiry.');
+  L.push('- Keep your explanation friendly, direct, concise, and professional.');
+
   L.push('', '## Strict Order and Booking Policy');
   L.push('- When a customer expresses intent to order products, book an appointment, or request a service:');
   L.push('  1. Politely collect all necessary details: specific items/services, quantity or package, customer full name, contact phone number, and delivery address or preferred appointment date/time.');

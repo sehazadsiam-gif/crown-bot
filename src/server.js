@@ -31,11 +31,12 @@ import { buildPrompt, openState, escalationHit } from './prompt.js';
 import { generateReply, parseMenuText, suggestFaqsForBusiness, detectOrderOrInquiry, detectLanguage } from './ai.js';
 import {
   verifySignature, isSelf, sendMessage, fetchProfileName, parseWebhook, testMetaConnection,
-  getMetaAppId, getMetaAppSecret, createOAuthStateToken, verifyOAuthStateToken, exchangeOAuthCode, subscribePageWebhooks
+  getMetaAppId, getMetaAppSecret, createOAuthStateToken, verifyOAuthStateToken, exchangeOAuthCode, subscribePageWebhooks,
+  getChannelConfig, fetchWhatsAppMedia, fetchImageUrl
 } from './meta.js';
 import { sendTikTokMessage, parseTikTokWebhook, testTikTokConnection, verifyTikTokSignature } from './tiktok.js';
 import webpush from 'web-push';
-import { createReadStream } from 'node:fs';
+import { createReadStream, existsSync, mkdirSync, writeFileSync } from 'node:fs';
 import { copyFile, mkdir, readdir, rm, stat } from 'node:fs/promises';
 
 // Configure VAPID for web push (auto-generate keypair if not set in env)
@@ -96,13 +97,29 @@ const app = Fastify({
   bodyLimit: 2_000_000
 });
 
+const UPLOADS_DIR = join(__dirname, '..', 'data', 'uploads');
+if (!existsSync(UPLOADS_DIR)) {
+  try { mkdirSync(UPLOADS_DIR, { recursive: true }); } catch {}
+}
+
 await app.register(cookie, { secret: effectiveSessionSecret });
 await app.register(fstatic, { root: join(__dirname, '..', 'public'), prefix: `${BASE}/` });
+
+await app.register(fstatic, {
+  root: UPLOADS_DIR,
+  prefix: `${BASE}/uploads/`,
+  decorateReply: false
+});
 
 if (BASE && BASE !== '/' && BASE !== '') {
   await app.register(fstatic, {
     root: join(__dirname, '..', 'public'),
     prefix: '/',
+    decorateReply: false
+  });
+  await app.register(fstatic, {
+    root: UPLOADS_DIR,
+    prefix: '/uploads/',
     decorateReply: false
   });
 }
@@ -2188,7 +2205,7 @@ function enqueue(ev, log) {
 }
 
 async function handleEvent(ev, log) {
-  const { platform, senderId, mid, text, contactName, recipientAccountId } = ev;
+  const { platform, senderId, mid, text, contactName, recipientAccountId, imageUrl, mediaId } = ev;
   if (!senderId) return;
 
   // Resolve target workspace & channel account
@@ -2208,9 +2225,54 @@ async function handleEvent(ev, log) {
   const ch = cfg.channels?.[platform];
   if (ch && ch.enabled === false) return log.info(`Channel ${platform} is disabled in workspace #${workspaceId}`);
 
+  // Download and store incoming image attachments for vision AI & inbox preview
+  let localAttachmentUrl = null;
+  let imagePayload = null;
+
+  try {
+    if (platform === 'whatsapp' && mediaId) {
+      const waConf = getChannelConfig('whatsapp', workspaceId);
+      const token = channelAcc?.access_token || waConf.token;
+      const downloaded = await fetchWhatsAppMedia(mediaId, token);
+      if (downloaded) {
+        imagePayload = downloaded;
+        const ext = (downloaded.mimeType || 'image/jpeg').split('/')[1]?.replace('jpeg', 'jpg') || 'jpg';
+        const fileName = `img_${Date.now()}_${crypto.randomBytes(4).toString('hex')}.${ext}`;
+        const filePath = join(UPLOADS_DIR, fileName);
+        try {
+          writeFileSync(filePath, downloaded.buffer);
+          localAttachmentUrl = `${BASE}/uploads/${fileName}`;
+        } catch (err) {
+          log.warn(`Failed to save WhatsApp image locally: ${err.message}`);
+        }
+      }
+    } else if ((platform === 'facebook' || platform === 'instagram') && imageUrl) {
+      const chConf = getChannelConfig(platform, workspaceId);
+      const token = channelAcc?.access_token || (platform === 'facebook' ? chConf.pageToken : chConf.token);
+      const downloaded = await fetchImageUrl(imageUrl, platform, token);
+      if (downloaded) {
+        imagePayload = downloaded;
+        const ext = (downloaded.mimeType || 'image/jpeg').split('/')[1]?.replace('jpeg', 'jpg') || 'jpg';
+        const fileName = `img_${Date.now()}_${crypto.randomBytes(4).toString('hex')}.${ext}`;
+        const filePath = join(UPLOADS_DIR, fileName);
+        try {
+          writeFileSync(filePath, downloaded.buffer);
+          localAttachmentUrl = `${BASE}/uploads/${fileName}`;
+        } catch (err) {
+          log.warn(`Failed to save ${platform} image locally: ${err.message}`);
+        }
+      } else {
+        localAttachmentUrl = imageUrl;
+      }
+    }
+  } catch (err) {
+    log.warn(`Failed to process attachment for ${platform}: ${err.message}`);
+  }
+
   const name = contactName || await fetchProfileName(platform, senderId, ev, channelAcc, workspaceId);
   const conv = upsertConversation(platform, senderId, name, workspaceId);
-  addMessage(conv.id, 'in', text, null, mid);
+  const displayText = text || (localAttachmentUrl ? '[Photo attached]' : '');
+  addMessage(conv.id, 'in', displayText, null, mid, localAttachmentUrl);
 
   if (!isSubscriptionActive(workspaceId)) return log.info(`Subscription inactive/expired for workspace #${workspaceId}. Bot auto-reply paused.`);
   if (!cfg.runtime?.enabled) return log.info(`Bot globally disabled for workspace #${workspaceId}`);
@@ -2228,11 +2290,14 @@ async function handleEvent(ev, log) {
   }
 
   const history = getMessages(conv.id, 12).slice(0, -1);
-  const lang = detectLanguage(text);
-  const { text: replyText, model } = await generateReply(cfg, history, text, log, lang);
+  const promptText = text || 'The customer sent a product photo or screenshot. Please examine the image, identify the item, and reply with helpful details, availability, and pricing.';
+  const lang = detectLanguage(promptText);
+  const images = imagePayload ? [{ data: imagePayload.base64, mimeType: imagePayload.mimeType }] : [];
+  const { text: replyText, model } = await generateReply(cfg, history, promptText, log, lang, images);
 
   // Background order capture
-  detectOrderOrInquiry(text, history, cfg).then(extracted => {
+  const orderCheckText = text || 'Inquiry about product in photo';
+  detectOrderOrInquiry(orderCheckText, history, cfg).then(extracted => {
     if (extracted && extracted.is_order) {
       const isAppt = extracted.kind === 'appointment' || extracted.kind === 'booking';
       const scheduleOrAddress = extracted.appointment_time

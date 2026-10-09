@@ -10967,12 +10967,30 @@ Thank you for partnering with Crown Operations!`;
       document.body.prepend(banner);
     }
 
-    function bubble(cls, txt, where = 'threadLog') {
+    function bubble(cls, txt, where = 'threadLog', attachmentUrl = null) {
       const log = document.getElementById(where);
       if (!log) return null;
       const d = document.createElement('div');
       d.className = 'msg ' + cls;
-      d.textContent = txt;
+      if (attachmentUrl) {
+        const img = document.createElement('img');
+        img.src = attachmentUrl;
+        img.style.maxWidth = '220px';
+        img.style.maxHeight = '220px';
+        img.style.borderRadius = '8px';
+        img.style.display = 'block';
+        img.style.marginBottom = txt ? '6px' : '0';
+        img.style.cursor = 'pointer';
+        img.style.objectFit = 'cover';
+        img.title = 'Click to open full photo';
+        img.onclick = () => window.open(attachmentUrl, '_blank');
+        d.appendChild(img);
+      }
+      if (txt) {
+        const span = document.createElement('span');
+        span.textContent = txt;
+        d.appendChild(span);
+      }
       log.appendChild(d);
       log.scrollTop = log.scrollHeight;
       return d;
@@ -11004,7 +11022,7 @@ Thank you for partnering with Crown Operations!`;
           if (!d.messages?.length) {
             log.innerHTML = '<div class="empty">No messages in this conversation yet.</div>';
           } else {
-            d.messages.forEach(m => bubble(m.direction === 'in' ? 'b' : 'u', m.text, 'threadLog'));
+            d.messages.forEach(m => bubble(m.direction === 'in' ? 'b' : 'u', m.text, 'threadLog', m.attachment_url));
           }
           if (d.conversation?.flagged) bubble('sys', '⚑ ' + (d.conversation.flag_reason || 'Flagged thread'), 'threadLog');
           log.scrollTop = log.scrollHeight;
@@ -11070,7 +11088,7 @@ Thank you for partnering with Crown Operations!`;
         if (!d.messages?.length) {
           log.innerHTML = '<div class="empty">No messages in this conversation yet.</div>';
         } else {
-          d.messages.forEach(m => bubble(m.direction === 'in' ? 'b' : 'u', m.text, 'threadLog'));
+          d.messages.forEach(m => bubble(m.direction === 'in' ? 'b' : 'u', m.text, 'threadLog', m.attachment_url));
         }
         if (d.conversation?.flagged) bubble('sys', '⚑ ' + (d.conversation.flag_reason || 'Flagged thread'), 'threadLog');
         // Scroll to latest message

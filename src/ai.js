@@ -18,8 +18,8 @@ async function post(url, opts) {
   finally { clearTimeout(t); }
 }
 
-/* history: [{direction:'in'|'out', text}] oldest first */
-async function callGemini(system, history, userText) {
+/* history: [{direction:'in'|'out', text}] oldest first, images: [{mimeType, data}] */
+async function callGemini(system, history, userText, images = []) {
   const { geminiKey, geminiModel } = getEnv();
   if (!geminiKey) throw Object.assign(new Error('no gemini key'), { code: 'no_key' });
 
@@ -34,9 +34,36 @@ async function callGemini(system, history, userText) {
     else merged.push({ ...turn });
   }
   while (merged.length && merged[0].role !== 'user') merged.shift();
-  const contents = merged.map(t => ({ role: t.role, parts: [{ text: t.text }] }));
 
-  const modelsToTry = Array.from(new Set([geminiModel, 'gemini-3.5-flash', 'gemini-3.6-flash', 'gemini-3.5-flash-lite', 'gemini-3.1-flash-lite']));
+  const contents = merged.map((t, idx) => {
+    const isLatestUser = idx === merged.length - 1 && t.role === 'user';
+    const textContent = t.text?.trim() || (isLatestUser && images?.length ? 'The customer sent this image. Please examine the image, identify the item, and assist them.' : '');
+    const parts = [{ text: textContent }];
+    if (isLatestUser && Array.isArray(images) && images.length) {
+      for (const img of images) {
+        if (img?.data && img?.mimeType) {
+          parts.push({
+            inlineData: {
+              mimeType: img.mimeType,
+              data: img.data
+            }
+          });
+        }
+      }
+    }
+    return { role: t.role, parts };
+  });
+
+  const modelsToTry = Array.from(new Set([
+    geminiModel,
+    'gemini-2.5-flash',
+    'gemini-1.5-flash',
+    'gemini-2.0-flash',
+    'gemini-3.5-flash',
+    'gemini-3.6-flash',
+    'gemini-3.5-flash-lite',
+    'gemini-3.1-flash-lite'
+  ]));
 
   let lastError;
   for (const model of modelsToTry) {
@@ -80,14 +107,28 @@ async function callGemini(system, history, userText) {
   throw lastError || new Error('All gemini models failed');
 }
 
-async function callGroq(system, history, userText) {
+async function callGroq(system, history, userText, images = []) {
   const { groqKey, groqModel } = getEnv();
   if (!groqKey) throw Object.assign(new Error('no groq key'), { code: 'no_key' });
+
+  let userContent = userText;
+  if (Array.isArray(images) && images.length) {
+    const parts = [{ type: 'text', text: userText || 'The customer sent this image. Please examine the item and assist them.' }];
+    for (const img of images) {
+      if (img?.data && img?.mimeType) {
+        parts.push({
+          type: 'image_url',
+          image_url: { url: `data:${img.mimeType};base64,${img.data}` }
+        });
+      }
+    }
+    userContent = parts;
+  }
 
   const messages = [
     { role: 'system', content: system },
     ...history.map(m => ({ role: m.direction === 'in' ? 'user' : 'assistant', content: m.text })),
-    { role: 'user', content: userText }
+    { role: 'user', content: userContent }
   ];
 
   const res = await post('https://api.groq.com/openai/v1/chat/completions', {
@@ -127,12 +168,12 @@ export function detectLanguage(text) {
   return 'en';
 }
 
-export async function generateReply(cfg, history, userText, log = console, lang = 'en') {
+export async function generateReply(cfg, history, userText, log = console, lang = 'en', images = []) {
   const system = buildPrompt(cfg, lang);
 
   for (const [name, fn] of [['gemini', callGemini], ['groq', callGroq]]) {
     try {
-      const text = await fn(system, history, userText);
+      const text = await fn(system, history, userText, images);
       return { text, model: name };
     } catch (e) {
       if (e.code !== 'no_key') log.warn?.(`[ai] ${name} failed: ${e.message}`);
