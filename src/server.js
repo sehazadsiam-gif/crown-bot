@@ -1740,6 +1740,8 @@ async function handleConversationReply(req, reply) {
     const wsId = conv.workspace_id || 1;
     if (conv.platform === 'tiktok') {
       await sendTikTokMessage(conv.psid, text, null, wsId);
+    } else if (conv.platform === 'web') {
+      // Web chat visitor: message is recorded in DB for the client to poll/receive
     } else {
       await sendMessage(conv.platform, conv.psid, text, null, wsId);
     }
@@ -1977,25 +1979,81 @@ async function handlePublicChat(req, reply) {
   const sessionId = String(body.sessionId || body.session_id || crypto.randomUUID()).slice(0, 64);
   const customerName = String(body.customerName || 'Web Visitor').slice(0, 100);
 
-  if (!message) {
-    return reply.code(400).send({ error: 'Message cannot be empty.' });
+  // Handle optional image attachment / screenshot
+  let imagePayload = null;
+  let localAttachmentUrl = null;
+  const rawImage = body.image || body.imageBase64 || body.attachment;
+  if (rawImage) {
+    try {
+      let b64 = typeof rawImage === 'string' ? rawImage : (rawImage.data || rawImage.base64);
+      let mime = (typeof rawImage === 'object' && rawImage.mimeType) ? rawImage.mimeType : 'image/jpeg';
+      if (b64 && b64.includes('base64,')) {
+        const parts = b64.split('base64,');
+        const match = parts[0].match(/data:([^;]+);/);
+        if (match) mime = match[1];
+        b64 = parts[1];
+      }
+      if (b64) {
+        const buffer = Buffer.from(b64, 'base64');
+        const ext = mime.split('/')[1]?.replace('jpeg', 'jpg') || 'jpg';
+        const fileName = `web_${Date.now()}_${crypto.randomBytes(4).toString('hex')}.${ext}`;
+        const filePath = join(UPLOADS_DIR, fileName);
+        writeFileSync(filePath, buffer);
+        localAttachmentUrl = `${BASE}/uploads/${fileName}`;
+        imagePayload = { base64: b64, mimeType: mime };
+      }
+    } catch (e) {
+      req.log.warn({ err: e }, 'Failed to save web chat image attachment');
+    }
   }
 
-  const lang = detectLanguage(message);
-  const hit = escalationHit(cfg, message);
-  const { text: botReply, model } = await generateReply(cfg, history, message, req.log, lang);
+  if (!message && !imagePayload) {
+    return reply.code(400).send({ error: 'Message or image cannot be empty.' });
+  }
 
   // Record conversation in database for live customer inbox
   let activeConv = null;
   try {
     activeConv = upsertConversation('web', sessionId, customerName, wsId);
-    if (activeConv && activeConv.id) {
-      addMessage(activeConv.id, 'in', message);
-      addMessage(activeConv.id, 'out', botReply);
-      if (hit) setFlag(activeConv.id, true);
-    }
   } catch (err) {
-    req.log.warn({ err }, 'Failed to record public webchat message');
+    req.log.warn({ err }, 'Failed to upsert web conversation');
+  }
+
+  const displayText = message || (localAttachmentUrl ? '[Photo / Screenshot attached]' : '');
+  if (activeConv && activeConv.id) {
+    addMessage(activeConv.id, 'in', displayText, null, null, localAttachmentUrl);
+  }
+
+  // Check if human handover is active or bot paused/disabled
+  const botActive = activeConv ? isConversationBotActive(activeConv) : true;
+  const globalBotActive = cfg.runtime?.enabled !== false;
+  const subActive = isSubscriptionActive(wsId);
+
+  if (!subActive || !globalBotActive || !botActive) {
+    if (activeConv && activeConv.id) {
+      setFlag(activeConv.id, true, !botActive ? 'human handover active' : 'bot disabled');
+    }
+    const handoverReply = !botActive
+      ? (cfg.runtime?.handoverNotice || 'A support agent has taken over this chat and will reply to you shortly.')
+      : (cfg.runtime?.fallbackText || 'Thanks for your message! Our team will reply shortly.');
+    return {
+      ok: true,
+      reply: handoverReply,
+      handover: true,
+      paused: !botActive,
+      sessionId
+    };
+  }
+
+  const lang = detectLanguage(message || 'Photo inquiry');
+  const hit = escalationHit(cfg, message);
+  const promptText = message || 'The customer sent a product photo or screenshot. Please examine the image, identify the item, and reply with helpful details, availability, and pricing according to our catalog and trained screenshot guidelines.';
+  const images = imagePayload ? [{ data: imagePayload.base64, mimeType: imagePayload.mimeType }] : [];
+  const { text: botReply, model } = await generateReply(cfg, history, promptText, req.log, lang, images);
+
+  if (activeConv && activeConv.id) {
+    addMessage(activeConv.id, 'out', botReply);
+    if (hit) setFlag(activeConv.id, true, `keyword: ${hit}`);
   }
 
   // If simulator or preview test chat, automatically fulfill owner test verification
@@ -2004,7 +2062,7 @@ async function handlePublicChat(req, reply) {
   }
 
   // Background order / appointment capture
-  detectOrderOrInquiry(message, history, cfg).then(async extracted => {
+  detectOrderOrInquiry(message || promptText, history, cfg).then(async extracted => {
     if (extracted && extracted.is_order) {
       try {
         const isAppt = extracted.kind === 'appointment' || extracted.kind === 'booking';
@@ -2054,6 +2112,32 @@ async function handlePublicChat(req, reply) {
 
 app.post('/api/public/chat', handlePublicChat);
 app.post(`${BASE}/api/public/chat`, handlePublicChat);
+
+async function handlePublicChatMessages(req, reply) {
+  const wsId = resolveWorkspaceFromRequest(req);
+  const sessionId = String(req.query?.sessionId || req.query?.session_id || '').trim();
+  if (!sessionId) return { ok: true, messages: [] };
+
+  const conv = db.prepare('SELECT id, bot_enabled, ai_paused_until FROM conversations WHERE platform = ? AND psid = ? AND workspace_id = ?').get('web', sessionId, wsId);
+  if (!conv) return { ok: true, messages: [] };
+
+  const msgs = getMessages(conv.id, 50);
+  return {
+    ok: true,
+    conversation_id: conv.id,
+    bot_active: isConversationBotActive(conv),
+    messages: msgs.map(m => ({
+      id: m.id,
+      direction: m.direction,
+      text: m.text,
+      model: m.model,
+      attachment_url: m.attachment_url,
+      created_at: m.created_at
+    }))
+  };
+}
+app.get('/api/public/chat/messages', handlePublicChatMessages);
+app.get(`${BASE}/api/public/chat/messages`, handlePublicChatMessages);
 
 async function handleHealthCheck(req) {
   const wsId = Number(req.query?.workspace_id) || 1;

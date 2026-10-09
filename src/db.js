@@ -1756,6 +1756,27 @@ export function makeCleanTemplate(businessName = 'New Business', businessType = 
       notifyOnBooking: true,
       notifyOnPhone: true
     },
+    screenshot_training: {
+      guidelines: 'Carefully inspect customer photos, payment slips, and screenshots. Identify items against our official catalog and extract key transaction details.',
+      rules: [
+        {
+          id: 'scr_pay',
+          type: 'screenshot',
+          category: 'Payment',
+          title: 'bKash / Nagad Payment Slip',
+          trigger: 'Customer sends a screenshot of a mobile banking payment (bKash, Nagad, Rocket, or Bank transfer) showing TrxID and amount.',
+          reply: 'Thank you! We received your payment screenshot. Please share the last 4 digits of your sender number and your delivery address so our accounts team can verify and dispatch your order.'
+        },
+        {
+          id: 'scr_prod',
+          type: 'screenshot',
+          category: 'Product',
+          title: 'Product Catalog Match',
+          trigger: 'Customer sends a photo or screenshot of an item to check availability or price.',
+          reply: 'Examine the product in the photo, match it with our official catalog/menu, confirm the product name and price in BDT, and offer assistance with placing an order.'
+        }
+      ]
+    },
     runtime: { enabled: true, offHours: 'reply', fallbackText: 'Thanks for reaching out! Our team will review your request and get back to you shortly.' }
   };
 }
@@ -3264,13 +3285,19 @@ export function getWorkspaceTrainingStatus(workspaceId) {
   }
   const servicesComplete = serviceCount >= 3;
 
-  // 3. Bot Training count (minimum 3 items: Q&A pairs or business knowledge rules)
+  // 3. Bot Training count (minimum 3 items: Q&A pairs, business knowledge rules, or screenshot rules)
   let faqCount = 0;
   if (Array.isArray(cfg?.faqs)) {
-    faqCount += cfg.faqs.filter(f => f && ((f.q && f.a) || f.content || f.text || f.rule)).length;
+    faqCount += cfg.faqs.filter(f => f && ((f.q && f.a) || f.content || f.text || f.rule || f.reply || (f.type === 'screenshot' && (f.trigger || f.reply)))).length;
   }
   if (Array.isArray(cfg?.knowledge)) {
     faqCount += cfg.knowledge.filter(k => k && (typeof k === 'string' ? k.trim() : (k.content || (k.q && k.a)))).length;
+  }
+  if (Array.isArray(cfg?.screenshot_training?.rules)) {
+    faqCount += cfg.screenshot_training.rules.filter(r => r && (r.trigger || r.reply)).length;
+  }
+  if (Array.isArray(cfg?.screenshot_rules)) {
+    faqCount += cfg.screenshot_rules.filter(r => r && (r.trigger || r.reply)).length;
   }
   const faqsComplete = faqCount >= 3;
 

@@ -530,9 +530,28 @@
 
     <!-- Input -->
     <footer class="chat-footer">
+      <div id="imagePreviewRow" style="display:none; padding:8px 14px; background:rgba(0,0,0,0.3); border-top:1px solid var(--line); align-items:center; justify-content:space-between">
+        <div style="display:flex; align-items:center; gap:10px; overflow:hidden">
+          <img id="attachedPreviewImg" src="" alt="Screenshot" style="width:40px; height:40px; object-fit:cover; border-radius:8px; border:1px solid var(--line-highlight); flex-shrink:0">
+          <div style="font-size:12px; color:var(--ink2); text-overflow:ellipsis; overflow:hidden; white-space:nowrap">
+            <span style="font-weight:600; color:var(--good)">📸 Screenshot Attached</span>
+            <div style="font-size:11px; color:var(--ink3)">Ready to send to AI</div>
+          </div>
+        </div>
+        <button type="button" class="icon-btn" onclick="clearAttachedImage()" style="width:28px; height:28px; border-radius:50%; flex-shrink:0" title="Remove screenshot">✕</button>
+      </div>
+
       <form class="chat-input-wrap" id="chatForm">
-        <input type="text" class="chat-input" id="messageInput" placeholder="Ask a question or place an order…"
-          autocomplete="off" required>
+        <input type="file" id="imageFileInput" accept="image/*" style="display:none">
+        <button type="button" class="btn-send" id="attachBtn" title="Attach screenshot or photo (or paste with Ctrl+V)" style="width:38px; height:38px; border-radius:10px; background:transparent; border:1px solid var(--line); color:var(--ink2); margin-right:4px">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect width="18" height="18" x="3" y="3" rx="2" ry="2"/>
+            <circle cx="9" cy="9" r="2"/>
+            <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/>
+          </svg>
+        </button>
+        <input type="text" class="chat-input" id="messageInput" placeholder="Ask a question, send screenshot or order…"
+          autocomplete="off">
         <button type="submit" class="btn-send" id="sendBtn" title="Send message">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
             <line x1="22" y1="2" x2="11" y2="13" />
@@ -557,10 +576,13 @@
     }
 
     let botData = null;
-    let sessionId = localStorage.getItem('cc_chat_sid') || ('sid_' + Math.random().toString(36).slice(2, 10));
-    localStorage.setItem('cc_chat_sid', sessionId);
+    const sessionKey = 'cc_chat_sid_' + (wsParam || 'default');
+    let sessionId = localStorage.getItem(sessionKey) || ('sid_' + Math.random().toString(36).slice(2, 10));
+    localStorage.setItem(sessionKey, sessionId);
 
     let conversationHistory = [];
+    let currentAttachedImage = null; // { base64, mimeType }
+    let knownMessageIds = new Set();
 
     async function initBot() {
       try {
@@ -580,27 +602,84 @@
               : `Currently Closed · ${botData.open.note || 'Leave a message'}`;
           }
 
-          // White-label check (Pro / Enterprise plan removes branding)
+          // White-label check
           const bFooter = document.getElementById('brandingFooter');
           if (bFooter) {
             bFooter.style.display = botData.whiteLabel ? 'none' : 'block';
           }
-
-          // Initial Greeting
-          appendBotMessage(botData.greeting || `Hello! Welcome to ${botData.name}. How can I assist you today?`);
         }
-      } catch (e) {
-        appendBotMessage('Hello! How can I assist you today?');
+      } catch (e) {}
+
+      // Attempt to restore past chat history for this session
+      const restored = await syncMessages();
+      if (!restored) {
+        appendBotMessage(botData?.greeting || `Hello! Welcome to ${botData?.name || 'our service'}. How can I assist you today?`);
       }
+
+      // Start periodic background polling for incoming staff agent messages
+      startPolling();
     }
 
-    function appendBotMessage(text) {
+    async function syncMessages() {
+      try {
+        const res = await fetch(`/api/public/chat/messages?sessionId=${encodeURIComponent(sessionId)}${wsParam ? `&ws=${encodeURIComponent(wsParam)}` : ''}`);
+        if (res.ok) {
+          const data = await res.json();
+          const msgs = data.messages || [];
+          if (msgs.length) {
+            const wrap = document.getElementById('messagesWrap');
+            wrap.innerHTML = '';
+            knownMessageIds.clear();
+            conversationHistory = [];
+
+            for (const m of msgs) {
+              knownMessageIds.add(m.id);
+              if (m.direction === 'in') {
+                appendUserMessage(m.text, m.attachment_url, false);
+              } else {
+                appendBotMessage(m.text, false, m.model === 'human' ? 'Staff Member' : null);
+              }
+            }
+            scrollToBottom();
+            return true;
+          }
+        }
+      } catch (e) {}
+      return false;
+    }
+
+    let pollInterval = null;
+    function startPolling() {
+      if (pollInterval) clearInterval(pollInterval);
+      pollInterval = setInterval(async () => {
+        try {
+          const res = await fetch(`/api/public/chat/messages?sessionId=${encodeURIComponent(sessionId)}${wsParam ? `&ws=${encodeURIComponent(wsParam)}` : ''}`);
+          if (res.ok) {
+            const data = await res.json();
+            const msgs = data.messages || [];
+            let added = false;
+            for (const m of msgs) {
+              if (m && m.id && !knownMessageIds.has(m.id)) {
+                knownMessageIds.add(m.id);
+                if (m.direction === 'out') {
+                  appendBotMessage(m.text, true, m.model === 'human' ? 'Staff Member' : null);
+                  added = true;
+                }
+              }
+            }
+            if (added) scrollToBottom();
+          }
+        } catch (e) {}
+      }, 3500);
+    }
+
+    function appendBotMessage(text, scroll = true, badge = null) {
+      if (!text) return;
       conversationHistory.push({ role: 'assistant', content: text });
       const wrap = document.getElementById('messagesWrap');
       const row = document.createElement('div');
       row.className = 'message-row bot';
 
-      // Format simple markdown (bold, lists, prices)
       let formatted = escapeHtml(text)
         .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
         .replace(/\*(.*?)\*/g, '<em>$1</em>')
@@ -610,32 +689,40 @@
         .replace(/\n/g, '<br>');
 
       const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      const badgeHtml = badge ? `<span style="font-size:10px; font-weight:700; text-transform:uppercase; padding:2px 6px; background:rgba(0,221,255,0.15); color:var(--good); border-radius:4px; margin-bottom:4px; display:inline-block">👤 ${badge}</span><br>` : '';
 
       row.innerHTML = `
-    <div class="msg-bubble">
-      <p>${formatted}</p>
-      <div class="msg-time">${timeStr}</div>
-    </div>
-  `;
+        <div class="msg-bubble">
+          ${badgeHtml}
+          <p>${formatted}</p>
+          <div class="msg-time">${timeStr}</div>
+        </div>
+      `;
       wrap.appendChild(row);
-      scrollToBottom();
+      if (scroll) scrollToBottom();
     }
 
-    function appendUserMessage(text) {
+    function appendUserMessage(text, attachmentUrl = null, scroll = true) {
       conversationHistory.push({ role: 'user', content: text });
       const wrap = document.getElementById('messagesWrap');
       const row = document.createElement('div');
       row.className = 'message-row user';
       const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
+      let imgHtml = '';
+      if (attachmentUrl) {
+        imgHtml = `<div style="margin-bottom:6px"><img src="${escapeHtml(attachmentUrl)}" alt="Attachment" style="max-width:180px; max-height:180px; border-radius:8px; border:1px solid rgba(255,255,255,0.2); object-fit:cover; display:block"></div>`;
+      }
+
       row.innerHTML = `
-    <div class="msg-bubble">
-      <p>${escapeHtml(text)}</p>
-      <div class="msg-time">${timeStr}</div>
-    </div>
-  `;
+        <div class="msg-bubble">
+          ${imgHtml}
+          ${text && text !== '[Photo attached]' && text !== '[Photo / Screenshot attached]' ? `<p>${escapeHtml(text)}</p>` : ''}
+          <div class="msg-time">${timeStr}</div>
+        </div>
+      `;
       wrap.appendChild(row);
-      scrollToBottom();
+      if (scroll) scrollToBottom();
     }
 
     function scrollToBottom() {
@@ -649,27 +736,82 @@
     }
 
     function escapeHtml(str) {
-      return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
     }
 
+    /* ---------- Image / Screenshot Attachment Logic ---------- */
+    const attachBtn = document.getElementById('attachBtn');
+    const imageFileInput = document.getElementById('imageFileInput');
+    const imagePreviewRow = document.getElementById('imagePreviewRow');
+    const attachedPreviewImg = document.getElementById('attachedPreviewImg');
+
+    attachBtn.onclick = () => imageFileInput.click();
+
+    imageFileInput.onchange = (e) => {
+      const file = e.target.files && e.target.files[0];
+      if (file) handleImageFile(file);
+    };
+
+    function handleImageFile(file) {
+      if (!file || !file.type.startsWith('image/')) return;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const dataUrl = e.target.result;
+        currentAttachedImage = {
+          base64: dataUrl,
+          mimeType: file.type
+        };
+        attachedPreviewImg.src = dataUrl;
+        imagePreviewRow.style.display = 'flex';
+      };
+      reader.readAsDataURL(file);
+    }
+
+    window.clearAttachedImage = function() {
+      currentAttachedImage = null;
+      imageFileInput.value = '';
+      imagePreviewRow.style.display = 'none';
+    };
+
+    // Clipboard paste event for instant screenshot sending (Ctrl+V / Cmd+V)
+    window.addEventListener('paste', (e) => {
+      const items = (e.clipboardData || window.clipboardData)?.items;
+      if (!items) return;
+      for (const item of items) {
+        if (item.type.indexOf('image') !== -1) {
+          const file = item.getAsFile();
+          handleImageFile(file);
+          break;
+        }
+      }
+    });
+
     async function sendMessage(text) {
-      if (!text) return;
-      appendUserMessage(text);
+      const imgToSend = currentAttachedImage;
+      if (!text && !imgToSend) return;
+
+      appendUserMessage(text, imgToSend ? imgToSend.base64 : null);
+      clearAttachedImage();
       showTyping(true);
 
       const sendBtn = document.getElementById('sendBtn');
       sendBtn.disabled = true;
 
       try {
+        const payload = {
+          message: text,
+          history: conversationHistory.slice(-8),
+          sessionId: sessionId,
+          workspace_id: wsParam
+        };
+        if (imgToSend) {
+          payload.image = imgToSend;
+        }
+
         const res = await fetch('/api/public/chat' + (wsParam ? `?ws=${encodeURIComponent(wsParam)}` : ''), {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            message: text,
-            history: conversationHistory.slice(-8),
-            sessionId: sessionId,
-            workspace_id: wsParam
-          })
+          body: JSON.stringify(payload)
         });
         const d = await res.json();
         showTyping(false);
@@ -690,7 +832,7 @@
       e.preventDefault();
       const input = document.getElementById('messageInput');
       const val = input.value.trim();
-      if (val) {
+      if (val || currentAttachedImage) {
         sendMessage(val);
         input.value = '';
       }
@@ -704,8 +846,9 @@
       if (confirm('Restart conversation?')) {
         document.getElementById('messagesWrap').innerHTML = '';
         conversationHistory = [];
+        knownMessageIds.clear();
         sessionId = 'sid_' + Math.random().toString(36).slice(2, 10);
-        localStorage.setItem('cc_chat_sid', sessionId);
+        localStorage.setItem(sessionKey, sessionId);
         initBot();
       }
     };

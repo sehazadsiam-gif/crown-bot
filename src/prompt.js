@@ -131,13 +131,38 @@ export function buildPrompt(cfg, lang = 'en') {
     : '- Do not answer questions directly; route everything to human staff.');
 
   L.push('', '## Understanding Product Photos, Screenshots & Customer Images');
-  L.push('- When the customer sends a photo of a product, food dish, drink, retail item, screenshot from social media, or menu screenshot:');
-  L.push('  1. Carefully examine the image, identify the item, and read any visible text, labels, or captions.');
-  L.push('  2. Cross-reference the identified item with the Products, Services & Catalog list provided above.');
+  const scrTraining = cfg.screenshot_training || {};
+  const scrRules = [
+    ...(Array.isArray(scrTraining.rules) ? scrTraining.rules : []),
+    ...(Array.isArray(cfg.screenshot_rules) ? cfg.screenshot_rules : []),
+    ...(Array.isArray(cfg.faqs) ? cfg.faqs.filter(f => f && (f.type === 'screenshot' || f.category === 'Screenshot')) : [])
+  ];
+
+  if (scrTraining.guidelines && String(scrTraining.guidelines).trim()) {
+    L.push(`- Specific Business Guidelines for Photos & Screenshots: ${String(scrTraining.guidelines).trim()}`);
+  }
+
+  L.push('- Core Image Handling Procedure:');
+  L.push('  1. Carefully examine the image, identify the item, and read any visible text, labels, amounts, TrxID, phone numbers, or captions.');
+  L.push('  2. Cross-reference identified items with the Products, Services & Catalog list provided above.');
   L.push('  3. If found in the catalog, politely confirm the product name, state the price (in Tk/BDT), and let the customer know if it is available and how they can order.');
   L.push('  4. If the item in the screenshot/photo is not in your catalog, politely explain what item it looks like, clarify that it is currently not on our menu/catalog, and suggest similar available alternatives from our catalog.');
   L.push('  5. If the customer sends a screenshot of an order summary or handwritten list, read each listed item and help calculate or collect details to process their inquiry.');
   L.push('- Keep your explanation friendly, direct, concise, and professional.');
+
+  if (scrRules.length) {
+    L.push('', '### Explicit Trained Screenshot Rules & Ground Truth Replies:');
+    L.push('MANDATE: The tenant admin has trained specific responses for these visual scenarios. You MUST follow them strictly:');
+    for (const r of scrRules) {
+      const title = r.title || r.scenario || r.q || 'Screenshot Rule';
+      const trigger = r.trigger || r.content || r.details || '';
+      const reply = r.reply || r.action || r.a || '';
+      if (!trigger && !reply) continue;
+      L.push(`- Scenario: [${title}]`);
+      if (trigger) L.push(`  When customer sends: "${trigger}"`);
+      if (reply) L.push(`  You MUST reply: "${reply}"`);
+    }
+  }
 
   L.push('', '## Strict Order and Booking Policy');
   L.push('- When a customer expresses intent to order products, book an appointment, or request a service:');
