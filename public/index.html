@@ -10636,18 +10636,41 @@ Thank you for partnering with Crown Operations!`;
             <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; margin-bottom:10px; flex-wrap:wrap">
               <div style="display:flex; align-items:center; gap:8px">
                 <span style="font-size:10.5px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; padding:2px 8px; border-radius:5px; background:rgba(236,72,153,0.15); color:#f472b6; border:1px solid rgba(236,72,153,0.3)">
-                  📸 Screenshot &amp; Reply
+                  📸 Product Photo &amp; Reply
                 </span>
                 <select data-fcat="${i}" style="font-size:11.5px; padding:3px 8px; border-radius:6px; background:rgba(255,255,255,0.04); border:1px solid var(--line); color:var(--text); cursor:pointer">
                   ${catOptions}
                 </select>
               </div>
-              <button class="btn ghost sm" data-fdel="${i}" style="color:var(--text-dim); padding:2px 8px; font-size:11.5px" title="Delete Screenshot Rule">Delete</button>
+              <button class="btn ghost sm" data-fdel="${i}" style="color:var(--text-dim); padding:2px 8px; font-size:11.5px" title="Delete Rule">Delete</button>
             </div>
+
+            <!-- Upload Product Photo Row -->
+            <div style="display:flex; gap:12px; align-items:center; margin-bottom:10px; background:rgba(255,255,255,0.02); border:1px dashed var(--line); border-radius:8px; padding:8px 10px">
+              <div style="width:64px; height:64px; border-radius:8px; background:rgba(0,0,0,0.3); border:1px solid var(--line); display:flex; align-items:center; justify-content:center; overflow:hidden; flex-shrink:0">
+                ${f.image_url ? `<img src="${esc(f.image_url)}" alt="Product Photo" style="width:100%; height:100%; object-fit:cover">` : `<span style="font-size:22px; opacity:0.6">📷</span>`}
+              </div>
+              <div style="flex:1; min-width:0">
+                <div style="display:flex; gap:6px; align-items:center; margin-bottom:4px; flex-wrap:wrap">
+                  <label class="btn sm" style="cursor:pointer; font-size:11px; padding:3px 8px; display:inline-flex; align-items:center; gap:4px">
+                    <span>${f.image_url ? '🔄 Change Photo' : '📸 Upload Product Photo'}</span>
+                    <input type="file" accept="image/*" data-fimginput="${i}" style="display:none">
+                  </label>
+                  ${f.image_url ? `
+                    <button type="button" class="btn sm ghost" data-fautodetect="${i}" style="font-size:11px; padding:3px 8px; color:var(--good); border-color:rgba(0,221,255,0.3)">⚡ Auto-Detect with AI</button>
+                    <button type="button" class="btn sm ghost" data-fdelimg="${i}" style="font-size:11px; padding:3px 8px; color:var(--text-dim)">✕ Remove</button>
+                  ` : ''}
+                </div>
+                <div style="font-size:11px; color:var(--text-dim)">
+                  ${f.image_url ? 'Product photo attached. The AI matches customer screenshots with this item.' : 'Upload a product picture to train the bot visual recognition.'}
+                </div>
+              </div>
+            </div>
+
             <div>
-              <input type="text" value="${esc(f.title || '')}" data-ftitle="${i}" placeholder="Scenario (e.g., bKash / Nagad Payment Slip, Dress Catalog Photo, Prescription)" style="width:100%; font-weight:600; font-size:13px; margin-bottom:8px; border-color:var(--line)">
-              <input type="text" value="${esc(f.trigger || f.content || '')}" data-ftrigger="${i}" placeholder="Visual Trigger: What customer sends (e.g. bKash payment screenshot showing TrxID and amount)" style="width:100%; font-size:12.5px; margin-bottom:8px; border-color:var(--line)">
-              <textarea data-freply="${i}" rows="2" placeholder="Verified Bot Reply: Exact message the AI must send (e.g. Thank you! We received your payment screenshot. Please share last 4 digits of sender number and delivery address...)" style="width:100%; font-size:12.5px; border-color:var(--line)">${esc(f.reply || f.a || '')}</textarea>
+              <input type="text" value="${esc(f.title || '')}" data-ftitle="${i}" placeholder="Product Name / Title (e.g. Lavender Silk Saree, Black Leather Shoes, Mocha Latte)" style="width:100%; font-weight:600; font-size:13px; margin-bottom:8px; border-color:var(--line)">
+              <input type="text" value="${esc(f.trigger || f.content || '')}" data-ftrigger="${i}" placeholder="Visual Recognition Clues (e.g. Lavender embroidered kurti with golden neck border)" style="width:100%; font-size:12.5px; margin-bottom:8px; border-color:var(--line)">
+              <textarea data-freply="${i}" rows="2" placeholder="Verified Bot Reply (e.g. The Lavender Silk Saree is in stock for 2,500 BDT. Would you like to order for home delivery?)" style="width:100%; font-size:12.5px; border-color:var(--line)">${esc(f.reply || f.a || '')}</textarea>
             </div>
           `;
         } else if (isRule) {
@@ -10732,15 +10755,102 @@ Thank you for partnering with Crown Operations!`;
         save();
         flashTrainingSave();
       }
+      else if (t.dataset.fimginput !== undefined) {
+        const idx = +t.dataset.fimginput;
+        const file = t.files && t.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = async (ev) => {
+            const b64 = ev.target.result;
+            chip('Uploading product photo…');
+            try {
+              const res = await api(`/api/tenant/upload-image?workspace_id=${currentWorkspaceId}`, {
+                method: 'POST',
+                body: JSON.stringify({ data: b64, mimeType: file.type, workspace_id: currentWorkspaceId })
+              });
+              if (res.ok) {
+                const d = await res.json();
+                S.faqs[idx].image_url = d.url;
+                if (!S.faqs[idx].title && !S.faqs[idx].trigger) {
+                  chip('AI analyzing product photo…');
+                  try {
+                    const dRes = await api(`/api/tenant/describe-photo?workspace_id=${currentWorkspaceId}`, {
+                      method: 'POST',
+                      body: JSON.stringify({ image_url: d.url, workspace_id: currentWorkspaceId })
+                    });
+                    if (dRes.ok) {
+                      const descData = (await dRes.json()).data;
+                      if (descData) {
+                        if (descData.title) S.faqs[idx].title = descData.title;
+                        if (descData.trigger) S.faqs[idx].trigger = descData.trigger;
+                        if (descData.reply && !S.faqs[idx].reply) S.faqs[idx].reply = descData.reply;
+                      }
+                    }
+                  } catch {}
+                }
+                save();
+                renderFaq();
+                flashTrainingSave();
+                chip('Photo uploaded & trained!');
+              } else {
+                chip('Upload failed');
+              }
+            } catch {
+              chip('Upload failed');
+            }
+          };
+          reader.readAsDataURL(file);
+        }
+      }
     });
 
-    document.getElementById('faqList').addEventListener('click', e => {
-      const b = e.target.closest('[data-fdel]');
-      if (!b) return;
-      S.faqs.splice(+b.dataset.fdel, 1);
-      save();
-      renderFaq();
-      flashTrainingSave();
+    document.getElementById('faqList').addEventListener('click', async e => {
+      const bDel = e.target.closest('[data-fdel]');
+      if (bDel) {
+        S.faqs.splice(+bDel.dataset.fdel, 1);
+        save();
+        renderFaq();
+        flashTrainingSave();
+        return;
+      }
+
+      const bDelImg = e.target.closest('[data-fdelimg]');
+      if (bDelImg) {
+        const idx = +bDelImg.dataset.fdelimg;
+        delete S.faqs[idx].image_url;
+        save();
+        renderFaq();
+        flashTrainingSave();
+        return;
+      }
+
+      const bAuto = e.target.closest('[data-fautodetect]');
+      if (bAuto) {
+        const idx = +bAuto.dataset.fautodetect;
+        const url = S.faqs[idx]?.image_url;
+        if (!url) return;
+        chip('AI analyzing product photo…');
+        try {
+          const dRes = await api(`/api/tenant/describe-photo?workspace_id=${currentWorkspaceId}`, {
+            method: 'POST',
+            body: JSON.stringify({ image_url: url, workspace_id: currentWorkspaceId })
+          });
+          if (dRes.ok) {
+            const descData = (await dRes.json()).data;
+            if (descData) {
+              if (descData.title) S.faqs[idx].title = descData.title;
+              if (descData.trigger) S.faqs[idx].trigger = descData.trigger;
+              if (descData.reply) S.faqs[idx].reply = descData.reply;
+              save();
+              renderFaq();
+              flashTrainingSave();
+              chip('AI auto-detection applied!');
+            }
+          }
+        } catch {
+          chip('AI analysis failed');
+        }
+      }
     });
 
     /* ---------- HARD GUARDS & ESCALATIONS ---------- */

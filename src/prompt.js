@@ -154,13 +154,15 @@ export function buildPrompt(cfg, lang = 'en') {
     L.push('', '### Explicit Trained Screenshot Rules & Ground Truth Replies:');
     L.push('MANDATE: The tenant admin has trained specific responses for these visual scenarios. You MUST follow them strictly:');
     for (const r of scrRules) {
-      const title = r.title || r.scenario || r.q || 'Screenshot Rule';
+      const title = r.title || r.scenario || r.q || 'Product / Screenshot Rule';
       const trigger = r.trigger || r.content || r.details || '';
       const reply = r.reply || r.action || r.a || '';
-      if (!trigger && !reply) continue;
-      L.push(`- Scenario: [${title}]`);
-      if (trigger) L.push(`  When customer sends: "${trigger}"`);
-      if (reply) L.push(`  You MUST reply: "${reply}"`);
+      const img = r.image_url || '';
+      if (!trigger && !reply && !title) continue;
+      L.push(`- Product/Photo Scenario: [${title}]`);
+      if (img) L.push(`  Reference Photo: ${img}`);
+      if (trigger) L.push(`  Visual Recognition Clues / Features: "${trigger}"`);
+      if (reply) L.push(`  Verified Bot Reply & Instructions: "${reply}"`);
     }
   }
 

@@ -36,7 +36,7 @@ import {
 } from './meta.js';
 import { sendTikTokMessage, parseTikTokWebhook, testTikTokConnection, verifyTikTokSignature } from './tiktok.js';
 import webpush from 'web-push';
-import { createReadStream, existsSync, mkdirSync, writeFileSync } from 'node:fs';
+import { createReadStream, existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { copyFile, mkdir, readdir, rm, stat } from 'node:fs/promises';
 
 // Configure VAPID for web push (auto-generate keypair if not set in env)
@@ -1161,6 +1161,94 @@ async function handleTenantRecordTest(req) {
 }
 app.post('/api/tenant/record-test', { preHandler: requireAuth }, handleTenantRecordTest);
 app.post(`${BASE}/api/tenant/record-test`, { preHandler: requireAuth }, handleTenantRecordTest);
+
+async function handleTenantUploadImage(req, reply) {
+  const wsId = getScopedWorkspaceId(req);
+  const body = req.body || {};
+  let b64 = body.data || body.base64 || body.image;
+  let mime = body.mimeType || 'image/jpeg';
+
+  if (!b64) return reply.code(400).send({ error: 'No image data provided' });
+
+  if (b64.includes('base64,')) {
+    const parts = b64.split('base64,');
+    const match = parts[0].match(/data:([^;]+);/);
+    if (match) mime = match[1];
+    b64 = parts[1];
+  }
+
+  const buffer = Buffer.from(b64, 'base64');
+  const ext = mime.split('/')[1]?.replace('jpeg', 'jpg') || 'jpg';
+  const fileName = `prod_${wsId}_${Date.now()}_${crypto.randomBytes(4).toString('hex')}.${ext}`;
+  const filePath = join(UPLOADS_DIR, fileName);
+
+  try {
+    writeFileSync(filePath, buffer);
+    const publicUrl = `${BASE}/uploads/${fileName}`;
+    return { ok: true, url: publicUrl, fileName };
+  } catch (err) {
+    req.log.error(err);
+    return reply.code(500).send({ error: 'Failed to save image' });
+  }
+}
+app.post('/api/tenant/upload-image', { preHandler: requireAuth }, handleTenantUploadImage);
+app.post(`${BASE}/api/tenant/upload-image`, { preHandler: requireAuth }, handleTenantUploadImage);
+
+async function handleTenantDescribePhoto(req, reply) {
+  const wsId = getScopedWorkspaceId(req);
+  const cfg = getWorkspaceConfig(wsId);
+  const body = req.body || {};
+  let b64 = body.data || body.base64 || body.image;
+  let mime = body.mimeType || 'image/jpeg';
+  const imageUrl = body.url || body.image_url;
+
+  if (!b64 && imageUrl) {
+    try {
+      const localName = imageUrl.split('/uploads/')[1];
+      if (localName) {
+        const filePath = join(UPLOADS_DIR, localName);
+        if (existsSync(filePath)) {
+          const buf = readFileSync(filePath);
+          b64 = buf.toString('base64');
+        }
+      }
+    } catch {}
+  }
+
+  if (!b64) return reply.code(400).send({ error: 'No image data found' });
+
+  if (b64.includes('base64,')) {
+    const parts = b64.split('base64,');
+    const match = parts[0].match(/data:([^;]+);/);
+    if (match) mime = match[1];
+    b64 = parts[1];
+  }
+
+  const prompt = `Examine this product photo or screenshot for a business in Bangladesh.
+Output ONLY a valid JSON object with these keys:
+- "title": a clean, concise product or item name (e.g. "Royal Blue Embroidered Silk Saree", "Iced Hazelnut Frappe", "Casual Leather Shoes")
+- "trigger": visual recognition cues (key visual features, colors, patterns, style, labels, or design elements visible in the photo that distinguish this item)
+- "reply": a friendly, professional sample customer reply confirming the product name, price in BDT (or asking size/quantity), and offering to help place an order.
+Do not output markdown code blocks. Output raw JSON only.`;
+
+  try {
+    const images = [{ data: b64, mimeType: mime }];
+    const { text } = await generateReply(cfg, [], prompt, req.log, 'en', images);
+    let cleaned = text.trim().replace(/^```json\s*/i, '').replace(/^```\s*/i, '').replace(/\s*```$/i, '').trim();
+    let parsed = null;
+    try { parsed = JSON.parse(cleaned); } catch {}
+    if (!parsed) {
+      const m = cleaned.match(/\{[\s\S]*\}/);
+      if (m) { try { parsed = JSON.parse(m[0]); } catch {} }
+    }
+    return { ok: true, data: parsed || { title: 'Product Item', trigger: 'Product in photo', reply: text } };
+  } catch (err) {
+    req.log.warn({ err }, 'describe-photo failed');
+    return reply.code(500).send({ error: 'AI photo analysis failed' });
+  }
+}
+app.post('/api/tenant/describe-photo', { preHandler: requireAuth }, handleTenantDescribePhoto);
+app.post(`${BASE}/api/tenant/describe-photo`, { preHandler: requireAuth }, handleTenantDescribePhoto);
 
 async function handleGetStats(req) {
   const wsId = getScopedWorkspaceId(req);
