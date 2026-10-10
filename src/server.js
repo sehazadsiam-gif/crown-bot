@@ -1951,14 +1951,34 @@ app.post('/api/admin/subscription-requests/:id/reject', { preHandler: requireMas
 
 const handleTestOwnerAlert = async (req, reply) => {
   const wsId = req.session.role === 'master_admin' ? Number(req.body?.workspace_id || req.session.workspace_id) : req.session.workspace_id;
+  const { phone, email, telegramBotToken, telegramChatId, callmebotApiKey } = req.body || {};
+
+  // Auto-persist alert settings if provided from the test form
+  try {
+    const cfg = getWorkspaceConfig(wsId);
+    cfg.alerts = cfg.alerts || {};
+    let changed = false;
+    if (phone !== undefined && phone !== cfg.alerts.phone) { cfg.alerts.phone = phone; changed = true; }
+    if (email !== undefined && email !== cfg.alerts.email) { cfg.alerts.email = email; changed = true; }
+    if (telegramBotToken !== undefined && telegramBotToken !== cfg.alerts.telegramBotToken) { cfg.alerts.telegramBotToken = telegramBotToken; changed = true; }
+    if (telegramChatId !== undefined && telegramChatId !== cfg.alerts.telegramChatId) { cfg.alerts.telegramChatId = telegramChatId; changed = true; }
+    if (callmebotApiKey !== undefined && callmebotApiKey !== cfg.alerts.callmebotApiKey) { cfg.alerts.callmebotApiKey = callmebotApiKey; changed = true; }
+    if (changed) {
+      saveWorkspaceConfig(wsId, cfg);
+    }
+  } catch (err) {
+    console.warn('Failed to auto-save alerts config in test:', err.message);
+  }
+
   const result = await dispatchOwnerAlert(wsId, {
     platform: 'test',
     customer_name: 'Test Patient (Verification)',
     customer_phone: '+880 1700-000000',
     details: 'Test appointment booking verification alert.',
     estimated_total: '1,500'
-  });
-  return { ok: true, result };
+  }, { phone, email, telegramBotToken, telegramChatId, callmebotApiKey });
+
+  return result;
 };
 app.post(`${BASE}/api/tenant/test-owner-alert`, { preHandler: requireAuth }, handleTestOwnerAlert);
 app.post('/api/tenant/test-owner-alert', { preHandler: requireAuth }, handleTestOwnerAlert);

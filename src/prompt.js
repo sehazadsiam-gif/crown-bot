@@ -19,7 +19,7 @@ export function openState(cfg) {
   return { open, n, why: open ? `open until ${B.close || '21:00'}` : `closed, opens ${B.open || '09:00'}` };
 }
 
-export function buildPrompt(cfg, lang = 'en') {
+export function buildPrompt(cfg, lang = 'en', hasHistory = false) {
   const st = openState(cfg);
   const B = cfg.business || cfg.cafe || {};
   const P = cfg.persona || {};
@@ -40,7 +40,13 @@ export function buildPrompt(cfg, lang = 'en') {
   L.push(`- Tone: ${P.tone || 'professional, helpful, welcoming, and clear'}.`);
   L.push(`- Length: ${P.length || '1 to 3 concise sentences, directly answering the customer inquiry'}.`);
   L.push('- Do NOT use emojis under any circumstance. Keep all messaging strictly clean and professional.');
-  if (P.greeting) L.push(`- Initial greeting: "${P.greeting}"`);
+  L.push('- CONVERSATIONAL GREETING POLICY: Greet the customer (e.g. "Assalamu Alaikum", "Hello", or welcome message) ONLY in the first message of a new conversation.');
+  L.push('- NEVER repeat "Assalamu Alaikum" or any greeting in follow-up turns or ongoing dialogue. Once conversation has started, respond directly and naturally to the inquiry.');
+  if (hasHistory) {
+    L.push('- Active Conversation Turn: This is an ongoing conversation. DO NOT say "Assalamu Alaikum" or any greeting. Directly answer the customer question.');
+  } else if (P.greeting) {
+    L.push(`- Initial greeting for the first message only: "${P.greeting}"`);
+  }
   L.push(P.disclose
     ? `- If asked, state that you are the automated messaging assistant for ${bName}.`
     : `- Reply naturally as the team at ${bName}. Do not identify yourself as an AI unless explicitly asked.`);

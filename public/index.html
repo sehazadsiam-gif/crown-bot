@@ -11933,31 +11933,70 @@ ${errData.message}`);
       const btn = document.getElementById('btnTestOwnerAlert');
       const resEl = document.getElementById('testAlertResultMsg');
       if (btn) { btn.disabled = true; btn.textContent = 'Sending…'; }
-      if (resEl) { resEl.style.display = 'block'; resEl.style.color = 'var(--ink2)'; resEl.textContent = 'Dispatching test alert…'; }
+      if (resEl) { resEl.style.display = 'block'; resEl.style.color = 'var(--ink2)'; resEl.innerHTML = 'Dispatching test alert…'; }
+
+      const phone = document.querySelector('[data-b="alerts.phone"]')?.value?.trim() || '';
+      const email = document.querySelector('[data-b="alerts.email"]')?.value?.trim() || '';
+      const tgToken = document.querySelector('[data-b="alerts.telegramBotToken"]')?.value?.trim() || '';
+      const tgChatId = document.querySelector('[data-b="alerts.telegramChatId"]')?.value?.trim() || '';
 
       try {
         const params = currentWorkspaceId ? `?workspace_id=${currentWorkspaceId}` : '';
         const res = await api(`/api/tenant/test-owner-alert${params}`, {
-          method: 'POST'
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            phone,
+            email,
+            telegramBotToken: tgToken,
+            telegramChatId: tgChatId
+          })
         }).then(r => r.json());
 
-        if (res.ok) {
+        if (res.ok && res.dispatched && res.dispatched.length > 0) {
           if (resEl) {
-            resEl.style.color = '#10B981';
-            resEl.textContent = `Success: Test alert sent successfully! Dispatched to: ${res.dispatched?.join(', ') || 'configured channels'}. Check your WhatsApp / Telegram / Email!`;
+            resEl.style.display = 'block';
+            let waBtn = '';
+            if (res.waLink) {
+              waBtn = `<div style="margin-top:8px;"><a href="${res.waLink}" target="_blank" class="btn sm" style="display:inline-flex; align-items:center; gap:6px; background:#25D366; color:#fff; text-decoration:none; font-weight:600; padding:6px 12px; border-radius:6px;">📲 Open in WhatsApp</a></div>`;
+            }
+            resEl.innerHTML = `
+              <div style="background:rgba(16,185,129,0.1); border:1px solid #10B981; border-radius:8px; padding:12px; margin-top:8px;">
+                <div style="color:#10B981; font-weight:700; margin-bottom:4px;">✅ Test alert dispatched to: ${res.dispatched.join(', ')}!</div>
+                <div style="font-size:12px; color:var(--ink2);">Check your ${res.dispatched.join(' / ')} app now to view the incoming alert.</div>
+                ${waBtn}
+              </div>
+            `;
           }
-          chip('Test alert sent!');
+          chip('Test alert dispatched!');
         } else {
+          const warnings = res.warnings && res.warnings.length ? res.warnings : (res.error ? [res.error] : ['No alert channel is connected or configured yet.']);
+          let waBtn = '';
+          if (res.waLink) {
+            waBtn = `<div style="margin-top:10px;"><a href="${res.waLink}" target="_blank" class="btn sm" style="display:inline-flex; align-items:center; gap:6px; background:#25D366; color:#fff; text-decoration:none; font-weight:600; padding:7px 14px; border-radius:6px;">📲 Click to Open &amp; Test Alert on WhatsApp</a></div>`;
+          }
           if (resEl) {
-            resEl.style.color = 'var(--red)';
-            resEl.textContent = `Error: ${res.error || 'Please configure phone, email, or Telegram in the fields above first.'}`;
+            resEl.style.display = 'block';
+            resEl.innerHTML = `
+              <div style="background:rgba(239,68,68,0.08); border:1px solid rgba(239,68,68,0.3); border-radius:8px; padding:12px; margin-top:8px;">
+                <div style="color:var(--red); font-weight:700; margin-bottom:6px;">⚠️ Alert could not be delivered automatically:</div>
+                <ul style="margin:0 0 6px 16px; padding:0; font-size:12px; color:var(--ink2); line-height:1.6;">
+                  ${warnings.map(w => `<li>${w}</li>`).join('')}
+                </ul>
+                ${waBtn}
+                <div style="margin-top:10px; font-size:11px; color:var(--muted); border-top:1px dashed var(--bdr); padding-top:8px;">
+                  💡 <strong>Instant Free Phone Notifications:</strong> We recommend <strong>Telegram</strong> (100% free, 0-second push alerts with sound). Simply create a bot with <code>@BotFather</code> and enter the Bot Token &amp; Chat ID above!
+                </div>
+              </div>
+            `;
           }
         }
       } catch (err) {
         console.error(err);
         if (resEl) {
+          resEl.style.display = 'block';
           resEl.style.color = 'var(--red)';
-          resEl.textContent = 'Error dispatching test alert.';
+          resEl.textContent = 'Error dispatching test alert: ' + (err.message || 'Network error');
         }
       } finally {
         if (btn) { btn.disabled = false; btn.textContent = 'Send Test Alert'; }

@@ -2,9 +2,18 @@ import 'dotenv/config';
 import { buildPrompt } from './prompt.js';
 import { getIndustryPresets } from './db.js';
 
+const GEMINI_FALLBACK_MODELS = [
+  'gemini-3.8-flash',
+  'gemini-3.7-flash',
+  'gemini-3.5-flash',
+  'gemini-3.6-flash',
+  'gemini-3.5-flash-lite',
+  'gemini-3.1-flash-lite'
+];
+
 const getEnv = () => ({
   geminiKey: process.env.GEMINI_API_KEY,
-  geminiModel: process.env.GEMINI_MODEL || 'gemini-3.5-flash',
+  geminiModel: process.env.GEMINI_MODEL || 'gemini-3.8-flash',
   groqKey: process.env.GROQ_API_KEY,
   groqModel: process.env.GROQ_MODEL || 'llama-3.3-70b-versatile'
 });
@@ -54,16 +63,7 @@ async function callGemini(system, history, userText, images = []) {
     return { role: t.role, parts };
   });
 
-  const modelsToTry = Array.from(new Set([
-    geminiModel,
-    'gemini-2.5-flash',
-    'gemini-1.5-flash',
-    'gemini-2.0-flash',
-    'gemini-3.5-flash',
-    'gemini-3.6-flash',
-    'gemini-3.5-flash-lite',
-    'gemini-3.1-flash-lite'
-  ]));
+  const modelsToTry = Array.from(new Set([geminiModel, ...GEMINI_FALLBACK_MODELS]));
 
   let lastError;
   for (const model of modelsToTry) {
@@ -169,7 +169,8 @@ export function detectLanguage(text) {
 }
 
 export async function generateReply(cfg, history, userText, log = console, lang = 'en', images = []) {
-  const system = buildPrompt(cfg, lang);
+  const hasHistory = Array.isArray(history) && history.length > 0;
+  const system = buildPrompt(cfg, lang, hasHistory);
 
   for (const [name, fn] of [['gemini', callGemini], ['groq', callGroq]]) {
     try {
@@ -202,7 +203,7 @@ export async function parseMenuText(raw) {
   let out = null;
 
   if (geminiKey) {
-    const modelsToTry = Array.from(new Set([geminiModel, 'gemini-3.5-flash', 'gemini-3.6-flash', 'gemini-3.5-flash-lite']));
+    const modelsToTry = Array.from(new Set([geminiModel, ...GEMINI_FALLBACK_MODELS]));
     for (const model of modelsToTry) {
       try {
         const res = await post(
@@ -320,7 +321,7 @@ Make answers natural, professional, trustworthy, and directly informative.`;
   const { geminiKey, geminiModel, groqKey } = getEnv();
 
   if (geminiKey) {
-    const modelsToTry = Array.from(new Set([geminiModel, 'gemini-3.5-flash', 'gemini-3.6-flash', 'gemini-3.5-flash-lite']));
+    const modelsToTry = Array.from(new Set([geminiModel, ...GEMINI_FALLBACK_MODELS]));
     for (const model of modelsToTry) {
       try {
         const res = await post(
@@ -478,7 +479,7 @@ Output ONLY valid JSON. No markdown blocks, no commentary.`;
 
   // Try Gemini first
   if (geminiKey) {
-    const modelsToTry = Array.from(new Set([geminiModel, 'gemini-2.5-flash', 'gemini-1.5-flash', 'gemini-2.0-flash', 'gemini-flash-latest']));
+    const modelsToTry = Array.from(new Set([geminiModel, ...GEMINI_FALLBACK_MODELS]));
     for (const model of modelsToTry) {
       try {
         const res = await post(

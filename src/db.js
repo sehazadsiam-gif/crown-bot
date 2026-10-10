@@ -2329,13 +2329,13 @@ export function getOrderStats(workspaceId) {
   return { pending, confirmed, rejected, total };
 }
 
-export async function dispatchOwnerAlert(workspaceId, orderData) {
+export async function dispatchOwnerAlert(workspaceId, orderData, alertOverrides = null) {
   try {
     const wsId = Number(workspaceId) || 1;
     const ws = db.prepare('SELECT * FROM workspaces WHERE id = ?').get(wsId);
     const cfg = getWorkspaceConfig(wsId);
-    const alertsCfg = cfg?.alerts || {};
-    if (alertsCfg.enabled === false) return { skipped: true };
+    const alertsCfg = { ...(cfg?.alerts || {}), ...(alertOverrides || {}) };
+    if (alertsCfg.enabled === false && !alertOverrides) return { skipped: true, ok: false, error: 'Alerts are disabled in workspace settings.' };
 
     const bName = ws?.name || cfg?.business?.name || cfg?.cafe?.name || 'Your Business';
     const plat = (orderData.platform || 'web').toUpperCase();
@@ -2356,12 +2356,16 @@ export async function dispatchOwnerAlert(workspaceId, orderData) {
 
 👉 View & reply in dashboard: https://bot.ccadmin.online/chatbotadmin/`;
 
+    const dispatched = [];
+    const channels = {};
+    const warnings = [];
+
     // 1. Telegram Push Notification (100% Free, instant phone alert)
     const tgToken = alertsCfg.telegramBotToken || process.env.TELEGRAM_ALERT_BOT_TOKEN;
     const tgChatId = alertsCfg.telegramChatId || process.env.TELEGRAM_ALERT_CHAT_ID;
     if (tgToken && tgChatId) {
       try {
-        fetch(`https://api.telegram.org/bot${tgToken}/sendMessage`, {
+        const tgRes = await fetch(`https://api.telegram.org/bot${tgToken}/sendMessage`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -2369,30 +2373,119 @@ export async function dispatchOwnerAlert(workspaceId, orderData) {
             text: alertText,
             parse_mode: 'Markdown'
           })
-        }).catch(tgErr => console.warn('Telegram alert dispatch error:', tgErr.message));
+        });
+        const tgData = await tgRes.json();
+        if (tgData.ok) {
+          dispatched.push('Telegram');
+          channels.telegram = { success: true };
+        } else {
+          channels.telegram = { success: false, error: tgData.description || 'Telegram API returned error' };
+          warnings.push(`Telegram: ${tgData.description || 'Invalid bot token or chat ID'}`);
+        }
       } catch (tgErr) {
-        console.warn('Telegram alert fetch error:', tgErr.message);
+        channels.telegram = { success: false, error: tgErr.message };
+        warnings.push(`Telegram: ${tgErr.message}`);
       }
+    } else {
+      channels.telegram = { configured: false, hint: 'Token or Chat ID not provided' };
     }
 
     // 2. Email alert
     const targetEmail = alertsCfg.email || alertsCfg.contact_email || cfg?.business?.email || (getTenantUser(wsId)?.email);
     if (targetEmail && targetEmail.includes('@')) {
-      sendOwnerAlertEmail({
-        to: targetEmail,
-        businessName: bName,
-        customerName: cName,
-        customerPhone: cPhone,
-        details: cDetails,
-        platform: plat,
-        estimatedTotal: orderData.estimated_total
-      }).catch(mailErr => console.warn('Email alert dispatch error:', mailErr.message));
+      try {
+        const mailRes = await sendOwnerAlertEmail({
+          to: targetEmail,
+          businessName: bName,
+          customerName: cName,
+          customerPhone: cPhone,
+          details: cDetails,
+          platform: plat,
+          estimatedTotal: orderData.estimated_total
+        });
+        if (mailRes.sent) {
+          dispatched.push('Email');
+          channels.email = { success: true, to: targetEmail };
+        } else {
+          channels.email = { 
+            success: false, 
+            to: targetEmail, 
+            simulated: mailRes.simulated,
+            error: mailRes.error || (mailRes.simulated ? 'SMTP not configured in server environment' : 'Delivery failed')
+          };
+          warnings.push(`Email (${targetEmail}): ${mailRes.error || (mailRes.simulated ? 'SMTP credentials (SMTP_HOST, SMTP_USER, SMTP_PASS) not configured in .env' : 'Delivery failed')}`);
+        }
+      } catch (mailErr) {
+        channels.email = { success: false, error: mailErr.message };
+        warnings.push(`Email: ${mailErr.message}`);
+      }
+    } else {
+      channels.email = { configured: false, hint: 'No alert email configured' };
     }
 
-    return { ok: true };
+    // 3. WhatsApp
+    const rawPhone = (alertsCfg.phone || '').trim();
+    const cleanPhone = rawPhone.replace(/[^\d]/g, '');
+    let waLink = null;
+    if (cleanPhone) {
+      waLink = `https://api.whatsapp.com/send?phone=${cleanPhone}&text=${encodeURIComponent(alertText)}`;
+      let waSent = false;
+
+      // Try Meta WhatsApp Cloud API if configured
+      try {
+        const { getChannelConfig, sendWhatsAppMessage } = await import('./meta.js');
+        const waConf = getChannelConfig('whatsapp', wsId);
+        if (waConf?.phoneNumberId && waConf?.token) {
+          await sendWhatsAppMessage(cleanPhone, alertText, null, wsId);
+          dispatched.push('WhatsApp');
+          channels.whatsapp = { success: true, method: 'cloud_api' };
+          waSent = true;
+        }
+      } catch (waErr) {
+        channels.whatsapp = { success: false, method: 'cloud_api', error: waErr.message };
+        warnings.push(`WhatsApp Cloud API: ${waErr.message}`);
+      }
+
+      // Try CallMeBot if API key provided
+      const callmeApiKey = alertsCfg.callmebotApiKey || process.env.CALLMEBOT_API_KEY;
+      if (!waSent && callmeApiKey) {
+        try {
+          const cbUrl = `https://api.callmebot.com/whatsapp.php?phone=+${cleanPhone}&text=${encodeURIComponent(alertText)}&apikey=${callmeApiKey}`;
+          const cbRes = await fetch(cbUrl);
+          if (cbRes.ok) {
+            dispatched.push('WhatsApp (CallMeBot)');
+            channels.whatsapp = { success: true, method: 'callmebot' };
+            waSent = true;
+          }
+        } catch (cbErr) {
+          warnings.push(`CallMeBot: ${cbErr.message}`);
+        }
+      }
+
+      if (!waSent && !channels.whatsapp) {
+        channels.whatsapp = {
+          success: false,
+          configured: false,
+          waLink,
+          hint: 'WhatsApp Cloud API not connected. Click below to open in WhatsApp.'
+        };
+        warnings.push(`WhatsApp: Automated Cloud API is not connected. Use 1-Click WhatsApp link or configure Telegram/Email.`);
+      }
+    } else {
+      channels.whatsapp = { configured: false, hint: 'No phone number provided' };
+    }
+
+    return {
+      ok: dispatched.length > 0,
+      dispatched,
+      channels,
+      warnings,
+      waLink,
+      alertText
+    };
   } catch (err) {
     console.warn('dispatchOwnerAlert error:', err.message);
-    return { ok: false, error: err.message };
+    return { ok: false, error: err.message, dispatched: [], warnings: [err.message] };
   }
 }
 
